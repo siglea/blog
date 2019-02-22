@@ -1,0 +1,110 @@
+### Maven库：
+http://repo2.maven.org/maven2/
+
+### Maven依赖查询：
+http://mvnrepository.com/
+
+### 创建Maven的普通java项目： 
+   ```
+   mvn archetype:generate -DgroupId=com.siglea -DartifactId=demo
+   
+   ```
+### 创建Maven的javaWeb项目：
+   ```
+   mvn archetype:generate -DgroupId=com.siglea -DartifactId=demoweb -DarchetypeArtifactId=maven-archetype-webapp  
+   
+   ```
+#####   mvn clean
+#####   mvn compile
+#####   mvn jetty:run
+```
+    <!-- https://mvnrepository.com/artifact/org.mortbay.jetty/jetty -->
+    <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty</artifactId>
+        <version>6.1.26</version>
+    </dependency>
+```
+### 遇到的错误（1）mvn archetype:generate
+```
+    [INFO] --- maven-archetype-plugin:3.0.1:generate (default-cli) @ standalone-pom ---
+    [WARNING] Error injecting: org.apache.maven.archetype.common.DefaultPomManager
+    java.lang.NoClassDefFoundError: org/jdom/JDOMException
+            at java.lang.Class.getDeclaredConstructors0(Native Method)
+    解决办法：删除 .m2/repository 对应报错的文件
+```
+### 遇到的错误（2） mvn archetype:create
+```
+mvn archetype:create 修改为 mvn archetype:generate
+```
+
+### 遇到的错误（3）mvn site
+```
+java.lang.NoClassDefFoundError: org/apache/maven/doxia/siterenderer/DocumentContent
+解决办法：在pom.xml添加如下配置
+<build>
+<pluginManagement>
+    <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>2.7</version>
+        </plugin>
+    </plugins>
+    </pluginManagement>
+</build>
+```
+
+### 好用的源地址(pom.xml settings.xml中配置)
+```
+<mirror>
+    <id>nexus-aliyun</id>
+    <name>Nexus aliyun</name>
+    <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+    <mirrorOf>central</mirrorOf>
+</mirror>
+<mirror>
+   <id>maven2-repository.dev.java.net</id>
+   <name>Java.net Repository for Maven</name>
+   <url>http://download.java.net/maven/2/</url>
+   <mirrorOf>central1</mirrorOf>
+</mirror>
+<mirror>
+    <id>java.net2.r1</id>
+    <name>java.net Repository hosting the jee6 artifacts</name>
+    <url>http://repo1.maven.org/maven2/</url>
+    <mirrorOf>central2</mirrorOf>
+</mirror>
+<mirror>
+    <id>java.net2.r3</id>
+    <name>java.net Repository hosting the jee6 artifacts</name>
+    <url>http://repository.sonatype.org/content/groups/public/</url>
+    <mirrorOf>central3</mirrorOf>
+</mirror>
+<mirror>
+<mirror>
+    <id>java.net2.r4</id>
+    <name>java.net Repository hosting the jee6 artifacts</name>
+    <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
+    <mirrorOf>central4</mirrorOf>
+</mirror>
+<mirror>
+    <id>java.net2.r2</id>
+    <name>java.net Repository hosting the jee6 artifacts</name>
+    <url>http://repository.jboss.com/maven2/</url>
+    <mirrorOf>central5</mirrorOf>
+</mirror>
+<mirror>
+    <id>java.net2</id>
+    <name>java.net Repository hosting the jee6 artifacts</name>
+    <url>http://download.java.net/maven/2</url>
+    <mirrorOf>central6</mirrorOf>
+</mirror>
+```
+###### 参考链接
+http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html
