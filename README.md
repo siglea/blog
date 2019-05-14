@@ -1,3 +1,5 @@
+https://pandao.github.io/editor.md/
+ruby jekyll
 
 // 剧抓取
 https://api.synopsis.yonggongbao.cn/synopsis/catchData
