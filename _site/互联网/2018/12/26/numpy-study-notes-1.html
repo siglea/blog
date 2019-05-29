@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Numpy学习笔记 (1)</title>
+  <meta name="description" content="np.array  construct ndarray from python array  ndim: 返回值有几个括弧  dtype: 也是object，指定ndarray的型, 必须整个数列都是一个型的    a = np.array([1, 2, 3,4,5], ndmin = 2, dtype=comp...">
+  <script src="/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2018/12/26/numpy-study-notes-1.html">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+</head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-86140592-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  <body>
+
+    <header class="site-header">
+  <div class="container" style="text-align:center">
+    <div class="navbar" style="margin-bottom:0;border:0">
+    <ul class="navbar-nav nav header-nav">
+    <li><a href="/index.html" class="button">首页</a></li>
+      <li><a href="/category/互联网" class="button">互联网</a></li>
+      <li><a href="/category/金融" class="button">金融</a></li>
+      <li><a href="/category/商业" class="button">商业</a></li>
+      <li><a href="/category/读书笔记" class="button">读书笔记</a></li>
+      <li><a href="/category/生活" class="button">生活</a></li>
+    </ul>
+    </div>
+  </div>
+
+</header>
+<div class="clearfix">
+
+
+    <div class="page-content">
+      <div class="container" style="padding-left:0;padding-right:0;">
+        <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Numpy学习笔记 (1)</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2018-12-26T09:30:09+08:00" itemprop="datePublished">Dec 26, 2018</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h2 id="nparray">np.array</h2>
+<ul>
+  <li>construct ndarray from python array</li>
+  <li>ndim: 返回值有几个括弧</li>
+  <li>dtype: 也是object，指定ndarray的型, 必须整个数列都是一个型的
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ndmin</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+<span class="c1"># =&gt; [[ 1.+0.j,  2.+0.j,  3.+0.j]]
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="npdtype">np.dtype</h2>
+<ul>
+  <li><code class="highlighter-rouge">dtype</code>是object而不是常数</li>
+  <li><code class="highlighter-rouge">np.int32</code>是type class，和<code class="highlighter-rouge">np.dtype</code>不同
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="ndarrayshape">ndarray.shape</h2>
+<ul>
+  <li>overwrite shape can reshape the array, reshape后维度不会变， 原来的array会被覆盖</li>
+  <li>reshape会返回新的array
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+<span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="ndarrayndim">ndarray.ndim</h2>
+<ul>
+  <li>返回维度（int）</li>
+</ul>
+
+<h2 id="新建np-array">新建np array</h2>
+<ol>
+  <li>np.empty (default dtype float 64)</li>
+  <li>np.ones (default dtype float 64)</li>
+  <li>np.zeros (default dtype float 64)
+    <ul>
+      <li>shape can be <code class="highlighter-rouge">(1, 2)</code> or <code class="highlighter-rouge">[1, 2]</code></li>
+      <li>如果只指定<code class="highlighter-rouge">int</code>，默认是<code class="highlighter-rouge">int64</code></li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="从既存的array创建">从既存的array创建</h2>
+<ul>
+  <li>原来的array和ndarray一定是两个object
+    <ol>
+      <li>np.asarray (list or tuple)</li>
+    </ol>
+  </li>
+  <li>！⚠️tuple的元素对齐返回值不同
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span> <span class="c1">#返回二元数组，dtype是int
+</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span> <span class="c1">#返回一元数组，dtype是object
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="nparange">np.arange</h2>
+<ul>
+  <li>dtype是int，输入float的时候小数点部分会被切掉</li>
+  <li><code class="highlighter-rouge">endpoint=False</code>会把最后那个数也加进去
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="nplinspace">np.linspace</h2>
+<ul>
+  <li><code class="highlighter-rouge">base</code>是log space的底，default是0（线性）
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># 起点，终点，点数
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="slice">slice</h2>
+<ol>
+  <li>use <code class="highlighter-rouge">slice</code> method
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>[start:stop:step]
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">7</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+</code></pre></div>    </div>
+    <p>二元数组的情况下</p>
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+<span class="n">a</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="c1"># =&gt; True
+</span></code></pre></div>    </div>
+  </li>
+  <li>boolean slicing
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+<span class="n">a</span><span class="p">[</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">]</span> <span class="c1"># =&gt; 返回一位数组
+</span></code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="boradcasting">boradcasting</h2>
+<ol>
+  <li>两个ndarray shape相同时，操作是element-wise</li>
+  <li>可以boardcast的情况：形状完全相同，形状(n, 1)和(n, m)的情况</li>
+</ol>
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+      </div>
+      <div class="clearfix">
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="container">
+
+    <h2 class="footer-heading">粉笔灰杂谈</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>粉笔灰杂谈</li>
+          <li><a href="mailto:siglea@sina.com">siglea@sina.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/siglea"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">siglea</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

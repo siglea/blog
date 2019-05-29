@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>TCP-IP的关键知识点</title>
+  <meta name="description" content="TCP建立连接的本质含义是？  确定整个通信链路是否接通  确定双方信息处理服务准备完毕  告知通信双方各自的初始序列号，建立连接后对每一个发送的数据包都需要以初始序列号为基准进行编号  TCP是双工的，所以建立连接后，两端都是互为客户端服务端  连接成功建立表示双方维护了一个可用连接的映射关系">
+  <script src="/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/TCP-IP.html">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+</head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-86140592-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  <body>
+
+    <header class="site-header">
+  <div class="container" style="text-align:center">
+    <div class="navbar" style="margin-bottom:0;border:0">
+    <ul class="navbar-nav nav header-nav">
+    <li><a href="/index.html" class="button">首页</a></li>
+      <li><a href="/category/互联网" class="button">互联网</a></li>
+      <li><a href="/category/金融" class="button">金融</a></li>
+      <li><a href="/category/商业" class="button">商业</a></li>
+      <li><a href="/category/读书笔记" class="button">读书笔记</a></li>
+      <li><a href="/category/生活" class="button">生活</a></li>
+    </ul>
+    </div>
+  </div>
+
+</header>
+<div class="clearfix">
+
+
+    <div class="page-content">
+      <div class="container" style="padding-left:0;padding-right:0;">
+        <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">TCP-IP的关键知识点</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-05-27T18:00:00+08:00" itemprop="datePublished">May 27, 2019</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h4 id="tcp建立连接的本质含义是">TCP建立连接的本质含义是？</h4>
+<ol>
+  <li>确定整个通信链路是否接通</li>
+  <li>确定双方信息处理服务准备完毕</li>
+  <li>告知通信双方各自的初始序列号，建立连接后对每一个发送的数据包都需要以初始序列号为基准进行编号</li>
+  <li>TCP是双工的，所以建立连接后，两端都是互为客户端服务端</li>
+  <li>连接成功建立表示双方维护了一个可用连接的映射关系</li>
+</ol>
+
+<h4 id="在tcp有keepalive机制的情况下为什么还要有应用层保活">在TCP有keepalive机制的情况下，为什么还要有应用层保活？</h4>
+<ol>
+  <li>在诸如由防火墙过滤、路由器故障、运营商信令控制、网线断开等原因导致的TCP中断的情况下keepalive失效</li>
+  <li>NAT及DHCP机制也会导致keepalive失效</li>
+  <li>keepalive默认参数设置7200秒才会触发重试并且在重试10之后就终止</li>
+  <li>经过Socks封装的TCP大部分操作系统把底层的断连等细节直接忽略掉并没有抛给上层应用</li>
+  <li>keepalive机制判断的仅仅是连接的存在（只是在映射表中存在ESTABLISHED)，并不能判断应用服务是否正常</li>
+  <li>keepalive并不是TCP规范的一部分，并不是所有操作系统都完整的实现</li>
+  <li>应用层的心跳除了保活还有其他应用意义比如应用层控制的重传（断连重连后，底层并不知道应用层数据状况）</li>
+</ol>
+
+<h4 id="sync-flooding-攻击">SYNC Flooding 攻击</h4>
+<p>https://blog.csdn.net/bigtree_3721/article/details/77619877</p>
+
+<h4 id="数据格式选择">数据格式选择</h4>
+
+<h5 id="参考资料">参考资料</h5>
+
+<p><a href="http://www.52im.net/">即时通讯网</a></p>
+
+<p><a href="https://java-mzd.iteye.com/blog/1007577">TCP-IP的20问</a></p>
+
+<p><a href="https://www.jianshu.com/p/16c8c9e09feb">长连接及心跳保活原理简介</a></p>
+
+<p><a href="https://www.cnblogs.com/imstudy/p/5846363.html">为什么说基于TCP的移动端IM仍然需要心跳保活？</a></p>
+
+<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=195&amp;ctid=10">微信对网络影响的技术试验及分析（论文全文）</a></p>
+
+<h5 id="tcp丢包及重试">TCP丢包及重试</h5>
+
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+      </div>
+      <div class="clearfix">
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="container">
+
+    <h2 class="footer-heading">粉笔灰杂谈</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>粉笔灰杂谈</li>
+          <li><a href="mailto:siglea@sina.com">siglea@sina.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/siglea"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">siglea</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
