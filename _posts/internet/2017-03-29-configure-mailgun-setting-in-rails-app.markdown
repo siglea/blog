@@ -5,6 +5,8 @@ date:   2017-03-29 20:15:09 +0800
 comments: true
 tags:
 - programming
+categories:
+- 互联网
 ---
 
 Recently I'm learning to create a Rails 5 api only application with an android mobile application. I want to send a activation email after user registered from the android app, and I found there is a free Mailgun add-on on Heroku. It's perfect choice to start to play with because you can send up to 100 messages/hour without being charged. The documentation is good enough but I do found several steps confusing.

@@ -5,6 +5,8 @@ date:   2016-12-02 20:23:06 +0800
 comments: true
 tags:
 - programming
+categories:
+- 互联网
 ---
 
 Days before, I changed the operating system of my old laptop from Windows7 to Ubuntu Desktop, I installed Ubuntu from a USB stick from my friend. After installing I found I Broadcom wireless driver wasn't installed so I couldn't connect to my WiFi. I tried several ways then found the solution, hope it my be helpful.

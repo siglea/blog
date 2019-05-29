@@ -1,0 +1,42 @@
+---
+layout: default
+---
+<div class="row" style="margin-bottom:30px">
+    <div class="home col-md-8">
+<h1>Archive of posts with {{ page.type }} '{{ page.title }}'</h1>
+<ul class="posts">
+    {% for post in page.posts %}
+    <li>
+        <span class="post-date">{{ post.date | date: "%b %-d, %Y" }}</span>
+        <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+    </li>
+    {% endfor %}
+</ul>
+    </div>
+<div class="col-md-4">
+    <div class="post-contents">
+        <i class="fa fa-tags">&nbsp;&nbsp; Tags</i><br />
+        {% for tag in site.tags %}
+        {% assign t = tag | first %}
+        {% assign posts = tag | last %}
+        <a  href="tag/{{ t | prepend: site.baseurl }}">
+            <span class="label label-default">{{t | downcase | replace:" ","-" }} ( {{ posts | size }} )</span>
+        </a><br />
+
+        {% endfor %}
+    </div>
+    <br />
+    <div class="post-contents">
+        <h3>About Me</h3>
+        <img src="{{ site.baseurl }}/img/me.jpg" style="margin:20px auto 0 auto;">
+        <p style="font-size:18px;margin-top:10px">I'm Siglea,That's All.</p>
+        <br />
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default social-network" style="background-color:#0078ba" target="_blank" onclick=''><i class="fa fa-linkedin" style="font-size:20px;color:white;"></i></button>
+            <button type="button" class="btn btn-default social-network" style="background-color:#DD4B38" target="_blank" onclick=''><i class="fa fa-google-plus" style="font-size:20px;color:white;"></i></button>
+            <button type="button" class="btn btn-default social-network" style="background-color:#F60" target="_blank" onclick=''><i class="fa fa-soundcloud" style="font-size:20px;color:white;"></i></button>
+        </div>
+    </div>
+
+</div>
+</div>

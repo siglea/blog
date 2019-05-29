@@ -5,7 +5,8 @@ date:   2016-12-06 14:23:06 +0800
 comments: true
 tags:
 - programming
-- 中文
+categories:
+- 互联网
 ---
 
 给三年前买的旧笔记本重装了Ubuntu桌面版，第一件要做的事就是科学上网啦。

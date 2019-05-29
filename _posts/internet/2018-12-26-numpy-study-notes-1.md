@@ -5,6 +5,8 @@ date:   2018-12-26 10:30:09 +0900
 comments: true
 tags:
 - python
+categories:
+- 互联网
 ---
 
 ## np.array

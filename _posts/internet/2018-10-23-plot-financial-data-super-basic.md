@@ -5,6 +5,8 @@ date:   2018-10-23 21:30:09 +0900
 comments: true
 tags:
 - programming
+categories:
+- 互联网
 ---
 
 ## import libraries

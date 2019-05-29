@@ -6,6 +6,8 @@ comments: true
 tags:
 - aws
 - study note
+categories:
+- 互联网
 ---
 
 # code deploy

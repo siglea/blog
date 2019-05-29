@@ -6,6 +6,8 @@ comments: true
 tags:
 - programming
 - language learning
+categories:
+- 互联网
 ---
 These days I was learning German grammar of transforming adjective. I learnt so many rules like,  when the non which you describe is a accusative, if it's male word append `en`, if it's female or plural append `e`, if it's neutral append `es`. But when the article is `meine` or `keine` and the word is plural, append `en` For nominative and dative phrase ..... 
 

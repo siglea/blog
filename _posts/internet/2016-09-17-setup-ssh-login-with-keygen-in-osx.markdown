@@ -5,6 +5,8 @@ date:   2016-09-17 15:46:02 +0800
 comments: true
 tags:
 - programming
+categories:
+- 互联网
 ---
 I'm quite tired with copy-pasting passwords from my Evernote every time I  login to my company's remote server. Especially my company uses a proxy server, which means I have to type two passwords to eventually login.
 

@@ -49,13 +49,16 @@ layout: default
     </div>
   </div>
 
-  <div class="col-md-4">
+    <div class="col-md-4">
     <div class="post-contents">
       <i class="fa fa-tags">&nbsp;&nbsp; Tags</i><br />
       {% for tag in site.tags %}
       {% assign t = tag | first %}
       {% assign posts = tag | last %}
-      <span class="label label-default">{{t | downcase | replace:" ","-" }} ( {{ posts | size }} )</span><br />
+      <a  href="tag/{{ t | prepend: site.baseurl }}">
+      <span class="label label-default">{{t | downcase | replace:" ","-" }} ( {{ posts | size }} )</span>
+      </a><br />
+
       {% endfor %}
     </div>
     <br />

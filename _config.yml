@@ -15,7 +15,24 @@ url: "https://www.fenbihui.cn" # the base hostname & protocol for your site
 github_username:  siglea
 
 # Gems settings
-plugins: [jekyll-paginate]
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-seo
+  - jekyll-archives
+
+# https://github.com/jekyll/jekyll-archives
+jekyll-archives:
+  enabled:
+    - categories
+    - tags
+  permalinks:
+    year: '/:year/'
+    month: '/:year/:month/'
+    day: '/:year/:month/:day/'
+    tag: '/tag/:name/'
+    category: '/category/:name/'
+
 
 # Build settings
 markdown: kramdown

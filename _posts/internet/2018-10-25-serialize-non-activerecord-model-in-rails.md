@@ -5,6 +5,8 @@ date:   2018-10-25 11:30:09 +0900
 comments: true
 tags:
 - programming
+categories:
+- 互联网
 ---
 
 Recently I've been working in backend which connects to another API, you may need to send a specific format of JSON data which is not the same as database resource.

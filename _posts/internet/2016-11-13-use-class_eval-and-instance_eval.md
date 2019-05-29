@@ -5,6 +5,8 @@ date:   2016-11-13 10:23:06 +0800
 comments: true
 tags:
 - programming
+categories:
+- 互联网
 ---
 
 ### current object and current class

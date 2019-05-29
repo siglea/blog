@@ -5,7 +5,8 @@ date:   2016-10-07 23:23:02 +0800
 comments: true
 tags:
 - programming
-- '中文'
+categories:
+- 互联网
 ---
 自从lantern被墙,换了新的vpn以来，从google cdn, bootstrap cdn, cloudflare cdn加载资源速度变得超慢，请求CDN资源能花上半分钟，超级令人不爽(`‐●_‐´怒)。
 

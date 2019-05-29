@@ -5,6 +5,8 @@ date:   2016-11-12 10:23:06 +0800
 comments: true
 tags:
 - programming
+categories:
+- 互联网
 ---
 
 In Ruby, methods like `map`, `reject`, `reduce` are very handy to use. Recently, I came across Javascript functional programming, I found there are similar usages in Javascript.

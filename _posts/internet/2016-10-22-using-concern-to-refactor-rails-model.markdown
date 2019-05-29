@@ -5,6 +5,8 @@ date:   2016-10-22 15:25:09 +0800
 comments: true
 tags:
 - programming
+categories:
+- 互联网
 ---
 
 # Background #
