@@ -1,0 +1,62 @@
+I"	<h1 id="code-deploy">code deploy</h1>
+<p>integrate with CI/CD tools as well as config management tools <code class="highlighter-rouge">ansible</code>, <code class="highlighter-rouge">chef</code>, <code class="highlighter-rouge">puppet</code></p>
+
+<h2 id="steps-to-deploy-a-project">Steps to deploy a project</h2>
+<p><img src="/img/code_deploy.png" /></p>
+
+<h2 id="deploy-methods">deploy methods</h2>
+<ol>
+  <li>inplace
+    <ul>
+      <li>as called <code class="highlighter-rouge">rolling update</code></li>
+      <li>stop the instance while updating and use other instances (capacity will be smaller)</li>
+      <li>can be used for EC2, on-premise systems, not for lambda</li>
+      <li>need redeploy for rollback</li>
+    </ul>
+  </li>
+  <li>green/blue
+    <ul>
+      <li>prepare new instances and switch traffic once deployment is done</li>
+      <li>blue is is the active deployment, green is the new release</li>
+      <li>can also be used for lambda</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="appspec-file-to-configure-deployment">appspec file to configure deployment</h2>
+<ol>
+  <li>lambda deployment
+    <ul>
+      <li>version</li>
+      <li>resources (name and properties of lambda function)</li>
+      <li>hooks (specify when should lambda function run)
+        <ul>
+          <li>BeforeAllowTraffic</li>
+          <li>AfterAllowTraffic</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>ec2 and on premises
+    <ul>
+      <li>version</li>
+      <li>os</li>
+      <li>files (source and destination)</li>
+      <li>hooks
+        <ul>
+          <li>ApplicationStop (Gracefully stio the app for the new verion)</li>
+          <li>DownloadBundle (CD agent copies revision files to a temporary location)</li>
+          <li>BeforeInstall (e.g backing up current revision, decrypting files)</li>
+          <li>Install (copy revision files from temp to correct location)</li>
+          <li>After install (e.g config tasks, change permission)</li>
+          <li>ApplicationStart</li>
+          <li>ValidateService (tests)</li>
+          <li>BeforeBlockTraffic (tasks before deregistering from load balancer)</li>
+          <li>BlockTraffic (deregister instances from load balancer)</li>
+          <li>AfterBlockTraffic (tasks after deregistering from load balancer)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+:ET

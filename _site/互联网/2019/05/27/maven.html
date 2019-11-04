@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>maven使用</title>
-  <meta name="description" content="Maven库：http://repo2.maven.org/maven2/">
+  <meta name="description" content="mvn clean    mvn clean package -Dmaven.test.skip=truemvn compile">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,8 +14,8 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="https://www.fenbihui.cn/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html">
-  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="https://www.fenbihui.cn/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
   <script>
@@ -62,109 +62,108 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h3 id="maven库">Maven库：</h3>
-<p>http://repo2.maven.org/maven2/</p>
+    <h4 id="mvn-clean">mvn clean</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    mvn clean package <span class="nt">-Dmaven</span>.test.skip<span class="o">=</span><span class="nb">true</span>
+</code></pre></div></div>
+<h4 id="mvn-compile">mvn compile</h4>
 
-<h3 id="maven依赖查询">Maven依赖查询：</h3>
-<p>http://mvnrepository.com/</p>
-
-<h3 id="创建maven的普通java项目">创建Maven的普通java项目：</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate -DgroupId=com.siglea -DartifactId=demo
-   
+<h4 id="创建maven的普通java项目">创建Maven的普通java项目：</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate <span class="nt">-DgroupId</span><span class="o">=</span>com.siglea <span class="nt">-DartifactId</span><span class="o">=</span>demo
 </code></pre></div></div>
-<h3 id="创建maven的javaweb项目">创建Maven的javaWeb项目：</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate -DgroupId=com.siglea -DartifactId=demoweb -DarchetypeArtifactId=maven-archetype-webapp  
-   
+<h4 id="创建maven的javaweb项目">创建Maven的javaWeb项目：</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate <span class="nt">-DgroupId</span><span class="o">=</span>com.siglea <span class="nt">-DartifactId</span><span class="o">=</span>demoweb <span class="nt">-DarchetypeArtifactId</span><span class="o">=</span>maven-archetype-webapp  
 </code></pre></div></div>
-<h5 id="mvn-clean">mvn clean</h5>
-<h5 id="mvn-compile">mvn compile</h5>
-<h5 id="mvn-jettyrun">mvn jetty:run</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;!-- https://mvnrepository.com/artifact/org.mortbay.jetty/jetty --&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.mortbay.jetty&lt;/groupId&gt;
-        &lt;artifactId&gt;jetty&lt;/artifactId&gt;
-        &lt;version&gt;6.1.26&lt;/version&gt;
-    &lt;/dependency&gt;
+<h4 id="mvn-jettyrun">mvn jetty:run</h4>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c">&lt;!-- https://mvnrepository.com/artifact/org.mortbay.jetty/jetty --&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.mortbay.jetty<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>jetty<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>6.1.26<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div></div>
-<h3 id="遇到的错误1mvn-archetypegenerate">遇到的错误（1）mvn archetype:generate</h3>
+<h4 id="遇到的错误1mvn-archetypegenerate">遇到的错误（1）mvn archetype:generate</h4>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    [INFO] --- maven-archetype-plugin:3.0.1:generate (default-cli) @ standalone-pom ---
     [WARNING] Error injecting: org.apache.maven.archetype.common.DefaultPomManager
     java.lang.NoClassDefFoundError: org/jdom/JDOMException
             at java.lang.Class.getDeclaredConstructors0(Native Method)
     解决办法：删除 .m2/repository 对应报错的文件
 </code></pre></div></div>
-<h3 id="遇到的错误2-mvn-archetypecreate">遇到的错误（2） mvn archetype:create</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn archetype:create 修改为 mvn archetype:generate
+<h4 id="遇到的错误2-mvn-archetypecreate">遇到的错误（2） mvn archetype:create</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn archetype:create 修改为 mvn archetype:generate
 </code></pre></div></div>
 
-<h3 id="遇到的错误3mvn-site">遇到的错误（3）mvn site</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java.lang.NoClassDefFoundError: org/apache/maven/doxia/siterenderer/DocumentContent
-解决办法：在pom.xml添加如下配置
-&lt;build&gt;
-&lt;pluginManagement&gt;
-    &lt;plugins&gt;
-        &lt;plugin&gt;
-          &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-          &lt;artifactId&gt;maven-site-plugin&lt;/artifactId&gt;
-          &lt;version&gt;3.3&lt;/version&gt;
-        &lt;/plugin&gt;
-        &lt;plugin&gt;
-          &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-          &lt;artifactId&gt;maven-project-info-reports-plugin&lt;/artifactId&gt;
-          &lt;version&gt;2.7&lt;/version&gt;
-        &lt;/plugin&gt;
-    &lt;/plugins&gt;
-    &lt;/pluginManagement&gt;
-&lt;/build&gt;
+<h4 id="遇到的错误3mvn-site">遇到的错误（3）mvn site</h4>
+<p>java.lang.NoClassDefFoundError: org/apache/maven/doxia/siterenderer/DocumentContent
+解决办法：在pom.xml添加如下配置</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;build&gt;</span>
+<span class="nt">&lt;pluginManagement&gt;</span>
+    <span class="nt">&lt;plugins&gt;</span>
+        <span class="nt">&lt;plugin&gt;</span>
+          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+          <span class="nt">&lt;artifactId&gt;</span>maven-site-plugin<span class="nt">&lt;/artifactId&gt;</span>
+          <span class="nt">&lt;version&gt;</span>3.3<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/plugin&gt;</span>
+        <span class="nt">&lt;plugin&gt;</span>
+          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+          <span class="nt">&lt;artifactId&gt;</span>maven-project-info-reports-plugin<span class="nt">&lt;/artifactId&gt;</span>
+          <span class="nt">&lt;version&gt;</span>2.7<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/plugin&gt;</span>
+    <span class="nt">&lt;/plugins&gt;</span>
+    <span class="nt">&lt;/pluginManagement&gt;</span>
+<span class="nt">&lt;/build&gt;</span>
 </code></pre></div></div>
 
 <h3 id="好用的源地址pomxml-settingsxml中配置">好用的源地址(pom.xml settings.xml中配置)</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;mirror&gt;
-    &lt;id&gt;nexus-aliyun&lt;/id&gt;
-    &lt;name&gt;Nexus aliyun&lt;/name&gt;
-    &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt;
-    &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-   &lt;id&gt;maven2-repository.dev.java.net&lt;/id&gt;
-   &lt;name&gt;Java.net Repository for Maven&lt;/name&gt;
-   &lt;url&gt;http://download.java.net/maven/2/&lt;/url&gt;
-   &lt;mirrorOf&gt;central1&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-    &lt;id&gt;java.net2.r1&lt;/id&gt;
-    &lt;name&gt;java.net Repository hosting the jee6 artifacts&lt;/name&gt;
-    &lt;url&gt;http://repo1.maven.org/maven2/&lt;/url&gt;
-    &lt;mirrorOf&gt;central2&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-    &lt;id&gt;java.net2.r3&lt;/id&gt;
-    &lt;name&gt;java.net Repository hosting the jee6 artifacts&lt;/name&gt;
-    &lt;url&gt;http://repository.sonatype.org/content/groups/public/&lt;/url&gt;
-    &lt;mirrorOf&gt;central3&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-&lt;mirror&gt;
-    &lt;id&gt;java.net2.r4&lt;/id&gt;
-    &lt;name&gt;java.net Repository hosting the jee6 artifacts&lt;/name&gt;
-    &lt;url&gt;http://mirrors.ibiblio.org/pub/mirrors/maven2/&lt;/url&gt;
-    &lt;mirrorOf&gt;central4&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-    &lt;id&gt;java.net2.r2&lt;/id&gt;
-    &lt;name&gt;java.net Repository hosting the jee6 artifacts&lt;/name&gt;
-    &lt;url&gt;http://repository.jboss.com/maven2/&lt;/url&gt;
-    &lt;mirrorOf&gt;central5&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-    &lt;id&gt;java.net2&lt;/id&gt;
-    &lt;name&gt;java.net Repository hosting the jee6 artifacts&lt;/name&gt;
-    &lt;url&gt;http://download.java.net/maven/2&lt;/url&gt;
-    &lt;mirrorOf&gt;central6&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>nexus-aliyun<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>Nexus aliyun<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://maven.aliyun.com/nexus/content/groups/public/<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+   <span class="nt">&lt;id&gt;</span>maven2-repository.dev.java.net<span class="nt">&lt;/id&gt;</span>
+   <span class="nt">&lt;name&gt;</span>Java.net Repository for Maven<span class="nt">&lt;/name&gt;</span>
+   <span class="nt">&lt;url&gt;</span>http://download.java.net/maven/2/<span class="nt">&lt;/url&gt;</span>
+   <span class="nt">&lt;mirrorOf&gt;</span>central1<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>java.net2.r1<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://repo1.maven.org/maven2/<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central2<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>java.net2.r3<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://repository.sonatype.org/content/groups/public/<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central3<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>java.net2.r4<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://mirrors.ibiblio.org/pub/mirrors/maven2/<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central4<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>java.net2.r2<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://repository.jboss.com/maven2/<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central5<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>java.net2<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://download.java.net/maven/2<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central6<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
 </code></pre></div></div>
-<h6 id="参考链接">参考链接</h6>
-<p>http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html</p>
+<h4 id="参考链接">参考链接</h4>
+<p><a href="http://repo2.maven.org/maven2/">Maven库</a></p>
+
+<p><a href="http://mvnrepository.com/">Maven依赖查询</a></p>
+
+<p><a href="http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html">http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html</a></p>
 
   </div>
 </article>

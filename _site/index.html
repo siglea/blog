@@ -14,8 +14,8 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="https://www.fenbihui.cn/">
-  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="https://www.fenbihui.cn/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
   <script>
@@ -53,6 +53,30 @@
       <div class="container" style="padding-left:0;padding-right:0;">
         <div class="row" style="margin-bottom:30px">
   <div class="home col-md-8">
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html">算法时间复杂度</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>算法</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="时间复杂度原则">时间复杂度原则</h4>
+<ul>
+  <li>如果运行时间是常数量级，用常数1表示</li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
     
     <div class="post-contents">
       <h2>
@@ -128,143 +152,19 @@
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="单服务器性能评估">单服务器性能评估</h3>
-<p>https://cloud.tencent.com/developer/article/1004754</p>
+	<h4 id="单服务器性能评估">单服务器性能评估</h4>
+<p><a href="https://cloud.tencent.com/developer/article/1004754">https://cloud.tencent.com/developer/article/1004754</a></p>
 
-<h3 id="单服务器并发连接评估">单服务器并发连接评估</h3>
-<p>https://www.zhihu.com/question/20831000
-https://www.cnblogs.com/duanxz/p/4464178.html</p>
+<h4 id="单服务器并发连接评估">单服务器并发连接评估</h4>
+<p><a href="https://www.zhihu.com/question/20831000">https://www.zhihu.com/question/20831000</a>
+<a href="https://www.cnblogs.com/duanxz/p/4464178.html">https://www.cnblogs.com/duanxz/p/4464178.html</a></p>
 
-<h3 id="烦人的代理">烦人的代理</h3>
-<p>https://blog.csdn.net/plychoz/article/details/83147759</p>
+<h4 id="烦人的代理">烦人的代理</h4>
+<p><a href="https://blog.csdn.net/plychoz/article/details/83147759">https://blog.csdn.net/plychoz/article/details/83147759</a></p>
 
       </div>
       <div style="height:50px;">
 	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/server-performance.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html">maven使用</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>maven</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>构建</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="maven库">Maven库：</h3>
-<p>http://repo2.maven.org/maven2/</p>
-
-<h3 id="maven依赖查询">Maven依赖查询：</h3>
-<p>http://mvnrepository.com/</p>
-
-<h3 id="创建maven的普通java项目">创建Maven的普通java项目：</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate -DgroupId=com.siglea -DartifactId=demo
-   
-</code></pre></div></div>
-<h3 id="创建maven的javaweb项目">创建Maven的javaWeb项目：</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate -DgroupId=com.siglea -DartifactId=demoweb -DarchetypeArtifactId=maven-archetype-webapp  
-   
-</code></pre></div></div>
-<h5 id="mvn-clean">mvn clean</h5>
-<h5 id="mvn-compile">mvn compile</h5>
-<h5 id="mvn-jettyrun">mvn jetty:run</h5>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;!-- https://mvnrepository.com/artifact/org.mortbay.jetty/jetty --&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.mortbay.jetty&lt;/groupId&gt;
-        &lt;artifactId&gt;jetty&lt;/artifactId&gt;
-        &lt;version&gt;6.1.26&lt;/version&gt;
-    &lt;/dependency&gt;
-</code></pre></div></div>
-<h3 id="遇到的错误1mvn-archetypegenerate">遇到的错误（1）mvn archetype:generate</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    [INFO] --- maven-archetype-plugin:3.0.1:generate (default-cli) @ standalone-pom ---
-    [WARNING] Error injecting: org.apache.maven.archetype.common.DefaultPomManager
-    java.lang.NoClassDefFoundError: org/jdom/JDOMException
-            at java.lang.Class.getDeclaredConstructors0(Native Method)
-    解决办法：删除 .m2/repository 对应报错的文件
-</code></pre></div></div>
-<h3 id="遇到的错误2-mvn-archetypecreate">遇到的错误（2） mvn archetype:create</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn archetype:create 修改为 mvn archetype:generate
-</code></pre></div></div>
-
-<h3 id="遇到的错误3mvn-site">遇到的错误（3）mvn site</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java.lang.NoClassDefFoundError: org/apache/maven/doxia/siterenderer/DocumentContent
-解决办法：在pom.xml添加如下配置
-&lt;build&gt;
-&lt;pluginManagement&gt;
-    &lt;plugins&gt;
-        &lt;plugin&gt;
-          &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-          &lt;artifactId&gt;maven-site-plugin&lt;/artifactId&gt;
-          &lt;version&gt;3.3&lt;/version&gt;
-        &lt;/plugin&gt;
-        &lt;plugin&gt;
-          &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-          &lt;artifactId&gt;maven-project-info-reports-plugin&lt;/artifactId&gt;
-          &lt;version&gt;2.7&lt;/version&gt;
-        &lt;/plugin&gt;
-    &lt;/plugins&gt;
-    &lt;/pluginManagement&gt;
-&lt;/build&gt;
-</code></pre></div></div>
-
-<h3 id="好用的源地址pomxml-settingsxml中配置">好用的源地址(pom.xml settings.xml中配置)</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;mirror&gt;
-    &lt;id&gt;nexus-aliyun&lt;/id&gt;
-    &lt;name&gt;Nexus aliyun&lt;/name&gt;
-    &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt;
-    &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-   &lt;id&gt;maven2-repository.dev.java.net&lt;/id&gt;
-   &lt;name&gt;Java.net Repository for Maven&lt;/name&gt;
-   &lt;url&gt;http://download.java.net/maven/2/&lt;/url&gt;
-   &lt;mirrorOf&gt;central1&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-    &lt;id&gt;java.net2.r1&lt;/id&gt;
-    &lt;name&gt;java.net Repository hosting the jee6 artifacts&lt;/name&gt;
-    &lt;url&gt;http://repo1.maven.org/maven2/&lt;/url&gt;
-    &lt;mirrorOf&gt;central2&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-    &lt;id&gt;java.net2.r3&lt;/id&gt;
-    &lt;name&gt;java.net Repository hosting the jee6 artifacts&lt;/name&gt;
-    &lt;url&gt;http://repository.sonatype.org/content/groups/public/&lt;/url&gt;
-    &lt;mirrorOf&gt;central3&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-&lt;mirror&gt;
-    &lt;id&gt;java.net2.r4&lt;/id&gt;
-    &lt;name&gt;java.net Repository hosting the jee6 artifacts&lt;/name&gt;
-    &lt;url&gt;http://mirrors.ibiblio.org/pub/mirrors/maven2/&lt;/url&gt;
-    &lt;mirrorOf&gt;central4&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-    &lt;id&gt;java.net2.r2&lt;/id&gt;
-    &lt;name&gt;java.net Repository hosting the jee6 artifacts&lt;/name&gt;
-    &lt;url&gt;http://repository.jboss.com/maven2/&lt;/url&gt;
-    &lt;mirrorOf&gt;central5&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-&lt;mirror&gt;
-    &lt;id&gt;java.net2&lt;/id&gt;
-    &lt;name&gt;java.net Repository hosting the jee6 artifacts&lt;/name&gt;
-    &lt;url&gt;http://download.java.net/maven/2&lt;/url&gt;
-    &lt;mirrorOf&gt;central6&lt;/mirrorOf&gt;
-&lt;/mirror&gt;
-</code></pre></div></div>
-<h6 id="参考链接">参考链接</h6>
-<p>http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html</p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -294,6 +194,10 @@ https://www.cnblogs.com/duanxz/p/4464178.html</p>
       
       
       <a href="/page5" class="button page-button">5</a>
+      
+      
+      
+      <a href="/page6" class="button page-button">6</a>
       
       
 
@@ -421,6 +325,13 @@ https://www.cnblogs.com/duanxz/p/4464178.html</p>
       </a><br />
 
       
+      
+      
+      <a  href="tag/算法">
+      <span class="label label-default">算法 ( 1 )</span>
+      </a><br />
+
+      
     </div>
     <br />
     <div class="post-contents">
@@ -428,11 +339,6 @@ https://www.cnblogs.com/duanxz/p/4464178.html</p>
       <img src="/img/me.jpg" style="margin:20px auto 0 auto;">
       <p style="font-size:18px;margin-top:10px">I'm Siglea,That's All.</p>
       <br />
-      <div class="btn-group" role="group">
-	<button type="button" class="btn btn-default social-network" style="background-color:#0078ba" target="_blank" onclick=''><i class="fa fa-linkedin" style="font-size:20px;color:white;"></i></button>
-	<button type="button" class="btn btn-default social-network" style="background-color:#DD4B38" target="_blank" onclick=''><i class="fa fa-google-plus" style="font-size:20px;color:white;"></i></button>
-	<button type="button" class="btn btn-default social-network" style="background-color:#F60" target="_blank" onclick=''><i class="fa fa-soundcloud" style="font-size:20px;color:white;"></i></button>
-      </div>
     </div>
     </div>
 </div>

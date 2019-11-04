@@ -1,0 +1,4 @@
+I"c<p>Yesterday I came accross a tricky useage of <code class="highlighter-rouge">raise_error</code> matcher in rspec, first I try to use the one line syntax <code class="highlighter-rouge">is_expected.to</code></p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
+</code></pre></div></div>
+:ET

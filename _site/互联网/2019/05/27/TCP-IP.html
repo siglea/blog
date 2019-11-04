@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>TCP-IP的关键知识点</title>
+  <title>TCP/IP十问</title>
   <meta name="description" content="TCP建立连接的本质含义是？  确定整个通信链路是否接通  确定双方信息处理服务准备完毕  告知通信双方各自的初始序列号，建立连接后对每一个发送的数据包都需要以初始序列号为基准进行编号  TCP是双工的，所以建立连接后，两端都是互为客户端服务端  连接成功建立表示双方维护了一个可用连接的映射关系">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
@@ -14,8 +14,8 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="https://www.fenbihui.cn/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/TCP-IP.html">
-  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="https://www.fenbihui.cn/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/TCP-IP.html">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
   <script>
@@ -57,19 +57,19 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">TCP-IP的关键知识点</h1>
+    <h1 class="post-title" itemprop="name headline">TCP/IP十问</h1>
     <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-05-27T18:00:00+08:00" itemprop="datePublished">May 27, 2019</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
     <h4 id="tcp建立连接的本质含义是">TCP建立连接的本质含义是？</h4>
-<ol>
+<ul>
   <li>确定整个通信链路是否接通</li>
   <li>确定双方信息处理服务准备完毕</li>
   <li>告知通信双方各自的初始序列号，建立连接后对每一个发送的数据包都需要以初始序列号为基准进行编号</li>
   <li>TCP是双工的，所以建立连接后，两端都是互为客户端服务端</li>
   <li>连接成功建立表示双方维护了一个可用连接的映射关系</li>
-</ol>
+</ul>
 
 <h4 id="在tcp有keepalive机制的情况下为什么还要有应用层保活">在TCP有keepalive机制的情况下，为什么还要有应用层保活？</h4>
 <ol>
@@ -83,9 +83,11 @@
 </ol>
 
 <h4 id="sync-flooding-攻击">SYNC Flooding 攻击</h4>
-<p>https://blog.csdn.net/bigtree_3721/article/details/77619877</p>
+<p><a href="https://blog.csdn.net/bigtree_3721/article/details/77619877">https://blog.csdn.net/bigtree_3721/article/details/77619877</a></p>
 
-<h4 id="数据格式选择">数据格式选择</h4>
+<h4 id="tcp丢包及重试">TCP丢包及重试</h4>
+
+<hr />
 
 <h5 id="参考资料">参考资料</h5>
 
@@ -98,8 +100,6 @@
 <p><a href="https://www.cnblogs.com/imstudy/p/5846363.html">为什么说基于TCP的移动端IM仍然需要心跳保活？</a></p>
 
 <p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=195&amp;ctid=10">微信对网络影响的技术试验及分析（论文全文）</a></p>
-
-<h5 id="tcp丢包及重试">TCP丢包及重试</h5>
 
 
   </div>

@@ -1,0 +1,14 @@
+I"�<p>Days before, I changed the operating system of my old laptop from Windows7 to Ubuntu Desktop, I installed Ubuntu from a USB stick from my friend. After installing I found I Broadcom wireless driver wasn’t installed so I couldn’t connect to my WiFi. I tried several ways then found the solution, hope it my be helpful.</p>
+
+<p>To download the driver from Internet, you need to connect with Ethernet.</p>
+
+<p>Open Software and Update from system and configuration, open the fifth tab optional drivers and see if wireless driver comes out or not.</p>
+
+<p><img src="/img/ubuntu1.png" style="height:50%;width:50%;" /></p>
+
+<p>Make sure allowing downloading drivers from Internet is checked in the first tab Ubuntu Software.</p>
+
+<p><img src="/img/ubuntu2.png" style="height:50%;width:50%;" /></p>
+
+<p>If it still doesn’t come out, you need to manually install it from terminal, use <code class="highlighter-rouge">lspci -nn -d 14e4:</code> command to see which network card you’re using, then install the corresponding driver. <a href="http://askubuntu.com/questions/55868/installing-broadcom-wireless-drivers">http://askubuntu.com/questions/55868/installing-broadcom-wireless-drivers</a> offers an excellent guide.</p>
+:ET

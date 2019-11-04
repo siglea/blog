@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Numpy学习笔记 (1)"
+title:  "Numpy学习笔记"
 date:   2018-12-26 10:30:09 +0900
 comments: true
 tags:

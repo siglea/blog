@@ -1,0 +1,11 @@
+I"<h2 id="nparray">np.array</h2>
+<ul>
+  <li>construct ndarray from python array</li>
+  <li>ndim: 返回值有几个括弧</li>
+  <li>dtype: 也是object，指定ndarray的型, 必须整个数列都是一个型的
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ndmin</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+<span class="c1"># =&gt; [[ 1.+0.j,  2.+0.j,  3.+0.j]]
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+:ET

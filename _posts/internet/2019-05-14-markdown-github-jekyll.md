@@ -8,24 +8,25 @@ tags:
 categories:
 - 互联网 
 ---
-
-#### jekyll常用命令
+#### jekyll安装
+```shell
+gem install jekyll
+gem install jekyll-archives
+gem install jekyll-paginate
+gem install jekyll-sitemap
+gem install jekyll-seo
 ```
+#### jekyll常用命令
+```shell
 jekyll s #编译并运行本地服务
-
 jekyll b #编译
 ```
 #### jekyll环境常用命令
 ```
 rbenv local #查看或设置rbenv版本号
-
 ```
 
-
-分页bug
-日期自动生成
-done tags链接
-done 分类主页
+---
 
 [jekyll-website]: https://jekyllrb.com
 [jekyll-gh]:    https://github.com/jekyll/jekyll
