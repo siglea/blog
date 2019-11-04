@@ -1,0 +1,20 @@
+I"�<h4 id="时间复杂度原则">时间复杂度原则</h4>
+<ul>
+  <li>如果运行时间是常数量级，用常数1表示</li>
+  <li>只保留时间函数中的最高阶项
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 0.5n^2 + 0.5n
+T(n) = O(n^2)
+</code></pre></div>    </div>
+  </li>
+  <li>如果最高阶项存在，则省去最高阶项前面的系数
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 3n
+T(n) = O(n)
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="时间复杂度排序">时间复杂度排序</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>O(1) &lt; O(logN) &lt; O(n) &lt; O(n^2)
+</code></pre></div></div>
+
+:ET

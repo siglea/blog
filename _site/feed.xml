@@ -5,8 +5,8 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 04 Nov 2019 23:32:25 +0800</pubDate>
-    <lastBuildDate>Mon, 04 Nov 2019 23:32:25 +0800</lastBuildDate>
+    <pubDate>Mon, 04 Nov 2019 23:44:33 +0800</pubDate>
+    <lastBuildDate>Mon, 04 Nov 2019 23:44:33 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -14,7 +14,21 @@
         <description>&lt;h4 id=&quot;时间复杂度原则&quot;&gt;时间复杂度原则&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;如果运行时间是常数量级，用常数1表示&lt;/li&gt;
+  &lt;li&gt;只保留时间函数中的最高阶项
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;T(n) = 0.5n^2 + 0.5n
+T(n) = O(n^2)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;如果最高阶项存在，则省去最高阶项前面的系数
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;T(n) = 3n
+T(n) = O(n)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h4 id=&quot;时间复杂度排序&quot;&gt;时间复杂度排序&lt;/h4&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;O(1) &amp;lt; O(logN) &amp;lt; O(n) &amp;lt; O(n^2)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 </description>
         <pubDate>Mon, 04 Nov 2019 10:25:00 +0800</pubDate>
