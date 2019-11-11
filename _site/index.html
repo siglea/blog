@@ -56,6 +56,53 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html"> Linux  Cmd </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>linux</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="系统负载查看命令top">系统负载查看命令top</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>top
+<span class="c"># m键:切换内存使用率进度条模式</span>
+
+<span class="c"># N:根据pid大小进行排序</span>
+<span class="c"># M:根据驻留内存大小进行排序</span>
+<span class="c"># P:根据CPU使用百分比大小进行排序</span>
+<span class="c"># T:根据时间/累计时间进行排序</span>
+</code></pre></div></div>
+<h4 id="内存查看命令free">内存查看命令free</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>free <span class="nt">-h</span>
+<span class="c">#free命令信息来自 cat /proc/meminfo</span>
+</code></pre></div></div>
+<h4 id="磁盘查看命令df">磁盘查看命令df</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">df</span> <span class="nt">-h</span>
+</code></pre></div></div>
+<h4 id="目录文件大小查看命令du">目录文件大小查看命令du</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">du</span>
+<span class="c"># 只显示当前目录下面的子目录的目录大小和当前目录的总的大小</span>
+
+<span class="nb">du</span>  <span class="nt">-sh</span>
+<span class="c"># 查看当前目录总大小</span>
+
+<span class="nb">du</span>  <span class="nt">-sh</span> ./<span class="k">*</span> 
+<span class="nb">du</span> <span class="nt">-h</span>  <span class="nt">--max-depth</span><span class="o">=</span>1
+<span class="c"># 查看当前目录各个文件大小</span>
+</code></pre></div></div>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html">算法时间复杂度</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
@@ -88,6 +135,56 @@ T(n) = O(n)
       </div>
       <div style="height:50px;">
 	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Elasticsearch-demo.html"> Elasticsearch  Demo </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Elasticsearch-demo.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式搜索引擎</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>全文搜索引擎</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="基础入门">基础入门</h4>
+<p>http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html</p>
+<h4 id="java教程">java教程</h4>
+<p>https://www.jianshu.com/p/3fa27dda63ab</p>
+<h4 id="lucene--nutch2002">lucene &amp; nutch（2002）</h4>
+<p>https://www.cnblogs.com/yinhaiming/articles/1542921.html</p>
+<h4 id="elasticsearch2010--solr2004">Elasticsearch（2010） &amp; Solr（2004）</h4>
+<p>https://www.cnblogs.com/fosilzhou/articles/4629220.html</p>
+
+<h4 id="原理">原理</h4>
+<p><a href="http://developer.51cto.com/art/201904/594615.htm">http://developer.51cto.com/art/201904/594615.htm</a>
+https://www.jianshu.com/p/b3f987b0fbf1
+https://blog.csdn.net/JENREY/article/details/81290535</p>
+
+<h4 id="其他">其他</h4>
+<p>https://www.aboutyun.com/thread-14986-1-1.html
+https://www.aboutyun.com/forum.php?mod=viewthread&amp;tid=17406&amp;page=1
+https://www.jianshu.com/p/366d9bd38d14</p>
+
+<p>网络爬虫将抓取到的HTML页面解析完成之后，把解析出的数据加入缓冲区队列，由其他两个线程负责处理数据，一个线程负责将数据保存到分布式数据库，一个线程负责将数据提交到搜索引擎进行索引。
+https://blog.csdn.net/xiaoyu714543065/article/details/10374191
+https://www.ibm.com/developerworks/cn/opensource/os-cn-BigInsightsNutchSolr/
+nutch是分布式爬虫系统，solr是搜索引擎。（1） Nutch诞生于2002年8月，是Apache旗下的一个用Java实现的开源搜索引擎项目，自Nutch1.2版本之后，Nutch已经从搜索引擎演化为网络爬虫，接着Nutch进一步演化为两大分支版本：1.X和2.X，这两大分支最大的区别在于2.X对底层的数据存储进行了抽象以支持各种底层存储技术。（2） 1.x版本是基于Hadoop架构的，底层存储使用的是HDFS，而2.x通过使用Apache Gora，使得Nutch可以访问HBase、Accumulo、Cassandra、MySQL、DataFileAvroStore、AvroStore等NoSQL。（3）nutch主要用于采集网页，solr可以作为搜索服务器。nutch+solr可以搭建一个简单的搜索引擎。（4）简单地讲，nutch就是用于分布式采集数据源，solr用于建索引和搜索服务。</p>
+
+<p>作者：郭志圣
+链接：https://www.zhihu.com/question/21089426/answer/44561312
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<h4 id="故事">故事</h4>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Elasticsearch-demo.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -128,57 +225,6 @@ T(n) = O(n)
       </div>
       <div style="height:50px;">
 	<a href="/%E9%87%91%E8%9E%8D/2019/05/29/gupiao-10-wen.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E5%95%86%E4%B8%9A/2019/05/29/n-1.html">商业</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E5%95%86%E4%B8%9A/2019/05/29/n-1.html#disqus_thread"></a></span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="商业">商业</h3>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E5%95%86%E4%B8%9A/2019/05/29/n-1.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/server-performance.html">服务器性能</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/server-performance.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Server</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>高并发</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>高可用</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="单服务器性能评估">单服务器性能评估</h4>
-<p><a href="https://cloud.tencent.com/developer/article/1004754">https://cloud.tencent.com/developer/article/1004754</a></p>
-
-<h4 id="单服务器并发连接评估">单服务器并发连接评估</h4>
-<p><a href="https://www.zhihu.com/question/20831000">https://www.zhihu.com/question/20831000</a>
-<a href="https://www.cnblogs.com/duanxz/p/4464178.html">https://www.cnblogs.com/duanxz/p/4464178.html</a></p>
-
-<h4 id="烦人的代理">烦人的代理</h4>
-<p><a href="https://blog.csdn.net/plychoz/article/details/83147759">https://blog.csdn.net/plychoz/article/details/83147759</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/server-performance.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -341,8 +387,29 @@ T(n) = O(n)
       
       
       
+      <a  href="tag/分布式搜索引擎">
+      <span class="label label-default">分布式搜索引擎 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/全文搜索引擎">
+      <span class="label label-default">全文搜索引擎 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
       <a  href="tag/算法">
       <span class="label label-default">算法 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/linux">
+      <span class="label label-default">linux ( 1 )</span>
       </a><br />
 
       

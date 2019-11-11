@@ -1,0 +1,43 @@
+---
+layout: post
+title:  " Linux  Cmd "
+date:   2019-11-04 11:25:00 +0900
+comments: true
+tags:
+- linux
+categories:
+- 互联网
+---
+#### 系统负载查看命令top
+```shell
+top
+# m键:切换内存使用率进度条模式
+
+# N:根据pid大小进行排序
+# M:根据驻留内存大小进行排序
+# P:根据CPU使用百分比大小进行排序
+# T:根据时间/累计时间进行排序
+```
+#### 内存查看命令free
+```shell
+free -h
+#free命令信息来自 cat /proc/meminfo
+```
+#### 磁盘查看命令df
+```shell
+df -h
+```
+#### 目录文件大小查看命令du
+```shell
+du
+# 只显示当前目录下面的子目录的目录大小和当前目录的总的大小
+
+du  -sh
+# 查看当前目录总大小
+
+du  -sh ./* 
+du -h  --max-depth=1
+# 查看当前目录各个文件大小
+```
+
+

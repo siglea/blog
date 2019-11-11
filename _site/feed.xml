@@ -5,9 +5,51 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 04 Nov 2019 23:44:33 +0800</pubDate>
-    <lastBuildDate>Mon, 04 Nov 2019 23:44:33 +0800</lastBuildDate>
+    <pubDate>Tue, 12 Nov 2019 00:13:02 +0800</pubDate>
+    <lastBuildDate>Tue, 12 Nov 2019 00:13:02 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title> Linux  Cmd </title>
+        <description>&lt;h4 id=&quot;系统负载查看命令top&quot;&gt;系统负载查看命令top&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;top
+&lt;span class=&quot;c&quot;&gt;# m键:切换内存使用率进度条模式&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# N:根据pid大小进行排序&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# M:根据驻留内存大小进行排序&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# P:根据CPU使用百分比大小进行排序&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# T:根据时间/累计时间进行排序&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h4 id=&quot;内存查看命令free&quot;&gt;内存查看命令free&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;free &lt;span class=&quot;nt&quot;&gt;-h&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#free命令信息来自 cat /proc/meminfo&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h4 id=&quot;磁盘查看命令df&quot;&gt;磁盘查看命令df&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;df&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-h&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h4 id=&quot;目录文件大小查看命令du&quot;&gt;目录文件大小查看命令du&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;du&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 只显示当前目录下面的子目录的目录大小和当前目录的总的大小&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;du&lt;/span&gt;  &lt;span class=&quot;nt&quot;&gt;-sh&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 查看当前目录总大小&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;du&lt;/span&gt;  &lt;span class=&quot;nt&quot;&gt;-sh&lt;/span&gt; ./&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; 
+&lt;span class=&quot;nb&quot;&gt;du&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-h&lt;/span&gt;  &lt;span class=&quot;nt&quot;&gt;--max-depth&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1
+&lt;span class=&quot;c&quot;&gt;# 查看当前目录各个文件大小&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+</description>
+        <pubDate>Mon, 04 Nov 2019 10:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html</guid>
+        
+        <category>linux</category>
+        
+        
+        <category>互联网</category>
+        
+      </item>
     
       <item>
         <title>算法时间复杂度</title>
@@ -36,6 +78,51 @@ T(n) = O(n)
         <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html</guid>
         
         <category>算法</category>
+        
+        
+        <category>互联网</category>
+        
+      </item>
+    
+      <item>
+        <title> Elasticsearch  Demo </title>
+        <description>&lt;h4 id=&quot;基础入门&quot;&gt;基础入门&lt;/h4&gt;
+&lt;p&gt;http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html&lt;/p&gt;
+&lt;h4 id=&quot;java教程&quot;&gt;java教程&lt;/h4&gt;
+&lt;p&gt;https://www.jianshu.com/p/3fa27dda63ab&lt;/p&gt;
+&lt;h4 id=&quot;lucene--nutch2002&quot;&gt;lucene &amp;amp; nutch（2002）&lt;/h4&gt;
+&lt;p&gt;https://www.cnblogs.com/yinhaiming/articles/1542921.html&lt;/p&gt;
+&lt;h4 id=&quot;elasticsearch2010--solr2004&quot;&gt;Elasticsearch（2010） &amp;amp; Solr（2004）&lt;/h4&gt;
+&lt;p&gt;https://www.cnblogs.com/fosilzhou/articles/4629220.html&lt;/p&gt;
+
+&lt;h4 id=&quot;原理&quot;&gt;原理&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;http://developer.51cto.com/art/201904/594615.htm&quot;&gt;http://developer.51cto.com/art/201904/594615.htm&lt;/a&gt;
+https://www.jianshu.com/p/b3f987b0fbf1
+https://blog.csdn.net/JENREY/article/details/81290535&lt;/p&gt;
+
+&lt;h4 id=&quot;其他&quot;&gt;其他&lt;/h4&gt;
+&lt;p&gt;https://www.aboutyun.com/thread-14986-1-1.html
+https://www.aboutyun.com/forum.php?mod=viewthread&amp;amp;tid=17406&amp;amp;page=1
+https://www.jianshu.com/p/366d9bd38d14&lt;/p&gt;
+
+&lt;p&gt;网络爬虫将抓取到的HTML页面解析完成之后，把解析出的数据加入缓冲区队列，由其他两个线程负责处理数据，一个线程负责将数据保存到分布式数据库，一个线程负责将数据提交到搜索引擎进行索引。
+https://blog.csdn.net/xiaoyu714543065/article/details/10374191
+https://www.ibm.com/developerworks/cn/opensource/os-cn-BigInsightsNutchSolr/
+nutch是分布式爬虫系统，solr是搜索引擎。（1） Nutch诞生于2002年8月，是Apache旗下的一个用Java实现的开源搜索引擎项目，自Nutch1.2版本之后，Nutch已经从搜索引擎演化为网络爬虫，接着Nutch进一步演化为两大分支版本：1.X和2.X，这两大分支最大的区别在于2.X对底层的数据存储进行了抽象以支持各种底层存储技术。（2） 1.x版本是基于Hadoop架构的，底层存储使用的是HDFS，而2.x通过使用Apache Gora，使得Nutch可以访问HBase、Accumulo、Cassandra、MySQL、DataFileAvroStore、AvroStore等NoSQL。（3）nutch主要用于采集网页，solr可以作为搜索服务器。nutch+solr可以搭建一个简单的搜索引擎。（4）简单地讲，nutch就是用于分布式采集数据源，solr用于建索引和搜索服务。&lt;/p&gt;
+
+&lt;p&gt;作者：郭志圣
+链接：https://www.zhihu.com/question/21089426/answer/44561312
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。&lt;/p&gt;
+&lt;h4 id=&quot;故事&quot;&gt;故事&lt;/h4&gt;
+</description>
+        <pubDate>Mon, 04 Nov 2019 10:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Elasticsearch-demo.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Elasticsearch-demo.html</guid>
+        
+        <category>分布式搜索引擎</category>
+        
+        <category>全文搜索引擎</category>
         
         
         <category>互联网</category>
@@ -283,79 +370,6 @@ jekyll b &lt;span class=&quot;c&quot;&gt;#编译&lt;/span&gt;
         
         
         <category>互联网</category>
-        
-      </item>
-    
-      <item>
-        <title>TCP/IP十问</title>
-        <description>&lt;h4 id=&quot;tcp建立连接的本质含义是&quot;&gt;TCP建立连接的本质含义是？&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;确定整个通信链路是否接通&lt;/li&gt;
-  &lt;li&gt;确定双方信息处理服务准备完毕&lt;/li&gt;
-  &lt;li&gt;告知通信双方各自的初始序列号，建立连接后对每一个发送的数据包都需要以初始序列号为基准进行编号&lt;/li&gt;
-  &lt;li&gt;TCP是双工的，所以建立连接后，两端都是互为客户端服务端&lt;/li&gt;
-  &lt;li&gt;连接成功建立表示双方维护了一个可用连接的映射关系&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;在tcp有keepalive机制的情况下为什么还要有应用层保活&quot;&gt;在TCP有keepalive机制的情况下，为什么还要有应用层保活？&lt;/h4&gt;
-&lt;ol&gt;
-  &lt;li&gt;在诸如由防火墙过滤、路由器故障、运营商信令控制、网线断开等原因导致的TCP中断的情况下keepalive失效&lt;/li&gt;
-  &lt;li&gt;NAT及DHCP机制也会导致keepalive失效&lt;/li&gt;
-  &lt;li&gt;keepalive默认参数设置7200秒才会触发重试并且在重试10之后就终止&lt;/li&gt;
-  &lt;li&gt;经过Socks封装的TCP大部分操作系统把底层的断连等细节直接忽略掉并没有抛给上层应用&lt;/li&gt;
-  &lt;li&gt;keepalive机制判断的仅仅是连接的存在（只是在映射表中存在ESTABLISHED)，并不能判断应用服务是否正常&lt;/li&gt;
-  &lt;li&gt;keepalive并不是TCP规范的一部分，并不是所有操作系统都完整的实现&lt;/li&gt;
-  &lt;li&gt;应用层的心跳除了保活还有其他应用意义比如应用层控制的重传（断连重连后，底层并不知道应用层数据状况）&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4 id=&quot;sync-flooding-攻击&quot;&gt;SYNC Flooding 攻击&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/bigtree_3721/article/details/77619877&quot;&gt;https://blog.csdn.net/bigtree_3721/article/details/77619877&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;tcp丢包及重试&quot;&gt;TCP丢包及重试&lt;/h4&gt;
-
-&lt;hr /&gt;
-
-&lt;h5 id=&quot;参考资料&quot;&gt;参考资料&lt;/h5&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.52im.net/&quot;&gt;即时通讯网&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://java-mzd.iteye.com/blog/1007577&quot;&gt;TCP-IP的20问&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/16c8c9e09feb&quot;&gt;长连接及心跳保活原理简介&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/imstudy/p/5846363.html&quot;&gt;为什么说基于TCP的移动端IM仍然需要心跳保活？&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=195&amp;amp;ctid=10&quot;&gt;微信对网络影响的技术试验及分析（论文全文）&lt;/a&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 27 May 2019 18:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/TCP-IP.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/TCP-IP.html</guid>
-        
-        <category>tcp</category>
-        
-        <category>网络</category>
-        
-        
-        <category>互联网</category>
-        
-      </item>
-    
-      <item>
-        <title>Life - About My Daughter</title>
-        <description>&lt;h3 id=&quot;about-my-helan&quot;&gt;About my Helan&lt;/h3&gt;
-
-&lt;p&gt;####&lt;/p&gt;
-
-</description>
-        <pubDate>Fri, 17 May 2019 15:46:02 +0800</pubDate>
-        <link>http://localhost:4000/%E7%94%9F%E6%B4%BB/2019/05/17/my-daughter.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E7%94%9F%E6%B4%BB/2019/05/17/my-daughter.html</guid>
-        
-        <category>life</category>
-        
-        
-        <category>生活</category>
         
       </item>
     

@@ -56,6 +56,117 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/09/adjective-tranformation-in-German.html">Adjective Transformation in German</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 9, 2016</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/09/adjective-tranformation-in-German.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>language learning</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>These days I was learning German grammar of transforming adjective. I learnt so many rules like,  when the non which you describe is a accusative, if it’s male word append <code class="highlighter-rouge">en</code>, if it’s female or plural append <code class="highlighter-rouge">e</code>, if it’s neutral append <code class="highlighter-rouge">es</code>. But when the article is <code class="highlighter-rouge">meine</code> or <code class="highlighter-rouge">keine</code> and the word is plural, append <code class="highlighter-rouge">en</code> For nominative and dative phrase …..</p>
+
+<p>Okay… My mood turns into  <code class="highlighter-rouge">(´Д｀；)/ヽｧ・・・</code></p>
+
+<p>So I made a small program in Python to help me ‘remember’ which transformation of adjective to use (ノД`)ハァ.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">adj_transformation</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">article</span><span class="p">,</span> <span class="n">sex</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">plural</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s">'accusative'</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sex</span> <span class="o">==</span> <span class="s">'male'</span><span class="p">:</span>
+            <span class="n">adj</span> <span class="o">+=</span> <span class="s">'en'</span>			
+        <span class="k">elif</span> <span class="n">sex</span> <span class="o">==</span> <span class="s">'female'</span> <span class="ow">or</span> <span class="n">plural</span><span class="p">:</span>
+            <span class="n">adj</span> <span class="o">+=</span> <span class="s">'e'</span>
+    	<span class="k">elif</span> <span class="n">sex</span> <span class="o">==</span> <span class="s">'neutral'</span><span class="p">:</span>
+    	    <span class="n">adj</span> <span class="o">+=</span> <span class="s">'es'</span>
+    	<span class="k">elif</span> <span class="p">(</span><span class="n">article</span> <span class="o">==</span> <span class="s">'meine'</span> <span class="ow">or</span> <span class="s">'keine'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">plural</span><span class="p">:</span>
+    	    <span class="n">adj</span> <span class="o">+=</span> <span class="s">'en'</span>
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s">'nominative'</span><span class="p">:</span>
+     	<span class="k">if</span> <span class="n">sex</span> <span class="o">==</span> <span class="s">'male'</span><span class="p">:</span>
+            <span class="n">adj</span> <span class="o">+=</span> <span class="s">'er'</span>
+    	<span class="k">else</span><span class="p">:</span>
+    	    <span class="n">adj</span>
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s">'dative'</span><span class="p">:</span>
+      	<span class="n">adj</span> <span class="o">+=</span> <span class="s">'en'</span>
+    <span class="k">return</span> <span class="n">adj</span>
+
+<span class="n">adj</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">'input adjective, regular transaformation only: '</span><span class="p">)</span>
+<span class="n">article</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">'input article between ein, eine, keine, meine: '</span><span class="p">)</span>
+<span class="n">sex</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">'choose sex of the non bwtween male, female, neutral: '</span><span class="p">)</span>
+<span class="n">case</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">'choose case between nominative, dative, accusative: '</span><span class="p">)</span>
+<span class="n">plural</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">'input 1 for plural, 0 for non-plural:'</span><span class="p">)</span>
+
+<span class="n">target_adj</span> <span class="o">=</span> <span class="n">adj_transformation</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">article</span><span class="p">,</span> <span class="n">sex</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">plural</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'correct transformation for '</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="s">' is '</span><span class="p">,</span> <span class="n">target_adj</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>If I want to know the correct form of <code class="highlighter-rouge">alt (old)</code> in the sentence <code class="highlighter-rouge">Er is ein (alt) Mann</code>, run this program:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>input adjective, regular transaformation only: alt
+input article between ein, eine, kine, meine: ein
+choose sex of the non bwtween male, female, neutral: male
+choose case between nominative, dative, accusative: nominative
+input 1 for plural, 0 for non-plural:0
+correct transformation for  alt  is  alter
+</code></pre></div></div>
+<p>The result will shown in your terminal, <code class="highlighter-rouge">correct transformation for  alt  is  alter</code></p>
+
+<p>Now I have a ‘German mind’ <code class="highlighter-rouge">へ(´∀｀へ)ヨイヨイ♪(ノ´∀｀)ノヨイヨイ♪</code>.</p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/09/adjective-tranformation-in-German.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/07/tackle-cdn-loading-problem-inside-GFW.html">国内网页应用开发CDN链接被墙的应对方法</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 7, 2016</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/07/tackle-cdn-loading-problem-inside-GFW.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>自从lantern被墙,换了新的vpn以来，从google cdn, bootstrap cdn, cloudflare cdn加载资源速度变得超慢，请求CDN资源能花上半分钟，超级令人不爽(`‐●_‐´怒)。</p>
+
+<p>解决方法有：</p>
+
+<ol>
+  <li>把资源下载下来放在专门存放静态文件的文件夹中</li>
+  <li>如果网站主要面向的是国内的用户，换成国内的CDN也无妨。</li>
+  <li>vpn开成全局模式。</li>
+</ol>
+
+<p>如果国内的CDN的话可以用：</p>
+
+<ul>
+  <li>
+    <p>http://www.bootcdn.cn/ 
+流行的js库和css框架基本上都有</p>
+  </li>
+  <li>
+    <p>新浪和微软的CDN资源也很全，网上搜一搜就会有具体的资源地址</p>
+  </li>
+</ul>
+
+<p>如果还是速度很慢的话，
+一定是你家的宽带有问题啊ああああああああ (´￢O￢)</p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/07/tackle-cdn-loading-problem-inside-GFW.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/09/17/setup-ssh-login-with-keygen-in-osx.html">Setup SSH Login With Keygen In OSX</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Sep 17, 2016</span>
@@ -318,8 +429,29 @@ ProxyCommand ssh [username@proxyname] nc %h %p
       
       
       
+      <a  href="tag/分布式搜索引擎">
+      <span class="label label-default">分布式搜索引擎 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/全文搜索引擎">
+      <span class="label label-default">全文搜索引擎 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
       <a  href="tag/算法">
       <span class="label label-default">算法 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/linux">
+      <span class="label label-default">linux ( 1 )</span>
       </a><br />
 
       
