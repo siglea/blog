@@ -1,4 +1,4 @@
-I"A<h4 id="主键避重问题">主键避重问题</h4>
+I"<h4 id="主键避重问题">主键避重问题</h4>
 <ul>
   <li>ID生成器
     <ul>
@@ -11,16 +11,27 @@
     <ul>
       <li>按照ID范围，要求ID自增</li>
       <li>简单Hash(取模)</li>
-      <li>Hash一致性算法
-        <h4 id="分页查询问题">分页查询问题</h4>
-      </li>
+      <li>Hash一致性算法</li>
     </ul>
   </li>
 </ul>
 
+<h4 id="分页查询问题">分页查询问题</h4>
+<ul>
+  <li>分表查，应用程序合并</li>
+</ul>
+
 <h4 id="关联查询问题">关联查询问题</h4>
+<ul>
+  <li>避免join操作，改造为多次查询，由应用程序合并</li>
+  <li>使用现成的中间件</li>
+  <li>实际业务中可能会结合Redis/Es等解决方案</li>
+</ul>
 
 <h4 id="公共表问题">公共表问题</h4>
+<ul>
+  <li>公共表多库冗余，多库同步</li>
+</ul>
 
 <h4 id="事务一致性">事务一致性</h4>
 <p><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a>
@@ -44,10 +55,13 @@
   </li>
 </ul>
 
-<h4 id="其他">其他</h4>
+<h4 id="主从同步">主从同步</h4>
+<ul>
+  <li>半同步复制，semi-sync复制，指的就是主库写入binlog日志之后，就会将强制此时立即将数据同步到从库，从库将日志写入自己本地的relay log之后，接着会返回一个ack给主库，主库接收到至少一个从库的ack之后才会认为写操作完成了。</li>
+  <li>并行复制，指的是从库开启多个线程，并行读取relay log中不同库的日志，然后并行重放不同库的日志，这是库级别的并行。</li>
+</ul>
 
-<p><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651960212&amp;idx=1&amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS">58用户系统分库分表实战</a>
-<a href="https://database.51cto.com/art/201910/604128.htm">数据库规范</a>
-连接数/QPS</p>
+<h4 id="其他">其他</h4>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651960212&amp;idx=1&amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS">58用户系统分库分表实战</a></p>
 
 :ET

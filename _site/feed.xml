@@ -5,9 +5,29 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 16 Nov 2019 19:45:06 +0800</pubDate>
-    <lastBuildDate>Sat, 16 Nov 2019 19:45:06 +0800</lastBuildDate>
+    <pubDate>Sat, 16 Nov 2019 19:52:09 +0800</pubDate>
+    <lastBuildDate>Sat, 16 Nov 2019 19:52:09 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>DB Shard</title>
+        <description>&lt;h4 id=&quot;redis&quot;&gt;Redis&lt;/h4&gt;
+
+&lt;h4 id=&quot;mongo&quot;&gt;Mongo&lt;/h4&gt;
+
+&lt;h4 id=&quot;cassandra&quot;&gt;Cassandra&lt;/h4&gt;
+
+</description>
+        <pubDate>Tue, 12 Nov 2019 10:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NoSQL-NewSQL.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NoSQL-NewSQL.html</guid>
+        
+        <category>newSQL NoSQL</category>
+        
+        
+        <category>互联网</category>
+        
+      </item>
     
       <item>
         <title>DB Shard</title>
@@ -38,6 +58,7 @@
 &lt;ul&gt;
   &lt;li&gt;避免join操作，改造为多次查询，由应用程序合并&lt;/li&gt;
   &lt;li&gt;使用现成的中间件&lt;/li&gt;
+  &lt;li&gt;实际业务中可能会结合Redis/Es等解决方案&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;公共表问题&quot;&gt;公共表问题&lt;/h4&gt;
@@ -76,10 +97,6 @@
 &lt;h4 id=&quot;其他&quot;&gt;其他&lt;/h4&gt;
 &lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;amp;mid=2651960212&amp;amp;idx=1&amp;amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS&quot;&gt;58用户系统分库分表实战&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://database.51cto.com/art/201910/604128.htm&quot;&gt;数据库规范&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;[连接数/QPS]&lt;/p&gt;
-
 </description>
         <pubDate>Tue, 12 Nov 2019 10:25:00 +0800</pubDate>
         <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Shard.html</link>
@@ -97,11 +114,18 @@
       <item>
         <title>DB Mysql</title>
         <description>&lt;h4 id=&quot;索引原理btree&quot;&gt;索引原理(B+Tree)&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Tree -&amp;gt; BelanceTree -&amp;gt; B+Tree&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h4 id=&quot;查询优化&quot;&gt;查询优化&lt;/h4&gt;
 
 &lt;h4 id=&quot;常用指标&quot;&gt;常用指标&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;QPS Connection&lt;/li&gt;
+&lt;/ul&gt;
 
+&lt;p&gt;&lt;a href=&quot;https://database.51cto.com/art/201910/604128.htm&quot;&gt;数据库规范&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Tue, 12 Nov 2019 10:25:00 +0800</pubDate>
         <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Mysql.html</link>
@@ -494,33 +518,6 @@ curl &lt;span class=&quot;nt&quot;&gt;-XGET&lt;/span&gt;  &lt;span class=&quot;s
         
         
         <category>商业</category>
-        
-      </item>
-    
-      <item>
-        <title>服务器性能</title>
-        <description>&lt;h4 id=&quot;单服务器性能评估&quot;&gt;单服务器性能评估&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://cloud.tencent.com/developer/article/1004754&quot;&gt;https://cloud.tencent.com/developer/article/1004754&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;单服务器并发连接评估&quot;&gt;单服务器并发连接评估&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.zhihu.com/question/20831000&quot;&gt;https://www.zhihu.com/question/20831000&lt;/a&gt;
-&lt;a href=&quot;https://www.cnblogs.com/duanxz/p/4464178.html&quot;&gt;https://www.cnblogs.com/duanxz/p/4464178.html&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;烦人的代理&quot;&gt;烦人的代理&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/plychoz/article/details/83147759&quot;&gt;https://blog.csdn.net/plychoz/article/details/83147759&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 27 May 2019 18:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/server-performance.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/server-performance.html</guid>
-        
-        <category>Server</category>
-        
-        <category>高并发</category>
-        
-        <category>高可用</category>
-        
-        
-        <category>互联网</category>
         
       </item>
     

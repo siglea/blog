@@ -26,6 +26,7 @@ categories:
 #### 关联查询问题
 - 避免join操作，改造为多次查询，由应用程序合并
 - 使用现成的中间件
+- 实际业务中可能会结合Redis/Es等解决方案
 
 #### 公共表问题
 - 公共表多库冗余，多库同步
@@ -55,7 +56,5 @@ categories:
 #### 其他
 [58用户系统分库分表实战](https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&mid=2651960212&idx=1&sn=ab4c52ab0309f7380f7e0207fa357128&pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS)
 
-[数据库规范](https://database.51cto.com/art/201910/604128.htm)
 
-[连接数/QPS]
 

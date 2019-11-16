@@ -56,6 +56,31 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NoSQL-NewSQL.html">DB Shard</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NoSQL-NewSQL.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>newSQL NoSQL</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="redis">Redis</h4>
+
+<h4 id="mongo">Mongo</h4>
+
+<h4 id="cassandra">Cassandra</h4>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NoSQL-NewSQL.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Shard.html">DB Shard</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -94,6 +119,7 @@
 <ul>
   <li>避免join操作，改造为多次查询，由应用程序合并</li>
   <li>使用现成的中间件</li>
+  <li>实际业务中可能会结合Redis/Es等解决方案</li>
 </ul>
 
 <h4 id="公共表问题">公共表问题</h4>
@@ -132,10 +158,6 @@
 <h4 id="其他">其他</h4>
 <p><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651960212&amp;idx=1&amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS">58用户系统分库分表实战</a></p>
 
-<p><a href="https://database.51cto.com/art/201910/604128.htm">数据库规范</a></p>
-
-<p>[连接数/QPS]</p>
-
 
       </div>
       <div style="height:50px;">
@@ -156,11 +178,18 @@
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
 	<h4 id="索引原理btree">索引原理(B+Tree)</h4>
+<ul>
+  <li>Tree -&gt; BelanceTree -&gt; B+Tree</li>
+</ul>
 
 <h4 id="查询优化">查询优化</h4>
 
 <h4 id="常用指标">常用指标</h4>
+<ul>
+  <li>QPS Connection</li>
+</ul>
 
+<p><a href="https://database.51cto.com/art/201910/604128.htm">数据库规范</a></p>
 
       </div>
       <div style="height:50px;">
@@ -239,44 +268,6 @@ JVM GC的选择：选择 G1还是 CMS？</p>
       </div>
       <div style="height:50px;">
 	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/JVM-Options.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html">算法时间复杂度</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>算法</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="时间复杂度原则">时间复杂度原则</h4>
-<ul>
-  <li>如果运行时间是常数量级，用常数1表示</li>
-  <li>只保留时间函数中的最高阶项
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 0.5n^2 + 0.5n
-T(n) = O(n^2)
-</code></pre></div>    </div>
-  </li>
-  <li>如果最高阶项存在，则省去最高阶项前面的系数
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 3n
-T(n) = O(n)
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h4 id="时间复杂度排序">时间复杂度排序</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>O(1) &lt; O(logN) &lt; O(n) &lt; O(n^2)
-</code></pre></div></div>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -487,6 +478,13 @@ T(n) = O(n)
       
       <a  href="tag/分库/分表">
       <span class="label label-default">分库/分表 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/newSQL NoSQL">
+      <span class="label label-default">newsql-nosql ( 1 )</span>
       </a><br />
 
       

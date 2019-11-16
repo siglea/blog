@@ -56,6 +56,38 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/02/Troubleshooting-with-Installing-Broadcom-Wireless-Drivers-in-Ubuntu-Desktop.html">Troubleshooting with Installing Broadcom Wireless Drivers in Ubuntu Desktop</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 2, 2016</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/02/Troubleshooting-with-Installing-Broadcom-Wireless-Drivers-in-Ubuntu-Desktop.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>Days before, I changed the operating system of my old laptop from Windows7 to Ubuntu Desktop, I installed Ubuntu from a USB stick from my friend. After installing I found I Broadcom wireless driver wasn’t installed so I couldn’t connect to my WiFi. I tried several ways then found the solution, hope it my be helpful.</p>
+
+<p>To download the driver from Internet, you need to connect with Ethernet.</p>
+
+<p>Open Software and Update from system and configuration, open the fifth tab optional drivers and see if wireless driver comes out or not.</p>
+
+<p><img src="/img/ubuntu1.png" style="height:50%;width:50%;" /></p>
+
+<p>Make sure allowing downloading drivers from Internet is checked in the first tab Ubuntu Software.</p>
+
+<p><img src="/img/ubuntu2.png" style="height:50%;width:50%;" /></p>
+
+<p>If it still doesn’t come out, you need to manually install it from terminal, use <code class="highlighter-rouge">lspci -nn -d 14e4:</code> command to see which network card you’re using, then install the corresponding driver. <a href="http://askubuntu.com/questions/55868/installing-broadcom-wireless-drivers">http://askubuntu.com/questions/55868/installing-broadcom-wireless-drivers</a> offers an excellent guide.</p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/02/Troubleshooting-with-Installing-Broadcom-Wireless-Drivers-in-Ubuntu-Desktop.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/11/13/use-class_eval-and-instance_eval.html">Use class_eval and instance_eval</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 13, 2016</span>
@@ -376,49 +408,6 @@ correct transformation for  alt  is  alter
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/07/tackle-cdn-loading-problem-inside-GFW.html">国内网页应用开发CDN链接被墙的应对方法</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 7, 2016</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/07/tackle-cdn-loading-problem-inside-GFW.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>自从lantern被墙,换了新的vpn以来，从google cdn, bootstrap cdn, cloudflare cdn加载资源速度变得超慢，请求CDN资源能花上半分钟，超级令人不爽(`‐●_‐´怒)。</p>
-
-<p>解决方法有：</p>
-
-<ol>
-  <li>把资源下载下来放在专门存放静态文件的文件夹中</li>
-  <li>如果网站主要面向的是国内的用户，换成国内的CDN也无妨。</li>
-  <li>vpn开成全局模式。</li>
-</ol>
-
-<p>如果国内的CDN的话可以用：</p>
-
-<ul>
-  <li>
-    <p>http://www.bootcdn.cn/ 
-流行的js库和css框架基本上都有</p>
-  </li>
-  <li>
-    <p>新浪和微软的CDN资源也很全，网上搜一搜就会有具体的资源地址</p>
-  </li>
-</ul>
-
-<p>如果还是速度很慢的话，
-一定是你家的宽带有问题啊ああああああああ (´￢O￢)</p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/07/tackle-cdn-loading-problem-inside-GFW.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -627,6 +616,13 @@ correct transformation for  alt  is  alter
       
       <a  href="tag/分库/分表">
       <span class="label label-default">分库/分表 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/newSQL NoSQL">
+      <span class="label label-default">newsql-nosql ( 1 )</span>
       </a><br />
 
       
