@@ -1,0 +1,18 @@
+I"q<h4 id="主键避重问题">主键避重问题</h4>
+<ul>
+  <li>ID生成器
+    <ul>
+      <li>Twitter Snowflake</li>
+      <li>美团 LeftUid</li>
+      <li>百度 Uid-genarator</li>
+    </ul>
+  </li>
+  <li>散表规则
+    <ul>
+      <li>按照ID范围，要求ID自增</li>
+      <li>简单Hash(取模)</li>
+      <li>Hash一致性算法</li>
+    </ul>
+  </li>
+</ul>
+:ET

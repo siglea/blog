@@ -5,9 +5,114 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 16 Nov 2019 17:20:58 +0800</pubDate>
-    <lastBuildDate>Sat, 16 Nov 2019 17:20:58 +0800</lastBuildDate>
+    <pubDate>Sat, 16 Nov 2019 19:45:06 +0800</pubDate>
+    <lastBuildDate>Sat, 16 Nov 2019 19:45:06 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>DB Shard</title>
+        <description>&lt;h4 id=&quot;主键避重问题&quot;&gt;主键避重问题&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;ID生成器
+    &lt;ul&gt;
+      &lt;li&gt;Twitter Snowflake&lt;/li&gt;
+      &lt;li&gt;美团 LeftUid&lt;/li&gt;
+      &lt;li&gt;百度 Uid-genarator&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;散表规则
+    &lt;ul&gt;
+      &lt;li&gt;按照ID范围，要求ID自增&lt;/li&gt;
+      &lt;li&gt;简单Hash(取模)&lt;/li&gt;
+      &lt;li&gt;Hash一致性算法&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;分页查询问题&quot;&gt;分页查询问题&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;分表查，应用程序合并&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;关联查询问题&quot;&gt;关联查询问题&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;避免join操作，改造为多次查询，由应用程序合并&lt;/li&gt;
+  &lt;li&gt;使用现成的中间件&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;公共表问题&quot;&gt;公共表问题&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;公共表多库冗余，多库同步&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;事务一致性&quot;&gt;事务一致性&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383&quot;&gt;分布式事务&lt;/a&gt;
+&lt;a href=&quot;https://www.jdon.com/48829&quot;&gt;Spring的分布式事务实现(JTA+XA/2PC)&lt;/a&gt;&lt;/p&gt;
+&lt;h5 id=&quot;jtaxa&quot;&gt;JTA*XA&lt;/h5&gt;
+
+&lt;h4 id=&quot;比较常见的中间件cobartddlatlassharding-jdbcmycat&quot;&gt;比较常见的中间件cobar、TDDL、atlas、sharding-jdbc、mycat&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;cobar：阿里b2b团队开发和开源的，属于proxy层方案。早些年还可以用，但是最近几年都没更新了，基本没啥人用，差不多算是被抛弃的状态吧。而且不支持读写分离、存储过程、跨库join和分页等操作。&lt;/li&gt;
+  &lt;li&gt;TDDL：淘宝团队开发的，属于client层方案。不支持join、多表查询等语法，就是基本的crud语法是ok，但是支持读写分离。目前使用的也不多，因为还依赖淘宝的diamond配置管理系统。&lt;/li&gt;
+  &lt;li&gt;atlas：360开源的，属于proxy层方案，以前是有一些公司在用的，但是确实有一个很大的问题就是社区最新的维护都在5年前了。所以，现在用的公司基本也很少了。&lt;/li&gt;
+  &lt;li&gt;sharding-jdbc：当当开源的，属于client层方案。确实之前用的还比较多一些，因为SQL语法支持也比较多，没有太多限制，而且目前推出到了2.0版本，支持分库分表、读写分离、分布式id生成、柔性事务（最大努力送达型事务、TCC事务）。而且确实之前使用的公司会比较多一些（这个在官网有登记使用的公司，可以看到从2017年一直到现在，是不少公司在用的），目前社区也还一直在开发和维护，还算是比较活跃，个人认为算是一个现在也可以选择的方案。&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;mycat：基于cobar改造的，属于proxy层方案，支持的功能非常完善，而且目前应该是非常火的而且不断流行的数据库中间件，社区很活跃，也有一些公司开始在用了。但是确实相比于sharding jdbc来说，年轻一些，经历的锤炼少一些。&lt;/p&gt;
+
+    &lt;p&gt;所以综上所述，现在其实建议考量的，就是sharding-jdbc和mycat，这两个都可以去考虑使用。
+  sharding-jdbc这种client层方案的优点在于不用部署，运维成本低，不需要代理层的二次转发请求，性能很高，但是如果遇到升级啥的需要各个系统都重新升级版本再发布，各个系统都需要耦合sharding-jdbc的依赖；
+  mycat这种proxy层方案的缺点在于需要部署，自己及运维一套中间件，运维成本高，但是好处在于对于各个项目是透明的，如果遇到升级之类的都是自己中间件那里搞就行了。
+  通常来说，这两个方案其实都可以选用，但是我个人建议中小型公司选用sharding-jdbc，client层方案轻便，而且维护成本低，不需要额外增派人手，而且中小型公司系统复杂度会低一些，项目也没那么多；
+  但是中大型公司最好还是选用mycat这类proxy层方案，因为可能大公司系统和项目非常多，团队很大，人员充足，那么最好是专门弄个人来研究和维护mycat，然后大量项目直接透明使用即可。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;主从同步&quot;&gt;主从同步&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;半同步复制，semi-sync复制，指的就是主库写入binlog日志之后，就会将强制此时立即将数据同步到从库，从库将日志写入自己本地的relay log之后，接着会返回一个ack给主库，主库接收到至少一个从库的ack之后才会认为写操作完成了。&lt;/li&gt;
+  &lt;li&gt;并行复制，指的是从库开启多个线程，并行读取relay log中不同库的日志，然后并行重放不同库的日志，这是库级别的并行。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;其他&quot;&gt;其他&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;amp;mid=2651960212&amp;amp;idx=1&amp;amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS&quot;&gt;58用户系统分库分表实战&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://database.51cto.com/art/201910/604128.htm&quot;&gt;数据库规范&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[连接数/QPS]&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 12 Nov 2019 10:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Shard.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Shard.html</guid>
+        
+        <category>mysql DB</category>
+        
+        <category>分库/分表</category>
+        
+        
+        <category>互联网</category>
+        
+      </item>
+    
+      <item>
+        <title>DB Mysql</title>
+        <description>&lt;h4 id=&quot;索引原理btree&quot;&gt;索引原理(B+Tree)&lt;/h4&gt;
+
+&lt;h4 id=&quot;查询优化&quot;&gt;查询优化&lt;/h4&gt;
+
+&lt;h4 id=&quot;常用指标&quot;&gt;常用指标&lt;/h4&gt;
+
+</description>
+        <pubDate>Tue, 12 Nov 2019 10:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Mysql.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Mysql.html</guid>
+        
+        <category>mysql DB</category>
+        
+        
+        <category>互联网</category>
+        
+      </item>
     
       <item>
         <title> Linux  Cmd </title>
@@ -413,159 +518,6 @@ curl &lt;span class=&quot;nt&quot;&gt;-XGET&lt;/span&gt;  &lt;span class=&quot;s
         <category>高并发</category>
         
         <category>高可用</category>
-        
-        
-        <category>互联网</category>
-        
-      </item>
-    
-      <item>
-        <title>maven使用</title>
-        <description>&lt;h4 id=&quot;mvn-clean&quot;&gt;mvn clean&lt;/h4&gt;
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    mvn clean package &lt;span class=&quot;nt&quot;&gt;-Dmaven&lt;/span&gt;.test.skip&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;mvn-compile&quot;&gt;mvn compile&lt;/h4&gt;
-
-&lt;h4 id=&quot;创建maven的普通java项目&quot;&gt;创建Maven的普通java项目：&lt;/h4&gt;
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   mvn archetype:generate &lt;span class=&quot;nt&quot;&gt;-DgroupId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;com.siglea &lt;span class=&quot;nt&quot;&gt;-DartifactId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;demo
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;创建maven的javaweb项目&quot;&gt;创建Maven的javaWeb项目：&lt;/h4&gt;
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   mvn archetype:generate &lt;span class=&quot;nt&quot;&gt;-DgroupId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;com.siglea &lt;span class=&quot;nt&quot;&gt;-DartifactId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;demoweb &lt;span class=&quot;nt&quot;&gt;-DarchetypeArtifactId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;maven-archetype-webapp  
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;mvn-jettyrun&quot;&gt;mvn jetty:run&lt;/h4&gt;
-&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- https://mvnrepository.com/artifact/org.mortbay.jetty/jetty --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.mortbay.jetty&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;jetty&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;6.1.26&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;遇到的错误1mvn-archetypegenerate&quot;&gt;遇到的错误（1）mvn archetype:generate&lt;/h4&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    [INFO] --- maven-archetype-plugin:3.0.1:generate (default-cli) @ standalone-pom ---
-    [WARNING] Error injecting: org.apache.maven.archetype.common.DefaultPomManager
-    java.lang.NoClassDefFoundError: org/jdom/JDOMException
-            at java.lang.Class.getDeclaredConstructors0(Native Method)
-    解决办法：删除 .m2/repository 对应报错的文件
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;遇到的错误2-mvn-archetypecreate&quot;&gt;遇到的错误（2） mvn archetype:create&lt;/h4&gt;
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mvn archetype:create 修改为 mvn archetype:generate
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;遇到的错误3mvn-site&quot;&gt;遇到的错误（3）mvn site&lt;/h4&gt;
-&lt;p&gt;java.lang.NoClassDefFoundError: org/apache/maven/doxia/siterenderer/DocumentContent
-解决办法：在pom.xml添加如下配置&lt;/p&gt;
-&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;pluginManagement&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.apache.maven.plugins&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;maven-site-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;3.3&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.apache.maven.plugins&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;maven-project-info-reports-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;2.7&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/pluginManagement&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;好用的源地址pomxml-settingsxml中配置&quot;&gt;好用的源地址(pom.xml settings.xml中配置)&lt;/h3&gt;
-&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;mirror&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;nexus-aliyun&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;Nexus aliyun&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;url&amp;gt;&lt;/span&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mirrorOf&amp;gt;&lt;/span&gt;central&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirrorOf&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirror&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;mirror&amp;gt;&lt;/span&gt;
-   &lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;maven2-repository.dev.java.net&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
-   &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;Java.net Repository for Maven&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-   &lt;span class=&quot;nt&quot;&gt;&amp;lt;url&amp;gt;&lt;/span&gt;http://download.java.net/maven/2/&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
-   &lt;span class=&quot;nt&quot;&gt;&amp;lt;mirrorOf&amp;gt;&lt;/span&gt;central1&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirrorOf&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirror&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;mirror&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;java.net2.r1&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;java.net Repository hosting the jee6 artifacts&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;url&amp;gt;&lt;/span&gt;http://repo1.maven.org/maven2/&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mirrorOf&amp;gt;&lt;/span&gt;central2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirrorOf&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirror&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;mirror&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;java.net2.r3&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;java.net Repository hosting the jee6 artifacts&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;url&amp;gt;&lt;/span&gt;http://repository.sonatype.org/content/groups/public/&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mirrorOf&amp;gt;&lt;/span&gt;central3&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirrorOf&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirror&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;mirror&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;mirror&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;java.net2.r4&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;java.net Repository hosting the jee6 artifacts&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;url&amp;gt;&lt;/span&gt;http://mirrors.ibiblio.org/pub/mirrors/maven2/&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mirrorOf&amp;gt;&lt;/span&gt;central4&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirrorOf&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirror&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;mirror&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;java.net2.r2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;java.net Repository hosting the jee6 artifacts&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;url&amp;gt;&lt;/span&gt;http://repository.jboss.com/maven2/&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mirrorOf&amp;gt;&lt;/span&gt;central5&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirrorOf&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirror&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;mirror&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;java.net2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;java.net Repository hosting the jee6 artifacts&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;url&amp;gt;&lt;/span&gt;http://download.java.net/maven/2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;mirrorOf&amp;gt;&lt;/span&gt;central6&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirrorOf&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/mirror&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;参考链接&quot;&gt;参考链接&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;http://repo2.maven.org/maven2/&quot;&gt;Maven库&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://mvnrepository.com/&quot;&gt;Maven依赖查询&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html&quot;&gt;http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 27 May 2019 18:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html</guid>
-        
-        <category>maven</category>
-        
-        <category>构建</category>
-        
-        
-        <category>互联网</category>
-        
-      </item>
-    
-      <item>
-        <title>markdown-github-jekyll</title>
-        <description>&lt;h4 id=&quot;jekyll安装&quot;&gt;jekyll安装&lt;/h4&gt;
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll
-gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-archives
-gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-paginate
-gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-sitemap
-gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-seo
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;jekyll常用命令&quot;&gt;jekyll常用命令&lt;/h4&gt;
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;jekyll s &lt;span class=&quot;c&quot;&gt;#编译并运行本地服务&lt;/span&gt;
-jekyll b &lt;span class=&quot;c&quot;&gt;#编译&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;jekyll环境常用命令&quot;&gt;jekyll环境常用命令&lt;/h4&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;rbenv local #查看或设置rbenv版本号
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;markdown语法&quot;&gt;MarkDown语法&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.runoob.com/markdown/md-lists.html&quot;&gt;https://www.runoob.com/markdown/md-lists.html&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/191d1e21f7ed&quot;&gt;https://www.jianshu.com/p/191d1e21f7ed&lt;/a&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-
-</description>
-        <pubDate>Mon, 27 May 2019 18:00:00 +0800</pubDate>
-        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/markdown-github-jekyll.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/markdown-github-jekyll.html</guid>
-        
-        <category>jekyll</category>
         
         
         <category>互联网</category>
