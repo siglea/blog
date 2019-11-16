@@ -1,0 +1,173 @@
+I"�<h4 id="基础入门">基础入门</h4>
+<ul>
+  <li><a href="http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html">http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html</a></li>
+  <li><a href="https://www.jianshu.com/p/d68197bc7def">https://www.jianshu.com/p/d68197bc7def</a></li>
+  <li><a href="https://www.elastic.co/cn/products/elasticsearch">ec官网</a></li>
+</ul>
+
+<h4 id="常用命令">常用命令</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#查看节点左右的Index</span>
+curl <span class="nt">-X</span> GET <span class="s1">'http://localhost:9200/_cat/indices?v'</span>
+
+<span class="c">#查看所有Type</span>
+curl <span class="s1">'localhost:9200/_mapping?pretty=true'</span>
+
+<span class="c">#新建Index</span>
+curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/weather'</span>
+
+<span class="c">#删除Index</span>
+curl <span class="nt">-X</span> DELETE <span class="s1">'localhost:9200/weather'</span>
+
+<span class="c">#新建Index附件结构 Index:accounts Type:person</span>
+curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/accounts'</span> <span class="nt">-d</span> <span class="s1">'
+{
+  "mappings": {
+    "person": {
+      "properties": {
+        "user": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        },
+        "title": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        },
+        "desc": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        }
+      }
+    }
+  }
+}'</span>
+
+<span class="c">#给指定Index指定的type增加Document</span>
+<span class="nv">$ </span>curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/accounts/person/1'</span> <span class="nt">-d</span> <span class="s1">'
+{
+  "user": "张三",
+  "title": "工程师",
+  "desc": "数据库管理"
+}'</span>
+
+<span class="c">#查看指定Index指定的type的指定Document</span>
+curl <span class="s1">'localhost:9200/accounts/person/1?pretty=true'</span>
+
+<span class="c">#查看指定Index指定的type的所有记录</span>
+<span class="nv">$ </span>curl <span class="s1">'localhost:9200/accounts/person/_search'</span>
+
+<span class="c">#搜索指定Index指定的type的复合搜索条件的记录 from:偏移量 size:数据量</span>
+<span class="c">#该分页方式是假分页，会读取整体数据只显示size，数据量超过1万性能急剧下降</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query" : { "match" : { "desc" : "管理" }},
+  "from": 1,
+  "size": 1
+}'</span>
+
+<span class="c">#逻辑搜索 OR 关系</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query" : { "match" : { "desc" : "软件 系统" }}
+}'</span>
+
+<span class="c">#逻辑搜索 AND 关系</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "desc": "软件" } },
+        { "match": { "desc": "系统" } }
+      ]
+    }
+  }
+}'</span>
+
+<span class="c">#scroll分页查询</span>
+<span class="c">#区别于from size的方式的本质是采用类似Oracle的游标</span>
+curl <span class="nt">-XGET</span> <span class="s1">'localhost:9200/twitter/tweet/_search?scroll=1m'</span> <span class="nt">-d</span> <span class="s1">'
+{
+    "query": {
+        "match" : {
+            "title" : "elasticsearch"
+        }
+    }
+}
+'</span>
+
+curl <span class="nt">-XGET</span>  <span class="s1">'localhost:9200/_search/scroll?scroll=1m&amp;scroll_id=c2Nhbjs2OzM0NDg1ODpzRlBLc0FXNlNyNm5JWUc1'</span>
+
+</code></pre></div></div>
+<h4 id="相关原理">相关原理</h4>
+<ul>
+  <li>倒排索引
+    <ol>
+      <li>key =&gt; value-index =&gt; value</li>
+      <li>分词、过滤助动叹词、相似词合并</li>
+      <li>索引建立</li>
+    </ol>
+  </li>
+  <li>分布式
+    <ol>
+      <li>Elasticsearch也是会对数据进行切分，同时每一个分片会保存多个副本</li>
+      <li>数据写入和索引建立，都是先在master完成再同步到slave</li>
+      <li>选举策略和zk/redis集成都很类似(拜占庭将军问题)</li>
+      <li>分布式查询操作类似Map/Reduce</li>
+      <li>NRT(Near RealTime)</li>
+      <li>默认primary shard=5
+        <ul>
+          <li>协调节点</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+</ul>
+
+<h5 id="参考资料">参考资料</h5>
+<ul>
+  <li><a href="http://developer.51cto.com/art/201904/594615.htm">http://developer.51cto.com/art/201904/594615.htm</a></li>
+  <li><a href="https://www.jianshu.com/p/b3f987b0fbf1">https://www.jianshu.com/p/b3f987b0fbf1</a></li>
+</ul>
+
+<h4 id="实战事项">实战事项</h4>
+
+<h4 id="java教程">java教程</h4>
+<p><a href="https://www.jianshu.com/p/3fa27dda63ab">https://www.jianshu.com/p/3fa27dda63ab</a></p>
+
+<h4 id="lucene--nutch2002">lucene &amp; nutch（2002）</h4>
+<p><a href="https://www.cnblogs.com/yinhaiming/articles/1542921.html">https://www.cnblogs.com/yinhaiming/articles/1542921.html</a></p>
+
+<h4 id="elasticsearch2010--solr2004">Elasticsearch（2010） &amp; Solr（2004）</h4>
+<p><a href="https://www.cnblogs.com/fosilzhou/articles/4629220.html">https://www.cnblogs.com/fosilzhou/articles/4629220.html</a></p>
+
+<h4 id="其他">其他</h4>
+<ul>
+  <li>ELK 系统，也就是日志分析系统。其中 E 就是 Elasticsearch，L 是 Logstash，是一个日志收集系统，K 是 Kibana，是一个数据可视化平台。</li>
+  <li>ElasticSearch + Hbase</li>
+</ul>
+<p><a href="https://www.aboutyun.com/thread-14986-1-1.html">https://www.aboutyun.com/thread-14986-1-1.html</a></p>
+
+<p><a href="https://www.aboutyun.com/forum.php?mod=viewthread&amp;tid=17406&amp;page=1">https://www.aboutyun.com/forum.php?mod=viewthread&amp;tid=17406&amp;page=1</a></p>
+
+<p><a href="https://www.jianshu.com/p/366d9bd38d14">https://www.jianshu.com/p/366d9bd38d14</a></p>
+
+<p><a href="https://blog.csdn.net/JENREY/article/details/81290535">https://blog.csdn.net/JENREY/article/details/81290535</a></p>
+
+<p>网络爬虫将抓取到的HTML页面解析完成之后，把解析出的数据加入缓冲区队列，由其他两个线程负责处理数据，
+一个线程负责将数据保存到分布式数据库，一个线程负责将数据提交到搜索引擎进行索引。
+https://blog.csdn.net/xiaoyu714543065/article/details/10374191
+https://www.ibm.com/developerworks/cn/opensource/os-cn-BigInsightsNutchSolr/
+nutch是分布式爬虫系统，solr是搜索引擎。
+（1） Nutch诞生于2002年8月，是Apache旗下的一个用Java实现的开源搜索引擎项目，
+自Nutch1.2版本之后，Nutch已经从搜索引擎演化为网络爬虫，接着Nutch进一步演化为两大分支版本：1.X和2.X，
+这两大分支最大的区别在于2.X对底层的数据存储进行了抽象以支持各种底层存储技术。
+（2） 1.x版本是基于Hadoop架构的，底层存储使用的是HDFS，而2.x通过使用Apache Gora，
+使得Nutch可以访问HBase、Accumulo、Cassandra、MySQL、DataFileAvroStore、AvroStore等NoSQL。
+（3）nutch主要用于采集网页，solr可以作为搜索服务器。nutch+solr可以搭建一个简单的搜索引擎。
+（4）简单地讲，nutch就是用于分布式采集数据源，solr用于建索引和搜索服务。</p>
+
+<h4 id="故事">故事</h4>
+:ET
