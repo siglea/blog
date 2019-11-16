@@ -25,6 +25,10 @@ jekyll b #编译
 ```
 rbenv local #查看或设置rbenv版本号
 ```
+#### MarkDown语法
+<https://www.runoob.com/markdown/md-lists.html>
+
+<https://www.jianshu.com/p/191d1e21f7ed>
 
 ---
 

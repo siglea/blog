@@ -10,4 +10,5 @@ categories:
 ---
 #### java 参数
 https://blog.csdn.net/liyongbing1122/article/details/88716400
+JVM GC的选择：选择 G1还是 CMS？
 
