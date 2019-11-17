@@ -5,8 +5,8 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 16 Nov 2019 19:52:09 +0800</pubDate>
-    <lastBuildDate>Sat, 16 Nov 2019 19:52:09 +0800</lastBuildDate>
+    <pubDate>Mon, 18 Nov 2019 00:50:43 +0800</pubDate>
+    <lastBuildDate>Mon, 18 Nov 2019 00:50:43 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -23,6 +23,41 @@
         <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NoSQL-NewSQL.html</guid>
         
         <category>newSQL NoSQL</category>
+        
+        
+        <category>互联网</category>
+        
+      </item>
+    
+      <item>
+        <title>DB Mysql</title>
+        <description>&lt;p&gt;&lt;a href=&quot;https://cloud.tencent.com/developer/article/1401904&quot;&gt;常用分布式事务框架&lt;/a&gt;
+&lt;a href=&quot;https://zhuanlan.zhihu.com/p/75843832&quot;&gt;蚂蚁金服分布式事务实战&lt;/a&gt;
+&lt;a href=&quot;https://www.infoq.cn/article/8bu33kuSyJ6P-wAAoELT&quot;&gt;分布式事务选型的取舍infoq&lt;/a&gt;
+&lt;a href=&quot;http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383&quot;&gt;分布式事务&lt;/a&gt;
+&lt;a href=&quot;https://www.jdon.com/48829&quot;&gt;Spring的分布式事务实现(JTA+XA/2PC)&lt;/a&gt;
+&lt;a href=&quot;http://seata.io/zh-cn/&quot;&gt;Seata官网&lt;/a&gt;
+&lt;a href=&quot;https://www.cnblogs.com/firstdream/p/6585923.html&quot;&gt;FLP不可能原理&lt;/a&gt; 
+&lt;a href=&quot;http://www.sohu.com/a/290897501_684445&quot;&gt;分布式事务：深入理解什么是2PC、3PC及TCC协议 &lt;/a&gt;
+&lt;a href=&quot;https://juejin.im/post/5dd0ff1af265da0c075d0af7&quot;&gt;如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？&lt;/a&gt;
+&lt;a href=&quot;http://www.ruanyifeng.com/blog/2018/07/cap.html&quot;&gt;CAP定理&lt;/a&gt;
+&lt;a href=&quot;https://blog.csdn.net/m0_38110132/article/details/76994165&quot;&gt;分布式事务的解决方案CSDN&lt;/a&gt;
+&lt;a href=&quot;https://www.bbsmax.com/A/obzb24Y0zE/&quot;&gt;Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较&lt;/a&gt;
+&lt;a href=&quot;https://blog.csdn.net/qq_27384769/category_7453176_1.html&quot;&gt;分布式CSDN博客&lt;/a&gt;
+https://www.itcodemonkey.com/article/13548.html&lt;/p&gt;
+
+&lt;p&gt;强一致性的2PC、3PC、Paxos、Raft、Zab；
+最终一致性的Saga、TCC、Seata(AT和MT模式）以及MQ事务消息&lt;/p&gt;
+
+&lt;p&gt;面试官问到了MySQL 的Update操作执行过程，你提到了WAL技术，先写Redolog，防止机器Crash造成数据丢失，也能提高性能，
+通过配置还可以减少磁盘IO的次数；紧接着又补充到，Kafka、Rocketmq等消息中间件以及Elasticsearch、HBase、Leveldb、Rocksdb、
+TiDB、Tair等高性能存储组件都用到了这种技术，这同样也可以体现你的技术视野。&lt;/p&gt;
+</description>
+        <pubDate>Tue, 12 Nov 2019 10:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-distributed-transacion.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-distributed-transacion.html</guid>
+        
+        <category>mysql DB</category>
         
         
         <category>互联网</category>
@@ -504,20 +539,6 @@ curl &lt;span class=&quot;nt&quot;&gt;-XGET&lt;/span&gt;  &lt;span class=&quot;s
         
         
         <category>金融</category>
-        
-      </item>
-    
-      <item>
-        <title>商业</title>
-        <description>&lt;h3 id=&quot;商业&quot;&gt;商业&lt;/h3&gt;
-
-</description>
-        <pubDate>Wed, 29 May 2019 15:46:02 +0800</pubDate>
-        <link>http://localhost:4000/%E5%95%86%E4%B8%9A/2019/05/29/n-1.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E5%95%86%E4%B8%9A/2019/05/29/n-1.html</guid>
-        
-        
-        <category>商业</category>
         
       </item>
     

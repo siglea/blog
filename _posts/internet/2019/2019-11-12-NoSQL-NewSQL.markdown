@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "DB Shard"
+title:  "NoSQL-NewSQL"
 date:   2019-11-12 11:25:00 +0900
 comments: true
 tags:
