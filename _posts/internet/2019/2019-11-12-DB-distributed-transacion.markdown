@@ -22,7 +22,7 @@ categories:
 [分布式事务的解决方案CSDN](https://blog.csdn.net/m0_38110132/article/details/76994165)
 [Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较](https://www.bbsmax.com/A/obzb24Y0zE/)
 [分布式CSDN博客](https://blog.csdn.net/qq_27384769/category_7453176_1.html)
-https://www.itcodemonkey.com/article/13548.html
+[基于RocketMQ的最终一致性](https://www.itcodemonkey.com/article/13548.html)
 
 强一致性的2PC、3PC、Paxos、Raft、Zab；
 最终一致性的Saga、TCC、Seata(AT和MT模式）以及MQ事务消息
