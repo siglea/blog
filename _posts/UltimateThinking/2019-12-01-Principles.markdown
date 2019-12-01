@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "《原则》Ray Dalio"
-date:   2019-05-29 15:46:02 +0800
+date:   2019-12-01 16:10:02 +0800
 comments: true
 categories:
 - 读书笔记

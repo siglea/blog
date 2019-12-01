@@ -56,6 +56,184 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/11/12/simple-functional-programming-in-Ruby-and-Javascript.html">Simple Functional Programming in Ruby and Javascript</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2016</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/11/12/simple-functional-programming-in-Ruby-and-Javascript.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>In Ruby, methods like <code class="highlighter-rouge">map</code>, <code class="highlighter-rouge">reject</code>, <code class="highlighter-rouge">reduce</code> are very handy to use. Recently, I came across Javascript functional programming, I found there are similar usages in Javascript.</p>
+
+<h3 id="map">map</h3>
+
+<p><code class="highlighter-rouge">map</code> is used to transform an array into another</p>
+
+<p>Here’s a simple example in Ruby, it accepts a block as parameter:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'m'</span><span class="p">,</span> <span class="s1">'o'</span><span class="p">,</span> <span class="s1">'n'</span><span class="p">,</span> <span class="s1">'k'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">]</span>
+<span class="n">arr</span><span class="p">.</span><span class="nf">map</span> <span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span> <span class="o">+</span> <span class="s1">'1'</span><span class="p">}</span>
+ <span class="c1">#=&gt; ["m1", "o1", "n1", "k1", "e1", "y1"]</span>
+</code></pre></div></div>
+
+<p>In Javascript, <code class="highlighter-rouge">map</code> accepts another function as a parameter, here is an example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="dl">'</span><span class="s1">m</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">o</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">n</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">k</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">e</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">y</span><span class="dl">'</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">arr2</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">1</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">});</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arr2</span><span class="p">);</span> 
+<span class="c1">// [ 'm1', 'o1', 'n1', 'k1', 'e1', 'y1' ]</span>
+</code></pre></div></div>
+
+<p>In ES6, you can also do this with arrow function, which is much similar to Ruby way:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="dl">'</span><span class="s1">m</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">o</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">n</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">k</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">e</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">y</span><span class="dl">'</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">arr2</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">x</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">x</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">1</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arr2</span><span class="p">);</span>
+<span class="c1">// [ 'm1', 'o1', 'n1', 'k1', 'e1', 'y1' ]</span>
+</code></pre></div></div>
+
+<h3 id="reduce">reduce</h3>
+
+<p><code class="highlighter-rouge">reduce</code> comes very handy to apply an operator on enumerable elements</p>
+
+<p>Here is an example of <code class="highlighter-rouge">reduce</code> in Ruby, it takes an initial value and a block applying operation on element</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">arr</span><span class="p">.</span><span class="nf">reduce</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="n">sum</span><span class="p">,</span> <span class="n">x</span><span class="o">|</span> <span class="n">sum</span> <span class="o">+=</span> <span class="n">x</span><span class="p">}</span>
+ <span class="c1">#=&gt; 15</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">reduce</code> can also accept a symbol as a parameter, initial value is default set to <code class="highlighter-rouge">0</code> for <code class="highlighter-rouge">:+</code>, <code class="highlighter-rouge">1</code> for <code class="highlighter-rouge">:*</code></p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">arr</span><span class="p">.</span><span class="nf">reduce</span><span class="p">(:</span><span class="o">+</span><span class="p">)</span>
+ <span class="c1">#=&gt; 15</span>
+</code></pre></div></div>
+
+<p>In Javascript, you can do this, the first parameter is a function that applies the operator, return value will be the next parameter that this function accepts, the second parameter is initial value:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">arr2</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">sum</span><span class="p">,</span> <span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">sum</span> <span class="o">+</span> <span class="nx">x</span><span class="p">;</span>
+<span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arr2</span><span class="p">);</span>
+<span class="c1">// 15</span>
+</code></pre></div></div>
+
+<p>In ES6, you can do this, also I prefer this way as a Ruby programmer:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">arr2</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">sum</span><span class="p">,</span> <span class="nx">x</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">sum</span> <span class="o">+</span> <span class="nx">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arr2</span><span class="p">);</span>
+<span class="c1">// 15</span>
+</code></pre></div></div>
+<hr />
+
+<h3 id="メノ">＼（＾∀＾）メ（＾∀＾）ノ</h3>
+
+<p>Let’s have more fun in functional programming</p>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/11/12/simple-functional-programming-in-Ruby-and-Javascript.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/22/using-concern-to-refactor-rails-model.html">Using Concern To Refactor Rails Model</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 22, 2016</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/22/using-concern-to-refactor-rails-model.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h1 id="background">Background</h1>
+
+<p>Recently I’m working on upgrading a Rails 2.3 application to Rails 4.2 (Yes, it’s true, our company is still using 2.3 now, ( ‘Θ’)ﾉ( ‘Θ’)ﾉ( ‘Θ’)ﾉ). There are 5 models containing codes which are 90% the same. I tried to refactor them with Rails 4’s concern module.</p>
+<hr />
+
+<h1 id="what-is-concern">What is concern</h1>
+
+<h3 id="rails-23-way">Rails 2.3 way</h3>
+<p>In Rails 2.3, if you extract code from model to a module, you need to create a module and put it into your <code class="highlighter-rouge">/lib</code> directory. To realize validations and class methods, you need to add a hook method in it, which was not an elegant way.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Taggable</span>
+  <span class="k">def</span>  <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+    <span class="n">base</span><span class="p">.</span><span class="nf">extend</span> <span class="no">ClassMethods</span>
+    <span class="n">base</span><span class="p">.</span><span class="nf">class_eval</span> <span class="k">do</span>
+      <span class="n">scope</span> <span class="ss">:disabled</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="n">where</span><span class="p">(</span><span class="ss">disabled: </span><span class="kp">true</span><span class="p">)</span> <span class="p">}</span>
+      <span class="c1"># scope, validations, after_save .....</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">module</span> <span class="nn">ClassMethods</span>
+    <span class="k">def</span> <span class="nf">find_with_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+	 <span class="c1"># .....</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h3 id="realization-with-concern">Realization with concern</h3>
+<p>In Rails 4, you can eaily realize it by creating a module extending <code class="highlighter-rouge">ActiveSupport::Concern</code> and include this module in your model.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Taggable</span>
+  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+  <span class="n">included</span> <span class="k">do</span>
+    <span class="n">scope</span> <span class="ss">:disabled</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="n">where</span><span class="p">(</span><span class="ss">disabled: </span><span class="kp">true</span><span class="p">)</span> <span class="p">}</span>
+  <span class="k">end</span>
+  
+  <span class="n">class_methods</span> <span class="k">do</span>
+    <span class="k">def</span> <span class="nf">find_with_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+	 <span class="c1"># ...</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  
+  <span class="c1">#put instance methods here</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h3 id="notice">Notice</h3>
+<ul>
+  <li>If you want to know which class is using this module in a class method, you can simply call <code class="highlighter-rouge">self</code>. For example, I want to cache class method <code class="highlighter-rouge">find</code>, then in my taggble module, I use</li>
+</ul>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">class_methods</span> <span class="k">do</span>
+  <span class="k">def</span> <span class="nf">some_class_method</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+    <span class="no">Rails</span><span class="p">.</span><span class="nf">cache</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s2">"</span><span class="si">#{</span><span class="nb">self</span><span class="p">.</span><span class="nf">name</span><span class="si">}</span><span class="s2">.find(</span><span class="si">#{</span><span class="nb">id</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span> <span class="ss">:expires_in</span> <span class="o">=&gt;</span> <span class="mi">15</span><span class="p">.</span><span class="nf">minutes</span><span class="p">.</span><span class="nf">to_i</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<ul>
+  <li>If it’s in an instance method, use <code class="highlighter-rouge">self.class</code> instead</li>
+</ul>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">some_instance_method</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+  <span class="no">Rails</span><span class="p">.</span><span class="nf">cache</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s2">"</span><span class="si">#{</span><span class="nb">self</span><span class="p">.</span><span class="nf">class</span><span class="p">.</span><span class="nf">name</span><span class="si">}</span><span class="s2">.find(</span><span class="si">#{</span><span class="nb">id</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span> <span class="ss">:expires_in</span> <span class="o">=&gt;</span> <span class="mi">15</span><span class="p">.</span><span class="nf">minutes</span><span class="p">.</span><span class="nf">to_i</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>And the code is more elegant (^m^ )クスッ.</p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/22/using-concern-to-refactor-rails-model.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/09/adjective-tranformation-in-German.html">Adjective Transformation in German</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 9, 2016</span>
@@ -448,7 +626,7 @@ ProxyCommand ssh [username@proxyname] nc %h %p
       
       
       <a  href="tag/算法">
-      <span class="label label-default">算法 ( 1 )</span>
+      <span class="label label-default">算法 ( 2 )</span>
       </a><br />
 
       
