@@ -56,6 +56,77 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2018/10/25/serialize-non-activerecord-model-in-rails.html">Serialize Non-ActiveRecord Model Using ActiveModel::Serializer in Rails</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 25, 2018</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2018/10/25/serialize-non-activerecord-model-in-rails.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>Recently I’ve been working in backend which connects to another API, you may need to send a specific format of JSON data which is not the same as database resource.</p>
+
+<h2 id="create-a-serializable-resource">Create A Serializable Resource</h2>
+<p>Currently I’m using <a href="https://github.com/rails-api/active_model_serializers/tree/0-10-stable">active_model_serializers 0.10.0</a>. From the documentation we know <code class="highlighter-rouge">ActiveModel::Serializer</code> wraps a serializable resource, to create a serializable resource we need to create a plain old Ruby object inherits <code class="highlighter-rouge">ActiveModelSerializers::Model</code>, then create a corresponding serializer.</p>
+
+<p>For example:</p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyModel</span> <span class="o">&lt;</span> <span class="no">ActiveModelSerializers</span><span class="o">::</span><span class="no">Model</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">title</span><span class="p">:,</span> <span class="n">body</span><span class="p">:)</span>
+    <span class="vi">@title</span> <span class="o">=</span> <span class="n">title</span>
+    <span class="vi">@body</span> <span class="o">=</span> <span class="n">body</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">converted_body</span>
+    <span class="c1"># do something</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyModelSerializer</span> <span class="o">&lt;</span> <span class="no">ActiveModelSerializers</span><span class="o">::</span><span class="no">Serializer</span>
+  <span class="n">attributes</span> <span class="ss">:converted_body</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h2 id="handling-nested-json">Handling Nested JSON</h2>
+<p>You can use <code class="highlighter-rouge">has_many</code>, <code class="highlighter-rouge">has_one</code> method in <code class="highlighter-rouge">ActiveModel::Serializer</code> to handle nested json, although it doesn’t mean the same with Rails model relations.</p>
+
+<p>For example:</p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyModel</span> <span class="o">&lt;</span> <span class="no">ActiveModelSerializers</span><span class="o">::</span><span class="no">Model</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="ss">object: </span><span class="n">object</span><span class="p">)</span>
+    <span class="vi">@title</span> <span class="o">=</span> <span class="n">title</span>
+    <span class="vi">@body</span> <span class="o">=</span> <span class="n">body</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> 
+
+  <span class="nf">def</span> <span class="n">related_models</span>
+    <span class="n">related_models</span><span class="p">.</span><span class="nf">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">related_model</span><span class="o">|</span>
+      <span class="no">RelatedModel</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">related_model: </span><span class="n">related_model</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyModelSerializer</span> <span class="o">&lt;</span> <span class="no">ActiveModelSerializers</span><span class="o">::</span><span class="no">Serializer</span>
+  <span class="n">has_many</span> <span class="ss">:related_models</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p><code class="highlighter-rouge">ActiveModelSerializers::Serializer</code> will automatically look for a serializer named <code class="highlighter-rouge">RelatedModelSerializer</code>.</p>
+
+<h2 id="reference">Reference</h2>
+<p>Find more explainations in   https://github.com/rails-api/active_model_serializers/tree/0-10-stable#what-does-a-serializable-resource-look-like</p>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2018/10/25/serialize-non-activerecord-model-in-rails.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2018/10/23/plot-financial-data-super-basic.html">Plot Financial Data Using Matplotlib (super basic)</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 23, 2018</span>
@@ -285,82 +356,6 @@ pip install shadowsocks
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/11/13/use-class_eval-and-instance_eval.html">Use class_eval and instance_eval</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 13, 2016</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/11/13/use-class_eval-and-instance_eval.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="current-object-and-current-class">current object and current class</h3>
-
-<p>Everything is an object in Ruby, there is an current object and current class referred to in every line of code. We use <code class="highlighter-rouge">self</code> to refer to current object (there is no keyword for current class).</p>
-
-<p>When call a method on an object, <code class="highlighter-rouge">self</code>(current object) is the receiver of the method. In a class definition, <code class="highlighter-rouge">self</code>(current object) is the class itself.</p>
-
-<p>Though there is no keyword for current class, it’s easy to refer to as long as we know what is our current object.</p>
-
-<h3 id="class_eval">class_eval</h3>
-
-<p><code class="highlighter-rouge">Module#class_eval</code> is used for modifying current class. It’s commonly used when we don’t know the exact name of class we want to refer to. For example,</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">add_method_to</span><span class="p">(</span><span class="n">my_class</span><span class="p">)</span>
-  <span class="n">my_class</span><span class="p">.</span><span class="nf">class_eval</span> <span class="k">do</span>
-    <span class="k">def</span> <span class="nf">foo</span>
-      <span class="nb">puts</span> <span class="s1">'foo'</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-			
-<span class="n">add_method_to</span><span class="p">(</span><span class="no">String</span><span class="p">)</span>
-<span class="s2">"bar"</span><span class="p">.</span><span class="nf">foo</span>
-<span class="c1">#=&gt; "foo"</span>
-</code></pre></div></div>
-
-<p>One example in Rails is putting common code for several models (just like what model conern does). For example, I want to add common validations for my models, I can create a module and use <code class="highlighter-rouge">class_eval</code> to add methods in classes that include it. In order to get that class, we need a hook method <code class="highlighter-rouge">self.included</code>, and put <code class="highlighter-rouge">class_eval</code> part inside this method.</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">SomeCommonModule</span>
-  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-    <span class="n">base</span><span class="p">.</span><span class="nf">class_eval</span> <span class="k">do</span>
-      <span class="n">validates_presence_of</span> <span class="ss">:balabalabala</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-
-<h3 id="instance_eval">instance_eval</h3>
-
-<p><code class="highlighter-rouge">instance_eval</code> is used for modifying current object (self), it breaks encapsulation, be careful with it.</p>
-
-<p>An example is to change instance variable of an object:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Foo</span>
-  <span class="k">def</span> <span class="nf">bar</span>
-    <span class="vi">@bar</span> <span class="o">=</span> <span class="s2">"bar"</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="n">foo</span> <span class="o">=</span> <span class="no">Foo</span><span class="p">.</span><span class="nf">new</span>
-<span class="n">foo</span><span class="p">.</span><span class="nf">bar</span>
-<span class="nb">puts</span> <span class="n">foo</span><span class="p">.</span><span class="nf">instance_eval</span> <span class="p">{</span> <span class="vi">@bar</span> <span class="p">}</span>
- <span class="c1">#=&gt; "bar"</span>
-<span class="n">foo</span><span class="p">.</span><span class="nf">instance_eval</span> <span class="p">{</span> <span class="vi">@bar</span> <span class="o">=</span> <span class="s2">"bbbbar"</span> <span class="p">}</span>
-<span class="nb">puts</span> <span class="n">foo</span><span class="p">.</span><span class="nf">instance_eval</span> <span class="p">{</span> <span class="vi">@bar</span> <span class="p">}</span>
- <span class="c1">#=&gt; "bbbbar"</span>
-</code></pre></div></div>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/11/13/use-class_eval-and-instance_eval.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -396,6 +391,10 @@ pip install shadowsocks
       
       
       <a href="/page7" class="button page-button">7</a>
+      
+      
+      
+      <a href="/page8" class="button page-button">8</a>
       
       
 
@@ -450,13 +449,6 @@ pip install shadowsocks
       
       <a  href="tag/jekyll">
       <span class="label label-default">jekyll ( 2 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/life">
-      <span class="label label-default">life ( 1 )</span>
       </a><br />
 
       

@@ -10,3 +10,5 @@ categories:
 ---
 
 强一致性的2PC、3PC、Paxos、Raft、Zab；
+
+https://www.cnblogs.com/think90/p/11443428.html

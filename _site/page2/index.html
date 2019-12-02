@@ -56,6 +56,209 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-distributed-transacion.html">DB-distributed-transacion</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-distributed-transacion.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>mysql DB</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="数据库本地事务简述">数据库本地事务简述</h3>
+<ul>
+  <li>ACID原则
+    <ol>
+      <li>原子性(Atomicity)</li>
+      <li>一致性(Consistency)</li>
+      <li>隔离性(Isolation)</li>
+      <li>持久性(Durability)</li>
+    </ol>
+  </li>
+  <li>以Mysql的InnoDB为例，事务的ACID是通过InnoDB日志和锁来保证
+    <ol>
+      <li>事务的隔离性是通过数据库锁的机制实现的</li>
+      <li>持久性通过Redo Log（重做日志）来实现，在事务提交前，只要将 Redo Log 持久化即可，不需要将数据持久化。</li>
+      <li>原子性和一致性通过 Undo Log 来实现。（数据数据操作前的数据备份 Undo Log）</li>
+    </ol>
+  </li>
+  <li>本质都是通过一个本地事务资源管理器来统一协调调度</li>
+</ul>
+
+<h3 id="分布式事务">分布式事务</h3>
+
+<h4 id="分布式事务产生的原因">分布式事务产生的原因</h4>
+<ul>
+  <li>Service多节点部署（比如公司内的用户、账户等各种微服务)</li>
+  <li>Resource 多节点 (每个人的数据部署再不同节点的数据库里)</li>
+</ul>
+
+<h4 id="分布式系统之cap定理">分布式系统之CAP定理</h4>
+<ul>
+  <li>CAP 定理，又被叫作布鲁尔定理。对于设计分布式系统(不仅仅是分布式事务)的架构师来说，CAP 就是你的入门理论。</li>
+  <li>C (一致性)：对某个指定的客户端来说，读操作能返回一致的写操作。
+对于数据分布在不同节点上的数据来说，如果在某个节点更新了数据，那么在其他节点如果都能读取到这个***的数据，那么就称为强一致，如果有某个节点没有读取到，那就是分布式不一致。</li>
+  <li>A (可用性)：非故障的节点在合理的时间内返回合理的响应(不是错误和超时的响应)。可用性的两个关键一个是合理的时间，一个是合理的响应。
+合理的时间指的是请求不能被阻塞，应该在合理的时间给出返回。合理的响应指的是系统应该明确返回结果并且结果是正确的，这里的正确指的是比如应该返回 50，而不是返回 40。</li>
+  <li>
+    <p>P (分区容错性)：当出现网络分区后，系统能够继续工作。打个比方，这里集群有多台机器，有台机器网络出现了问题，但是这个集群仍然可以正常工作。</p>
+  </li>
+  <li>
+    <p>熟悉 CAP 的人都知道，三者不能共有，如果感兴趣可以搜索 CAP 的证明，在分布式系统中，网络无法 100% 可靠，分区其实是一个必然现象。</p>
+
+    <p>如果我们选择了 CA 而放弃了 P，那么当发生分区现象时，为了保证一致性，这个时候必须拒绝请求，但是 A 又不允许，所以分布式系统理论上不可能选择 CA 架构，只能选择 CP 或者 AP 架构。</p>
+
+    <p>对于 CP 来说，放弃可用性，追求一致性和分区容错性，我们的 ZooKeeper 其实就是追求的强一致。</p>
+
+    <p>对于 AP 来说，放弃一致性(这里说的一致性是强一致性)，追求分区容错性和可用性，这是很多分布式系统设计时的选择，后面的 BASE 也是根据 AP 来扩展。</p>
+
+    <p>顺便一提，CAP 理论中是忽略网络延迟，也就是当事务提交时，从节点 A 复制到节点 B 没有延迟，但是在现实中这个是明显不可能的，所以总会有一定的时间是不一致。</p>
+
+    <p>同时 CAP 中选择两个，比如你选择了 CP，并不是叫你放弃 A。因为 P 出现的概率实在是太小了，大部分的时间你仍然需要保证 CA。</p>
+
+    <p>就算分区出现了你也要为后来的 A 做准备，比如通过一些日志的手段，是其他机器回复至可用。</p>
+  </li>
+</ul>
+
+<h4 id="分布式系统之base定理">分布式系统之BASE定理</h4>
+<ul>
+  <li>BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩写，是对 CAP 中 AP 的一个扩展。</li>
+  <li>基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用。</li>
+  <li>软状态：允许系统中存在中间状态，这个状态不影响系统可用性，这里指的是 CAP 中的不一致。</li>
+  <li>最终一致：最终一致是指经过一段时间后，所有节点数据都将会达到一致。</li>
+  <li>BASE 解决了 CAP 中理论没有网络延迟，在 BASE 中用软状态和最终一致，保证了延迟后的一致性。</li>
+  <li>BASE 和 ACID 是相反的，它完全不同于 ACID 的强一致性模型，而是通过牺牲强一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态</li>
+</ul>
+
+<h4 id="常用分布式事务框架">常用分布式事务框架</h4>
+<ul>
+  <li>基于XA的 2PC、3PC
+   本质相当于本地事务的加强版，强一致性，引入中间事务协调者，依赖数据库，属于数据库资源层方案</li>
+  <li>Saga
+  引入补偿机制（最终一致性）</li>
+  <li>TCC
+  Try、Commit、Cancel</li>
+  <li>本地消息表</li>
+  <li>RocketMQ(阿里开源)</li>
+  <li>Seata</li>
+</ul>
+
+<h5 id="参考资料">参考资料</h5>
+<ul>
+  <li><a href="https://developer.51cto.com/art/201808/581174.htm">分布式事务概述</a></li>
+  <li><a href="https://www.jianshu.com/p/917cb4bdaa03">由Seata看分布式事务取舍</a></li>
+  <li><a href="https://cloud.tencent.com/developer/article/1401904">常用分布式事务框架</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/75843832">蚂蚁金服分布式事务实战</a></li>
+  <li><a href="https://www.infoq.cn/article/8bu33kuSyJ6P-wAAoELT">分布式事务选型的取舍infoq</a></li>
+  <li><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a></li>
+  <li><a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></li>
+  <li><a href="http://seata.io/zh-cn/">Seata官网</a></li>
+  <li><a href="https://www.cnblogs.com/firstdream/p/6585923.html">FLP不可能原理</a></li>
+  <li><a href="http://www.sohu.com/a/290897501_684445">分布式事务：深入理解什么是2PC、3PC及TCC协议 </a></li>
+  <li><a href="https://juejin.im/post/5dd0ff1af265da0c075d0af7">如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？</a></li>
+  <li><a href="http://www.ruanyifeng.com/blog/2018/07/cap.html">CAP定理</a></li>
+  <li><a href="https://blog.csdn.net/m0_38110132/article/details/76994165">分布式事务的解决方案CSDN</a></li>
+  <li><a href="https://www.bbsmax.com/A/obzb24Y0zE/">Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较</a></li>
+  <li><a href="https://blog.csdn.net/qq_27384769/category_7453176_1.html">分布式CSDN博客</a></li>
+  <li><a href="https://www.itcodemonkey.com/article/13548.html">基于RocketMQ的最终一致性</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-distributed-transacion.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Shard.html">DB Shard</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Shard.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>mysql DB</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分库/分表</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="主键避重问题">主键避重问题</h4>
+<ul>
+  <li>ID生成器
+    <ul>
+      <li>Twitter Snowflake</li>
+      <li>美团 LeftUid</li>
+      <li>百度 Uid-genarator</li>
+    </ul>
+  </li>
+  <li>散表规则
+    <ul>
+      <li>按照ID范围，要求ID自增</li>
+      <li>简单Hash(取模)</li>
+      <li>Hash一致性算法</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="分页查询问题">分页查询问题</h4>
+<ul>
+  <li>分表查，应用程序合并</li>
+</ul>
+
+<h4 id="关联查询问题">关联查询问题</h4>
+<ul>
+  <li>避免join操作，改造为多次查询，由应用程序合并</li>
+  <li>使用现成的中间件</li>
+  <li>实际业务中可能会结合Redis/Es等解决方案</li>
+</ul>
+
+<h4 id="公共表问题">公共表问题</h4>
+<ul>
+  <li>公共表多库冗余，多库同步</li>
+</ul>
+
+<h4 id="事务一致性">事务一致性</h4>
+<p><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a>
+<a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></p>
+<h5 id="jtaxa">JTA*XA</h5>
+
+<h4 id="比较常见的中间件cobartddlatlassharding-jdbcmycat">比较常见的中间件cobar、TDDL、atlas、sharding-jdbc、mycat</h4>
+<ul>
+  <li>cobar：阿里b2b团队开发和开源的，属于proxy层方案。早些年还可以用，但是最近几年都没更新了，基本没啥人用，差不多算是被抛弃的状态吧。而且不支持读写分离、存储过程、跨库join和分页等操作。</li>
+  <li>TDDL：淘宝团队开发的，属于client层方案。不支持join、多表查询等语法，就是基本的crud语法是ok，但是支持读写分离。目前使用的也不多，因为还依赖淘宝的diamond配置管理系统。</li>
+  <li>atlas：360开源的，属于proxy层方案，以前是有一些公司在用的，但是确实有一个很大的问题就是社区最新的维护都在5年前了。所以，现在用的公司基本也很少了。</li>
+  <li>sharding-jdbc：当当开源的，属于client层方案。确实之前用的还比较多一些，因为SQL语法支持也比较多，没有太多限制，而且目前推出到了2.0版本，支持分库分表、读写分离、分布式id生成、柔性事务（最大努力送达型事务、TCC事务）。而且确实之前使用的公司会比较多一些（这个在官网有登记使用的公司，可以看到从2017年一直到现在，是不少公司在用的），目前社区也还一直在开发和维护，还算是比较活跃，个人认为算是一个现在也可以选择的方案。</li>
+  <li>
+    <p>mycat：基于cobar改造的，属于proxy层方案，支持的功能非常完善，而且目前应该是非常火的而且不断流行的数据库中间件，社区很活跃，也有一些公司开始在用了。但是确实相比于sharding jdbc来说，年轻一些，经历的锤炼少一些。</p>
+
+    <p>所以综上所述，现在其实建议考量的，就是sharding-jdbc和mycat，这两个都可以去考虑使用。
+  sharding-jdbc这种client层方案的优点在于不用部署，运维成本低，不需要代理层的二次转发请求，性能很高，但是如果遇到升级啥的需要各个系统都重新升级版本再发布，各个系统都需要耦合sharding-jdbc的依赖；
+  mycat这种proxy层方案的缺点在于需要部署，自己及运维一套中间件，运维成本高，但是好处在于对于各个项目是透明的，如果遇到升级之类的都是自己中间件那里搞就行了。
+  通常来说，这两个方案其实都可以选用，但是我个人建议中小型公司选用sharding-jdbc，client层方案轻便，而且维护成本低，不需要额外增派人手，而且中小型公司系统复杂度会低一些，项目也没那么多；
+  但是中大型公司最好还是选用mycat这类proxy层方案，因为可能大公司系统和项目非常多，团队很大，人员充足，那么最好是专门弄个人来研究和维护mycat，然后大量项目直接透明使用即可。</p>
+  </li>
+</ul>
+
+<h4 id="主从同步">主从同步</h4>
+<ul>
+  <li>半同步复制，semi-sync复制，指的就是主库写入binlog日志之后，就会将强制此时立即将数据同步到从库，从库将日志写入自己本地的relay log之后，接着会返回一个ack给主库，主库接收到至少一个从库的ack之后才会认为写操作完成了。</li>
+  <li>并行复制，指的是从库开启多个线程，并行读取relay log中不同库的日志，然后并行重放不同库的日志，这是库级别的并行。</li>
+</ul>
+
+<h4 id="其他">其他</h4>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651960212&amp;idx=1&amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS">58用户系统分库分表实战</a></p>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Shard.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Mysql.html">DB Mysql</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -67,17 +270,26 @@
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
 	<h4 id="索引原理btree">索引原理(B+Tree)</h4>
 <ul>
-  <li>Tree -&gt; BelanceTree -&gt; B+Tree</li>
+  <li>Tree -&gt; BelanceTree -&gt; B+Tree
+http://www.sohu.com/a/280609547_818692
+https://www.jianshu.com/p/0371c9569736
+https://www.cnblogs.com/tiancai/p/9024351.html
+    <h4 id="查询优化">查询优化</h4>
+  </li>
 </ul>
-
-<h4 id="查询优化">查询优化</h4>
 
 <h4 id="常用指标">常用指标</h4>
 <ul>
   <li>QPS Connection</li>
 </ul>
 
-<p>Mysql WAL技术</p>
+<h4 id="mysql-wal技术">Mysql WAL技术</h4>
+
+<h4 id="mysql主从同步">Mysql主从同步</h4>
+
+<h4 id="innodb-myisam">InnoDB MyISAM</h4>
+
+<h4 id="mysql--keepalived实现双高可用">mysql + keepalived实现双高可用</h4>
 
 <p><a href="https://database.51cto.com/art/201910/604128.htm">数据库规范</a></p>
 
@@ -162,291 +374,6 @@ JVM GC的选择：选择 G1还是 CMS？</p>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html">算法时间复杂度</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>算法</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="时间复杂度原则">时间复杂度原则</h4>
-<ul>
-  <li>如果运行时间是常数量级，用常数1表示</li>
-  <li>只保留时间函数中的最高阶项
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 0.5n^2 + 0.5n
-T(n) = O(n^2)
-</code></pre></div>    </div>
-  </li>
-  <li>如果最高阶项存在，则省去最高阶项前面的系数
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 3n
-T(n) = O(n)
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h4 id="时间复杂度排序">时间复杂度排序</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>O(1) &lt; O(logN) &lt; O(n) &lt; O(n^2)
-</code></pre></div></div>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/algorithm-O.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Elasticsearch-Summary.html"> Elasticsearch  Summary </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Elasticsearch-Summary.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式搜索引擎</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>全文搜索引擎</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="基础入门">基础入门</h4>
-<ul>
-  <li><a href="http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html">http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html</a></li>
-  <li><a href="https://www.jianshu.com/p/d68197bc7def">https://www.jianshu.com/p/d68197bc7def</a></li>
-  <li><a href="https://www.elastic.co/cn/products/elasticsearch">ec官网</a></li>
-</ul>
-
-<h4 id="常用命令">常用命令</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#查看节点左右的Index</span>
-curl <span class="nt">-X</span> GET <span class="s1">'http://localhost:9200/_cat/indices?v'</span>
-
-<span class="c">#查看所有Type</span>
-curl <span class="s1">'localhost:9200/_mapping?pretty=true'</span>
-
-<span class="c">#新建Index</span>
-curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/weather'</span>
-
-<span class="c">#删除Index</span>
-curl <span class="nt">-X</span> DELETE <span class="s1">'localhost:9200/weather'</span>
-
-<span class="c">#新建Index附件结构 Index:accounts Type:person</span>
-curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/accounts'</span> <span class="nt">-d</span> <span class="s1">'
-{
-  "mappings": {
-    "person": {
-      "properties": {
-        "user": {
-          "type": "text",
-          "analyzer": "ik_max_word",
-          "search_analyzer": "ik_max_word"
-        },
-        "title": {
-          "type": "text",
-          "analyzer": "ik_max_word",
-          "search_analyzer": "ik_max_word"
-        },
-        "desc": {
-          "type": "text",
-          "analyzer": "ik_max_word",
-          "search_analyzer": "ik_max_word"
-        }
-      }
-    }
-  }
-}'</span>
-
-<span class="c">#给指定Index指定的type增加Document</span>
-<span class="nv">$ </span>curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/accounts/person/1'</span> <span class="nt">-d</span> <span class="s1">'
-{
-  "user": "张三",
-  "title": "工程师",
-  "desc": "数据库管理"
-}'</span>
-
-<span class="c">#查看指定Index指定的type的指定Document</span>
-curl <span class="s1">'localhost:9200/accounts/person/1?pretty=true'</span>
-
-<span class="c">#查看指定Index指定的type的所有记录</span>
-<span class="nv">$ </span>curl <span class="s1">'localhost:9200/accounts/person/_search'</span>
-
-<span class="c">#搜索指定Index指定的type的复合搜索条件的记录 from:偏移量 size:数据量</span>
-<span class="c">#该分页方式是假分页，会读取整体数据只显示size，数据量超过1万性能急剧下降</span>
-curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
-{
-  "query" : { "match" : { "desc" : "管理" }},
-  "from": 1,
-  "size": 1
-}'</span>
-
-<span class="c">#逻辑搜索 OR 关系</span>
-curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
-{
-  "query" : { "match" : { "desc" : "软件 系统" }}
-}'</span>
-
-<span class="c">#逻辑搜索 AND 关系</span>
-curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
-{
-  "query": {
-    "bool": {
-      "must": [
-        { "match": { "desc": "软件" } },
-        { "match": { "desc": "系统" } }
-      ]
-    }
-  }
-}'</span>
-
-<span class="c">#scroll分页查询</span>
-<span class="c">#区别于from size的方式的本质是采用类似Oracle的游标</span>
-curl <span class="nt">-XGET</span> <span class="s1">'localhost:9200/twitter/tweet/_search?scroll=1m'</span> <span class="nt">-d</span> <span class="s1">'
-{
-    "query": {
-        "match" : {
-            "title" : "elasticsearch"
-        }
-    }
-}
-'</span>
-
-curl <span class="nt">-XGET</span>  <span class="s1">'localhost:9200/_search/scroll?scroll=1m&amp;scroll_id=c2Nhbjs2OzM0NDg1ODpzRlBLc0FXNlNyNm5JWUc1'</span>
-
-</code></pre></div></div>
-<h4 id="相关原理">相关原理</h4>
-<ul>
-  <li>倒排索引
-    <ol>
-      <li>key =&gt; value-index =&gt; value</li>
-      <li>分词、过滤助动叹词、相似词合并</li>
-      <li>索引建立</li>
-    </ol>
-  </li>
-  <li>分布式
-    <ol>
-      <li>Elasticsearch也是会对数据进行切分，同时每一个分片会保存多个副本</li>
-      <li>数据写入和索引建立，都是先在master完成再同步到slave</li>
-      <li>选举策略和zk/redis集成都很类似(拜占庭将军问题)
-        <ol>
-          <li>master节点宕机了，那么会重新选举一个节点为master节点。</li>
-          <li>如果是非master节点宕机了，那么会由master节点，让那个宕机节点上的primary shard的身份转移到其他机器上的replica shard。
-修复了那个宕机机器，重启了之后，master节点会控制将缺失的replica shard分配过去，同步后续修改的数据之类的，让集群恢复正常。</li>
-        </ol>
-      </li>
-      <li>分布式查询操作类似Map/Reduce</li>
-      <li>NRT(Near RealTime)
-        <ul>
-          <li>默认是每隔1秒refresh一次的，所以es是准实时的，因为写入的数据1秒之后才能被看到。</li>
-          <li>-&gt; buffer -&gt; segment file -&gt; os cache -&gt; 磁盘</li>
-          <li>-&gt; trans_log -&gt; os cache -&gt; 磁盘</li>
-          <li>refresh、flush、translog、merge</li>
-        </ul>
-      </li>
-      <li>默认primary shard=5，replica=1共计10shard</li>
-      <li>es写数据过程
-        <ol>
-          <li>客户端选择一个node发送请求过去，这个node就是coordinating node（协调节点）</li>
-          <li>coordinating node，对document进行路由，将请求转发给对应的node（有primary shard）</li>
-          <li>实际的node上的primary shard处理请求，然后将数据同步到replica node</li>
-          <li>coordinating node，如果发现primary node和所有replica node都搞定之后，就返回响应结果给客户端</li>
-        </ol>
-      </li>
-      <li>es读取数据过程
-        <ol>
-          <li>客户端发送请求到任意一个node，成为coordinate node</li>
-          <li>coordinate node对document进行路由，将请求转发到对应的node，此时会使用round-robin随机轮询算法，在primary shard以及其所有replica中随机选择一个，让读请求负载均衡</li>
-          <li>接收请求的node返回document给coordinate node</li>
-          <li>coordinate node返回document给客户端</li>
-        </ol>
-      </li>
-    </ol>
-  </li>
-</ul>
-
-<h5 id="参考资料">参考资料</h5>
-<ul>
-  <li><a href="http://developer.51cto.com/art/201904/594615.htm">http://developer.51cto.com/art/201904/594615.htm</a></li>
-  <li><a href="https://www.jianshu.com/p/b3f987b0fbf1">https://www.jianshu.com/p/b3f987b0fbf1</a></li>
-</ul>
-
-<h4 id="实战总结亿级性能">实战总结亿级性能</h4>
-<ul>
-  <li>用内存换速度
- es的搜索引擎严重依赖于底层的filesystem cache，你如果给filesystem cache更多的内存，尽量让内存可以容纳所有的indx segment file索引数据文件，
- 那么你搜索的时候就基本都是走内存的，性能会非常高。归根结底，你要让es性能要好，最佳的情况下，就是你的机器的内存，至少可以容纳你的总数据量的一半.</li>
-  <li>减少es中的无用字段的数据量(es+hbase)</li>
-  <li>数据预热，冷热分离，冗余数据</li>
-  <li>由应用服务器完成某些逻辑及运算操作</li>
-  <li>使用sroll api优化分页性能</li>
-</ul>
-
-<h5 id="实战案例">实战案例</h5>
-<ul>
-  <li>5台机器，每台机器是6核64G的，集群总内存是320G</li>
-  <li>es集群的日增量数据大概是2000万条，每天日增量数据大概是500MB，每月增量数据大概是6亿，15G。（数据总量大概是100G左右）</li>
-  <li>index数据量预估，shard个数预估（不支持后续增加shard需要重建),建议每个shard小于30G</li>
-</ul>
-
-<h5 id="参考资料-1">参考资料</h5>
-<p><a href="https://www.aboutyun.com/thread-14986-1-1.html">亿级规模的Elasticsearch优化实战</a></p>
-
-<h4 id="java实战教程">java实战教程</h4>
-<p><a href="https://www.jianshu.com/p/3fa27dda63ab">大数据技术之elasticsearch</a></p>
-
-<h4 id="lucene--nutch2002--solr2004--elasticsearch2010">lucene &amp; nutch（2002） &amp; Solr（2004）&amp;  Elasticsearch（2010）</h4>
-<ul>
-  <li>Lucene其实是一个提供全文文本搜索的函数库，它不是一个应用软件</li>
-  <li>Nutch = Lucene + 爬虫</li>
-  <li>Solr 是基于Lucene的一套完整的搜索服务属于Apache开源项目</li>
-  <li>Nutch是分布式爬虫系统，solr是搜索引擎</li>
-</ul>
-
-<h5 id="solr--elasticsearch">Solr &amp; Elasticsearch</h5>
-<ul>
-  <li>Solr 利用 Zookeeper 进行分布式管理，而 Elasticsearch 自身带有分布式协调管理功能;</li>
-  <li>Solr 支持更多格式的数据，而 Elasticsearch 仅支持json文件格式；</li>
-  <li>Solr 官方提供的功能更多，而 Elasticsearch 本身更注重于核心功能，高级功能多有第三方插件提供；</li>
-  <li>Solr 在传统的搜索应用中表现好于 Elasticsearch，但在处理实时搜索应用时效率明显低于 Elasticsearch。</li>
-</ul>
-
-<h5 id="关于nutch">关于Nutch</h5>
-<ul>
-  <li>Nutch诞生于2002年8月，是Apache旗下的一个用Java实现的开源搜索引擎项目，
-自Nutch1.2版本之后，Nutch已经从搜索引擎演化为网络爬虫，接着Nutch进一步演化为两大分支版本：1.X和2.X，
-这两大分支最大的区别在于2.X对底层的数据存储进行了抽象以支持各种底层存储技术。</li>
-  <li>1.x版本是基于Hadoop架构的，底层存储使用的是HDFS，而2.x通过使用Apache Gora，
-使得Nutch可以访问HBase、Accumulo、Cassandra、MySQL、DataFileAvroStore、AvroStore等NoSQL。</li>
-  <li>nutch主要用于采集网页，solr可以作为搜索服务器。nutch+solr可以搭建一个简单的搜索引擎。</li>
-  <li>简单地讲，nutch就是用于分布式采集数据源，solr用于建索引和搜索服务。</li>
-</ul>
-
-<h5 id="参考资料-2">参考资料</h5>
-<ul>
-  <li><a href="https://www.cnblogs.com/yinhaiming/articles/1542921.html">https://www.cnblogs.com/yinhaiming/articles/1542921.html</a></li>
-  <li><a href="https://www.cnblogs.com/fosilzhou/articles/4629220.html">https://www.cnblogs.com/fosilzhou/articles/4629220.html</a></li>
-  <li><a href="https://blog.csdn.net/xiaoyu714543065/article/details/10374191">https://blog.csdn.net/xiaoyu714543065/article/details/10374191</a></li>
-  <li><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-BigInsightsNutchSolr/">https://www.ibm.com/developerworks/cn/opensource/os-cn-BigInsightsNutchSolr/</a></li>
-  <li><a href="https://www.jianshu.com/p/366d9bd38d14">https://www.jianshu.com/p/366d9bd38d14</a></li>
-</ul>
-
-<h4 id="其他">其他</h4>
-<ul>
-  <li>ELK 系统，也就是日志分析系统。其中 E 就是 Elasticsearch，L 是 Logstash，是一个日志收集系统，K 是 Kibana，是一个数据可视化平台。</li>
-  <li>ElasticSearch + Hbase</li>
-  <li>Katta Hadoop contrib/index Lucandra HBasene</li>
-</ul>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Elasticsearch-Summary.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -482,6 +409,10 @@ curl <span class="nt">-XGET</span>  <span class="s1">'localhost:9200/_search/scr
       
       
       <a href="/page7" class="button page-button">7</a>
+      
+      
+      
+      <a href="/page8" class="button page-button">8</a>
       
       
 
@@ -536,13 +467,6 @@ curl <span class="nt">-XGET</span>  <span class="s1">'localhost:9200/_search/scr
       
       <a  href="tag/jekyll">
       <span class="label label-default">jekyll ( 2 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/life">
-      <span class="label label-default">life ( 1 )</span>
       </a><br />
 
       
