@@ -40,7 +40,7 @@
       <li><a href="/category/金融" class="button">金融</a></li>
       <li><a href="/category/商业" class="button">商业</a></li>
       <li><a href="/category/读书笔记" class="button">读书笔记</a></li>
-      <li><a href="/category/生活" class="button">生活</a></li>
+      <li><a href="/category/极致思考" class="button">极致思考</a></li>
     </ul>
     </div>
   </div>
@@ -53,6 +53,33 @@
       <div class="container" style="padding-left:0;padding-right:0;">
         <div class="row" style="margin-bottom:30px">
   <div class="home col-md-8">
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NoSQL-NewSQL.html">NoSQL-NewSQL</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NoSQL-NewSQL.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>newSQL NoSQL</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="redis">Redis</h4>
+
+<h4 id="mongo">Mongo</h4>
+
+<h4 id="cassandra">Cassandra</h4>
+
+<h4 id="leveldbrocksdb">Leveldb、Rocksdb、</h4>
+<h4 id="tidbtair">TiDB、Tair</h4>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NoSQL-NewSQL.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
     
     <div class="post-contents">
       <h2>
@@ -302,74 +329,25 @@ https://www.cnblogs.com/tiancai/p/9024351.html
     
     <div class="post-contents">
       <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html"> Linux  Cmd </a>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-op-cmd.html"> Linux Op Cmd </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html#disqus_thread"></a></span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-op-cmd.html#disqus_thread"></a></span>
       
       <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>linux</span>
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="系统负载查看命令top">系统负载查看命令top</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>top
-<span class="c"># m键:切换内存使用率进度条模式</span>
-
-<span class="c"># N:根据pid大小进行排序</span>
-<span class="c"># M:根据驻留内存大小进行排序</span>
-<span class="c"># P:根据CPU使用百分比大小进行排序</span>
-<span class="c"># T:根据时间/累计时间进行排序</span>
-</code></pre></div></div>
-<h4 id="内存查看命令free">内存查看命令free</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>free <span class="nt">-h</span>
-<span class="c">#free命令信息来自 cat /proc/meminfo</span>
-</code></pre></div></div>
-<h4 id="磁盘查看命令df">磁盘查看命令df</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">df</span> <span class="nt">-h</span>
-</code></pre></div></div>
-<h4 id="目录文件大小查看命令du">目录文件大小查看命令du</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">du</span>
-<span class="c"># 只显示当前目录下面的子目录的目录大小和当前目录的总的大小</span>
-
-<span class="nb">du</span>  <span class="nt">-sh</span>
-<span class="c"># 查看当前目录总大小</span>
-
-<span class="nb">du</span>  <span class="nt">-sh</span> ./<span class="k">*</span> 
-<span class="nb">du</span> <span class="nt">-h</span>  <span class="nt">--max-depth</span><span class="o">=</span>1
-<span class="c"># 查看当前目录各个文件大小</span>
-</code></pre></div></div>
-
-<h4 id="systemctl-supervisor-crontab-service-systemmd">systemctl supervisor crontab service systemmd</h4>
-
-<h4 id="curl-wget">curl wget</h4>
+	<h4 id="cpu常用命令topvmstatpidstatsarperfjstackjstat">CPU常用命令：top、vmstat、pidstat、sar、perf、jstack、jstat</h4>
+<h4 id="内存常用命令topfreevmstatcachetopcachestatsarjmap">内存常用命令：top、free、vmstat、cachetop、cachestat、sar、jmap</h4>
+<h4 id="磁盘常用命令topiostatvmstatpidstatdudf">磁盘常用命令：top、iostat、vmstat、pidstat、du/df</h4>
+<h4 id="网络常用命令netstatsardstattcpdump">网络常用命令：netstat、sar、dstat、tcpdump</h4>
+<h4 id="应用层分析工具profilerdump分析">应用层分析工具：profiler、dump分析</h4>
 
 
       </div>
       <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/JVM-Options.html"> Java 参数 </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/JVM-Options.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>java</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="java-参数">java 参数</h4>
-<p>https://blog.csdn.net/liyongbing1122/article/details/88716400
-JVM GC的选择：选择 G1还是 CMS？</p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/JVM-Options.html" class="button readmore-button">Read More</a>
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-op-cmd.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -564,7 +542,7 @@ JVM GC的选择：选择 G1还是 CMS？</p>
       
       
       <a  href="tag/linux">
-      <span class="label label-default">linux ( 1 )</span>
+      <span class="label label-default">linux ( 3 )</span>
       </a><br />
 
       

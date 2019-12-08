@@ -40,7 +40,7 @@
       <li><a href="/category/金融" class="button">金融</a></li>
       <li><a href="/category/商业" class="button">商业</a></li>
       <li><a href="/category/读书笔记" class="button">读书笔记</a></li>
-      <li><a href="/category/生活" class="button">生活</a></li>
+      <li><a href="/category/极致思考" class="button">极致思考</a></li>
     </ul>
     </div>
   </div>
@@ -53,6 +53,144 @@
       <div class="container" style="padding-left:0;padding-right:0;">
         <div class="row" style="margin-bottom:30px">
   <div class="home col-md-8">
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/06/install-shadowsocks-in-ubuntu.html">如何在ubuntu16通过终端设置shadowsocks实现科学上网</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 6, 2016</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/06/install-shadowsocks-in-ubuntu.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>给三年前买的旧笔记本重装了Ubuntu桌面版，第一件要做的事就是科学上网啦。</p>
+
+<p>┗(・o・)┛ナハ┗(・o・)┛ナハ</p>
+
+<p>shadowsocks的安装有两种方法，一是安装shadowsocks-qt5 GUI版，二是通过终端运行shadowsocks。我试过了第一种GUI安装，但是一直连不上服务器，发现输出的json配置文件格式是错误的，于是选择了第二种, 具体步骤如下:</p>
+
+<hr />
+
+<h3 id="1-下载shadowsocks">1. 下载shadowsocks</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt-get update
+sudo apt-get install python-pip
+sudo apt-get install python-setuptools m2crypto
+pip install shadowsocks
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="2-设置配置文件">2. 设置配置文件</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+"server":"XX.XX.XX.XX",
+"server_port":XX,
+"local_port":1080,
+"password":"your password",
+"timeout":600,
+"method":"aes-256-cfb"
+}
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="3-启动shadowsocks">3. 启动shadowsocks</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sslocal -c /your/path/shadowsocks.json
+</code></pre></div></div>
+
+<p>如果启动成功了可以看到如下信息(/home/momoko/shadowsocks/ss-config.json是我存放配置文件的路径)</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>INFO: loading config from /home/momoko/shadowsocks/ss-config.json
+2016-12-06 19:31:54 INFO     loading libcrypto from libcrypto.so.1.0.0
+2016-12-06 19:31:54 INFO     starting local at 127.0.0.1:1080
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="4-设置浏览器">4. 设置浏览器</h3>
+
+<p>接下来需要设置浏览器，代理到shadowsocks指定端口(默认情况是1080)</p>
+
+<p>我使用的浏览器是Ubuntu下的Chromium，chrome插件本来可以在chrome商店里下载到，成功翻墙之前是进不去的。这里推荐从github上下载SwitchyOmega，里面有中文下载说明, 网址如下:</p>
+
+<p><a href="https://github.com/FelisCatus/SwitchyOmega/releases/">https://github.com/FelisCatus/SwitchyOmega/releases/</a></p>
+
+<p>还有配合GFWList的使用方法:</p>
+
+<p><a href="https://github.com/FelisCatus/SwitchyOmega/wiki/GFWList">https://github.com/FelisCatus/SwitchyOmega/wiki/GFWList</a></p>
+
+<p>下载结束之后需要设置代理选项，情景模式里选<code class="highlighter-rouge">socks 5</code>, 端口号<code class="highlighter-rouge">1080</code>，其余设置参考上述链接。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>打开youtube或是facebook测试一下，有点小惊喜呢。┌</td>
+      <td>≧∇≦</td>
+      <td>┘</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br /></p>
+
+<h3 id="5-attention">5. Attention</h3>
+
+<p>值得注意的是，虽然浏览器可以翻墙了，但是用终端访问比如<code class="highlighter-rouge">curl www.google.com</code> 还是没有响应，这里需要安装额外的插件，我使用的是proxychains4，具体安装方法请自行搜索。如果你运行的是例如polipo全局代理的插件，在终端运行某些命令会失败（比如说<code class="highlighter-rouge">git clone</code>），这时候暂时关掉代理插件即可。</p>
+
+<p>什么？不会安装？浏览器都能翻墙了还不谷歌一下。 (￣▽￣人))　((人￣▽￣)</p>
+
+<hr />
+
+<p>自从学会科学上网，看youtube视频根本停不下来。</p>
+
+<p>へ(￣<em>￣へ)(ノ￣</em>￣)ノ パラパラ♪</p>
+
+<p>最后推荐一个颜文字网站：</p>
+
+<p><a href="http://kaomojiya.com/">http://kaomojiya.com/</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/06/install-shadowsocks-in-ubuntu.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/02/Troubleshooting-with-Installing-Broadcom-Wireless-Drivers-in-Ubuntu-Desktop.html">Troubleshooting with Installing Broadcom Wireless Drivers in Ubuntu Desktop</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 2, 2016</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/02/Troubleshooting-with-Installing-Broadcom-Wireless-Drivers-in-Ubuntu-Desktop.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>Days before, I changed the operating system of my old laptop from Windows7 to Ubuntu Desktop, I installed Ubuntu from a USB stick from my friend. After installing I found I Broadcom wireless driver wasn’t installed so I couldn’t connect to my WiFi. I tried several ways then found the solution, hope it my be helpful.</p>
+
+<p>To download the driver from Internet, you need to connect with Ethernet.</p>
+
+<p>Open Software and Update from system and configuration, open the fifth tab optional drivers and see if wireless driver comes out or not.</p>
+
+<p><img src="/img/ubuntu1.png" style="height:50%;width:50%;" /></p>
+
+<p>Make sure allowing downloading drivers from Internet is checked in the first tab Ubuntu Software.</p>
+
+<p><img src="/img/ubuntu2.png" style="height:50%;width:50%;" /></p>
+
+<p>If it still doesn’t come out, you need to manually install it from terminal, use <code class="highlighter-rouge">lspci -nn -d 14e4:</code> command to see which network card you’re using, then install the corresponding driver. <a href="http://askubuntu.com/questions/55868/installing-broadcom-wireless-drivers">http://askubuntu.com/questions/55868/installing-broadcom-wireless-drivers</a> offers an excellent guide.</p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/02/Troubleshooting-with-Installing-Broadcom-Wireless-Drivers-in-Ubuntu-Desktop.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
     
     <div class="post-contents">
       <h2>
@@ -308,117 +446,6 @@
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/09/adjective-tranformation-in-German.html">Adjective Transformation in German</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 9, 2016</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/09/adjective-tranformation-in-German.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>language learning</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>These days I was learning German grammar of transforming adjective. I learnt so many rules like,  when the non which you describe is a accusative, if it’s male word append <code class="highlighter-rouge">en</code>, if it’s female or plural append <code class="highlighter-rouge">e</code>, if it’s neutral append <code class="highlighter-rouge">es</code>. But when the article is <code class="highlighter-rouge">meine</code> or <code class="highlighter-rouge">keine</code> and the word is plural, append <code class="highlighter-rouge">en</code> For nominative and dative phrase …..</p>
-
-<p>Okay… My mood turns into  <code class="highlighter-rouge">(´Д｀；)/ヽｧ・・・</code></p>
-
-<p>So I made a small program in Python to help me ‘remember’ which transformation of adjective to use (ノД`)ハァ.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">adj_transformation</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">article</span><span class="p">,</span> <span class="n">sex</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">plural</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s">'accusative'</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">sex</span> <span class="o">==</span> <span class="s">'male'</span><span class="p">:</span>
-            <span class="n">adj</span> <span class="o">+=</span> <span class="s">'en'</span>			
-        <span class="k">elif</span> <span class="n">sex</span> <span class="o">==</span> <span class="s">'female'</span> <span class="ow">or</span> <span class="n">plural</span><span class="p">:</span>
-            <span class="n">adj</span> <span class="o">+=</span> <span class="s">'e'</span>
-    	<span class="k">elif</span> <span class="n">sex</span> <span class="o">==</span> <span class="s">'neutral'</span><span class="p">:</span>
-    	    <span class="n">adj</span> <span class="o">+=</span> <span class="s">'es'</span>
-    	<span class="k">elif</span> <span class="p">(</span><span class="n">article</span> <span class="o">==</span> <span class="s">'meine'</span> <span class="ow">or</span> <span class="s">'keine'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">plural</span><span class="p">:</span>
-    	    <span class="n">adj</span> <span class="o">+=</span> <span class="s">'en'</span>
-    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s">'nominative'</span><span class="p">:</span>
-     	<span class="k">if</span> <span class="n">sex</span> <span class="o">==</span> <span class="s">'male'</span><span class="p">:</span>
-            <span class="n">adj</span> <span class="o">+=</span> <span class="s">'er'</span>
-    	<span class="k">else</span><span class="p">:</span>
-    	    <span class="n">adj</span>
-    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s">'dative'</span><span class="p">:</span>
-      	<span class="n">adj</span> <span class="o">+=</span> <span class="s">'en'</span>
-    <span class="k">return</span> <span class="n">adj</span>
-
-<span class="n">adj</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">'input adjective, regular transaformation only: '</span><span class="p">)</span>
-<span class="n">article</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">'input article between ein, eine, keine, meine: '</span><span class="p">)</span>
-<span class="n">sex</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">'choose sex of the non bwtween male, female, neutral: '</span><span class="p">)</span>
-<span class="n">case</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">'choose case between nominative, dative, accusative: '</span><span class="p">)</span>
-<span class="n">plural</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">'input 1 for plural, 0 for non-plural:'</span><span class="p">)</span>
-
-<span class="n">target_adj</span> <span class="o">=</span> <span class="n">adj_transformation</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">article</span><span class="p">,</span> <span class="n">sex</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">plural</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s">'correct transformation for '</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="s">' is '</span><span class="p">,</span> <span class="n">target_adj</span><span class="p">)</span>
-</code></pre></div></div>
-
-<p>If I want to know the correct form of <code class="highlighter-rouge">alt (old)</code> in the sentence <code class="highlighter-rouge">Er is ein (alt) Mann</code>, run this program:</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>input adjective, regular transaformation only: alt
-input article between ein, eine, kine, meine: ein
-choose sex of the non bwtween male, female, neutral: male
-choose case between nominative, dative, accusative: nominative
-input 1 for plural, 0 for non-plural:0
-correct transformation for  alt  is  alter
-</code></pre></div></div>
-<p>The result will shown in your terminal, <code class="highlighter-rouge">correct transformation for  alt  is  alter</code></p>
-
-<p>Now I have a ‘German mind’ <code class="highlighter-rouge">へ(´∀｀へ)ヨイヨイ♪(ノ´∀｀)ノヨイヨイ♪</code>.</p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/09/adjective-tranformation-in-German.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/07/tackle-cdn-loading-problem-inside-GFW.html">国内网页应用开发CDN链接被墙的应对方法</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 7, 2016</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/07/tackle-cdn-loading-problem-inside-GFW.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>自从lantern被墙,换了新的vpn以来，从google cdn, bootstrap cdn, cloudflare cdn加载资源速度变得超慢，请求CDN资源能花上半分钟，超级令人不爽(`‐●_‐´怒)。</p>
-
-<p>解决方法有：</p>
-
-<ol>
-  <li>把资源下载下来放在专门存放静态文件的文件夹中</li>
-  <li>如果网站主要面向的是国内的用户，换成国内的CDN也无妨。</li>
-  <li>vpn开成全局模式。</li>
-</ol>
-
-<p>如果国内的CDN的话可以用：</p>
-
-<ul>
-  <li>
-    <p>http://www.bootcdn.cn/ 
-流行的js库和css框架基本上都有</p>
-  </li>
-  <li>
-    <p>新浪和微软的CDN资源也很全，网上搜一搜就会有具体的资源地址</p>
-  </li>
-</ul>
-
-<p>如果还是速度很慢的话，
-一定是你家的宽带有问题啊ああああああああ (´￢O￢)</p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/10/07/tackle-cdn-loading-problem-inside-GFW.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -609,7 +636,7 @@ correct transformation for  alt  is  alter
       
       
       <a  href="tag/linux">
-      <span class="label label-default">linux ( 1 )</span>
+      <span class="label label-default">linux ( 3 )</span>
       </a><br />
 
       

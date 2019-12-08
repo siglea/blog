@@ -40,7 +40,7 @@
       <li><a href="/category/金融" class="button">金融</a></li>
       <li><a href="/category/商业" class="button">商业</a></li>
       <li><a href="/category/读书笔记" class="button">读书笔记</a></li>
-      <li><a href="/category/生活" class="button">生活</a></li>
+      <li><a href="/category/极致思考" class="button">极致思考</a></li>
     </ul>
     </div>
   </div>
@@ -53,6 +53,174 @@
       <div class="container" style="padding-left:0;padding-right:0;">
         <div class="row" style="margin-bottom:30px">
   <div class="home col-md-8">
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2018/12/26/numpy-study-notes-1.html">Numpy学习笔记</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 26, 2018</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2018/12/26/numpy-study-notes-1.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>python</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h2 id="nparray">np.array</h2>
+<ul>
+  <li>construct ndarray from python array</li>
+  <li>ndim: 返回值有几个括弧</li>
+  <li>dtype: 也是object，指定ndarray的型, 必须整个数列都是一个型的
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ndmin</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+<span class="c1"># =&gt; [[ 1.+0.j,  2.+0.j,  3.+0.j]]
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="npdtype">np.dtype</h2>
+<ul>
+  <li><code class="highlighter-rouge">dtype</code>是object而不是常数</li>
+  <li><code class="highlighter-rouge">np.int32</code>是type class，和<code class="highlighter-rouge">np.dtype</code>不同
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="ndarrayshape">ndarray.shape</h2>
+<ul>
+  <li>overwrite shape can reshape the array, reshape后维度不会变， 原来的array会被覆盖</li>
+  <li>reshape会返回新的array
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+<span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="ndarrayndim">ndarray.ndim</h2>
+<ul>
+  <li>返回维度（int）</li>
+</ul>
+
+<h2 id="新建np-array">新建np array</h2>
+<ol>
+  <li>np.empty (default dtype float 64)</li>
+  <li>np.ones (default dtype float 64)</li>
+  <li>np.zeros (default dtype float 64)
+    <ul>
+      <li>shape can be <code class="highlighter-rouge">(1, 2)</code> or <code class="highlighter-rouge">[1, 2]</code></li>
+      <li>如果只指定<code class="highlighter-rouge">int</code>，默认是<code class="highlighter-rouge">int64</code></li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="从既存的array创建">从既存的array创建</h2>
+<ul>
+  <li>原来的array和ndarray一定是两个object
+    <ol>
+      <li>np.asarray (list or tuple)</li>
+    </ol>
+  </li>
+  <li>！⚠️tuple的元素对齐返回值不同
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span> <span class="c1">#返回二元数组，dtype是int
+</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span> <span class="c1">#返回一元数组，dtype是object
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="nparange">np.arange</h2>
+<ul>
+  <li>dtype是int，输入float的时候小数点部分会被切掉</li>
+  <li><code class="highlighter-rouge">endpoint=False</code>会把最后那个数也加进去
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="nplinspace">np.linspace</h2>
+<ul>
+  <li><code class="highlighter-rouge">base</code>是log space的底，default是0（线性）
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># 起点，终点，点数
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="slice">slice</h2>
+<ol>
+  <li>use <code class="highlighter-rouge">slice</code> method
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>[start:stop:step]
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">7</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+</code></pre></div>    </div>
+    <p>二元数组的情况下</p>
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+<span class="n">a</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="c1"># =&gt; True
+</span></code></pre></div>    </div>
+  </li>
+  <li>boolean slicing
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+<span class="n">a</span><span class="p">[</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">]</span> <span class="c1"># =&gt; 返回一位数组
+</span></code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="boradcasting">boradcasting</h2>
+<ol>
+  <li>两个ndarray shape相同时，操作是element-wise</li>
+  <li>可以boardcast的情况：形状完全相同，形状(n, 1)和(n, m)的情况</li>
+</ol>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2018/12/26/numpy-study-notes-1.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2018/10/25/use-raise-error-matcher-in-rspec.html">Use `raise_error` matcher in Rspec</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 25, 2018</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2018/10/25/use-raise-error-matcher-in-rspec.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>Yesterday I came accross a tricky useage of <code class="highlighter-rouge">raise_error</code> matcher in rspec, first I try to use the one line syntax <code class="highlighter-rouge">is_expected.to</code></p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>but I got an eror which stops the test before the test is finished.</p>
+
+<p>It is confusing in the first time, because <code class="highlighter-rouge">is_expected.to</code> is shortcut for <code class="highlighter-rouge">expect(subject)</code>.</p>
+
+<p>Then I found this <a href="https://github.com/rspec/rspec-expectations/issues/805#issuecomment-112239820">excellent explanation</a> in Github isses.</p>
+
+<p>So <code class="highlighter-rouge">expect(subject)</code> is not a block, subject is executed instantly, so rspec will stop before evaluating <code class="highlighter-rouge">raise_error</code> matcher.</p>
+
+<p>In order to make it work, we can make subject itself a block</p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span> <span class="p">}</span>
+
+<span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>But this syntax is creepy, instead it’s better to use</p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span>
+
+<span class="n">expect</span> <span class="p">{</span> <span class="n">subject</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span>
+</code></pre></div></div>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2018/10/25/use-raise-error-matcher-in-rspec.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
     
     <div class="post-contents">
       <h2>
@@ -214,144 +382,6 @@
       </div>
       <div style="height:50px;">
 	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2017/03/29/configure-mailgun-setting-in-rails-app.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/06/install-shadowsocks-in-ubuntu.html">如何在ubuntu16通过终端设置shadowsocks实现科学上网</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 6, 2016</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/06/install-shadowsocks-in-ubuntu.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>给三年前买的旧笔记本重装了Ubuntu桌面版，第一件要做的事就是科学上网啦。</p>
-
-<p>┗(・o・)┛ナハ┗(・o・)┛ナハ</p>
-
-<p>shadowsocks的安装有两种方法，一是安装shadowsocks-qt5 GUI版，二是通过终端运行shadowsocks。我试过了第一种GUI安装，但是一直连不上服务器，发现输出的json配置文件格式是错误的，于是选择了第二种, 具体步骤如下:</p>
-
-<hr />
-
-<h3 id="1-下载shadowsocks">1. 下载shadowsocks</h3>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt-get update
-sudo apt-get install python-pip
-sudo apt-get install python-setuptools m2crypto
-pip install shadowsocks
-</code></pre></div></div>
-
-<p><br /></p>
-
-<h3 id="2-设置配置文件">2. 设置配置文件</h3>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
-"server":"XX.XX.XX.XX",
-"server_port":XX,
-"local_port":1080,
-"password":"your password",
-"timeout":600,
-"method":"aes-256-cfb"
-}
-</code></pre></div></div>
-
-<p><br /></p>
-
-<h3 id="3-启动shadowsocks">3. 启动shadowsocks</h3>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sslocal -c /your/path/shadowsocks.json
-</code></pre></div></div>
-
-<p>如果启动成功了可以看到如下信息(/home/momoko/shadowsocks/ss-config.json是我存放配置文件的路径)</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>INFO: loading config from /home/momoko/shadowsocks/ss-config.json
-2016-12-06 19:31:54 INFO     loading libcrypto from libcrypto.so.1.0.0
-2016-12-06 19:31:54 INFO     starting local at 127.0.0.1:1080
-</code></pre></div></div>
-
-<p><br /></p>
-
-<h3 id="4-设置浏览器">4. 设置浏览器</h3>
-
-<p>接下来需要设置浏览器，代理到shadowsocks指定端口(默认情况是1080)</p>
-
-<p>我使用的浏览器是Ubuntu下的Chromium，chrome插件本来可以在chrome商店里下载到，成功翻墙之前是进不去的。这里推荐从github上下载SwitchyOmega，里面有中文下载说明, 网址如下:</p>
-
-<p><a href="https://github.com/FelisCatus/SwitchyOmega/releases/">https://github.com/FelisCatus/SwitchyOmega/releases/</a></p>
-
-<p>还有配合GFWList的使用方法:</p>
-
-<p><a href="https://github.com/FelisCatus/SwitchyOmega/wiki/GFWList">https://github.com/FelisCatus/SwitchyOmega/wiki/GFWList</a></p>
-
-<p>下载结束之后需要设置代理选项，情景模式里选<code class="highlighter-rouge">socks 5</code>, 端口号<code class="highlighter-rouge">1080</code>，其余设置参考上述链接。</p>
-
-<table>
-  <tbody>
-    <tr>
-      <td>打开youtube或是facebook测试一下，有点小惊喜呢。┌</td>
-      <td>≧∇≦</td>
-      <td>┘</td>
-    </tr>
-  </tbody>
-</table>
-
-<p><br /></p>
-
-<h3 id="5-attention">5. Attention</h3>
-
-<p>值得注意的是，虽然浏览器可以翻墙了，但是用终端访问比如<code class="highlighter-rouge">curl www.google.com</code> 还是没有响应，这里需要安装额外的插件，我使用的是proxychains4，具体安装方法请自行搜索。如果你运行的是例如polipo全局代理的插件，在终端运行某些命令会失败（比如说<code class="highlighter-rouge">git clone</code>），这时候暂时关掉代理插件即可。</p>
-
-<p>什么？不会安装？浏览器都能翻墙了还不谷歌一下。 (￣▽￣人))　((人￣▽￣)</p>
-
-<hr />
-
-<p>自从学会科学上网，看youtube视频根本停不下来。</p>
-
-<p>へ(￣<em>￣へ)(ノ￣</em>￣)ノ パラパラ♪</p>
-
-<p>最后推荐一个颜文字网站：</p>
-
-<p><a href="http://kaomojiya.com/">http://kaomojiya.com/</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/06/install-shadowsocks-in-ubuntu.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/02/Troubleshooting-with-Installing-Broadcom-Wireless-Drivers-in-Ubuntu-Desktop.html">Troubleshooting with Installing Broadcom Wireless Drivers in Ubuntu Desktop</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 2, 2016</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/02/Troubleshooting-with-Installing-Broadcom-Wireless-Drivers-in-Ubuntu-Desktop.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>Days before, I changed the operating system of my old laptop from Windows7 to Ubuntu Desktop, I installed Ubuntu from a USB stick from my friend. After installing I found I Broadcom wireless driver wasn’t installed so I couldn’t connect to my WiFi. I tried several ways then found the solution, hope it my be helpful.</p>
-
-<p>To download the driver from Internet, you need to connect with Ethernet.</p>
-
-<p>Open Software and Update from system and configuration, open the fifth tab optional drivers and see if wireless driver comes out or not.</p>
-
-<p><img src="/img/ubuntu1.png" style="height:50%;width:50%;" /></p>
-
-<p>Make sure allowing downloading drivers from Internet is checked in the first tab Ubuntu Software.</p>
-
-<p><img src="/img/ubuntu2.png" style="height:50%;width:50%;" /></p>
-
-<p>If it still doesn’t come out, you need to manually install it from terminal, use <code class="highlighter-rouge">lspci -nn -d 14e4:</code> command to see which network card you’re using, then install the corresponding driver. <a href="http://askubuntu.com/questions/55868/installing-broadcom-wireless-drivers">http://askubuntu.com/questions/55868/installing-broadcom-wireless-drivers</a> offers an excellent guide.</p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2016/12/02/Troubleshooting-with-Installing-Broadcom-Wireless-Drivers-in-Ubuntu-Desktop.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -546,7 +576,7 @@ pip install shadowsocks
       
       
       <a  href="tag/linux">
-      <span class="label label-default">linux ( 1 )</span>
+      <span class="label label-default">linux ( 3 )</span>
       </a><br />
 
       
