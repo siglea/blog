@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>aws developer associate test CodeDeploy quick note</title>
-  <meta name="description" content="code deployintegrate with CI/CD tools as well as config management tools ansible, chef, puppet">
+  <title> Linux Op Cmd </title>
+  <meta name="description" content="CPU常用命令：top、vmstat、pidstat、sar、perf、jstack、jstat内存常用命令：top、free、vmstat、cachetop、cachestat、sar、jmap磁盘常用命令：top、iostat、vmstat、pidstat、du/df网络常用命令：netstat、sar、ds...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="https://www.fenbihui.cn/%E4%BA%92%E8%81%94%E7%BD%91/2019/02/27/aws-developer-associate-code-deploy-quick-note.html">
+  <link rel="canonical" href="https://www.fenbihui.cn/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-op-cmd.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="https://www.fenbihui.cn/feed.xml">
 </head>
 
@@ -57,72 +57,17 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">aws developer associate test CodeDeploy quick note</h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-02-27T18:00:00+08:00" itemprop="datePublished">Feb 27, 2019</time></p>
+    <h1 class="post-title" itemprop="name headline"> Linux Op Cmd </h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-04T10:25:00+08:00" itemprop="datePublished">Nov 4, 2019</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h1 id="code-deploy">code deploy</h1>
-<p>integrate with CI/CD tools as well as config management tools <code class="highlighter-rouge">ansible</code>, <code class="highlighter-rouge">chef</code>, <code class="highlighter-rouge">puppet</code></p>
+    <h4 id="cpu常用命令topvmstatpidstatsarperfjstackjstat">CPU常用命令：top、vmstat、pidstat、sar、perf、jstack、jstat</h4>
+<h4 id="内存常用命令topfreevmstatcachetopcachestatsarjmap">内存常用命令：top、free、vmstat、cachetop、cachestat、sar、jmap</h4>
+<h4 id="磁盘常用命令topiostatvmstatpidstatdudf">磁盘常用命令：top、iostat、vmstat、pidstat、du/df</h4>
+<h4 id="网络常用命令netstatsardstattcpdump">网络常用命令：netstat、sar、dstat、tcpdump</h4>
+<h4 id="应用层分析工具profilerdump分析">应用层分析工具：profiler、dump分析</h4>
 
-<h2 id="steps-to-deploy-a-project">Steps to deploy a project</h2>
-<p><img src="/img/code_deploy.png" /></p>
-
-<h2 id="deploy-methods">deploy methods</h2>
-<ol>
-  <li>inplace
-    <ul>
-      <li>as called <code class="highlighter-rouge">rolling update</code></li>
-      <li>stop the instance while updating and use other instances (capacity will be smaller)</li>
-      <li>can be used for EC2, on-premise systems, not for lambda</li>
-      <li>need redeploy for rollback</li>
-    </ul>
-  </li>
-  <li>green/blue
-    <ul>
-      <li>prepare new instances and switch traffic once deployment is done</li>
-      <li>blue is is the active deployment, green is the new release</li>
-      <li>can also be used for lambda</li>
-    </ul>
-  </li>
-</ol>
-
-<h2 id="appspec-file-to-configure-deployment">appspec file to configure deployment</h2>
-<ol>
-  <li>lambda deployment
-    <ul>
-      <li>version</li>
-      <li>resources (name and properties of lambda function)</li>
-      <li>hooks (specify when should lambda function run)
-        <ul>
-          <li>BeforeAllowTraffic</li>
-          <li>AfterAllowTraffic</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>ec2 and on premises
-    <ul>
-      <li>version</li>
-      <li>os</li>
-      <li>files (source and destination)</li>
-      <li>hooks
-        <ul>
-          <li>ApplicationStop (Gracefully stio the app for the new verion)</li>
-          <li>DownloadBundle (CD agent copies revision files to a temporary location)</li>
-          <li>BeforeInstall (e.g backing up current revision, decrypting files)</li>
-          <li>Install (copy revision files from temp to correct location)</li>
-          <li>After install (e.g config tasks, change permission)</li>
-          <li>ApplicationStart</li>
-          <li>ValidateService (tests)</li>
-          <li>BeforeBlockTraffic (tasks before deregistering from load balancer)</li>
-          <li>BlockTraffic (deregister instances from load balancer)</li>
-          <li>AfterBlockTraffic (tasks after deregistering from load balancer)</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ol>
 
   </div>
 </article>

@@ -14,8 +14,8 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2016/11/12/simple-functional-programming-in-Ruby-and-Javascript.html">
-  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+  <link rel="canonical" href="https://www.fenbihui.cn/%E4%BA%92%E8%81%94%E7%BD%91/2016/11/12/simple-functional-programming-in-Ruby-and-Javascript.html">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="https://www.fenbihui.cn/feed.xml">
 </head>
 
   <script>
@@ -77,9 +77,9 @@
 
 <p>In Javascript, <code class="highlighter-rouge">map</code> accepts another function as a parameter, here is an example:</p>
 
-<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="dl">'</span><span class="s1">m</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">o</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">n</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">k</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">e</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">y</span><span class="dl">'</span><span class="p">];</span>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'m'</span><span class="p">,</span> <span class="s1">'o'</span><span class="p">,</span> <span class="s1">'n'</span><span class="p">,</span> <span class="s1">'k'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">];</span>
 <span class="kd">var</span> <span class="nx">arr2</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">1</span><span class="dl">'</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="s1">'1'</span><span class="p">;</span>
 <span class="p">});</span>
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arr2</span><span class="p">);</span> 
 <span class="c1">// [ 'm1', 'o1', 'n1', 'k1', 'e1', 'y1' ]</span>
@@ -87,8 +87,8 @@
 
 <p>In ES6, you can also do this with arrow function, which is much similar to Ruby way:</p>
 
-<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="dl">'</span><span class="s1">m</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">o</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">n</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">k</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">e</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">y</span><span class="dl">'</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">arr2</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">x</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">x</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">1</span><span class="dl">'</span><span class="p">);</span>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'m'</span><span class="p">,</span> <span class="s1">'o'</span><span class="p">,</span> <span class="s1">'n'</span><span class="p">,</span> <span class="s1">'k'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">arr2</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">x</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">x</span> <span class="o">+</span> <span class="s1">'1'</span><span class="p">);</span>
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arr2</span><span class="p">);</span>
 <span class="c1">// [ 'm1', 'o1', 'n1', 'k1', 'e1', 'y1' ]</span>
 </code></pre></div></div>
