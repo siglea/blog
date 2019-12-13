@@ -11,18 +11,47 @@ categories:
 
 #### 索引原理(B+Tree)
 - Tree -> BelanceTree -> B+Tree
-http://www.sohu.com/a/280609547_818692
-https://www.jianshu.com/p/0371c9569736
-https://www.cnblogs.com/tiancai/p/9024351.html
+<http://www.sohu.com/a/280609547_818692>
+
+<https://www.jianshu.com/p/0371c9569736>
+
+<https://www.cnblogs.com/tiancai/p/9024351.html>
 #### 查询优化
-https://www.jianshu.com/p/efaa9005a598
-https://www.jb51.net/article/136701.htm
-https://www.cnblogs.com/houss/p/10598901.html
+<https://www.jianshu.com/p/efaa9005a598>
+
+<https://www.jb51.net/article/136701.htm>
+
+<https://www.cnblogs.com/houss/p/10598901.html>
 #### 常用指标
-- QPS Connection
+- QPS   (2w/s与机器配置及数据量有关)
+- TPS   (1w/s)
+- 并发数
+- 连接数
+- 缓存命中率
+- 慢查询
+```
+slow_query_log=on
+slow_query_log_file=存放目录
+long_query_time=0.1秒
+log_queries_not_using_indexes=on
+```
+- 主从延迟 
+```
+show slave status;
+Seconds_Behind_Master
+```
+- 死锁
+```
+set global innodb_print_all_deadlocks=on; 
+```
 
-#### Mysql WAL技术
+#### Mysql WAL技术 Write-Ahead Logging
+在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
+在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
+为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
+还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。
 
+<https://www.cnblogs.com/hzmark/p/wal.html>
 #### Mysql主从同步
 
 #### InnoDB MyISAM

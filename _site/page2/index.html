@@ -14,8 +14,8 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="https://www.fenbihui.cn/page2/">
-  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="https://www.fenbihui.cn/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/page2/">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
   <script>
@@ -297,21 +297,51 @@
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
 	<h4 id="索引原理btree">索引原理(B+Tree)</h4>
 <ul>
-  <li>Tree -&gt; BelanceTree -&gt; B+Tree
-http://www.sohu.com/a/280609547_818692
-https://www.jianshu.com/p/0371c9569736
-https://www.cnblogs.com/tiancai/p/9024351.html
-    <h4 id="查询优化">查询优化</h4>
-    <p>https://www.jianshu.com/p/efaa9005a598
-https://www.jb51.net/article/136701.htm
-https://www.cnblogs.com/houss/p/10598901.html</p>
-    <h4 id="常用指标">常用指标</h4>
+  <li>Tree -&gt; BelanceTree -&gt; B+Tree</li>
+</ul>
+<p><a href="http://www.sohu.com/a/280609547_818692">http://www.sohu.com/a/280609547_818692</a></p>
+
+<p><a href="https://www.jianshu.com/p/0371c9569736">https://www.jianshu.com/p/0371c9569736</a></p>
+
+<p><a href="https://www.cnblogs.com/tiancai/p/9024351.html">https://www.cnblogs.com/tiancai/p/9024351.html</a></p>
+<h4 id="查询优化">查询优化</h4>
+<p><a href="https://www.jianshu.com/p/efaa9005a598">https://www.jianshu.com/p/efaa9005a598</a></p>
+
+<p><a href="https://www.jb51.net/article/136701.htm">https://www.jb51.net/article/136701.htm</a></p>
+
+<p><a href="https://www.cnblogs.com/houss/p/10598901.html">https://www.cnblogs.com/houss/p/10598901.html</a></p>
+<h4 id="常用指标">常用指标</h4>
+<ul>
+  <li>QPS   (2w/s与机器配置及数据量有关)</li>
+  <li>TPS   (1w/s)</li>
+  <li>并发数</li>
+  <li>连接数</li>
+  <li>缓存命中率</li>
+  <li>慢查询
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>slow_query_log=on
+slow_query_log_file=存放目录
+long_query_time=0.1秒
+log_queries_not_using_indexes=on
+</code></pre></div>    </div>
   </li>
-  <li>QPS Connection</li>
+  <li>主从延迟
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show slave status;
+Seconds_Behind_Master
+</code></pre></div>    </div>
+  </li>
+  <li>死锁
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set global innodb_print_all_deadlocks=on; 
+</code></pre></div>    </div>
+  </li>
 </ul>
 
-<h4 id="mysql-wal技术">Mysql WAL技术</h4>
+<h4 id="mysql-wal技术-write-ahead-logging">Mysql WAL技术 Write-Ahead Logging</h4>
+<p>在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
+在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
+为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
+还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。</p>
 
+<p><a href="https://www.cnblogs.com/hzmark/p/wal.html">https://www.cnblogs.com/hzmark/p/wal.html</a></p>
 <h4 id="mysql主从同步">Mysql主从同步</h4>
 
 <h4 id="innodb-myisam">InnoDB MyISAM</h4>
