@@ -11,17 +11,16 @@ categories:
 
 #### 索引原理(B+Tree)
 - Tree -> BelanceTree -> B+Tree
-<http://www.sohu.com/a/280609547_818692>
+    - <http://www.sohu.com/a/280609547_818692>
+    - <https://www.jianshu.com/p/0371c9569736>
+    - <https://www.cnblogs.com/tiancai/p/9024351.html>
 
-<https://www.jianshu.com/p/0371c9569736>
+#### 各种优化
+- <https://www.jianshu.com/p/efaa9005a598>
+- <https://www.jb51.net/article/136701.htm>
+- <https://www.cnblogs.com/houss/p/10598901.html>
+- <https://coolshell.cn/articles/1846.html>
 
-<https://www.cnblogs.com/tiancai/p/9024351.html>
-#### 查询优化
-<https://www.jianshu.com/p/efaa9005a598>
-
-<https://www.jb51.net/article/136701.htm>
-
-<https://www.cnblogs.com/houss/p/10598901.html>
 #### 常用指标
 - QPS   (2w/s与机器配置及数据量有关)
 - TPS   (1w/s)
@@ -46,16 +45,43 @@ set global innodb_print_all_deadlocks=on;
 ```
 
 #### Mysql WAL技术 Write-Ahead Logging
-在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
-在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
-为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
-还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。
+    
+   在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
+   在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
+   为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
+   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。
+    
+   <https://www.cnblogs.com/hzmark/p/wal.html>
 
-<https://www.cnblogs.com/hzmark/p/wal.html>
-#### Mysql主从同步
+#### InnoDB与MyISAM(Index Sequence Access Method)
+- 核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
+  MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
+    - <https://www.jianshu.com/p/db334404d909>
+    - <https://blog.csdn.net/w2064004678/article/details/83012387>
+- 索引结构不同
+    - <https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew>    
+- 其他不同
+    - <https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg>
+    - <https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A>
 
-#### InnoDB MyISAM
+#### FAQ
+- 问题：INT(M)中M究竟有何用？
 
-#### mysql + keepalived实现双高可用
+    int类型占四个字节，一个字节8比特位，也就是4*8=32比特位，可以表示的数字个数是2的32次方个(2^32)。声明一个int类型的数据，长度便已经固定，那么这个M究竟有何用？
+    结论：INT(M)中的M与数据存储长度没有关系，只是标识数据显示长度，在显示时不足无数会自动填充0进行补齐，必须配合AutoFill使用。
 
+- MySQL 中 InnoDB 引擎的行锁是通过加在什么上完成(或称实现) 的?
+
+    InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。
+    InnoDB 这 种行锁实现特点意味着:只有通过索引条件检索数据，InnoDB 才使用行级 锁，否则，InnoDB 将使用表锁!
+
+
+https://blog.csdn.net/bluetjs/article/details/52936943
+#### 其他
+- Mysql主从同步 <https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw>
+- Mysql+Keepalived实现双高可用 <https://www.cnblogs.com/kevingrace/p/6710136.html>
+- PROCEDURE ANALYSE 
+- 全文索引
+- 分区表 <https://www.jianshu.com/p/b61d767f4ff5>
+    
 [数据库规范](https://database.51cto.com/art/201910/604128.htm)

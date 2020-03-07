@@ -29,6 +29,7 @@ https://mp.weixin.qq.com/s?src=11&timestamp=1579746373&ver=2113&signature=y0yfrE
 https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6
 
 12306
+<http://www.52im.net/forum.php?mod=viewthread&tid=2771&ctid=22>
 
 微博
 <https://www.cnblogs.com/shanyou/p/5048099.html>

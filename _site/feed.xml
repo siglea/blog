@@ -5,8 +5,8 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 12 Jan 2020 17:35:28 +0800</pubDate>
-    <lastBuildDate>Sun, 12 Jan 2020 17:35:28 +0800</lastBuildDate>
+    <pubDate>Sat, 07 Mar 2020 23:41:35 +0800</pubDate>
+    <lastBuildDate>Sat, 07 Mar 2020 23:41:35 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -331,19 +331,23 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
         <title>DB Mysql</title>
         <description>&lt;h4 id=&quot;索引原理btree&quot;&gt;索引原理(B+Tree)&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;Tree -&amp;gt; BelanceTree -&amp;gt; B+Tree&lt;/li&gt;
+  &lt;li&gt;Tree -&amp;gt; BelanceTree -&amp;gt; B+Tree
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;http://www.sohu.com/a/280609547_818692&quot;&gt;http://www.sohu.com/a/280609547_818692&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/0371c9569736&quot;&gt;https://www.jianshu.com/p/0371c9569736&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/tiancai/p/9024351.html&quot;&gt;https://www.cnblogs.com/tiancai/p/9024351.html&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;http://www.sohu.com/a/280609547_818692&quot;&gt;http://www.sohu.com/a/280609547_818692&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/0371c9569736&quot;&gt;https://www.jianshu.com/p/0371c9569736&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&quot;各种优化&quot;&gt;各种优化&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/efaa9005a598&quot;&gt;https://www.jianshu.com/p/efaa9005a598&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.jb51.net/article/136701.htm&quot;&gt;https://www.jb51.net/article/136701.htm&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/houss/p/10598901.html&quot;&gt;https://www.cnblogs.com/houss/p/10598901.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://coolshell.cn/articles/1846.html&quot;&gt;https://coolshell.cn/articles/1846.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/tiancai/p/9024351.html&quot;&gt;https://www.cnblogs.com/tiancai/p/9024351.html&lt;/a&gt;&lt;/p&gt;
-&lt;h4 id=&quot;查询优化&quot;&gt;查询优化&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/efaa9005a598&quot;&gt;https://www.jianshu.com/p/efaa9005a598&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.jb51.net/article/136701.htm&quot;&gt;https://www.jb51.net/article/136701.htm&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/houss/p/10598901.html&quot;&gt;https://www.cnblogs.com/houss/p/10598901.html&lt;/a&gt;&lt;/p&gt;
 &lt;h4 id=&quot;常用指标&quot;&gt;常用指标&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;QPS   (2w/s与机器配置及数据量有关)&lt;/li&gt;
@@ -370,17 +374,60 @@ Seconds_Behind_Master
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;mysql-wal技术-write-ahead-logging&quot;&gt;Mysql WAL技术 Write-Ahead Logging&lt;/h4&gt;
+
 &lt;p&gt;在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
-在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
-为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
-还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。&lt;/p&gt;
+   在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
+   为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
+   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/hzmark/p/wal.html&quot;&gt;https://www.cnblogs.com/hzmark/p/wal.html&lt;/a&gt;&lt;/p&gt;
-&lt;h4 id=&quot;mysql主从同步&quot;&gt;Mysql主从同步&lt;/h4&gt;
 
-&lt;h4 id=&quot;innodb-myisam&quot;&gt;InnoDB MyISAM&lt;/h4&gt;
+&lt;h4 id=&quot;innodb与myisamindex-sequence-access-method&quot;&gt;InnoDB与MyISAM(Index Sequence Access Method)&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
+MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/db334404d909&quot;&gt;https://www.jianshu.com/p/db334404d909&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/w2064004678/article/details/83012387&quot;&gt;https://blog.csdn.net/w2064004678/article/details/83012387&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;索引结构不同
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew&quot;&gt;https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;其他不同
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg&quot;&gt;https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A&quot;&gt;https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;h4 id=&quot;mysql--keepalived实现双高可用&quot;&gt;mysql + keepalived实现双高可用&lt;/h4&gt;
+&lt;h4 id=&quot;faq&quot;&gt;FAQ&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;问题：INT(M)中M究竟有何用？&lt;/p&gt;
+
+    &lt;p&gt;int类型占四个字节，一个字节8比特位，也就是4*8=32比特位，可以表示的数字个数是2的32次方个(2^32)。声明一个int类型的数据，长度便已经固定，那么这个M究竟有何用？
+  结论：INT(M)中的M与数据存储长度没有关系，只是标识数据显示长度，在显示时不足无数会自动填充0进行补齐，必须配合AutoFill使用。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;MySQL 中 InnoDB 引擎的行锁是通过加在什么上完成(或称实现) 的?&lt;/p&gt;
+
+    &lt;p&gt;InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。
+  InnoDB 这 种行锁实现特点意味着:只有通过索引条件检索数据，InnoDB 才使用行级 锁，否则，InnoDB 将使用表锁!&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;其他&quot;&gt;其他&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Mysql主从同步 &lt;a href=&quot;https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw&quot;&gt;https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Mysql+Keepalived实现双高可用 &lt;a href=&quot;https://www.cnblogs.com/kevingrace/p/6710136.html&quot;&gt;https://www.cnblogs.com/kevingrace/p/6710136.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;PROCEDURE ANALYSE&lt;/li&gt;
+  &lt;li&gt;全文索引&lt;/li&gt;
+  &lt;li&gt;分区表 &lt;a href=&quot;https://www.jianshu.com/p/b61d767f4ff5&quot;&gt;https://www.jianshu.com/p/b61d767f4ff5&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://database.51cto.com/art/201910/604128.htm&quot;&gt;数据库规范&lt;/a&gt;&lt;/p&gt;
 </description>
