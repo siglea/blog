@@ -56,32 +56,61 @@ set global innodb_print_all_deadlocks=on;
 #### InnoDB与MyISAM(Index Sequence Access Method)
 - 核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
   MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
-    - <https://www.jianshu.com/p/db334404d909>
+    - 4个隔离级别透彻分析 <https://www.jianshu.com/p/db334404d909>
     - <https://blog.csdn.net/w2064004678/article/details/83012387>
 - 索引结构不同
     - <https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew>    
 - 其他不同
     - <https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg>
     - <https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A>
+- 引擎不同的几个方面：Storage mechanism、Locking levels、Indexing、Capabilities and functions
 
 #### FAQ
 - 问题：INT(M)中M究竟有何用？
 
     int类型占四个字节，一个字节8比特位，也就是4*8=32比特位，可以表示的数字个数是2的32次方个(2^32)。声明一个int类型的数据，长度便已经固定，那么这个M究竟有何用？
     结论：INT(M)中的M与数据存储长度没有关系，只是标识数据显示长度，在显示时不足无数会自动填充0进行补齐，必须配合AutoFill使用。
-
 - MySQL 中 InnoDB 引擎的行锁是通过加在什么上完成(或称实现) 的?
 
     InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。
     InnoDB 这 种行锁实现特点意味着:只有通过索引条件检索数据，InnoDB 才使用行级 锁，否则，InnoDB 将使用表锁!
+- 各种锁 
+    - 本质都为了实现数据一致性及各种事务控制
+    - 悲观锁：读取数据时就加锁排他
+    - 乐观锁：读取数据不加锁，更新时处理（比如版本号机制、CAS compare and swap算法）
+    - 共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁
+        <https://www.jianshu.com/p/c456f726e9c7>
+- 数据库三范式
+    - 表中的每个字段不可分割
+    - 表都需要有主键
+    - 字段不能出现在多个表中，有时为了查询效率也冗余个别字段
+- 一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?
+    
+    (1)如果表的类型是 MyISAM，那么是 18
+        因为 MyISAM 表会把自增主键的最大 ID 记录到数据文件里，重启 MySQL 自增主键的最大 ID 也不会丢失
+    (2)如果表的类型是 InnoDB，那么是 15
+        InnoDB 表只是把自增主键的最大 ID 记录到内存中，所以重启数据库或者是对表进行 OPTIMIZE 操作，都会导致最大 ID 丢失
+- 如何区分 FLOAT 和 DOUBLE?
+    
+    以下是 FLOAT 和 DOUBLE 的区别:
+    浮点数以 8 位精度存储在 FLOAT 中，并且有四个字节。 浮点数存储在 DOUBLE 中，精度为 18 位，有八个字节。
+- 区分 CHAR_LENGTH 和 LENGTH?
+    
+    CHAR_LENGTH 是字符数，而 LENGTH 是字节数。Latin 字符的这两个数据是相同的，但是对 于 Unicode 和其他编码，它们是不同的。
+- federated 表是什么?
+    
+    federated 表，允许访问位于其他服务器数据库上的表。
+    <https://blog.csdn.net/qq_33578833/article/details/80177115>
+    
+- 可以使用多少列创建索引?
 
-
-https://blog.csdn.net/bluetjs/article/details/52936943
+    任何标准表最多可以创建 16 个索引列。
 #### 其他
 - Mysql主从同步 <https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw>
 - Mysql+Keepalived实现双高可用 <https://www.cnblogs.com/kevingrace/p/6710136.html>
 - PROCEDURE ANALYSE 
 - 全文索引
 - 分区表 <https://www.jianshu.com/p/b61d767f4ff5>
-    
+- UTF-8编码占几个字节 <https://blog.csdn.net/bluetjs/article/details/52936943>
+
 [数据库规范](https://database.51cto.com/art/201910/604128.htm)

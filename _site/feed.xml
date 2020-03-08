@@ -5,8 +5,8 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 07 Mar 2020 23:41:35 +0800</pubDate>
-    <lastBuildDate>Sat, 07 Mar 2020 23:41:35 +0800</lastBuildDate>
+    <pubDate>Sun, 08 Mar 2020 12:44:56 +0800</pubDate>
+    <lastBuildDate>Sun, 08 Mar 2020 12:44:56 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -387,7 +387,7 @@ Seconds_Behind_Master
   &lt;li&gt;核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
 MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
     &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/db334404d909&quot;&gt;https://www.jianshu.com/p/db334404d909&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;4个隔离级别透彻分析 &lt;a href=&quot;https://www.jianshu.com/p/db334404d909&quot;&gt;https://www.jianshu.com/p/db334404d909&lt;/a&gt;&lt;/li&gt;
       &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/w2064004678/article/details/83012387&quot;&gt;https://blog.csdn.net/w2064004678/article/details/83012387&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
@@ -402,6 +402,7 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
       &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A&quot;&gt;https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
+  &lt;li&gt;引擎不同的几个方面：Storage mechanism、Locking levels、Indexing、Capabilities and functions&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;faq&quot;&gt;FAQ&lt;/h4&gt;
@@ -418,15 +419,59 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
     &lt;p&gt;InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。
   InnoDB 这 种行锁实现特点意味着:只有通过索引条件检索数据，InnoDB 才使用行级 锁，否则，InnoDB 将使用表锁!&lt;/p&gt;
   &lt;/li&gt;
-&lt;/ul&gt;
+  &lt;li&gt;各种锁
+    &lt;ul&gt;
+      &lt;li&gt;本质都为了实现数据一致性及各种事务控制&lt;/li&gt;
+      &lt;li&gt;悲观锁：读取数据时就加锁排他&lt;/li&gt;
+      &lt;li&gt;乐观锁：读取数据不加锁，更新时处理（比如版本号机制、CAS compare and swap算法）&lt;/li&gt;
+      &lt;li&gt;共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁
+  &lt;a href=&quot;https://www.jianshu.com/p/c456f726e9c7&quot;&gt;https://www.jianshu.com/p/c456f726e9c7&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;数据库三范式
+    &lt;ul&gt;
+      &lt;li&gt;表中的每个字段不可分割&lt;/li&gt;
+      &lt;li&gt;表都需要有主键&lt;/li&gt;
+      &lt;li&gt;字段不能出现在多个表中，有时为了查询效率也冗余个别字段&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?&lt;/p&gt;
 
-&lt;h4 id=&quot;其他&quot;&gt;其他&lt;/h4&gt;
-&lt;ul&gt;
+    &lt;p&gt;(1)如果表的类型是 MyISAM，那么是 18
+      因为 MyISAM 表会把自增主键的最大 ID 记录到数据文件里，重启 MySQL 自增主键的最大 ID 也不会丢失
+  (2)如果表的类型是 InnoDB，那么是 15
+      InnoDB 表只是把自增主键的最大 ID 记录到内存中，所以重启数据库或者是对表进行 OPTIMIZE 操作，都会导致最大 ID 丢失&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;如何区分 FLOAT 和 DOUBLE?&lt;/p&gt;
+
+    &lt;p&gt;以下是 FLOAT 和 DOUBLE 的区别:
+  浮点数以 8 位精度存储在 FLOAT 中，并且有四个字节。 浮点数存储在 DOUBLE 中，精度为 18 位，有八个字节。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;区分 CHAR_LENGTH 和 LENGTH?&lt;/p&gt;
+
+    &lt;p&gt;CHAR_LENGTH 是字符数，而 LENGTH 是字节数。Latin 字符的这两个数据是相同的，但是对 于 Unicode 和其他编码，它们是不同的。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;federated 表是什么?&lt;/p&gt;
+
+    &lt;p&gt;federated 表，允许访问位于其他服务器数据库上的表。
+  &lt;a href=&quot;https://blog.csdn.net/qq_33578833/article/details/80177115&quot;&gt;https://blog.csdn.net/qq_33578833/article/details/80177115&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;可以使用多少列创建索引?&lt;/p&gt;
+
+    &lt;p&gt;任何标准表最多可以创建 16 个索引列。&lt;/p&gt;
+    &lt;h4 id=&quot;其他&quot;&gt;其他&lt;/h4&gt;
+  &lt;/li&gt;
   &lt;li&gt;Mysql主从同步 &lt;a href=&quot;https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw&quot;&gt;https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Mysql+Keepalived实现双高可用 &lt;a href=&quot;https://www.cnblogs.com/kevingrace/p/6710136.html&quot;&gt;https://www.cnblogs.com/kevingrace/p/6710136.html&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;PROCEDURE ANALYSE&lt;/li&gt;
   &lt;li&gt;全文索引&lt;/li&gt;
   &lt;li&gt;分区表 &lt;a href=&quot;https://www.jianshu.com/p/b61d767f4ff5&quot;&gt;https://www.jianshu.com/p/b61d767f4ff5&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;UTF-8编码占几个字节 &lt;a href=&quot;https://blog.csdn.net/bluetjs/article/details/52936943&quot;&gt;https://blog.csdn.net/bluetjs/article/details/52936943&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://database.51cto.com/art/201910/604128.htm&quot;&gt;数据库规范&lt;/a&gt;&lt;/p&gt;
