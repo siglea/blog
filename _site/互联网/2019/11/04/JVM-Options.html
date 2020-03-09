@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title> Java 参数 </title>
-  <meta name="description" content="java 参数https://blog.csdn.net/liyongbing1122/article/details/88716400JVM GC的选择：选择 G1还是 CMS？">
+  <title> Jvm垃圾回收与调优 </title>
+  <meta name="description" content="GC的收集算法  标记-复制，待回收对象较多，适用于新生代  标记-清除  标记-压缩">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -57,16 +57,59 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline"> Java 参数 </h1>
+    <h1 class="post-title" itemprop="name headline"> Jvm垃圾回收与调优 </h1>
     <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-04T10:25:00+08:00" itemprop="datePublished">Nov 4, 2019</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="java-参数">java 参数</h4>
-<p>https://blog.csdn.net/liyongbing1122/article/details/88716400
-JVM GC的选择：选择 G1还是 CMS？</p>
+    <h4 id="gc的收集算法">GC的收集算法</h4>
+<ul>
+  <li>标记-复制，待回收对象较多，适用于新生代</li>
+  <li>标记-清除</li>
+  <li>标记-压缩</li>
+</ul>
 
-<p>https://mp.weixin.qq.com/s/oDeO8Td-SJn9g4mRygqtSw</p>
+<h4 id="分代为了更高效的区别回收g1的分区region也是为了发挥多核并发优势">分代（为了更高效的区别回收，G1的分区region也是为了发挥多核并发优势）</h4>
+<ul>
+  <li>Young Generation
+  Eden 伊甸园
+  Survivor 幸存者（from/to，S0/S1)</li>
+  <li>Tenured/Old Generation</li>
+  <li>Permanent Generation (Java8之前）</li>
+  <li>Metaspace (Java8之后）</li>
+</ul>
+
+<h5 id="参考">参考</h5>
+<p>JVM的4种垃圾回收算法、垃圾回收机制与总结 <a href="https://zhuanlan.zhihu.com/p/54851319">https://zhuanlan.zhihu.com/p/54851319</a></p>
+
+<h4 id="gc收集器">GC收集器</h4>
+<ul>
+  <li>Serial（串行）收集器</li>
+  <li>Parallel（并行）收集器</li>
+  <li>CMS（并发）收集器</li>
+  <li>G1（并发）收集器</li>
+  <li>JDK11的ZGC <a href="https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw">https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw</a></li>
+</ul>
+
+<h5 id="参考-1">参考</h5>
+<ul>
+  <li>7种JVM垃圾收集器特点，优劣势、及使用场景 <a href="https://zhuanlan.zhihu.com/p/58896728">https://zhuanlan.zhihu.com/p/58896728</a>
+  <a href="http://blog.itpub.net/69917606/viewspace-2656882">http://blog.itpub.net/69917606/viewspace-2656882</a></li>
+  <li>深入详解JVM内存模型与JVM参数详细配置 <a href="https://zhuanlan.zhihu.com/p/58896619">https://zhuanlan.zhihu.com/p/58896619</a></li>
+  <li>JVM性能调优的6大步骤，及关键调优参数详解 <a href="https://zhuanlan.zhihu.com/p/58897189">https://zhuanlan.zhihu.com/p/58897189</a></li>
+  <li>深入剖析JVM：G1收集器+回收流程+推荐用例 <a href="https://zhuanlan.zhihu.com/p/59861022">https://zhuanlan.zhihu.com/p/59861022</a></li>
+</ul>
+
+<h4 id="java-参数">java 参数</h4>
+
+<p>查看JVM使用的默认的垃圾收集器 https://www.cnblogs.com/grey-wolf/p/9217497.html</p>
+
+<p>JVM 参数 https://blog.csdn.net/liyongbing1122/article/details/88716400</p>
+
+<p>关于JVM收集器讲的不错
+https://mp.weixin.qq.com/s/1uVK5qL1g1l9ybAB7mwQNw</p>
+
+<p>逃逸分析</p>
 
   </div>
 </article>
