@@ -5,9 +5,118 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 10 Mar 2020 22:23:17 +0800</pubDate>
-    <lastBuildDate>Tue, 10 Mar 2020 22:23:17 +0800</lastBuildDate>
+    <pubDate>Thu, 12 Mar 2020 23:46:09 +0800</pubDate>
+    <lastBuildDate>Thu, 12 Mar 2020 23:46:09 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>Docker</title>
+        <description>&lt;h4 id=&quot;docker-hello-world&quot;&gt;Docker Hello World!&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run hello-world
+docker run ubuntu:15.10 /bin/echo &lt;span class=&quot;s2&quot;&gt;&quot;Hello world&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h4 id=&quot;查看运行的容器&quot;&gt;查看运行的容器&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker ps
+docker ps &lt;span class=&quot;nt&quot;&gt;-a&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 输出详情介绍：&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;## CONTAINER ID: 容器 ID。&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;## IMAGE: 使用的镜像。&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;## COMMAND: 启动容器时运行的命令。&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;## CREATED: 容器的创建时间。&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;## STATUS: 容器状态。&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;## 状态有7种：&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;### created（已创建）&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;### restarting（重启中）&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;### running（运行中）&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;### removing（迁移中）&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;### paused（暂停）&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;### exited（停止）&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;### dead（死亡）&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;## PORTS: 容器的端口信息和使用的连接类型（tcp\udp）。&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;## NAMES: 自动分配的容器名称。&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h4 id=&quot;查看容器内的标准输出日志&quot;&gt;查看容器内的标准输出日志&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker logs 2b1b7a428627
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h4 id=&quot;启动重启停止容器&quot;&gt;启动/重启/停止容器&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker start/restart amazing_cori
+docker stop 2b1b7a428627
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h4 id=&quot;compose-machine-swarm&quot;&gt;Compose Machine Swarm&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker start/restart amazing_cori
+docker stop 2b1b7a428627
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Thu, 12 Mar 2020 22:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/12/Docker.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/12/Docker.html</guid>
+        
+        <category>Docker</category>
+        
+        
+        <category>互联网</category>
+        
+      </item>
+    
+      <item>
+        <title> 主流互联网公司系统概况及指标 </title>
+        <description>&lt;h4 id=&quot;微信&quot;&gt;微信&lt;/h4&gt;
+
+&lt;h4 id=&quot;淘宝&quot;&gt;淘宝&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;2018年双11 交易创建30万QPS&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw&quot;&gt;https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;2019年双11 交易峰值54.5万笔/秒&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ&quot;&gt;https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;阿里巴巴双11千万级实时监控系统技术揭秘&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q&quot;&gt;https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;2019双11，支付宝有哪些“秘密武器”&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g&quot;&gt;https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;诺亚 (Noah) 自适应流控&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6&quot;&gt;https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;12306&quot;&gt;12306&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=2771&amp;amp;ctid=22&quot;&gt;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=2771&amp;amp;ctid=22&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;微博&quot;&gt;微博&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/shanyou/p/5048099.html&quot;&gt;https://www.cnblogs.com/shanyou/p/5048099.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;唯品会&quot;&gt;唯品会&lt;/h4&gt;
+&lt;p&gt;唯品会OSP 微服务架构
+用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力
+&lt;a href=&quot;https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ&quot;&gt;https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;达达&quot;&gt;达达&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/67b710267d10&quot;&gt;https://www.jianshu.com/p/67b710267d10&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;指标概述&quot;&gt;指标概述&lt;/h4&gt;
+&lt;p&gt;https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA&lt;/p&gt;
+</description>
+        <pubDate>Fri, 03 Jan 2020 10:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/01/03/IndexOfSystem.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/01/03/IndexOfSystem.html</guid>
+        
+        <category>linux</category>
+        
+        
+        <category>互联网</category>
+        
+      </item>
     
       <item>
         <title>卧底经济学</title>
@@ -481,45 +590,6 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
         <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Mysql.html</guid>
         
         <category>mysql DB</category>
-        
-        
-        <category>互联网</category>
-        
-      </item>
-    
-      <item>
-        <title>一致性算法</title>
-        <description>&lt;p&gt;强一致性的2PC、3PC、Paxos、Raft、Zab；&lt;/p&gt;
-
-&lt;p&gt;https://www.cnblogs.com/think90/p/11443428.html&lt;/p&gt;
-</description>
-        <pubDate>Tue, 12 Nov 2019 10:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/ConsistencyAlgorithm.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/ConsistencyAlgorithm.html</guid>
-        
-        <category>算法</category>
-        
-        
-        <category>互联网</category>
-        
-      </item>
-    
-      <item>
-        <title>NoSQL-NewSQL</title>
-        <description>&lt;h4 id=&quot;redis&quot;&gt;Redis&lt;/h4&gt;
-
-&lt;h4 id=&quot;mongo&quot;&gt;Mongo&lt;/h4&gt;
-
-&lt;h4 id=&quot;cassandra&quot;&gt;Cassandra&lt;/h4&gt;
-
-&lt;h4 id=&quot;leveldbrocksdb&quot;&gt;Leveldb、Rocksdb、&lt;/h4&gt;
-&lt;h4 id=&quot;tidbtair&quot;&gt;TiDB、Tair&lt;/h4&gt;
-</description>
-        <pubDate>Tue, 12 Nov 2019 10:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NoSQL-NewSQL.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NoSQL-NewSQL.html</guid>
-        
-        <category>newSQL NoSQL</category>
         
         
         <category>互联网</category>

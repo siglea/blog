@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title> Linux  Cmd </title>
-  <meta name="description" content="系统负载查看命令top```shelltopm键:切换内存使用率进度条模式">
+  <title>NIO-BIO-AIO</title>
+  <meta name="description" content="">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html">
+  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/NIO-BIO-AIO.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -57,43 +57,12 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline"> Linux  Cmd </h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-04T10:25:00+08:00" itemprop="datePublished">Nov 4, 2019</time></p>
+    <h1 class="post-title" itemprop="name headline">NIO-BIO-AIO</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-12T10:25:00+08:00" itemprop="datePublished">Nov 12, 2019</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="系统负载查看命令top">系统负载查看命令top</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>top
-<span class="c"># m键:切换内存使用率进度条模式</span>
-
-<span class="c"># N:根据pid大小进行排序</span>
-<span class="c"># M:根据驻留内存大小进行排序</span>
-<span class="c"># P:根据CPU使用百分比大小进行排序</span>
-<span class="c"># T:根据时间/累计时间进行排序</span>
-</code></pre></div></div>
-<h4 id="内存查看命令free">内存查看命令free</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>free <span class="nt">-h</span>
-<span class="c">#free命令信息来自 cat /proc/meminfo</span>
-</code></pre></div></div>
-<h4 id="磁盘查看命令df">磁盘查看命令df</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">df</span> <span class="nt">-h</span>
-</code></pre></div></div>
-<h4 id="目录文件大小查看命令du">目录文件大小查看命令du</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">du</span>
-<span class="c"># 只显示当前目录下面的子目录的目录大小和当前目录的总的大小</span>
-
-<span class="nb">du</span>  <span class="nt">-sh</span>
-<span class="c"># 查看当前目录总大小</span>
-
-<span class="nb">du</span>  <span class="nt">-sh</span> ./<span class="k">*</span> 
-<span class="nb">du</span> <span class="nt">-h</span>  <span class="nt">--max-depth</span><span class="o">=</span>1
-<span class="c"># 查看当前目录各个文件大小</span>
-</code></pre></div></div>
-
-<h4 id="systemctl-supervisor-crontab-service-systemmd">systemctl supervisor crontab service systemmd</h4>
-
-<h4 id="curl-wget-sed-awk-ps">curl wget sed awk ps</h4>
-
+    
 
   </div>
 </article>

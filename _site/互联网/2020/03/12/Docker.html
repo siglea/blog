@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title> Index Of System </title>
-  <meta name="description" content="微信">
+  <title>Docker</title>
+  <meta name="description" content="Docker Hello World!docker run hello-worlddocker run ubuntu:15.10 /bin/echo "Hello world"查看运行的容器```shelldocker psdocker ps -a输出详情介绍：CONTAINER ID: 容器 ID。IMAGE:...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/01/03/IndexOfSystem.html">
+  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/12/Docker.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -57,45 +57,48 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline"> Index Of System </h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-01-03T10:25:00+08:00" itemprop="datePublished">Jan 3, 2019</time></p>
+    <h1 class="post-title" itemprop="name headline">Docker</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-03-12T22:25:00+08:00" itemprop="datePublished">Mar 12, 2020</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <p>微信</p>
+    <h4 id="docker-hello-world">Docker Hello World!</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run hello-world
+docker run ubuntu:15.10 /bin/echo <span class="s2">"Hello world"</span>
+</code></pre></div></div>
+<h4 id="查看运行的容器">查看运行的容器</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker ps
+docker ps <span class="nt">-a</span>
+<span class="c"># 输出详情介绍：</span>
+<span class="c">## CONTAINER ID: 容器 ID。</span>
+<span class="c">## IMAGE: 使用的镜像。</span>
+<span class="c">## COMMAND: 启动容器时运行的命令。</span>
+<span class="c">## CREATED: 容器的创建时间。</span>
 
-<p>淘宝
-2018年双11 交易创建30万QPS
-https://mp.weixin.qq.com/s?src=11&amp;timestamp=1579746373&amp;ver=2113&amp;signature=jN*OQXZXngGsXGKyy0lajE9CN2OZpzCzLv8rtu3TVMan6ksQo4EhkUGGEvkmu9vxP8oFcFhM6Yl7geYEsHh4JKBcDrVYrsDeQHSSFVDi7jC3ixLVwzkjo2art19aTldF&amp;new=1</p>
+<span class="c">## STATUS: 容器状态。</span>
+<span class="c">## 状态有7种：</span>
+<span class="c">### created（已创建）</span>
+<span class="c">### restarting（重启中）</span>
+<span class="c">### running（运行中）</span>
+<span class="c">### removing（迁移中）</span>
+<span class="c">### paused（暂停）</span>
+<span class="c">### exited（停止）</span>
+<span class="c">### dead（死亡）</span>
 
-<p>2019年双11 交易峰值54.5万笔/秒
-https://mp.weixin.qq.com/s?src=11&amp;timestamp=1579746373&amp;ver=2113&amp;signature=iQAMH8oU3H75KfXFDTrclaR1904fGp3jol1Zpn*jxj5GOriP5ui-TzuT3NyJpLgfB3j7QnoxcoLsNTZVjUBfMBh8TFfKfEmh3G9QUTlXqoh66U4rjYBeFhlXUejQzFSZ&amp;new=1</p>
-
-<p>阿里巴巴双11千万级实时监控系统技术揭秘
-https://mp.weixin.qq.com/s?src=11&amp;timestamp=1579746373&amp;ver=2113&amp;signature=RMS1mwj8U90WhFTIPkU8hZ*kPxDeZr1onJnM225xwLhf-vNisZceaUoxyVdAz1al4vNFWSXr28mhs7M9xHE9rXCtCyGU08nHOvtjYz7hm3vk6Ex2Nq3QKeDYXQrZjrvg&amp;new=1</p>
-
-<p>2019双11，支付宝有哪些“秘密武器”
-https://mp.weixin.qq.com/s?src=11&amp;timestamp=1579746373&amp;ver=2113&amp;signature=y0yfrEzoHa-tYF2c43EKwIfVjA0gbLEsh83kp05xf3G9ewAWLlFFib0NYRNnrySa56tn70dOrSWrLIUM9M794TMsKWeciar2SCZ-qVzl1I1mI4eOr5Q2bcZHtVyOwSp4&amp;new=1</p>
-
-<p>诺亚 (Noah) 自适应流控
-https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6</p>
-
-<p>12306
-<a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22</a></p>
-
-<p>微博
-<a href="https://www.cnblogs.com/shanyou/p/5048099.html">https://www.cnblogs.com/shanyou/p/5048099.html</a></p>
-
-<p>唯品会
-唯品会OSP 微服务架构
-用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力
-<a href="https://mp.weixin.qq.com/s?src=11&amp;timestamp=1579746373&amp;ver=2113&amp;signature=H0SwPcTTckjvCj-1t8YQL-kH-yUd1sM1Mc7CNkW4To55f7KIpArbsoDht5wAQOtcCMK4jI81AnQtCk-jGZMSNYOpOtvqtMG7HSovZszxB7rVvWwl0KYL6eG5ntOTybg9&amp;new=1">https://mp.weixin.qq.com/s?src=11&amp;timestamp=1579746373&amp;ver=2113&amp;signature=H0SwPcTTckjvCj-1t8YQL-kH-yUd1sM1Mc7CNkW4To55f7KIpArbsoDht5wAQOtcCMK4jI81AnQtCk-jGZMSNYOpOtvqtMG7HSovZszxB7rVvWwl0KYL6eG5ntOTybg9&amp;new=1</a></p>
-
-<p>达达
-<a href="https://www.jianshu.com/p/67b710267d10">https://www.jianshu.com/p/67b710267d10</a></p>
-
-<p>指标概述
-https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA</p>
+<span class="c">## PORTS: 容器的端口信息和使用的连接类型（tcp\udp）。</span>
+<span class="c">## NAMES: 自动分配的容器名称。</span>
+</code></pre></div></div>
+<h4 id="查看容器内的标准输出日志">查看容器内的标准输出日志</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker logs 2b1b7a428627
+</code></pre></div></div>
+<h4 id="启动重启停止容器">启动/重启/停止容器</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start/restart amazing_cori
+docker stop 2b1b7a428627
+</code></pre></div></div>
+<h4 id="compose-machine-swarm">Compose Machine Swarm</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start/restart amazing_cori
+docker stop 2b1b7a428627
+</code></pre></div></div>
 
   </div>
 </article>

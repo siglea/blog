@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title> Linux  Cmd </title>
-  <meta name="description" content="系统负载查看命令top```shelltopm键:切换内存使用率进度条模式">
+  <title> 主流互联网公司系统概况及指标 </title>
+  <meta name="description" content="微信">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html">
+  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/01/03/IndexOfSystem.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -57,43 +57,55 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline"> Linux  Cmd </h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-04T10:25:00+08:00" itemprop="datePublished">Nov 4, 2019</time></p>
+    <h1 class="post-title" itemprop="name headline"> 主流互联网公司系统概况及指标 </h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-01-03T10:25:00+08:00" itemprop="datePublished">Jan 3, 2020</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="系统负载查看命令top">系统负载查看命令top</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>top
-<span class="c"># m键:切换内存使用率进度条模式</span>
+    <h4 id="微信">微信</h4>
 
-<span class="c"># N:根据pid大小进行排序</span>
-<span class="c"># M:根据驻留内存大小进行排序</span>
-<span class="c"># P:根据CPU使用百分比大小进行排序</span>
-<span class="c"># T:根据时间/累计时间进行排序</span>
-</code></pre></div></div>
-<h4 id="内存查看命令free">内存查看命令free</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>free <span class="nt">-h</span>
-<span class="c">#free命令信息来自 cat /proc/meminfo</span>
-</code></pre></div></div>
-<h4 id="磁盘查看命令df">磁盘查看命令df</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">df</span> <span class="nt">-h</span>
-</code></pre></div></div>
-<h4 id="目录文件大小查看命令du">目录文件大小查看命令du</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">du</span>
-<span class="c"># 只显示当前目录下面的子目录的目录大小和当前目录的总的大小</span>
+<h4 id="淘宝">淘宝</h4>
+<ul>
+  <li>2018年双11 交易创建30万QPS</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw">https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw</a></p>
 
-<span class="nb">du</span>  <span class="nt">-sh</span>
-<span class="c"># 查看当前目录总大小</span>
+<ul>
+  <li>2019年双11 交易峰值54.5万笔/秒</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ">https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ</a></p>
 
-<span class="nb">du</span>  <span class="nt">-sh</span> ./<span class="k">*</span> 
-<span class="nb">du</span> <span class="nt">-h</span>  <span class="nt">--max-depth</span><span class="o">=</span>1
-<span class="c"># 查看当前目录各个文件大小</span>
-</code></pre></div></div>
+<ul>
+  <li>阿里巴巴双11千万级实时监控系统技术揭秘</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q">https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q</a></p>
 
-<h4 id="systemctl-supervisor-crontab-service-systemmd">systemctl supervisor crontab service systemmd</h4>
+<ul>
+  <li>2019双11，支付宝有哪些“秘密武器”</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g">https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g</a></p>
 
-<h4 id="curl-wget-sed-awk-ps">curl wget sed awk ps</h4>
+<ul>
+  <li>诺亚 (Noah) 自适应流控</li>
+</ul>
+<p><a href="https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6">https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6</a></p>
 
+<h4 id="12306">12306</h4>
+<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22</a></p>
+
+<h4 id="微博">微博</h4>
+<p><a href="https://www.cnblogs.com/shanyou/p/5048099.html">https://www.cnblogs.com/shanyou/p/5048099.html</a></p>
+
+<h4 id="唯品会">唯品会</h4>
+<p>唯品会OSP 微服务架构
+用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力
+<a href="https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ">https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ</a></p>
+
+<h4 id="达达">达达</h4>
+<p><a href="https://www.jianshu.com/p/67b710267d10">https://www.jianshu.com/p/67b710267d10</a></p>
+
+<h4 id="指标概述">指标概述</h4>
+<p>https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA</p>
 
   </div>
 </article>

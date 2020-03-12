@@ -56,6 +56,180 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E5%95%86%E4%B8%9A/2019/05/29/n-1.html">商业</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E5%95%86%E4%B8%9A/2019/05/29/n-1.html#disqus_thread"></a></span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="商业">商业</h3>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E5%95%86%E4%B8%9A/2019/05/29/n-1.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/server-performance.html">服务器性能</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/server-performance.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Server</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>高并发</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>高可用</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="单服务器性能评估">单服务器性能评估</h4>
+<p><a href="https://cloud.tencent.com/developer/article/1004754">https://cloud.tencent.com/developer/article/1004754</a></p>
+
+<h4 id="单服务器并发连接评估">单服务器并发连接评估</h4>
+<p><a href="https://www.zhihu.com/question/20831000">https://www.zhihu.com/question/20831000</a>
+<a href="https://www.cnblogs.com/duanxz/p/4464178.html">https://www.cnblogs.com/duanxz/p/4464178.html</a></p>
+
+<h4 id="烦人的代理">烦人的代理</h4>
+<p><a href="https://blog.csdn.net/plychoz/article/details/83147759">https://blog.csdn.net/plychoz/article/details/83147759</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/server-performance.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html">maven使用</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>maven</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>构建</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="mvn-clean">mvn clean</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    mvn clean package <span class="nt">-Dmaven</span>.test.skip<span class="o">=</span><span class="nb">true</span>
+</code></pre></div></div>
+<h4 id="mvn-compile">mvn compile</h4>
+
+<h4 id="创建maven的普通java项目">创建Maven的普通java项目：</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate <span class="nt">-DgroupId</span><span class="o">=</span>com.siglea <span class="nt">-DartifactId</span><span class="o">=</span>demo
+</code></pre></div></div>
+<h4 id="创建maven的javaweb项目">创建Maven的javaWeb项目：</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate <span class="nt">-DgroupId</span><span class="o">=</span>com.siglea <span class="nt">-DartifactId</span><span class="o">=</span>demoweb <span class="nt">-DarchetypeArtifactId</span><span class="o">=</span>maven-archetype-webapp  
+</code></pre></div></div>
+<h4 id="mvn-jettyrun">mvn jetty:run</h4>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c">&lt;!-- https://mvnrepository.com/artifact/org.mortbay.jetty/jetty --&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.mortbay.jetty<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>jetty<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>6.1.26<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+<h4 id="遇到的错误1mvn-archetypegenerate">遇到的错误（1）mvn archetype:generate</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    [INFO] --- maven-archetype-plugin:3.0.1:generate (default-cli) @ standalone-pom ---
+    [WARNING] Error injecting: org.apache.maven.archetype.common.DefaultPomManager
+    java.lang.NoClassDefFoundError: org/jdom/JDOMException
+            at java.lang.Class.getDeclaredConstructors0(Native Method)
+    解决办法：删除 .m2/repository 对应报错的文件
+</code></pre></div></div>
+<h4 id="遇到的错误2-mvn-archetypecreate">遇到的错误（2） mvn archetype:create</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn archetype:create 修改为 mvn archetype:generate
+</code></pre></div></div>
+
+<h4 id="遇到的错误3mvn-site">遇到的错误（3）mvn site</h4>
+<p>java.lang.NoClassDefFoundError: org/apache/maven/doxia/siterenderer/DocumentContent
+解决办法：在pom.xml添加如下配置</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;build&gt;</span>
+<span class="nt">&lt;pluginManagement&gt;</span>
+    <span class="nt">&lt;plugins&gt;</span>
+        <span class="nt">&lt;plugin&gt;</span>
+          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+          <span class="nt">&lt;artifactId&gt;</span>maven-site-plugin<span class="nt">&lt;/artifactId&gt;</span>
+          <span class="nt">&lt;version&gt;</span>3.3<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/plugin&gt;</span>
+        <span class="nt">&lt;plugin&gt;</span>
+          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+          <span class="nt">&lt;artifactId&gt;</span>maven-project-info-reports-plugin<span class="nt">&lt;/artifactId&gt;</span>
+          <span class="nt">&lt;version&gt;</span>2.7<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/plugin&gt;</span>
+    <span class="nt">&lt;/plugins&gt;</span>
+    <span class="nt">&lt;/pluginManagement&gt;</span>
+<span class="nt">&lt;/build&gt;</span>
+</code></pre></div></div>
+
+<h3 id="好用的源地址pomxml-settingsxml中配置">好用的源地址(pom.xml settings.xml中配置)</h3>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>nexus-aliyun<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>Nexus aliyun<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://maven.aliyun.com/nexus/content/groups/public/<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+   <span class="nt">&lt;id&gt;</span>maven2-repository.dev.java.net<span class="nt">&lt;/id&gt;</span>
+   <span class="nt">&lt;name&gt;</span>Java.net Repository for Maven<span class="nt">&lt;/name&gt;</span>
+   <span class="nt">&lt;url&gt;</span>http://download.java.net/maven/2/<span class="nt">&lt;/url&gt;</span>
+   <span class="nt">&lt;mirrorOf&gt;</span>central1<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>java.net2.r1<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://repo1.maven.org/maven2/<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central2<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>java.net2.r3<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://repository.sonatype.org/content/groups/public/<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central3<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>java.net2.r4<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://mirrors.ibiblio.org/pub/mirrors/maven2/<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central4<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>java.net2.r2<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://repository.jboss.com/maven2/<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central5<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+<span class="nt">&lt;mirror&gt;</span>
+    <span class="nt">&lt;id&gt;</span>java.net2<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://download.java.net/maven/2<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;mirrorOf&gt;</span>central6<span class="nt">&lt;/mirrorOf&gt;</span>
+<span class="nt">&lt;/mirror&gt;</span>
+</code></pre></div></div>
+<h4 id="参考链接">参考链接</h4>
+<p><a href="http://repo2.maven.org/maven2/">Maven库</a></p>
+
+<p><a href="http://mvnrepository.com/">Maven依赖查询</a></p>
+
+<p><a href="http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html">http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/markdown-github-jekyll.html">markdown-github-jekyll</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
@@ -123,181 +297,6 @@ jekyll b <span class="c">#编译</span>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/TCP-IP.html">TCP/IP十问</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/TCP-IP.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>tcp</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="tcp建立连接的本质含义是">TCP建立连接的本质含义是？</h4>
-<ul>
-  <li>确定整个通信链路是否接通</li>
-  <li>确定双方信息处理服务准备完毕</li>
-  <li>告知通信双方各自的初始序列号，建立连接后对每一个发送的数据包都需要以初始序列号为基准进行编号</li>
-  <li>TCP是双工的，所以建立连接后，两端都是互为客户端服务端</li>
-  <li>连接成功建立表示双方维护了一个可用连接的映射关系</li>
-</ul>
-
-<h4 id="在tcp有keepalive机制的情况下为什么还要有应用层保活">在TCP有keepalive机制的情况下，为什么还要有应用层保活？</h4>
-<ol>
-  <li>在诸如由防火墙过滤、路由器故障、运营商信令控制、网线断开等原因导致的TCP中断的情况下keepalive失效</li>
-  <li>NAT及DHCP机制也会导致keepalive失效</li>
-  <li>keepalive默认参数设置7200秒才会触发重试并且在重试10之后就终止</li>
-  <li>经过Socks封装的TCP大部分操作系统把底层的断连等细节直接忽略掉并没有抛给上层应用</li>
-  <li>keepalive机制判断的仅仅是连接的存在（只是在映射表中存在ESTABLISHED)，并不能判断应用服务是否正常</li>
-  <li>keepalive并不是TCP规范的一部分，并不是所有操作系统都完整的实现</li>
-  <li>应用层的心跳除了保活还有其他应用意义比如应用层控制的重传（断连重连后，底层并不知道应用层数据状况）</li>
-</ol>
-
-<h4 id="sync-flooding-攻击">SYNC Flooding 攻击</h4>
-<p><a href="https://blog.csdn.net/bigtree_3721/article/details/77619877">https://blog.csdn.net/bigtree_3721/article/details/77619877</a></p>
-
-<h4 id="tcp丢包及重试">TCP丢包及重试</h4>
-
-<hr />
-
-<h5 id="参考资料">参考资料</h5>
-
-<p><a href="http://www.52im.net/">即时通讯网</a></p>
-
-<p><a href="https://java-mzd.iteye.com/blog/1007577">TCP-IP的20问</a></p>
-
-<p><a href="https://www.jianshu.com/p/16c8c9e09feb">长连接及心跳保活原理简介</a></p>
-
-<p><a href="https://www.cnblogs.com/imstudy/p/5846363.html">为什么说基于TCP的移动端IM仍然需要心跳保活？</a></p>
-
-<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=195&amp;ctid=10">微信对网络影响的技术试验及分析（论文全文）</a></p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/TCP-IP.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/14/welcome-to-jekyll.html">Welcome to Jekyll!</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 14, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/14/welcome-to-jekyll.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>jekyll</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>You’ll find this post in your <code class="highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
-
-<p>To add new posts, simply add a file in the <code class="highlighter-rouge">_posts</code> directory that follows the convention <code class="highlighter-rouge">YYYY-MM-DD-name-of-post.ext</code> and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.</p>
-
-<p>Jekyll also offers powerful support for code snippets:</p>
-
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-  <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
-<span class="k">end</span>
-<span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
-<span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
-
-<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/14/welcome-to-jekyll.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/02/27/aws-developer-associate-code-deploy-quick-note.html">aws developer associate test CodeDeploy quick note</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Feb 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/02/27/aws-developer-associate-code-deploy-quick-note.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>aws</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>study note</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h1 id="code-deploy">code deploy</h1>
-<p>integrate with CI/CD tools as well as config management tools <code class="highlighter-rouge">ansible</code>, <code class="highlighter-rouge">chef</code>, <code class="highlighter-rouge">puppet</code></p>
-
-<h2 id="steps-to-deploy-a-project">Steps to deploy a project</h2>
-<p><img src="/img/code_deploy.png" /></p>
-
-<h2 id="deploy-methods">deploy methods</h2>
-<ol>
-  <li>inplace
-    <ul>
-      <li>as called <code class="highlighter-rouge">rolling update</code></li>
-      <li>stop the instance while updating and use other instances (capacity will be smaller)</li>
-      <li>can be used for EC2, on-premise systems, not for lambda</li>
-      <li>need redeploy for rollback</li>
-    </ul>
-  </li>
-  <li>green/blue
-    <ul>
-      <li>prepare new instances and switch traffic once deployment is done</li>
-      <li>blue is is the active deployment, green is the new release</li>
-      <li>can also be used for lambda</li>
-    </ul>
-  </li>
-</ol>
-
-<h2 id="appspec-file-to-configure-deployment">appspec file to configure deployment</h2>
-<ol>
-  <li>lambda deployment
-    <ul>
-      <li>version</li>
-      <li>resources (name and properties of lambda function)</li>
-      <li>hooks (specify when should lambda function run)
-        <ul>
-          <li>BeforeAllowTraffic</li>
-          <li>AfterAllowTraffic</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>ec2 and on premises
-    <ul>
-      <li>version</li>
-      <li>os</li>
-      <li>files (source and destination)</li>
-      <li>hooks
-        <ul>
-          <li>ApplicationStop (Gracefully stio the app for the new verion)</li>
-          <li>DownloadBundle (CD agent copies revision files to a temporary location)</li>
-          <li>BeforeInstall (e.g backing up current revision, decrypting files)</li>
-          <li>Install (copy revision files from temp to correct location)</li>
-          <li>After install (e.g config tasks, change permission)</li>
-          <li>ApplicationStart</li>
-          <li>ValidateService (tests)</li>
-          <li>BeforeBlockTraffic (tasks before deregistering from load balancer)</li>
-          <li>BlockTraffic (deregister instances from load balancer)</li>
-          <li>AfterBlockTraffic (tasks after deregistering from load balancer)</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ol>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/02/27/aws-developer-associate-code-deploy-quick-note.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -339,6 +338,10 @@ jekyll b <span class="c">#编译</span>
       <a href="/page8" class="button page-button">8</a>
       
       
+      
+      <a href="/page9" class="button page-button">9</a>
+      
+      
 
       
       <a href="/page6" class="button page-button">&raquo;</a>
@@ -370,13 +373,6 @@ jekyll b <span class="c">#编译</span>
       
       <a  href="tag/python">
       <span class="label label-default">python ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/linux">
-      <span class="label label-default">linux ( 4 )</span>
       </a><br />
 
       
@@ -466,6 +462,13 @@ jekyll b <span class="c">#编译</span>
       
       
       
+      <a  href="tag/linux">
+      <span class="label label-default">linux ( 4 )</span>
+      </a><br />
+
+      
+      
+      
       <a  href="tag/分布式搜索引擎">
       <span class="label label-default">分布式搜索引擎 ( 1 )</span>
       </a><br />
@@ -487,15 +490,15 @@ jekyll b <span class="c">#编译</span>
       
       
       
-      <a  href="tag/java">
-      <span class="label label-default">java ( 1 )</span>
+      <a  href="tag/JVM">
+      <span class="label label-default">jvm ( 1 )</span>
       </a><br />
 
       
       
       
       <a  href="tag/newSQL NoSQL">
-      <span class="label label-default">newsql-nosql ( 1 )</span>
+      <span class="label label-default">newsql-nosql ( 2 )</span>
       </a><br />
 
       
@@ -510,6 +513,13 @@ jekyll b <span class="c">#编译</span>
       
       <a  href="tag/分库/分表">
       <span class="label label-default">分库/分表 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Docker">
+      <span class="label label-default">docker ( 1 )</span>
       </a><br />
 
       

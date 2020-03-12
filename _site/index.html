@@ -56,6 +56,125 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/12/Docker.html">Docker</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 12, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/12/Docker.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Docker</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="docker-hello-world">Docker Hello World!</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run hello-world
+docker run ubuntu:15.10 /bin/echo <span class="s2">"Hello world"</span>
+</code></pre></div></div>
+<h4 id="查看运行的容器">查看运行的容器</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker ps
+docker ps <span class="nt">-a</span>
+<span class="c"># 输出详情介绍：</span>
+<span class="c">## CONTAINER ID: 容器 ID。</span>
+<span class="c">## IMAGE: 使用的镜像。</span>
+<span class="c">## COMMAND: 启动容器时运行的命令。</span>
+<span class="c">## CREATED: 容器的创建时间。</span>
+
+<span class="c">## STATUS: 容器状态。</span>
+<span class="c">## 状态有7种：</span>
+<span class="c">### created（已创建）</span>
+<span class="c">### restarting（重启中）</span>
+<span class="c">### running（运行中）</span>
+<span class="c">### removing（迁移中）</span>
+<span class="c">### paused（暂停）</span>
+<span class="c">### exited（停止）</span>
+<span class="c">### dead（死亡）</span>
+
+<span class="c">## PORTS: 容器的端口信息和使用的连接类型（tcp\udp）。</span>
+<span class="c">## NAMES: 自动分配的容器名称。</span>
+</code></pre></div></div>
+<h4 id="查看容器内的标准输出日志">查看容器内的标准输出日志</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker logs 2b1b7a428627
+</code></pre></div></div>
+<h4 id="启动重启停止容器">启动/重启/停止容器</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start/restart amazing_cori
+docker stop 2b1b7a428627
+</code></pre></div></div>
+<h4 id="compose-machine-swarm">Compose Machine Swarm</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start/restart amazing_cori
+docker stop 2b1b7a428627
+</code></pre></div></div>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/12/Docker.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2020/01/03/IndexOfSystem.html"> 主流互联网公司系统概况及指标 </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jan 3, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2020/01/03/IndexOfSystem.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>linux</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="微信">微信</h4>
+
+<h4 id="淘宝">淘宝</h4>
+<ul>
+  <li>2018年双11 交易创建30万QPS</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw">https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw</a></p>
+
+<ul>
+  <li>2019年双11 交易峰值54.5万笔/秒</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ">https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ</a></p>
+
+<ul>
+  <li>阿里巴巴双11千万级实时监控系统技术揭秘</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q">https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q</a></p>
+
+<ul>
+  <li>2019双11，支付宝有哪些“秘密武器”</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g">https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g</a></p>
+
+<ul>
+  <li>诺亚 (Noah) 自适应流控</li>
+</ul>
+<p><a href="https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6">https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6</a></p>
+
+<h4 id="12306">12306</h4>
+<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22</a></p>
+
+<h4 id="微博">微博</h4>
+<p><a href="https://www.cnblogs.com/shanyou/p/5048099.html">https://www.cnblogs.com/shanyou/p/5048099.html</a></p>
+
+<h4 id="唯品会">唯品会</h4>
+<p>唯品会OSP 微服务架构
+用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力
+<a href="https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ">https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ</a></p>
+
+<h4 id="达达">达达</h4>
+<p><a href="https://www.jianshu.com/p/67b710267d10">https://www.jianshu.com/p/67b710267d10</a></p>
+
+<h4 id="指标概述">指标概述</h4>
+<p>https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA</p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2020/01/03/IndexOfSystem.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2019/12/14/TheUndercoverEconomist.html">卧底经济学</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 14, 2019</span>
@@ -154,56 +273,6 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2019/12/01/HowToSuccess.html">为何我们不能获得真正的成功</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 1, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2019/12/01/HowToSuccess.html#disqus_thread"></a></span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="原则">原则</h4>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2019/12/01/HowToSuccess.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%9E%81%E8%87%B4%E6%80%9D%E8%80%83/2019/12/01/WhereAreWomenFrom.html">女人的起源</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 1, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%9E%81%E8%87%B4%E6%80%9D%E8%80%83/2019/12/01/WhereAreWomenFrom.html#disqus_thread"></a></span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="开言">开言</h4>
-<p>以这一篇做为这个版块的开始，之所以要增加【极致思考】这个版块，根本的原因是，我认为，大多数业务或者商业甚至物理定律是在有限的条件下有规律的发生（概率其实是规律的一种形式）。
-那么，如何能在极短的时间内发现有限的规律、发现事物本质就难能可贵了。所以，我想把自己对一些事物的自认为合理的猜测记录下来，以锻炼自己的思考力。</p>
-
-<h4 id="女人的起源">女人的起源</h4>
-<p>今天开车回家，在路上，无意间摸到了我副驾驶的座椅，我内心一惊，拥有这辆车5年多，我第一次感受到它。由于是真皮座椅，那一刻我忽然觉得它似乎有了生命，它是我的伴侣，它是我的”小途途”。
-这个奇妙的感觉，让我想到几年前，阅读了张小龙推荐的《女人的起源》一书，该书提出了一个有意思的问题：</p>
-<ol>
-  <li>人为何没有了毛发？
- 书中的解释是：某个时段，人类为了躲避陆地大型凶兽，很长一段时间是生活在水中或浅海区域，因为大型凶兽多数怕水。在水中时间久了，毛发就脱落了。但是，水中会有蛇类，所以人类至今都会天生怕蛇。</li>
-  <li>女性为何有凸起的乳房？</li>
-  <li>男性为何有凸起的乳房？</li>
-</ol>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%9E%81%E8%87%B4%E6%80%9D%E8%80%83/2019/12/01/WhereAreWomenFrom.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -243,6 +312,10 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       <a href="/page8" class="button page-button">8</a>
       
       
+      
+      <a href="/page9" class="button page-button">9</a>
+      
+      
 
       
       <a href="/page2" class="button page-button">&raquo;</a>
@@ -274,13 +347,6 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       
       <a  href="tag/python">
       <span class="label label-default">python ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/linux">
-      <span class="label label-default">linux ( 4 )</span>
       </a><br />
 
       
@@ -370,6 +436,13 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       
       
       
+      <a  href="tag/linux">
+      <span class="label label-default">linux ( 4 )</span>
+      </a><br />
+
+      
+      
+      
       <a  href="tag/分布式搜索引擎">
       <span class="label label-default">分布式搜索引擎 ( 1 )</span>
       </a><br />
@@ -391,15 +464,15 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       
       
       
-      <a  href="tag/java">
-      <span class="label label-default">java ( 1 )</span>
+      <a  href="tag/JVM">
+      <span class="label label-default">jvm ( 1 )</span>
       </a><br />
 
       
       
       
       <a  href="tag/newSQL NoSQL">
-      <span class="label label-default">newsql-nosql ( 1 )</span>
+      <span class="label label-default">newsql-nosql ( 2 )</span>
       </a><br />
 
       
@@ -414,6 +487,13 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       
       <a  href="tag/分库/分表">
       <span class="label label-default">分库/分表 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Docker">
+      <span class="label label-default">docker ( 1 )</span>
       </a><br />
 
       
