@@ -12,5 +12,10 @@ categories:
 #### 内存常用命令：top、free、vmstat、cachetop、cachestat、sar、jmap
 #### 磁盘常用命令：top、iostat、vmstat、pidstat、du/df
 #### 网络常用命令：netstat、sar、dstat、tcpdump
+
+
+netstat -ntlp  查看端口
+
+
 #### 应用层分析工具：profiler、dump分析
 

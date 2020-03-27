@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Docker</title>
-  <meta name="description" content="Docker Hello World!docker run hello-worlddocker run ubuntu:15.10 /bin/echo "Hello world"查看运行的容器```shelldocker psdocker ps -a输出详情介绍：CONTAINER ID: 容器 ID。IMAGE:...">
+  <meta name="description" content="Docker Hello World!docker run hello-worlddocker run ubuntu:15.10 /bin/echo "Hello world"Docker pull Imagedocker pull library/hello-worlddocker run nginxdocke...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -66,6 +66,21 @@
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run hello-world
 docker run ubuntu:15.10 /bin/echo <span class="s2">"Hello world"</span>
 </code></pre></div></div>
+<h4 id="docker-pull-image">Docker pull Image</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull library/hello-world
+</code></pre></div></div>
+<h4 id="docker-run-nginx">docker run nginx</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">--name</span> my_nginx_v1 <span class="nt">-p</span> 8080:80 <span class="nt">-d</span> nginx:v1
+<span class="c">## --name nginx-test：容器名称。</span>
+<span class="c">## -p 8080:80： 端口进行映射，将本地 8080 端口映射到容器内部的 80 端口。</span>
+<span class="c">## -d nginx： 设置容器在在后台一直运行。</span>
+</code></pre></div></div>
+<p><a href="https://www.runoob.com/docker/docker-install-nginx.html">https://www.runoob.com/docker/docker-install-nginx.html</a></p>
+
+<h4 id="docker-run-springboot">docker run springboot</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-p</span> 8080:8080 <span class="nt">-t</span> springboot/spring-boot-docker
+</code></pre></div></div>
+<p><a href="http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html">http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html</a></p>
 <h4 id="查看运行的容器">查看运行的容器</h4>
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker ps
 docker ps <span class="nt">-a</span>
@@ -95,10 +110,25 @@ docker ps <span class="nt">-a</span>
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start/restart amazing_cori
 docker stop 2b1b7a428627
 </code></pre></div></div>
-<h4 id="compose-machine-swarm">Compose Machine Swarm</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start/restart amazing_cori
-docker stop 2b1b7a428627
+<h4 id="删除容器镜像">删除容器/镜像</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">rm </span>20ca2a70ee13
+docker rmi ec49dbd13cf5
 </code></pre></div></div>
+<h4 id="compose-machine-swarm">Compose Machine Swarm</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+<h4 id="docker中run和start的区别">docker中run和start的区别</h4>
+<ul>
+  <li>docker run 后面指定的是一个镜像</li>
+  <li>而docker start指定的是一个容器</li>
+  <li>docker run是利用镜像生成容器，并启动容器，而docker start是启动一个之前生成过的容器</li>
+</ul>
+
+<h4 id="dockerfile-命令详解">Dockerfile 命令详解</h4>
+<p><a href="http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html">http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html</a></p>
+
+<p><a href="http://www.ityouknow.com/docker.html">http://www.ityouknow.com/docker.html</a></p>
+
 
   </div>
 </article>

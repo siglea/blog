@@ -14,6 +14,24 @@ categories:
 docker run hello-world
 docker run ubuntu:15.10 /bin/echo "Hello world"
 ```
+#### Docker pull Image
+```shell 
+docker pull library/hello-world
+```
+#### docker run nginx
+```shell
+docker run --name my_nginx_v1 -p 8080:80 -d nginx:v1
+## --name nginx-test：容器名称。
+## -p 8080:80： 端口进行映射，将本地 8080 端口映射到容器内部的 80 端口。
+## -d nginx： 设置容器在在后台一直运行。
+```
+<https://www.runoob.com/docker/docker-install-nginx.html>
+
+#### docker run springboot
+```shell
+docker run -p 8080:8080 -t springboot/spring-boot-docker
+```
+<http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html>
 #### 查看运行的容器
 ```shell
 docker ps
@@ -46,8 +64,22 @@ docker logs 2b1b7a428627
 docker start/restart amazing_cori
 docker stop 2b1b7a428627
 ```
+#### 删除容器/镜像
+```shell
+docker rm 20ca2a70ee13
+docker rmi ec49dbd13cf5
+```
 #### Compose Machine Swarm
 ```shell
-docker start/restart amazing_cori
-docker stop 2b1b7a428627
+
 ```
+#### docker中run和start的区别
+- docker run 后面指定的是一个镜像
+- 而docker start指定的是一个容器
+- docker run是利用镜像生成容器，并启动容器，而docker start是启动一个之前生成过的容器
+
+#### Dockerfile 命令详解
+<http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html>
+
+<http://www.ityouknow.com/docker.html>
+
