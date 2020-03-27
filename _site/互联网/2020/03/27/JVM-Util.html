@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> JVM 常用工具 </title>
+  <meta name="description" content="jmap : 内存占用情况查询```shell查询某个pid进程对应的应用程序内存占用情况jmap -heap pid示例jmap -heap 5940">
+  <script src="/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="canonical" href="http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/27/JVM-Util.html">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+</head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-86140592-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  <body>
+
+    <header class="site-header">
+  <div class="container" style="text-align:center">
+    <div class="navbar" style="margin-bottom:0;border:0">
+    <ul class="navbar-nav nav header-nav">
+    <li><a href="/index.html" class="button">首页</a></li>
+      <li><a href="/category/互联网" class="button">互联网</a></li>
+      <li><a href="/category/金融" class="button">金融</a></li>
+      <li><a href="/category/商业" class="button">商业</a></li>
+      <li><a href="/category/读书笔记" class="button">读书笔记</a></li>
+      <li><a href="/category/极致思考" class="button">极致思考</a></li>
+    </ul>
+    </div>
+  </div>
+
+</header>
+<div class="clearfix">
+
+
+    <div class="page-content">
+      <div class="container" style="padding-left:0;padding-right:0;">
+        <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline"> JVM 常用工具 </h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-03-27T22:25:00+08:00" itemprop="datePublished">Mar 27, 2020</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h4 id="jmap--内存占用情况查询">jmap : 内存占用情况查询</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 查询某个pid进程对应的应用程序内存占用情况</span>
+jmap <span class="nt">-heap</span> pid
+ 
+<span class="c">## 示例</span>
+jmap <span class="nt">-heap</span> 5940
+
+<span class="o">[</span>root@VM_0_8_centos ~]# jmap <span class="nt">-heap</span> 27472
+Attaching to process ID 27472, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 25.171-b11
+
+using thread-local object allocation.
+Parallel GC with 2 thread<span class="o">(</span>s<span class="o">)</span>
+
+Heap Configuration:
+   MinHeapFreeRatio         <span class="o">=</span> 0
+   MaxHeapFreeRatio         <span class="o">=</span> 100
+   MaxHeapSize              <span class="o">=</span> 2051014656 <span class="o">(</span>1956.0MB<span class="o">)</span>
+   NewSize                  <span class="o">=</span> 42991616 <span class="o">(</span>41.0MB<span class="o">)</span>
+   MaxNewSize               <span class="o">=</span> 683671552 <span class="o">(</span>652.0MB<span class="o">)</span>
+   OldSize                  <span class="o">=</span> 87031808 <span class="o">(</span>83.0MB<span class="o">)</span>
+   NewRatio                 <span class="o">=</span> 2
+   SurvivorRatio            <span class="o">=</span> 8
+   MetaspaceSize            <span class="o">=</span> 21807104 <span class="o">(</span>20.796875MB<span class="o">)</span>
+   CompressedClassSpaceSize <span class="o">=</span> 1073741824 <span class="o">(</span>1024.0MB<span class="o">)</span>
+   MaxMetaspaceSize         <span class="o">=</span> 17592186044415 MB
+   G1HeapRegionSize         <span class="o">=</span> 0 <span class="o">(</span>0.0MB<span class="o">)</span>
+
+Heap Usage:
+PS Young Generation
+Eden Space:
+   capacity <span class="o">=</span> 37224448 <span class="o">(</span>35.5MB<span class="o">)</span>
+   used     <span class="o">=</span> 14139096 <span class="o">(</span>13.484092712402344MB<span class="o">)</span>
+   free     <span class="o">=</span> 23085352 <span class="o">(</span>22.015907287597656MB<span class="o">)</span>
+   37.98335975324604% used
+From Space:
+   capacity <span class="o">=</span> 3145728 <span class="o">(</span>3.0MB<span class="o">)</span>
+   used     <span class="o">=</span> 2929584 <span class="o">(</span>2.7938690185546875MB<span class="o">)</span>
+   free     <span class="o">=</span> 216144 <span class="o">(</span>0.2061309814453125MB<span class="o">)</span>
+   93.12896728515625% used
+To Space:
+   capacity <span class="o">=</span> 3670016 <span class="o">(</span>3.5MB<span class="o">)</span>
+   used     <span class="o">=</span> 0 <span class="o">(</span>0.0MB<span class="o">)</span>
+   free     <span class="o">=</span> 3670016 <span class="o">(</span>3.5MB<span class="o">)</span>
+   0.0% used
+PS Old Generation
+   capacity <span class="o">=</span> 165150720 <span class="o">(</span>157.5MB<span class="o">)</span>
+   used     <span class="o">=</span> 98856376 <span class="o">(</span>94.27678680419922MB<span class="o">)</span>
+   free     <span class="o">=</span> 66294344 <span class="o">(</span>63.22321319580078MB<span class="o">)</span>
+   59.8582773359995% used
+
+26452 interned Strings occupying 2659208 bytes.
+
+</code></pre></div></div>
+
+<h4 id="jstat-可以实时监测系统资源占用与jvm运行情况">jstat: 可以实时监测系统资源占用与jvm运行情况</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 命令语法结构：
+Usage: jstat -help|-options
+       jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]]
+## 参数解释：
+Options — 选项，我们一般使用 -gcutil 查看gc情况
+-t      — 输出Timestamp
+vmid    — VM的进程号，即当前运行的java进程号
+interval– 间隔时间，单位为秒或者毫秒
+count   — 打印次数，如果缺省则打印无数次
+ 
+S0  — Heap上的 Survivor space 0 区已使用空间的百分比
+S1  — Heap上的 Survivor space 1 区已使用空间的百分比
+E   — Heap上的 Eden space 区已使用空间的百分比
+O   — Heap上的 Old space 区已使用空间的百分比
+P   — Perm space 区已使用空间的百分比
+YGC — 从应用程序启动到采样时发生 Young GC 的次数
+YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒)
+FGC — 从应用程序启动到采样时发生 Full GC 的次数
+FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒)
+GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒)
+
+## jstat -options
+    -class 类加载统计
+    -compiler 编译统计 
+    -gc
+    -gccapacity
+    -gccause Allocation Failure
+    -gcmetacapacity 元数据空间统计
+    -gcnew
+    -gcnewcapacity
+    -gcold
+    -gcoldcapacity
+    -gcutil 总结垃圾回收统计
+    -printcompilation JVM编译方法统计
+
+## 示例1 总结垃圾回收统计
+[root@VM_0_8_centos ~]# jstat -gcutil 27472 1000 5
+  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT
+ 78.04   0.00  14.10  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  24.05  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  34.14  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  40.62  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  47.20  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+
+## 示例2 类加载统计
+[root@VM_0_8_centos ~]# jstat -class -t 27472 1000 5
+Timestamp       加载class的数量  所占用空间大小  未加载数量  未加载占用空间     Time(秒)
+Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
+         5359.3  10847 20148.1        0     0.0      46.25
+         5360.4  10847 20148.1        0     0.0      46.25
+         5361.4  10847 20148.1        0     0.0      46.25
+         5362.3  10847 20148.1        0     0.0      46.25
+         5363.3  10847 20148.1        0     0.0      46.25
+
+</code></pre></div></div>
+<p>jstat命令使用
+<a href="https://www.cnblogs.com/lizhonghua34/p/7307139.html">https://www.cnblogs.com/lizhonghua34/p/7307139.html</a></p>
+
+<p>JVM运行时内存使用情况监控
+<a href="https://blog.csdn.net/zmx729618/article/details/78392715">https://blog.csdn.net/zmx729618/article/details/78392715</a></p>
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+      </div>
+      <div class="clearfix">
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="container">
+
+    <h2 class="footer-heading">粉笔灰杂谈</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>粉笔灰杂谈</li>
+          <li><a href="mailto:siglea@sina.com">siglea@sina.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/siglea"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">siglea</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

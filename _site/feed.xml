@@ -5,9 +5,141 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 27 Mar 2020 18:14:47 +0800</pubDate>
-    <lastBuildDate>Fri, 27 Mar 2020 18:14:47 +0800</lastBuildDate>
+    <pubDate>Fri, 27 Mar 2020 23:43:07 +0800</pubDate>
+    <lastBuildDate>Fri, 27 Mar 2020 23:43:07 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title> JVM 常用工具 </title>
+        <description>&lt;h4 id=&quot;jmap--内存占用情况查询&quot;&gt;jmap : 内存占用情况查询&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;## 查询某个pid进程对应的应用程序内存占用情况&lt;/span&gt;
+jmap &lt;span class=&quot;nt&quot;&gt;-heap&lt;/span&gt; pid
+ 
+&lt;span class=&quot;c&quot;&gt;## 示例&lt;/span&gt;
+jmap &lt;span class=&quot;nt&quot;&gt;-heap&lt;/span&gt; 5940
+
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;root@VM_0_8_centos ~]# jmap &lt;span class=&quot;nt&quot;&gt;-heap&lt;/span&gt; 27472
+Attaching to process ID 27472, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 25.171-b11
+
+using thread-local object allocation.
+Parallel GC with 2 thread&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+
+Heap Configuration:
+   MinHeapFreeRatio         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
+   MaxHeapFreeRatio         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 100
+   MaxHeapSize              &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 2051014656 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1956.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   NewSize                  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 42991616 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;41.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   MaxNewSize               &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 683671552 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;652.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   OldSize                  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 87031808 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;83.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   NewRatio                 &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 2
+   SurvivorRatio            &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 8
+   MetaspaceSize            &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 21807104 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;20.796875MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   CompressedClassSpaceSize &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1073741824 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1024.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   MaxMetaspaceSize         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 17592186044415 MB
+   G1HeapRegionSize         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+
+Heap Usage:
+PS Young Generation
+Eden Space:
+   capacity &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 37224448 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;35.5MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   used     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 14139096 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;13.484092712402344MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   free     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 23085352 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;22.015907287597656MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   37.98335975324604% used
+From Space:
+   capacity &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 3145728 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   used     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 2929584 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;2.7938690185546875MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   free     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 216144 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0.2061309814453125MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   93.12896728515625% used
+To Space:
+   capacity &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 3670016 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3.5MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   used     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   free     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 3670016 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3.5MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   0.0% used
+PS Old Generation
+   capacity &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 165150720 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;157.5MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   used     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 98856376 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;94.27678680419922MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   free     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 66294344 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;63.22321319580078MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   59.8582773359995% used
+
+26452 interned Strings occupying 2659208 bytes.
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;jstat-可以实时监测系统资源占用与jvm运行情况&quot;&gt;jstat: 可以实时监测系统资源占用与jvm运行情况&lt;/h4&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;## 命令语法结构：
+Usage: jstat -help|-options
+       jstat -&amp;lt;option&amp;gt; [-t] [-h&amp;lt;lines&amp;gt;] &amp;lt;vmid&amp;gt; [&amp;lt;interval&amp;gt; [&amp;lt;count&amp;gt;]]
+## 参数解释：
+Options — 选项，我们一般使用 -gcutil 查看gc情况
+-t      — 输出Timestamp
+vmid    — VM的进程号，即当前运行的java进程号
+interval– 间隔时间，单位为秒或者毫秒
+count   — 打印次数，如果缺省则打印无数次
+ 
+S0  — Heap上的 Survivor space 0 区已使用空间的百分比
+S1  — Heap上的 Survivor space 1 区已使用空间的百分比
+E   — Heap上的 Eden space 区已使用空间的百分比
+O   — Heap上的 Old space 区已使用空间的百分比
+P   — Perm space 区已使用空间的百分比
+YGC — 从应用程序启动到采样时发生 Young GC 的次数
+YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒)
+FGC — 从应用程序启动到采样时发生 Full GC 的次数
+FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒)
+GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒)
+
+## jstat -options
+    -class 类加载统计
+    -compiler 编译统计 
+    -gc
+    -gccapacity
+    -gccause Allocation Failure
+    -gcmetacapacity 元数据空间统计
+    -gcnew
+    -gcnewcapacity
+    -gcold
+    -gcoldcapacity
+    -gcutil 总结垃圾回收统计
+    -printcompilation JVM编译方法统计
+
+## 示例1 总结垃圾回收统计
+[root@VM_0_8_centos ~]# jstat -gcutil 27472 1000 5
+  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT
+ 78.04   0.00  14.10  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  24.05  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  34.14  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  40.62  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  47.20  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+
+## 示例2 类加载统计
+[root@VM_0_8_centos ~]# jstat -class -t 27472 1000 5
+Timestamp       加载class的数量  所占用空间大小  未加载数量  未加载占用空间     Time(秒)
+Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
+         5359.3  10847 20148.1        0     0.0      46.25
+         5360.4  10847 20148.1        0     0.0      46.25
+         5361.4  10847 20148.1        0     0.0      46.25
+         5362.3  10847 20148.1        0     0.0      46.25
+         5363.3  10847 20148.1        0     0.0      46.25
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;jstat命令使用
+&lt;a href=&quot;https://www.cnblogs.com/lizhonghua34/p/7307139.html&quot;&gt;https://www.cnblogs.com/lizhonghua34/p/7307139.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;JVM运行时内存使用情况监控
+&lt;a href=&quot;https://blog.csdn.net/zmx729618/article/details/78392715&quot;&gt;https://blog.csdn.net/zmx729618/article/details/78392715&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Fri, 27 Mar 2020 22:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/27/JVM-Util.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/27/JVM-Util.html</guid>
+        
+        <category>JVM</category>
+        
+        
+        <category>互联网</category>
+        
+      </item>
     
       <item>
         <title>Docker</title>
@@ -460,166 +592,6 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
         <category>mysql DB</category>
         
         <category>分库/分表</category>
-        
-        
-        <category>互联网</category>
-        
-      </item>
-    
-      <item>
-        <title>DB Mysql</title>
-        <description>&lt;h4 id=&quot;索引原理btree&quot;&gt;索引原理(B+Tree)&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;Tree -&amp;gt; BelanceTree -&amp;gt; B+Tree
-    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;http://www.sohu.com/a/280609547_818692&quot;&gt;http://www.sohu.com/a/280609547_818692&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/0371c9569736&quot;&gt;https://www.jianshu.com/p/0371c9569736&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/tiancai/p/9024351.html&quot;&gt;https://www.cnblogs.com/tiancai/p/9024351.html&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;各种优化&quot;&gt;各种优化&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/efaa9005a598&quot;&gt;https://www.jianshu.com/p/efaa9005a598&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.jb51.net/article/136701.htm&quot;&gt;https://www.jb51.net/article/136701.htm&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/houss/p/10598901.html&quot;&gt;https://www.cnblogs.com/houss/p/10598901.html&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://coolshell.cn/articles/1846.html&quot;&gt;https://coolshell.cn/articles/1846.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;常用指标&quot;&gt;常用指标&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;QPS   (2w/s与机器配置及数据量有关)&lt;/li&gt;
-  &lt;li&gt;TPS   (1w/s)&lt;/li&gt;
-  &lt;li&gt;并发数&lt;/li&gt;
-  &lt;li&gt;连接数&lt;/li&gt;
-  &lt;li&gt;缓存命中率&lt;/li&gt;
-  &lt;li&gt;慢查询
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;slow_query_log=on
-slow_query_log_file=存放目录
-long_query_time=0.1秒
-log_queries_not_using_indexes=on
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;主从延迟
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;show slave status;
-Seconds_Behind_Master
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;死锁
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;set global innodb_print_all_deadlocks=on; 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;mysql-wal技术-write-ahead-logging&quot;&gt;Mysql WAL技术 Write-Ahead Logging&lt;/h4&gt;
-
-&lt;p&gt;在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
-   在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
-   为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
-   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/hzmark/p/wal.html&quot;&gt;https://www.cnblogs.com/hzmark/p/wal.html&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;innodb与myisamindex-sequence-access-method&quot;&gt;InnoDB与MyISAM(Index Sequence Access Method)&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
-MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
-    &lt;ul&gt;
-      &lt;li&gt;4个隔离级别透彻分析 &lt;a href=&quot;https://www.jianshu.com/p/db334404d909&quot;&gt;https://www.jianshu.com/p/db334404d909&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/w2064004678/article/details/83012387&quot;&gt;https://blog.csdn.net/w2064004678/article/details/83012387&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;索引结构不同
-    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew&quot;&gt;https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;其他不同
-    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg&quot;&gt;https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A&quot;&gt;https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;引擎不同的几个方面：Storage mechanism、Locking levels、Indexing、Capabilities and functions&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;faq&quot;&gt;FAQ&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;问题：INT(M)中M究竟有何用？&lt;/p&gt;
-
-    &lt;p&gt;int类型占四个字节，一个字节8比特位，也就是4*8=32比特位，可以表示的数字个数是2的32次方个(2^32)。声明一个int类型的数据，长度便已经固定，那么这个M究竟有何用？
-  结论：INT(M)中的M与数据存储长度没有关系，只是标识数据显示长度，在显示时不足无数会自动填充0进行补齐，必须配合AutoFill使用。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;MySQL 中 InnoDB 引擎的行锁是通过加在什么上完成(或称实现) 的?&lt;/p&gt;
-
-    &lt;p&gt;InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。
-  InnoDB 这 种行锁实现特点意味着:只有通过索引条件检索数据，InnoDB 才使用行级 锁，否则，InnoDB 将使用表锁!&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;各种锁
-    &lt;ul&gt;
-      &lt;li&gt;本质都为了实现数据一致性及各种事务控制&lt;/li&gt;
-      &lt;li&gt;悲观锁：读取数据时就加锁排他&lt;/li&gt;
-      &lt;li&gt;乐观锁：读取数据不加锁，更新时处理（比如版本号机制、CAS compare and swap算法）&lt;/li&gt;
-      &lt;li&gt;共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁
-  &lt;a href=&quot;https://www.jianshu.com/p/c456f726e9c7&quot;&gt;https://www.jianshu.com/p/c456f726e9c7&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;数据库三范式
-    &lt;ul&gt;
-      &lt;li&gt;表中的每个字段不可分割&lt;/li&gt;
-      &lt;li&gt;表都需要有主键&lt;/li&gt;
-      &lt;li&gt;字段不能出现在多个表中，有时为了查询效率也冗余个别字段&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?&lt;/p&gt;
-
-    &lt;p&gt;(1)如果表的类型是 MyISAM，那么是 18
-      因为 MyISAM 表会把自增主键的最大 ID 记录到数据文件里，重启 MySQL 自增主键的最大 ID 也不会丢失
-  (2)如果表的类型是 InnoDB，那么是 15
-      InnoDB 表只是把自增主键的最大 ID 记录到内存中，所以重启数据库或者是对表进行 OPTIMIZE 操作，都会导致最大 ID 丢失&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;如何区分 FLOAT 和 DOUBLE?&lt;/p&gt;
-
-    &lt;p&gt;以下是 FLOAT 和 DOUBLE 的区别:
-  浮点数以 8 位精度存储在 FLOAT 中，并且有四个字节。 浮点数存储在 DOUBLE 中，精度为 18 位，有八个字节。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;区分 CHAR_LENGTH 和 LENGTH?&lt;/p&gt;
-
-    &lt;p&gt;CHAR_LENGTH 是字符数，而 LENGTH 是字节数。Latin 字符的这两个数据是相同的，但是对 于 Unicode 和其他编码，它们是不同的。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;federated 表是什么?&lt;/p&gt;
-
-    &lt;p&gt;federated 表，允许访问位于其他服务器数据库上的表。
-  &lt;a href=&quot;https://blog.csdn.net/qq_33578833/article/details/80177115&quot;&gt;https://blog.csdn.net/qq_33578833/article/details/80177115&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;可以使用多少列创建索引?&lt;/p&gt;
-
-    &lt;p&gt;任何标准表最多可以创建 16 个索引列。&lt;/p&gt;
-    &lt;h4 id=&quot;其他&quot;&gt;其他&lt;/h4&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Mysql主从同步 &lt;a href=&quot;https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw&quot;&gt;https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Mysql+Keepalived实现双高可用 &lt;a href=&quot;https://www.cnblogs.com/kevingrace/p/6710136.html&quot;&gt;https://www.cnblogs.com/kevingrace/p/6710136.html&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;PROCEDURE ANALYSE&lt;/li&gt;
-  &lt;li&gt;全文索引&lt;/li&gt;
-  &lt;li&gt;分区表 &lt;a href=&quot;https://www.jianshu.com/p/b61d767f4ff5&quot;&gt;https://www.jianshu.com/p/b61d767f4ff5&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;UTF-8编码占几个字节 &lt;a href=&quot;https://blog.csdn.net/bluetjs/article/details/52936943&quot;&gt;https://blog.csdn.net/bluetjs/article/details/52936943&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://database.51cto.com/art/201910/604128.htm&quot;&gt;数据库规范&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Tue, 12 Nov 2019 10:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Mysql.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Mysql.html</guid>
-        
-        <category>mysql DB</category>
         
         
         <category>互联网</category>
