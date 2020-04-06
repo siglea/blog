@@ -5,9 +5,59 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 27 Mar 2020 23:43:07 +0800</pubDate>
-    <lastBuildDate>Fri, 27 Mar 2020 23:43:07 +0800</lastBuildDate>
+    <pubDate>Mon, 06 Apr 2020 23:08:22 +0800</pubDate>
+    <lastBuildDate>Mon, 06 Apr 2020 23:08:22 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title> Spring </title>
+        <description>&lt;h4 id=&quot;spring启动原理&quot;&gt;Spring启动原理&lt;/h4&gt;
+&lt;p&gt;启动原理解析
+&lt;a href=&quot;http://tengj.top/2017/03/09/springboot3/&quot;&gt;http://tengj.top/2017/03/09/springboot3/&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;spring-starter&quot;&gt;Spring Starter&lt;/h4&gt;
+&lt;p&gt;spring-boot的核心在于starter，在于@EnableAutoConfiguration&lt;/p&gt;
+
+&lt;p&gt;徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！
+&lt;a href=&quot;https://www.cnblogs.com/lenve/p/10892011.html&quot;&gt;https://www.cnblogs.com/lenve/p/10892011.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;SpringBoot启动机制（starter机制）核心原理详解
+&lt;a href=&quot;https://www.jianshu.com/p/d166d935217b&quot;&gt;https://www.jianshu.com/p/d166d935217b&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;实现一个Spring boot stater
+&lt;a href=&quot;https://www.jianshu.com/p/fdb574e1f77c&quot;&gt;https://www.jianshu.com/p/fdb574e1f77c&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;spring常用注解&quot;&gt;Spring常用注解&lt;/h4&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@Conditional
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan
+@SpringBootApplication
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;spring-starter-1&quot;&gt;Spring Starter&lt;/h4&gt;
+&lt;h4 id=&quot;springmvc&quot;&gt;SpringMVC&lt;/h4&gt;
+&lt;h4 id=&quot;springjdbc--mybitas&quot;&gt;SpringJDBC / Mybitas&lt;/h4&gt;
+&lt;h4 id=&quot;spring-security--apache-shrio--jwt-javawebtoken&quot;&gt;Spring Security / Apache Shrio / JWT JavaWebToken&lt;/h4&gt;
+&lt;h4 id=&quot;spring-boot-打出来的war中的webxml消失了&quot;&gt;spring boot 打出来的war中的web.xml消失了&lt;/h4&gt;
+&lt;p&gt;springboot 是如何帮我们省去web.xml配置的
+&lt;a href=&quot;https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app&quot;&gt;https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;http下载工具，基于http代理，支持多连接分块下载
+https://github.com/proxyee-down-org/proxyee-down&lt;/p&gt;
+</description>
+        <pubDate>Fri, 27 Mar 2020 22:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/27/Spring.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/27/Spring.html</guid>
+        
+        <category>Java</category>
+        
+        <category>Spring</category>
+        
+        
+        <category>互联网</category>
+        
+      </item>
     
       <item>
         <title> JVM 常用工具 </title>
@@ -15,7 +65,7 @@
 &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;## 查询某个pid进程对应的应用程序内存占用情况&lt;/span&gt;
 jmap &lt;span class=&quot;nt&quot;&gt;-heap&lt;/span&gt; pid
  
-&lt;span class=&quot;c&quot;&gt;## 示例&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;## 示例1&lt;/span&gt;
 jmap &lt;span class=&quot;nt&quot;&gt;-heap&lt;/span&gt; 5940
 
 &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;root@VM_0_8_centos ~]# jmap &lt;span class=&quot;nt&quot;&gt;-heap&lt;/span&gt; 27472
@@ -65,6 +115,13 @@ PS Old Generation
    59.8582773359995% used
 
 26452 interned Strings occupying 2659208 bytes.
+
+&lt;span class=&quot;c&quot;&gt;## 示例2&lt;/span&gt;
+jmap &lt;span class=&quot;nt&quot;&gt;-F&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-histo&lt;/span&gt; 16464 &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; 16464.log
+&lt;span class=&quot;nt&quot;&gt;-histo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:live] 打印每个class的实例数目,内存占用,类全名信息. VM的内部类名字开头会加上前缀”&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;”. 如果live子参数加上后,只统计活的对象数量. 
+
+&lt;span class=&quot;c&quot;&gt;## 示例2&lt;/span&gt;
+jmap &lt;span class=&quot;nt&quot;&gt;-dump&lt;/span&gt;:format&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;b,file&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;outfile 3024可以将3024进程的内存heap输出出来到outfile文件里，再配合MAT（内存分析工具）。
 
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
@@ -510,88 +567,6 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
         <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-distributed-transacion.html</guid>
         
         <category>mysql DB</category>
-        
-        
-        <category>互联网</category>
-        
-      </item>
-    
-      <item>
-        <title>DB Shard</title>
-        <description>&lt;h4 id=&quot;主键避重问题&quot;&gt;主键避重问题&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;ID生成器
-    &lt;ul&gt;
-      &lt;li&gt;Twitter Snowflake&lt;/li&gt;
-      &lt;li&gt;美团 LeftUid&lt;/li&gt;
-      &lt;li&gt;百度 Uid-genarator&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;散表规则
-    &lt;ul&gt;
-      &lt;li&gt;按照ID范围，要求ID自增&lt;/li&gt;
-      &lt;li&gt;简单Hash(取模)&lt;/li&gt;
-      &lt;li&gt;Hash一致性算法&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;分页查询问题&quot;&gt;分页查询问题&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;分表查，应用程序合并&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;关联查询问题&quot;&gt;关联查询问题&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;避免join操作，改造为多次查询，由应用程序合并&lt;/li&gt;
-  &lt;li&gt;使用现成的中间件&lt;/li&gt;
-  &lt;li&gt;实际业务中可能会结合Redis/Es等解决方案&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;公共表问题&quot;&gt;公共表问题&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;公共表多库冗余，多库同步&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;事务一致性&quot;&gt;事务一致性&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383&quot;&gt;分布式事务&lt;/a&gt;
-&lt;a href=&quot;https://www.jdon.com/48829&quot;&gt;Spring的分布式事务实现(JTA+XA/2PC)&lt;/a&gt;&lt;/p&gt;
-&lt;h5 id=&quot;jtaxa&quot;&gt;JTA*XA&lt;/h5&gt;
-
-&lt;h4 id=&quot;比较常见的中间件cobartddlatlassharding-jdbcmycat&quot;&gt;比较常见的中间件cobar、TDDL、atlas、sharding-jdbc、mycat&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;cobar：阿里b2b团队开发和开源的，属于proxy层方案。早些年还可以用，但是最近几年都没更新了，基本没啥人用，差不多算是被抛弃的状态吧。而且不支持读写分离、存储过程、跨库join和分页等操作。&lt;/li&gt;
-  &lt;li&gt;TDDL：淘宝团队开发的，属于client层方案。不支持join、多表查询等语法，就是基本的crud语法是ok，但是支持读写分离。目前使用的也不多，因为还依赖淘宝的diamond配置管理系统。&lt;/li&gt;
-  &lt;li&gt;atlas：360开源的，属于proxy层方案，以前是有一些公司在用的，但是确实有一个很大的问题就是社区最新的维护都在5年前了。所以，现在用的公司基本也很少了。&lt;/li&gt;
-  &lt;li&gt;sharding-jdbc：当当开源的，属于client层方案。确实之前用的还比较多一些，因为SQL语法支持也比较多，没有太多限制，而且目前推出到了2.0版本，支持分库分表、读写分离、分布式id生成、柔性事务（最大努力送达型事务、TCC事务）。而且确实之前使用的公司会比较多一些（这个在官网有登记使用的公司，可以看到从2017年一直到现在，是不少公司在用的），目前社区也还一直在开发和维护，还算是比较活跃，个人认为算是一个现在也可以选择的方案。&lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;mycat：基于cobar改造的，属于proxy层方案，支持的功能非常完善，而且目前应该是非常火的而且不断流行的数据库中间件，社区很活跃，也有一些公司开始在用了。但是确实相比于sharding jdbc来说，年轻一些，经历的锤炼少一些。&lt;/p&gt;
-
-    &lt;p&gt;所以综上所述，现在其实建议考量的，就是sharding-jdbc和mycat，这两个都可以去考虑使用。
-  sharding-jdbc这种client层方案的优点在于不用部署，运维成本低，不需要代理层的二次转发请求，性能很高，但是如果遇到升级啥的需要各个系统都重新升级版本再发布，各个系统都需要耦合sharding-jdbc的依赖；
-  mycat这种proxy层方案的缺点在于需要部署，自己及运维一套中间件，运维成本高，但是好处在于对于各个项目是透明的，如果遇到升级之类的都是自己中间件那里搞就行了。
-  通常来说，这两个方案其实都可以选用，但是我个人建议中小型公司选用sharding-jdbc，client层方案轻便，而且维护成本低，不需要额外增派人手，而且中小型公司系统复杂度会低一些，项目也没那么多；
-  但是中大型公司最好还是选用mycat这类proxy层方案，因为可能大公司系统和项目非常多，团队很大，人员充足，那么最好是专门弄个人来研究和维护mycat，然后大量项目直接透明使用即可。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;主从同步&quot;&gt;主从同步&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;半同步复制，semi-sync复制，指的就是主库写入binlog日志之后，就会将强制此时立即将数据同步到从库，从库将日志写入自己本地的relay log之后，接着会返回一个ack给主库，主库接收到至少一个从库的ack之后才会认为写操作完成了。&lt;/li&gt;
-  &lt;li&gt;并行复制，指的是从库开启多个线程，并行读取relay log中不同库的日志，然后并行重放不同库的日志，这是库级别的并行。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;其他&quot;&gt;其他&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;amp;mid=2651960212&amp;amp;idx=1&amp;amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS&quot;&gt;58用户系统分库分表实战&lt;/a&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Tue, 12 Nov 2019 10:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Shard.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/12/DB-Shard.html</guid>
-        
-        <category>mysql DB</category>
-        
-        <category>分库/分表</category>
         
         
         <category>互联网</category>

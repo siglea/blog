@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title> JVM 常用工具 </title>
-  <meta name="description" content="jmap : 内存占用情况查询```shell查询某个pid进程对应的应用程序内存占用情况jmap -heap pid示例jmap -heap 5940">
+  <meta name="description" content="jmap : 内存占用情况查询```shell查询某个pid进程对应的应用程序内存占用情况jmap -heap pid示例1jmap -heap 5940">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -66,7 +66,7 @@
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 查询某个pid进程对应的应用程序内存占用情况</span>
 jmap <span class="nt">-heap</span> pid
  
-<span class="c">## 示例</span>
+<span class="c">## 示例1</span>
 jmap <span class="nt">-heap</span> 5940
 
 <span class="o">[</span>root@VM_0_8_centos ~]# jmap <span class="nt">-heap</span> 27472
@@ -116,6 +116,13 @@ PS Old Generation
    59.8582773359995% used
 
 26452 interned Strings occupying 2659208 bytes.
+
+<span class="c">## 示例2</span>
+jmap <span class="nt">-F</span> <span class="nt">-histo</span> 16464 <span class="o">&gt;</span> 16464.log
+<span class="nt">-histo</span><span class="o">[</span>:live] 打印每个class的实例数目,内存占用,类全名信息. VM的内部类名字开头会加上前缀”<span class="k">*</span>”. 如果live子参数加上后,只统计活的对象数量. 
+
+<span class="c">## 示例2</span>
+jmap <span class="nt">-dump</span>:format<span class="o">=</span>b,file<span class="o">=</span>outfile 3024可以将3024进程的内存heap输出出来到outfile文件里，再配合MAT（内存分析工具）。
 
 </code></pre></div></div>
 

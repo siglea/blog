@@ -14,7 +14,7 @@ categories:
 ## 查询某个pid进程对应的应用程序内存占用情况
 jmap -heap pid
  
-## 示例
+## 示例1
 jmap -heap 5940
 
 [root@VM_0_8_centos ~]# jmap -heap 27472
@@ -64,6 +64,13 @@ PS Old Generation
    59.8582773359995% used
 
 26452 interned Strings occupying 2659208 bytes.
+
+## 示例2
+jmap -F -histo 16464 > 16464.log
+-histo[:live] 打印每个class的实例数目,内存占用,类全名信息. VM的内部类名字开头会加上前缀”*”. 如果live子参数加上后,只统计活的对象数量. 
+
+## 示例2
+jmap -dump:format=b,file=outfile 3024可以将3024进程的内存heap输出出来到outfile文件里，再配合MAT（内存分析工具）。
 
 ```
 
