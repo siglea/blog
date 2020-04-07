@@ -13,9 +13,11 @@ categories:
 启动原理解析
 <http://tengj.top/2017/03/09/springboot3/>
 
-#### Spring Starter
-spring-boot的核心在于starter，在于@EnableAutoConfiguration
+#### Spring-Boot核心
 
+- Starter 起步依赖：告诉Spring Boot需要什么功能，它就能引入需要的库
+- EnableAutoConfiguration 自动配置：针对很多Spring应用程序常见的应用功能，Spring Boot能自动提供相关配置
+S
 徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！
 <https://www.cnblogs.com/lenve/p/10892011.html>
 
