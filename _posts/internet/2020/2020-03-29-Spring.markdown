@@ -14,7 +14,6 @@ categories:
 <http://tengj.top/2017/03/09/springboot3/>
 
 #### Spring-Boot核心
-
 - Starter 起步依赖：告诉Spring Boot需要什么功能，它就能引入需要的库
 - EnableAutoConfiguration 自动配置：针对很多Spring应用程序常见的应用功能，Spring Boot能自动提供相关配置
 S
@@ -32,18 +31,40 @@ SpringBoot启动机制（starter机制）核心原理详解
 @Conditional
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@ComponentScan
 @SpringBootApplication
+@Configuration：代表这个类是一个配置类。
+@ComponentScan：用来扫描指定包下面的注解类。
+@Import：用来导入其他的@Configuration配置类。
+@ImportResource：用来导入xml配置文件，比如某些配置一定要xml配置。
+@Bean：用来定义一个bean，可以指定初始、销毁方法，及bean范围等。
+@Controller 标识一个类为控制器。
+@RequestMapping URL的映射。
+@ResponseBody 返回结果转换为JSON字符串。
+@RequestBody 表示接收JSON格式字符串参数。
+@RestController这个注解，而不是@Controller，不过这个注解同样不是Spring boot提供的，而是Spring MVC4中的提供的注解，表示一个支持Restful的控制器。
+这个类中有三个URL映射是相同的，即都是/article/{id}，这在@Controller标识的类中是不允许出现的。这里的可以通过method来进行区分，produces的作用是表示返回结果的类型是JSON。
+@PathVariable这个注解，也是Spring MVC提供的，其作用是表示该变量的值是从访问路径中获取。
 ```
+#### SpringWebApplication 与 Servlet
 
+#### Spring Boot 中的 Tomcat 是如何启动的？
+https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ
 
 #### Spring Starter
+
 #### SpringMVC
-#### SpringJDBC / Mybitas
+
+#### SpringJDBC / Mybatis / Spring Data / JPA
+
 #### Spring Security / Apache Shrio / JWT JavaWebToken
+
 #### spring boot 打出来的war中的web.xml消失了
 springboot 是如何帮我们省去web.xml配置的
 <https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app>
 
-http下载工具，基于http代理，支持多连接分块下载
-https://github.com/proxyee-down-org/proxyee-down
+#### Spring Boot 异步请求和异步调用
+https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA
+
+#### WebMvcConfigurerAdapter 与 WebMvcConfigurationSupport
+从遇到的一个坑查了半天
+https://blog.csdn.net/innovationad/article/details/79959383
