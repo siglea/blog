@@ -5,46 +5,82 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 06 Apr 2020 23:08:22 +0800</pubDate>
-    <lastBuildDate>Mon, 06 Apr 2020 23:08:22 +0800</lastBuildDate>
+    <pubDate>Mon, 13 Apr 2020 00:11:44 +0800</pubDate>
+    <lastBuildDate>Mon, 13 Apr 2020 00:11:44 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
-        <title> Spring </title>
-        <description>&lt;h4 id=&quot;spring启动原理&quot;&gt;Spring启动原理&lt;/h4&gt;
+        <title> SpringBoot </title>
+        <description>&lt;h4 id=&quot;springboot启动原理&quot;&gt;SpringBoot启动原理&lt;/h4&gt;
 &lt;p&gt;启动原理解析
 &lt;a href=&quot;http://tengj.top/2017/03/09/springboot3/&quot;&gt;http://tengj.top/2017/03/09/springboot3/&lt;/a&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;spring-starter&quot;&gt;Spring Starter&lt;/h4&gt;
-&lt;p&gt;spring-boot的核心在于starter，在于@EnableAutoConfiguration&lt;/p&gt;
+&lt;h4 id=&quot;springboot核心&quot;&gt;SpringBoot核心&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Starter 起步依赖：告诉Spring Boot需要什么功能，它就能引入需要的库&lt;/li&gt;
+  &lt;li&gt;EnableAutoConfiguration 自动配置：针对很多Spring应用程序常见的应用功能，Spring Boot能自动提供相关配置&lt;/li&gt;
+  &lt;li&gt;徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/lenve/p/10892011.html&quot;&gt;https://www.cnblogs.com/lenve/p/10892011.html&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;SpringBoot启动机制（starter机制）核心原理详解&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/d166d935217b&quot;&gt;https://www.jianshu.com/p/d166d935217b&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;实现一个Spring boot stater&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/fdb574e1f77c&quot;&gt;https://www.jianshu.com/p/fdb574e1f77c&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！
-&lt;a href=&quot;https://www.cnblogs.com/lenve/p/10892011.html&quot;&gt;https://www.cnblogs.com/lenve/p/10892011.html&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;SpringBoot启动机制（starter机制）核心原理详解
-&lt;a href=&quot;https://www.jianshu.com/p/d166d935217b&quot;&gt;https://www.jianshu.com/p/d166d935217b&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;实现一个Spring boot stater
-&lt;a href=&quot;https://www.jianshu.com/p/fdb574e1f77c&quot;&gt;https://www.jianshu.com/p/fdb574e1f77c&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;spring常用注解&quot;&gt;Spring常用注解&lt;/h4&gt;
+&lt;h4 id=&quot;springboot常用注解&quot;&gt;SpringBoot常用注解&lt;/h4&gt;
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@Conditional
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@ComponentScan
 @SpringBootApplication
+@Configuration：代表这个类是一个配置类。
+@ComponentScan：用来扫描指定包下面的注解类。
+@Import：用来导入其他的@Configuration配置类。
+@ImportResource：用来导入xml配置文件，比如某些配置一定要xml配置。
+@Bean：用来定义一个bean，可以指定初始、销毁方法，及bean范围等。
+@Controller 标识一个类为控制器。
+@RequestMapping URL的映射。
+@ResponseBody 返回结果转换为JSON字符串。
+@RequestBody 表示接收JSON格式字符串参数。
+@RestController这个注解，而不是@Controller，不过这个注解同样不是Spring boot提供的，而是Spring MVC4中的提供的注解，表示一个支持Restful的控制器。
+这个类中有三个URL映射是相同的，即都是/article/{id}，这在@Controller标识的类中是不允许出现的。这里的可以通过method来进行区分，produces的作用是表示返回结果的类型是JSON。
+@PathVariable这个注解，也是Spring MVC提供的，其作用是表示该变量的值是从访问路径中获取。
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h4 id=&quot;springwebapplication-与-servlet&quot;&gt;SpringWebApplication 与 Servlet&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Servlet是JavaWeb的核心，可以理解为CGI的Java线程版本&lt;/li&gt;
+  &lt;li&gt;SpringMVC核心用到DispatcherServlet，可以配置多个urlMapping&lt;/li&gt;
+  &lt;li&gt;Struts2/SpringMVC是基于Servlet实现分发，而Struts1是基于Filter&lt;/li&gt;
+  &lt;li&gt;一个SpringWebApplication可以定义多个Servlet，需要区分urlMapping&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;h4 id=&quot;spring-starter-1&quot;&gt;Spring Starter&lt;/h4&gt;
+&lt;h4 id=&quot;springboot-中的-tomcat-是如何启动的&quot;&gt;SpringBoot 中的 Tomcat 是如何启动的？&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ&quot;&gt;https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;spring-starter&quot;&gt;Spring Starter&lt;/h4&gt;
+
 &lt;h4 id=&quot;springmvc&quot;&gt;SpringMVC&lt;/h4&gt;
-&lt;h4 id=&quot;springjdbc--mybitas&quot;&gt;SpringJDBC / Mybitas&lt;/h4&gt;
-&lt;h4 id=&quot;spring-security--apache-shrio--jwt-javawebtoken&quot;&gt;Spring Security / Apache Shrio / JWT JavaWebToken&lt;/h4&gt;
-&lt;h4 id=&quot;spring-boot-打出来的war中的webxml消失了&quot;&gt;spring boot 打出来的war中的web.xml消失了&lt;/h4&gt;
-&lt;p&gt;springboot 是如何帮我们省去web.xml配置的
-&lt;a href=&quot;https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app&quot;&gt;https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;http下载工具，基于http代理，支持多连接分块下载
-https://github.com/proxyee-down-org/proxyee-down&lt;/p&gt;
+&lt;h4 id=&quot;springjdbc--mybatis--spring-data--jpa&quot;&gt;SpringJDBC / Mybatis / Spring Data / JPA&lt;/h4&gt;
+
+&lt;h4 id=&quot;spring-security--apache-shrio--jwt-javawebtoken&quot;&gt;Spring Security / Apache Shrio / JWT JavaWebToken&lt;/h4&gt;
+
+&lt;h4 id=&quot;springboot-打出来的war中的webxml消失了&quot;&gt;SpringBoot 打出来的war中的web.xml消失了&lt;/h4&gt;
+&lt;p&gt;springboot 是如何帮我们省去web.xml配置的&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app&quot;&gt;https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;springboot-异步请求和异步调用&quot;&gt;SpringBoot 异步请求和异步调用&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA&quot;&gt;https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;webmvcconfigureradapter-与-webmvcconfigurationsupport&quot;&gt;WebMvcConfigurerAdapter 与 WebMvcConfigurationSupport&lt;/h4&gt;
+&lt;p&gt;从遇到的一个坑查了半天&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/innovationad/article/details/79959383&quot;&gt;https://blog.csdn.net/innovationad/article/details/79959383&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Fri, 27 Mar 2020 22:25:00 +0800</pubDate>
         <link>http://localhost:4000/%E4%BA%92%E8%81%94%E7%BD%91/2020/03/27/Spring.html</link>

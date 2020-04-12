@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  " Spring "
+title:  " SpringBoot "
 date:   2020-03-27 23:25:00 +0900
 comments: true
 tags:
@@ -9,24 +9,21 @@ tags:
 categories:
 - 互联网
 ---
-#### Spring启动原理
+#### SpringBoot启动原理
 启动原理解析
 <http://tengj.top/2017/03/09/springboot3/>
 
-#### Spring-Boot核心
+#### SpringBoot核心
 - Starter 起步依赖：告诉Spring Boot需要什么功能，它就能引入需要的库
 - EnableAutoConfiguration 自动配置：针对很多Spring应用程序常见的应用功能，Spring Boot能自动提供相关配置
-S
-徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！
+- 徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！
 <https://www.cnblogs.com/lenve/p/10892011.html>
-
-SpringBoot启动机制（starter机制）核心原理详解
+- SpringBoot启动机制（starter机制）核心原理详解
 <https://www.jianshu.com/p/d166d935217b>
-
-实现一个Spring boot stater
+- 实现一个Spring boot stater
 <https://www.jianshu.com/p/fdb574e1f77c>
 
-#### Spring常用注解
+#### SpringBoot常用注解
 ```
 @Conditional
 @SpringBootConfiguration
@@ -46,9 +43,13 @@ SpringBoot启动机制（starter机制）核心原理详解
 @PathVariable这个注解，也是Spring MVC提供的，其作用是表示该变量的值是从访问路径中获取。
 ```
 #### SpringWebApplication 与 Servlet
+- Servlet是JavaWeb的核心，可以理解为CGI的Java线程版本
+- SpringMVC核心用到DispatcherServlet，可以配置多个urlMapping
+- Struts2/SpringMVC是基于Servlet实现分发，而Struts1是基于Filter
+- 一个SpringWebApplication可以定义多个Servlet，需要区分urlMapping
 
-#### Spring Boot 中的 Tomcat 是如何启动的？
-https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ
+#### SpringBoot 中的 Tomcat 是如何启动的？
+<https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ>
 
 #### Spring Starter
 
@@ -58,13 +59,16 @@ https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ
 
 #### Spring Security / Apache Shrio / JWT JavaWebToken
 
-#### spring boot 打出来的war中的web.xml消失了
+#### SpringBoot 打出来的war中的web.xml消失了
 springboot 是如何帮我们省去web.xml配置的
+
 <https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app>
 
-#### Spring Boot 异步请求和异步调用
-https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA
+#### SpringBoot 异步请求和异步调用
+
+<https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA>
 
 #### WebMvcConfigurerAdapter 与 WebMvcConfigurationSupport
 从遇到的一个坑查了半天
-https://blog.csdn.net/innovationad/article/details/79959383
+
+<https://blog.csdn.net/innovationad/article/details/79959383>
