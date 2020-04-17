@@ -20,7 +20,11 @@ categories:
 - <https://www.jb51.net/article/136701.htm>
 - <https://www.cnblogs.com/houss/p/10598901.html>
 - <https://coolshell.cn/articles/1846.html>
-
+```sql
+# 优化1
+select * from t_third_device where third='kuaishou' limit 300000,5; # 优化前
+select * from t_third_device a inner join (select id from t_third_device where third='kuaishou' limit 300000,5) b on a.id=b.id; # 优化后
+```
 #### 常用指标
 - QPS   (2w/s与机器配置及数据量有关)
 - TPS   (1w/s)

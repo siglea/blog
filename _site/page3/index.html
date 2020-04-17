@@ -168,11 +168,13 @@
   <li><a href="https://www.jianshu.com/p/efaa9005a598">https://www.jianshu.com/p/efaa9005a598</a></li>
   <li><a href="https://www.jb51.net/article/136701.htm">https://www.jb51.net/article/136701.htm</a></li>
   <li><a href="https://www.cnblogs.com/houss/p/10598901.html">https://www.cnblogs.com/houss/p/10598901.html</a></li>
-  <li><a href="https://coolshell.cn/articles/1846.html">https://coolshell.cn/articles/1846.html</a></li>
-</ul>
-
-<h4 id="常用指标">常用指标</h4>
-<ul>
+  <li><a href="https://coolshell.cn/articles/1846.html">https://coolshell.cn/articles/1846.html</a>
+    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="err">优化</span><span class="mi">1</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化前</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="n">a</span> <span class="k">inner</span> <span class="k">join</span> <span class="p">(</span><span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="n">b</span> <span class="k">on</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化后</span>
+</code></pre></div>    </div>
+    <h4 id="常用指标">常用指标</h4>
+  </li>
   <li>QPS   (2w/s与机器配置及数据量有关)</li>
   <li>TPS   (1w/s)</li>
   <li>并发数</li>
