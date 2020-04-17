@@ -56,6 +56,57 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html"> Linux  Cmd </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>linux</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="系统负载查看命令top">系统负载查看命令top</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>top
+<span class="c"># m键:切换内存使用率进度条模式</span>
+
+<span class="c"># N:根据pid大小进行排序</span>
+<span class="c"># M:根据驻留内存大小进行排序</span>
+<span class="c"># P:根据CPU使用百分比大小进行排序</span>
+<span class="c"># T:根据时间/累计时间进行排序</span>
+</code></pre></div></div>
+<h4 id="内存查看命令free">内存查看命令free</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>free <span class="nt">-h</span>
+<span class="c">#free命令信息来自 cat /proc/meminfo</span>
+</code></pre></div></div>
+<h4 id="磁盘查看命令df">磁盘查看命令df</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">df</span> <span class="nt">-h</span>
+</code></pre></div></div>
+<h4 id="目录文件大小查看命令du">目录文件大小查看命令du</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">du</span>
+<span class="c"># 只显示当前目录下面的子目录的目录大小和当前目录的总的大小</span>
+
+<span class="nb">du</span>  <span class="nt">-sh</span>
+<span class="c"># 查看当前目录总大小</span>
+
+<span class="nb">du</span>  <span class="nt">-sh</span> ./<span class="k">*</span> 
+<span class="nb">du</span> <span class="nt">-h</span>  <span class="nt">--max-depth</span><span class="o">=</span>1
+<span class="c"># 查看当前目录各个文件大小</span>
+</code></pre></div></div>
+
+<h4 id="systemctl-supervisor-crontab-service-systemmd">systemctl supervisor crontab service systemmd</h4>
+
+<h4 id="curl-wget-sed-awk-ps">curl wget sed awk ps</h4>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/11/04/Linux-cmd.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2019/05/29/youxiudemianyang.html">优秀的绵羊</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
@@ -141,214 +192,6 @@
       </div>
       <div style="height:50px;">
 	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/server-performance.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html">maven使用</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>maven</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>构建</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="mvn-clean">mvn clean</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    mvn clean package <span class="nt">-Dmaven</span>.test.skip<span class="o">=</span><span class="nb">true</span>
-</code></pre></div></div>
-<h4 id="mvn-compile">mvn compile</h4>
-
-<h4 id="创建maven的普通java项目">创建Maven的普通java项目：</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate <span class="nt">-DgroupId</span><span class="o">=</span>com.siglea <span class="nt">-DartifactId</span><span class="o">=</span>demo
-</code></pre></div></div>
-<h4 id="创建maven的javaweb项目">创建Maven的javaWeb项目：</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate <span class="nt">-DgroupId</span><span class="o">=</span>com.siglea <span class="nt">-DartifactId</span><span class="o">=</span>demoweb <span class="nt">-DarchetypeArtifactId</span><span class="o">=</span>maven-archetype-webapp  
-</code></pre></div></div>
-<h4 id="mvn-jettyrun">mvn jetty:run</h4>
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c">&lt;!-- https://mvnrepository.com/artifact/org.mortbay.jetty/jetty --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.mortbay.jetty<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>jetty<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>6.1.26<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-</code></pre></div></div>
-<h4 id="mvn-spring-bootrun">mvn spring-boot:run</h4>
-<h4 id="mvn-依赖冲突">mvn 依赖冲突</h4>
-<ul>
-  <li>第一声明者优先原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
-  <span class="c">&lt;!--  第一声明者优先原则 spring-beans-4.2.4 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>4.2.4.RELEASE<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-   
-<span class="c">&lt;!--   spring-beans-3.0.5 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>struts2-spring-plugin<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>2.3.24<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;/dependencies&gt;</span>
-</code></pre></div></div>
-
-<ul>
-  <li>路径近者优先原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>   
-    <span class="c">&lt;!--   spring-beans-3.0.5 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>struts2-spring-plugin<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>2.3.24<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-    <span class="c">&lt;!--  路径近者优先原则 spring-beans-4.2.4 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-  		<span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-  		<span class="nt">&lt;artifactId&gt;</span>spring-beans<span class="nt">&lt;/artifactId&gt;</span>
-  		<span class="nt">&lt;version&gt;</span>4.2.4.RELEASE<span class="nt">&lt;/version&gt;</span>
-  	<span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;/dependencies&gt;</span>
-</code></pre></div></div>
-<ul>
-  <li>排除依赖原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
-  		<span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-  		<span class="nt">&lt;artifactId&gt;</span>struts2-spring-plugin<span class="nt">&lt;/artifactId&gt;</span>
-  		<span class="nt">&lt;version&gt;</span>2.3.24<span class="nt">&lt;/version&gt;</span>
-  		<span class="nt">&lt;exclusions&gt;</span>
-  		  <span class="nt">&lt;exclusion&gt;</span>
-  		    <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-  		    <span class="nt">&lt;artifactId&gt;</span>spring-beans<span class="nt">&lt;/artifactId&gt;</span>
-  		  <span class="nt">&lt;/exclusion&gt;</span>
-  		<span class="nt">&lt;/exclusions&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></div></div>
-<ul>
-  <li>版本锁定原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- 锁定版本，struts2-2.3.24、spring4.2.4、hibernate5.0.7 --&gt;</span>
-<span class="nt">&lt;dependencyManagement&gt;</span>
-    <span class="nt">&lt;dependencies&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>struts2-core<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>${struts.version}<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.hibernate<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>hibernate-core<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>${hibernate.version}<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-    <span class="nt">&lt;/dependencies&gt;</span>
-<span class="nt">&lt;/dependencyManagement&gt;</span>
-</code></pre></div></div>
-<h4 id="遇到的错误1mvn-archetypegenerate">遇到的错误（1）mvn archetype:generate</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    [INFO] --- maven-archetype-plugin:3.0.1:generate (default-cli) @ standalone-pom ---
-    [WARNING] Error injecting: org.apache.maven.archetype.common.DefaultPomManager
-    java.lang.NoClassDefFoundError: org/jdom/JDOMException
-            at java.lang.Class.getDeclaredConstructors0(Native Method)
-    解决办法：删除 .m2/repository 对应报错的文件
-</code></pre></div></div>
-<h4 id="遇到的错误2-mvn-archetypecreate">遇到的错误（2） mvn archetype:create</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn archetype:create 修改为 mvn archetype:generate
-</code></pre></div></div>
-
-<h4 id="遇到的错误3mvn-site">遇到的错误（3）mvn site</h4>
-<p>java.lang.NoClassDefFoundError: org/apache/maven/doxia/siterenderer/DocumentContent
-解决办法：在pom.xml添加如下配置</p>
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;build&gt;</span>
-<span class="nt">&lt;pluginManagement&gt;</span>
-    <span class="nt">&lt;plugins&gt;</span>
-        <span class="nt">&lt;plugin&gt;</span>
-          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-          <span class="nt">&lt;artifactId&gt;</span>maven-site-plugin<span class="nt">&lt;/artifactId&gt;</span>
-          <span class="nt">&lt;version&gt;</span>3.3<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/plugin&gt;</span>
-        <span class="nt">&lt;plugin&gt;</span>
-          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-          <span class="nt">&lt;artifactId&gt;</span>maven-project-info-reports-plugin<span class="nt">&lt;/artifactId&gt;</span>
-          <span class="nt">&lt;version&gt;</span>2.7<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/plugin&gt;</span>
-    <span class="nt">&lt;/plugins&gt;</span>
-    <span class="nt">&lt;/pluginManagement&gt;</span>
-<span class="nt">&lt;/build&gt;</span>
-</code></pre></div></div>
-
-<h3 id="好用的源地址pomxml-settingsxml中配置">好用的源地址(pom.xml settings.xml中配置)</h3>
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;mirrors&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>nexus-aliyun<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>Nexus aliyun<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://maven.aliyun.com/nexus/content/groups/public/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-   <span class="nt">&lt;id&gt;</span>maven2-repository.dev.java.net<span class="nt">&lt;/id&gt;</span>
-   <span class="nt">&lt;name&gt;</span>Java.net Repository for Maven<span class="nt">&lt;/name&gt;</span>
-   <span class="nt">&lt;url&gt;</span>http://download.java.net/maven/2/<span class="nt">&lt;/url&gt;</span>
-   <span class="nt">&lt;mirrorOf&gt;</span>central1<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r1<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://repo1.maven.org/maven2/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central2<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r3<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://repository.sonatype.org/content/groups/public/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central3<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r4<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://mirrors.ibiblio.org/pub/mirrors/maven2/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central4<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r2<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://repository.jboss.com/maven2/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central5<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://download.java.net/maven/2<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central6<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;/mirrors&gt;</span>
-</code></pre></div></div>
-<h4 id="参考链接">参考链接</h4>
-<p><a href="http://repo2.maven.org/maven2/">Maven库</a></p>
-
-<p><a href="http://mvnrepository.com/">Maven依赖查询</a></p>
-
-<p><a href="http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html">http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%92%E8%81%94%E7%BD%91/2019/05/27/maven.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -547,7 +390,7 @@
       
       
       <a  href="tag/JVM">
-      <span class="label label-default">jvm ( 2 )</span>
+      <span class="label label-default">jvm ( 3 )</span>
       </a><br />
 
       

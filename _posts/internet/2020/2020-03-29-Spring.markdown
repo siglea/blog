@@ -9,18 +9,42 @@ tags:
 categories:
 - 互联网
 ---
-#### SpringBoot启动原理
-启动原理解析
-<http://tengj.top/2017/03/09/springboot3/>
 
-#### SpringBoot核心
-- Starter 起步依赖：告诉Spring Boot需要什么功能，它就能引入需要的库
-- EnableAutoConfiguration 自动配置：针对很多Spring应用程序常见的应用功能，Spring Boot能自动提供相关配置
+#### SpringBoot启动原理 ☆☆☆
+启动原理解析
+ <http://tengj.top/2017/03/09/springboot3/>
+
+#### SpringBoot自动配置 ☆☆☆
+- SpringBoot项目配置注解@EnableAutoConfiguration后
+- SpringBoot启动扫描META-INF下的spring.factories
+- spring.factories子配置项org.springframework.boot.autoconfigure.EnableAutoConfiguration配置了所有可以自动配置的组件
+- 各个XXXAutoConfiguration按照各自的ConditionalOnClass/OnBean等，判断是否加载XXX配置
+- 根据XXX配置的@Import加载相关的其他类，之后通过反射机制初始化Bean
+- 之后即可通过注入的方式使用
+```java
+// 比如DataSourceAutoConfiguration的自动配置是检测到DataSource.class 与 EmbeddedDatabaseType.class存在
+// DataSource是javax包中自带，而EmbeddedDatabaseType存在于spring-boot-starter-jdbc中
+// 因此在pom中引入spring-boot-starter-jdbc后，即可触发加载操作
+// 接下来就是根据spring.datasource相关配置初始化PooledDataSource 或者 直接使用EmbeddedDatabase
+@Configuration
+@ConditionalOnClass({DataSource.class, EmbeddedDatabaseType.class})
+@EnableConfigurationProperties({DataSourceProperties.class})
+@Import({DataSourcePoolMetadataProvidersConfiguration.class, DataSourceInitializationConfiguration.class})
+public class DataSourceAutoConfiguration {
+}
+// 参考 https://blog.csdn.net/kangsa998/article/details/90231518
+```
+
+#### SpringBoot的Starter ☆☆☆
 - 徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！
 <https://www.cnblogs.com/lenve/p/10892011.html>
+
 - SpringBoot启动机制（starter机制）核心原理详解
+
 <https://www.jianshu.com/p/d166d935217b>
+
 - 实现一个Spring boot stater
+
 <https://www.jianshu.com/p/fdb574e1f77c>
 
 #### SpringBoot常用注解
@@ -51,11 +75,13 @@ categories:
 #### SpringBoot 中的 Tomcat 是如何启动的？
 <https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ>
 
-#### Spring Starter
-
 #### SpringMVC
 
 #### SpringJDBC / Mybatis / Spring Data / JPA
+- Mybatis的集成和使用
+<https://blog.lqdev.cn/2018/12/03/springboot/chapter-thirty-five/>
+- Mybatis-plus的集成和使用
+<https://blog.lqdev.cn/2018/07/21/springboot/chapter-nine/>
 
 #### Spring Security / Apache Shrio / JWT JavaWebToken
 
@@ -63,16 +89,76 @@ categories:
 springboot 是如何帮我们省去web.xml配置的
 
 <https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app>
-
-#### SpringBoot 异步请求和异步调用
-
-<https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA>
-
 #### WebMvcConfigurerAdapter 与 WebMvcConfigurationSupport
-从遇到的一个坑查了半天
-
+(遇到的一个坑查了半天)
 <https://blog.csdn.net/innovationad/article/details/79959383>
 
 #### SpringBoot之Actuator
-Spring Boot Actuator:健康检查、审计、统计和监控
+- Spring Boot Actuator:健康检查、审计、统计和监控
 <https://www.jianshu.com/p/d5943e303a1f>
+- 监控管理之Spring Boot Admin使用
+<https://blog.lqdev.cn/2018/09/14/springboot/chapter-twenty-eight/>
+
+#### SpringBoot日志管理之AOP统一日志 
+<https://blog.lqdev.cn/2018/08/24/springboot/chapter-twenty-four/>
+
+#### SpringBoot日志管理之追加统一traceId
+```java
+import org.slf4j.MDC;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class LogTraceInterceptor extends HandlerInterceptorAdapter {
+
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        MDC.put(Constant.traceId, Constant.traceId+":"+RandomHelper.generateNonceNumStr(8));
+        return super.preHandle(request, response, handler);
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        super.postHandle(request, response, handler, modelAndView);
+        MDC.remove(Constant.traceId);
+    }
+}
+```
+```xml
+ <appender name="xhs" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/app.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %X{traceId} [%thread] %-5level %c{10} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+</appender>
+```
+#### SpringBoot & Dubbo
+<https://blog.lqdev.cn/2018/09/28/springboot/chapter-twenty-nine/>
+
+#### SpringBoot 异步的各种实现
+- 异步开发之异步请求 
+<https://blog.lqdev.cn/2018/08/16/springboot/chapter-twenty/>
+- 异步开发之异步调用
+<https://blog.lqdev.cn/2018/08/17/springboot/chapter-twenty-one/>
+
+<https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA>
+- 事件的发布和监听
+<https://blog.lqdev.cn/2018/11/06/springboot/chapter-thirty-two/>
+- RabbitMQ的集成和使用 
+<https://blog.lqdev.cn/2018/07/24/springboot/chapter-twelve/>
+
+<https://blog.lqdev.cn/2019/07/21/springboot/chapter-thirty-eight/>
+
+#### SpringBoot & WebService
+- Spring web Servcies集成和使用 
+<https://blog.lqdev.cn/2018/11/09/springboot/chapter-thirty-three/>
+- CXF构建WebService服务 
+<https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/>
