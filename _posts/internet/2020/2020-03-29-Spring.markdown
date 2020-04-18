@@ -9,10 +9,90 @@ tags:
 categories:
 - 互联网
 ---
+#### Spring Boot 是什么？
+- Spring 是一个“引擎”；
+- Spring MVC 是基于Spring的一个 MVC 框架；
+- Spring Boot 是基于Spring的条件注册的一套快速开发整合包。
 
 #### SpringBoot启动原理 ☆☆☆
-启动原理解析
- <http://tengj.top/2017/03/09/springboot3/>
+```java
+package org.springframework.boot;
+public class SpringApplication {
+    public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+            this.sources = new LinkedHashSet();
+            this.bannerMode = Mode.CONSOLE;
+            this.logStartupInfo = true;
+            this.addCommandLineProperties = true;
+            this.addConversionService = true;
+            this.headless = true;
+            this.registerShutdownHook = true;
+            this.additionalProfiles = new HashSet();
+            this.isCustomEnvironment = false;
+            this.resourceLoader = resourceLoader;
+            Assert.notNull(primarySources, "PrimarySources must not be null");
+            this.primarySources = new LinkedHashSet(Arrays.asList(primarySources));
+            // 1. 推测ApplicationType
+            this.webApplicationType = WebApplicationType.deduceFromClasspath();
+            // 2. 根据spring.factories初始化ApplicationContextInitializer 与 ApplicationListener
+            this.setInitializers(this.getSpringFactoriesInstances(ApplicationContextInitializer.class));
+            this.setListeners(this.getSpringFactoriesInstances(ApplicationListener.class));
+            // 3. 推测 Main入口
+            this.mainApplicationClass = this.deduceMainApplicationClass();
+    }
+public ConfigurableApplicationContext run(String... args) {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        ConfigurableApplicationContext context = null;
+        Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList();
+        this.configureHeadlessProperty();
+        SpringApplicationRunListeners listeners = this.getRunListeners(args);
+        // 4. SpringApplicationRunListeners生命周期之started()
+        listeners.starting();
+
+        Collection exceptionReporters;
+        try {
+            ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+            // 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared()
+            ConfigurableEnvironment environment = this.prepareEnvironment(listeners, applicationArguments);
+            this.configureIgnoreBeanInfo(environment);
+            Banner printedBanner = this.printBanner(environment);
+            context = this.createApplicationContext();
+            exceptionReporters = this.getSpringFactoriesInstances(SpringBootExceptionReporter.class, new Class[]{ConfigurableApplicationContext.class}, context);
+            // 6. 初始化类加载器、bean产生器、资源加载器等，打印banner
+            this.prepareContext(context, environment, listeners, applicationArguments, printedBanner);
+            // 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等
+            //    SpringApplicationRunListeners生命周期之contextPrepared()/contextLoaded()
+            this.refreshContext(context);
+            this.afterRefresh(context, applicationArguments);
+            stopWatch.stop();
+            if (this.logStartupInfo) {
+                (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), stopWatch);
+            }
+
+            listeners.started(context);
+            this.callRunners(context, applicationArguments);
+        } catch (Throwable var10) {
+            this.handleRunFailure(context, var10, exceptionReporters, listeners);
+            throw new IllegalStateException(var10);
+        }
+
+        try {
+            listeners.running(context);
+            return context;
+        } catch (Throwable var9) {
+            this.handleRunFailure(context, var9, exceptionReporters, (SpringApplicationRunListeners)null);
+            throw new IllegalStateException(var9);
+        }
+    }
+}
+```
+
+- 启动原理解析 
+<http://tengj.top/2017/03/09/springboot3/>
+- 自动装配之@ComponentScan详解
+<https://blog.csdn.net/mapleleafforest/article/details/86623578>
+- 自动装配之@EnableAutoConfiguration详解
+<https://blog.csdn.net/mapleleafforest/article/details/87273213>
 
 #### SpringBoot自动配置 ☆☆☆
 - SpringBoot项目配置注解@EnableAutoConfiguration后
@@ -32,9 +112,10 @@ categories:
 @Import({DataSourcePoolMetadataProvidersConfiguration.class, DataSourceInitializationConfiguration.class})
 public class DataSourceAutoConfiguration {
 }
-// 参考 https://blog.csdn.net/kangsa998/article/details/90231518
+// 
 ```
-
+DataSourceAutoConfiguration解析
+<https://blog.csdn.net/kangsa998/article/details/90231518>
 #### SpringBoot的Starter ☆☆☆
 - 徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！
 <https://www.cnblogs.com/lenve/p/10892011.html>
@@ -66,6 +147,8 @@ public class DataSourceAutoConfiguration {
 这个类中有三个URL映射是相同的，即都是/article/{id}，这在@Controller标识的类中是不允许出现的。这里的可以通过method来进行区分，produces的作用是表示返回结果的类型是JSON。
 @PathVariable这个注解，也是Spring MVC提供的，其作用是表示该变量的值是从访问路径中获取。
 ```
+27个核心注解
+<https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA>
 #### SpringWebApplication 与 Servlet
 - Servlet是JavaWeb的核心，可以理解为CGI的Java线程版本
 - SpringMVC核心用到DispatcherServlet，可以配置多个urlMapping
@@ -162,3 +245,11 @@ public class LogTraceInterceptor extends HandlerInterceptorAdapter {
 <https://blog.lqdev.cn/2018/11/09/springboot/chapter-thirty-three/>
 - CXF构建WebService服务 
 <https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/>
+
+#### LTW In Jdk Or SpringBoot
+<https://www.cnblogs.com/takumicx/p/10150344.html>
+
+
+如何将Spring Boot应用程序部署到Pivotal Cloud Foundry(PCF)?
+
+Spring Boot +Apache Camel??

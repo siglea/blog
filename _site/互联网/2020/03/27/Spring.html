@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title> SpringBoot </title>
-  <meta name="description" content="SpringBoot启动原理 ☆☆☆启动原理解析 http://tengj.top/2017/03/09/springboot3/">
+  <meta name="description" content="Spring Boot 是什么？  Spring 是一个“引擎”；  Spring MVC 是基于Spring的一个 MVC 框架；  Spring Boot 是基于Spring的条件注册的一套快速开发整合包。">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -62,9 +62,97 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="springboot启动原理-">SpringBoot启动原理 ☆☆☆</h4>
-<p>启动原理解析
- <a href="http://tengj.top/2017/03/09/springboot3/">http://tengj.top/2017/03/09/springboot3/</a></p>
+    <h4 id="spring-boot-是什么">Spring Boot 是什么？</h4>
+<ul>
+  <li>Spring 是一个“引擎”；</li>
+  <li>Spring MVC 是基于Spring的一个 MVC 框架；</li>
+  <li>Spring Boot 是基于Spring的条件注册的一套快速开发整合包。</li>
+</ul>
+
+<h4 id="springboot启动原理-">SpringBoot启动原理 ☆☆☆</h4>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">boot</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SpringApplication</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">SpringApplication</span><span class="o">(</span><span class="nc">ResourceLoader</span> <span class="n">resourceLoader</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">primarySources</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">sources</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashSet</span><span class="o">();</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">bannerMode</span> <span class="o">=</span> <span class="nc">Mode</span><span class="o">.</span><span class="na">CONSOLE</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">logStartupInfo</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">addCommandLineProperties</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">addConversionService</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">headless</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">registerShutdownHook</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">additionalProfiles</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">();</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">isCustomEnvironment</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span> <span class="o">=</span> <span class="n">resourceLoader</span><span class="o">;</span>
+            <span class="nc">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">primarySources</span><span class="o">,</span> <span class="s">"PrimarySources must not be null"</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">primarySources</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashSet</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">primarySources</span><span class="o">));</span>
+            <span class="c1">// 1. 推测ApplicationType</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">webApplicationType</span> <span class="o">=</span> <span class="nc">WebApplicationType</span><span class="o">.</span><span class="na">deduceFromClasspath</span><span class="o">();</span>
+            <span class="c1">// 2. 根据spring.factories初始化ApplicationContextInitializer 与 ApplicationListener</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">setInitializers</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="nc">ApplicationContextInitializer</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">setListeners</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="nc">ApplicationListener</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+            <span class="c1">// 3. 推测 Main入口</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">deduceMainApplicationClass</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="kd">public</span> <span class="nc">ConfigurableApplicationContext</span> <span class="nf">run</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">StopWatch</span> <span class="n">stopWatch</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StopWatch</span><span class="o">();</span>
+        <span class="n">stopWatch</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+        <span class="nc">ConfigurableApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="nc">Collection</span><span class="o">&lt;</span><span class="nc">SpringBootExceptionReporter</span><span class="o">&gt;</span> <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">configureHeadlessProperty</span><span class="o">();</span>
+        <span class="nc">SpringApplicationRunListeners</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getRunListeners</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+        <span class="c1">// 4. SpringApplicationRunListeners生命周期之started()</span>
+        <span class="n">listeners</span><span class="o">.</span><span class="na">starting</span><span class="o">();</span>
+
+        <span class="nc">Collection</span> <span class="n">exceptionReporters</span><span class="o">;</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">ApplicationArguments</span> <span class="n">applicationArguments</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultApplicationArguments</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+            <span class="c1">// 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared()</span>
+            <span class="nc">ConfigurableEnvironment</span> <span class="n">environment</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">prepareEnvironment</span><span class="o">(</span><span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">configureIgnoreBeanInfo</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
+            <span class="nc">Banner</span> <span class="n">printedBanner</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">printBanner</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">createApplicationContext</span><span class="o">();</span>
+            <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="nc">SpringBootExceptionReporter</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Class</span><span class="o">[]{</span><span class="nc">ConfigurableApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="n">context</span><span class="o">);</span>
+            <span class="c1">// 6. 初始化类加载器、bean产生器、资源加载器等，打印banner</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">prepareContext</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">environment</span><span class="o">,</span> <span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">,</span> <span class="n">printedBanner</span><span class="o">);</span>
+            <span class="c1">// 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等</span>
+            <span class="c1">//    SpringApplicationRunListeners生命周期之contextPrepared()/contextLoaded()</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">refreshContext</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">afterRefresh</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
+            <span class="n">stopWatch</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">logStartupInfo</span><span class="o">)</span> <span class="o">{</span>
+                <span class="o">(</span><span class="k">new</span> <span class="nc">StartupInfoLogger</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span><span class="o">)).</span><span class="na">logStarted</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getApplicationLog</span><span class="o">(),</span> <span class="n">stopWatch</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="n">listeners</span><span class="o">.</span><span class="na">started</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">callRunners</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">var10</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">handleRunFailure</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">var10</span><span class="o">,</span> <span class="n">exceptionReporters</span><span class="o">,</span> <span class="n">listeners</span><span class="o">);</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="n">var10</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">listeners</span><span class="o">.</span><span class="na">running</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">context</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">var9</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">handleRunFailure</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">var9</span><span class="o">,</span> <span class="n">exceptionReporters</span><span class="o">,</span> <span class="o">(</span><span class="nc">SpringApplicationRunListeners</span><span class="o">)</span><span class="kc">null</span><span class="o">);</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="n">var9</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>启动原理解析</li>
+</ul>
+<p><a href="http://tengj.top/2017/03/09/springboot3/">http://tengj.top/2017/03/09/springboot3/</a></p>
+<ul>
+  <li>自动装配之@ComponentScan详解</li>
+</ul>
+<p><a href="https://blog.csdn.net/mapleleafforest/article/details/86623578">https://blog.csdn.net/mapleleafforest/article/details/86623578</a></p>
+<ul>
+  <li>自动装配之@EnableAutoConfiguration详解</li>
+</ul>
+<p><a href="https://blog.csdn.net/mapleleafforest/article/details/87273213">https://blog.csdn.net/mapleleafforest/article/details/87273213</a></p>
 
 <h4 id="springboot自动配置-">SpringBoot自动配置 ☆☆☆</h4>
 <ul>
@@ -84,11 +172,12 @@
 <span class="nd">@Import</span><span class="o">({</span><span class="nc">DataSourcePoolMetadataProvidersConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">DataSourceInitializationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataSourceAutoConfiguration</span> <span class="o">{</span>
 <span class="o">}</span>
-<span class="c1">// 参考 https://blog.csdn.net/kangsa998/article/details/90231518</span>
+<span class="c1">// </span>
 </code></pre></div>    </div>
+    <p>DataSourceAutoConfiguration解析</p>
   </li>
 </ul>
-
+<p><a href="https://blog.csdn.net/kangsa998/article/details/90231518">https://blog.csdn.net/kangsa998/article/details/90231518</a></p>
 <h4 id="springboot的starter-">SpringBoot的Starter ☆☆☆</h4>
 <ul>
   <li>徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！</li>
@@ -125,6 +214,8 @@
 这个类中有三个URL映射是相同的，即都是/article/{id}，这在@Controller标识的类中是不允许出现的。这里的可以通过method来进行区分，produces的作用是表示返回结果的类型是JSON。
 @PathVariable这个注解，也是Spring MVC提供的，其作用是表示该变量的值是从访问路径中获取。
 </code></pre></div></div>
+<p>27个核心注解
+<a href="https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA">https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA</a></p>
 <h4 id="springwebapplication-与-servlet">SpringWebApplication 与 Servlet</h4>
 <ul>
   <li>Servlet是JavaWeb的核心，可以理解为CGI的Java线程版本</li>
@@ -241,6 +332,13 @@
   <li>CXF构建WebService服务</li>
 </ul>
 <p><a href="https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/">https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/</a></p>
+
+<h4 id="ltw-in-jdk-or-springboot">LTW In Jdk Or SpringBoot</h4>
+<p><a href="https://www.cnblogs.com/takumicx/p/10150344.html">https://www.cnblogs.com/takumicx/p/10150344.html</a></p>
+
+<p>如何将Spring Boot应用程序部署到Pivotal Cloud Foundry(PCF)?</p>
+
+<p>Spring Boot +Apache Camel??</p>
 
   </div>
 </article>
