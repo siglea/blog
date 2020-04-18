@@ -6,7 +6,7 @@ comments: true
 tags:
 - mysql DB 
 categories:
-- 互联网
+- 技术
 ---
 
 ### 数据库本地事务简述

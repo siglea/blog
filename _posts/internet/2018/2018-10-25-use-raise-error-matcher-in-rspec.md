@@ -6,7 +6,7 @@ comments: true
 tags:
 - programming
 categories:
-- 互联网
+- 技术
 ---
 
 Yesterday I came accross a tricky useage of `raise_error` matcher in rspec, first I try to use the one line syntax `is_expected.to`

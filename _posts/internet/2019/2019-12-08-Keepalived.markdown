@@ -6,7 +6,7 @@ comments: true
 tags:
 - linux
 categories:
-- 互联网
+- 技术
 ---
 ### keepalived是什么
 Keepalived软件起初是专为LVS负载均衡软件设计的，用来管理并监控LVS集群系统中各个服务节点的状态，后来又加入了可以实现高可用的VRRP功能。因此，Keepalived除了能够管理LVS软件外，还可以作为其他服务（例如：Nginx、Haproxy、MySQL等）的高可用解决方案软件。

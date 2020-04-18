@@ -6,7 +6,7 @@ comments: true
 tags:
 - 算法
 categories:
-- 互联网
+- 技术
 ---
 
 #### 时间复杂度原则

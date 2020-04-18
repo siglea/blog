@@ -6,7 +6,7 @@ comments: true
 tags:
 - python
 categories:
-- 互联网
+- 技术
 ---
 
 ## np.array

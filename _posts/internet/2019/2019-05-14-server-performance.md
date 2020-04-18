@@ -8,7 +8,7 @@ tags:
 - 高并发
 - 高可用
 categories:
-- 互联网 
+- 技术
 ---
 #### 单服务器性能评估
 <https://cloud.tencent.com/developer/article/1004754>

@@ -6,7 +6,7 @@ comments: true
 tags:
 - 算法 
 categories:
-- 互联网
+- 技术
 ---
 
 强一致性的2PC、3PC、Paxos、Raft、Zab；

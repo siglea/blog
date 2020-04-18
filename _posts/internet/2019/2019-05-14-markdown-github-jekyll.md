@@ -6,7 +6,7 @@ comments: true
 tags:
 - jekyll
 categories:
-- 互联网 
+- 技术
 ---
 #### jekyll安装
 ```shell

@@ -6,9 +6,9 @@ comments: true
 tags:
 - linux
 categories:
-- 互联网
+- 技术
 ---
-#### 系统负载查看命令top
+### 系统负载查看命令top
 ```shell
 top
 # m键:切换内存使用率进度条模式
@@ -18,16 +18,16 @@ top
 # P:根据CPU使用百分比大小进行排序
 # T:根据时间/累计时间进行排序
 ```
-#### 内存查看命令free
+### 内存查看命令free
 ```shell
 free -h
 #free命令信息来自 cat /proc/meminfo
 ```
-#### 磁盘查看命令df
+### 磁盘查看命令df
 ```shell
 df -h
 ```
-#### 目录文件大小查看命令du
+### 目录文件大小查看命令du
 ```shell
 du
 # 只显示当前目录下面的子目录的目录大小和当前目录的总的大小
@@ -40,17 +40,129 @@ du -h  --max-depth=1
 # 查看当前目录各个文件大小
 ```
 
-#### systemctl supervisor crontab service systemmd
+### systemd & systemctl
+- 使用了 Systemd，就不需要再用init了。Systemd 逐渐取代了initd
+- /etc/init.d 是sysVinit服务的启动方式,对于一些古老的系统或者服务 使用这个
+- service 也是sysVinit, 比/etc/init.d先进一点,底层还是调用/etc/init.d
+- systemctl 是systemD命令的主要方式, 尽管一些老的系统或者命令不支持systemctl, 
+  但是systemctl最后会逐渐的替代其他的命令方式的, 能用这个就优先用这个,是最时尚/方便的
 
-#### curl wget sed awk ps
-#### CPU常用命令：top、vmstat、pidstat、sar、perf、jstack、jstat
-#### 内存常用命令：top、free、vmstat、cachetop、cachestat、sar、jmap
-#### 磁盘常用命令：top、iostat、vmstat、pidstat、du/df
+```shell 
+# 查看版本
+systemctl --version
+# 立即启动一个服务
+$ sudo systemctl start apache.service
+# 立即停止一个服务
+$ sudo systemctl stop apache.service
+# 重启一个服务
+$ sudo systemctl restart apache.service
+# 杀死一个服务的所有子进程
+$ sudo systemctl kill apache.service
+# 重新加载一个服务的配置文件
+$ sudo systemctl reload apache.service
+# 重载所有修改过的配置文件
+$ sudo systemctl daemon-reload
+# 显示某个 Unit 的所有底层参数
+$ systemctl show httpd.service
+# 显示某个 Unit 的指定属性的值
+$ systemctl show -p CPUShares httpd.service
+# 设置某个 Unit 的指定属性
+$ sudo systemctl set-property httpd.service CPUShares=500
+
+# 默认目录
+/etc/systemd/system
+
+# service example start
+[Unit]
+Description=Tomcat-app
+After=network.target
+
+[Service]
+User=web
+Group=web
+Type=forking
+PIDFile=/home/web/tomcat_app/pid
+ExecStart=/home/web/tomcat_app/bin/catalina.sh start
+ExecReload=/home/web/tomcat_app/bin/catalina.sh restart
+ExecStop=/home/web/tomcat_app/bin/catalina.sh stop
+Restart=on-failure
+RestartSec=45s
+
+[Install]
+WantedBy=multi-user.target
+# service example end
+```
+init / service方式启动管理
+```shell
+$ sudo /etc/init.d/apache2 start
+# 或者
+$ service apache2 start 
+```
+- systemd入门及实战
+<http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html>
+
+<http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html>
+- Linux启动流程和服务管理(init和systemd比较)
+ <https://blog.csdn.net/qq_36119192/article/details/82415113>
+ 
+### supervisor 
+```shell
+# 查看所有进程的状态
+$ supervisorctl status 
+# 停止es
+supervisorctl stop es
+# 启动es
+supervisorctl start es
+# 重启es
+supervisorctl restart es
+# 配置文件修改后可以使用该命令加载新的配置
+supervisorctl update 
+# 重新启动配置中的所有程序
+supervisorctl reload
+# 修改配置
+vi /etc/supervisord.conf
+# 修改子service
+[include]
+
+# service example start
+files = supervisord.d/*.ini
+[program:check]
+directory = /home/web/tools
+command = /home/web/tools/checkAlive.sh
+autostart = true
+autorestart = true
+startsecs = 5
+user = root
+redirect_stderr = true
+stdout_logfile = /home/web/logs/checker.log
+logfile_maxbytes=50MB
+# service example end
+```
+supervisor 使用详解
+<https://blog.csdn.net/zou79189747/article/details/80403016>
+
+### sed命令
+```shell
+sed -n '/20:00:00/,/23:00:00/p' app.log|grep 'callback'
+```
+### awk命令
+
+### tail命令
+
+### cat命令
+
+### crontab配置 
+
+### curl wget
+
+### ps
+
+### netstat
+
+#### CPU常用命令：top、vmstat、pidstat、sar、perf
+#### 内存常用命令：top、free、vmstat、cachetop、cachestat、sar
+#### 磁盘常用命令：top、iostat、vmstat、pidstat
 #### 网络常用命令：netstat、sar、dstat、tcpdump
 
 
-### netstat -ntlp  查看端口
-
-
-#### 应用层分析工具：profiler、dump分析
 

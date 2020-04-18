@@ -7,7 +7,7 @@ tags:
 - aws
 - study note
 categories:
-- 互联网
+- 技术
 ---
 
 # iam

@@ -7,7 +7,7 @@ tags:
 - 分布式搜索引擎
 - 全文搜索引擎
 categories:
-- 互联网
+- 技术
 ---
 #### 基础入门
 - <http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html>

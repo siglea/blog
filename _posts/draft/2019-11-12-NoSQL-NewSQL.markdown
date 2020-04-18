@@ -6,7 +6,7 @@ comments: true
 tags:
 - newSQL NoSQL 
 categories:
-- 互联网
+- 技术
 ---
 
 #### Redis 

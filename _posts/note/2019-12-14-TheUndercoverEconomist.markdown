@@ -3,8 +3,10 @@ layout: post
 title:  "卧底经济学"
 date:   2019-12-14 16:10:02 +0800
 comments: true
-categories:
+tag: 
 - 读书笔记
+categories:
+- 随记
 ---
 
 #### 三种市场失灵
