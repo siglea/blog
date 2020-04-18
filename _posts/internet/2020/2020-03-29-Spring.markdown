@@ -19,15 +19,7 @@ categories:
 package org.springframework.boot;
 public class SpringApplication {
     public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
-            this.sources = new LinkedHashSet();
-            this.bannerMode = Mode.CONSOLE;
-            this.logStartupInfo = true;
-            this.addCommandLineProperties = true;
-            this.addConversionService = true;
-            this.headless = true;
-            this.registerShutdownHook = true;
-            this.additionalProfiles = new HashSet();
-            this.isCustomEnvironment = false;
+            // ... 省略代码
             this.resourceLoader = resourceLoader;
             Assert.notNull(primarySources, "PrimarySources must not be null");
             this.primarySources = new LinkedHashSet(Arrays.asList(primarySources));
@@ -39,50 +31,37 @@ public class SpringApplication {
             // 3. 推测 Main入口
             this.mainApplicationClass = this.deduceMainApplicationClass();
     }
-public ConfigurableApplicationContext run(String... args) {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
+    public ConfigurableApplicationContext run(String... args) {
+        // ... 省略代码
         ConfigurableApplicationContext context = null;
         Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList();
         this.configureHeadlessProperty();
         SpringApplicationRunListeners listeners = this.getRunListeners(args);
         // 4. SpringApplicationRunListeners生命周期之started()
         listeners.starting();
-
-        Collection exceptionReporters;
-        try {
-            ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
-            // 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared()
-            ConfigurableEnvironment environment = this.prepareEnvironment(listeners, applicationArguments);
-            this.configureIgnoreBeanInfo(environment);
-            Banner printedBanner = this.printBanner(environment);
-            context = this.createApplicationContext();
-            exceptionReporters = this.getSpringFactoriesInstances(SpringBootExceptionReporter.class, new Class[]{ConfigurableApplicationContext.class}, context);
-            // 6. 初始化类加载器、bean产生器、资源加载器等，打印banner
-            this.prepareContext(context, environment, listeners, applicationArguments, printedBanner);
-            // 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等
-            //    SpringApplicationRunListeners生命周期之contextPrepared()/contextLoaded()
-            this.refreshContext(context);
-            this.afterRefresh(context, applicationArguments);
-            stopWatch.stop();
-            if (this.logStartupInfo) {
-                (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), stopWatch);
-            }
-
-            listeners.started(context);
-            this.callRunners(context, applicationArguments);
-        } catch (Throwable var10) {
-            this.handleRunFailure(context, var10, exceptionReporters, listeners);
-            throw new IllegalStateException(var10);
-        }
-
-        try {
-            listeners.running(context);
-            return context;
-        } catch (Throwable var9) {
-            this.handleRunFailure(context, var9, exceptionReporters, (SpringApplicationRunListeners)null);
-            throw new IllegalStateException(var9);
-        }
+        // ... 省略代码
+       Collection exceptionReporters;
+       ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+       // 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared()
+       ConfigurableEnvironment environment = this.prepareEnvironment(listeners, applicationArguments);
+       this.configureIgnoreBeanInfo(environment);
+       Banner printedBanner = this.printBanner(environment);
+       context = this.createApplicationContext();
+       exceptionReporters = this.getSpringFactoriesInstances(SpringBootExceptionReporter.class, new Class[]{ConfigurableApplicationContext.class}, context);
+       // 6. 初始化类加载器、bean产生器、资源加载器等，打印banner
+       this.prepareContext(context, environment, listeners, applicationArguments, printedBanner);
+       // 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等
+       //    SpringApplicationRunListeners生命周期之contextPrepared()/contextLoaded()
+       this.refreshContext(context);
+       this.afterRefresh(context, applicationArguments);
+       stopWatch.stop();
+       if (this.logStartupInfo) {
+           (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), stopWatch);
+       }
+       listeners.started(context);
+       this.callRunners(context, applicationArguments);
+       listeners.running(context);
+       // ... 省略代码
     }
 }
 ```
@@ -157,8 +136,6 @@ DataSourceAutoConfiguration解析
 
 #### SpringBoot 中的 Tomcat 是如何启动的？
 <https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ>
-
-#### SpringMVC
 
 #### SpringJDBC / Mybatis / Spring Data / JPA
 - Mybatis的集成和使用
@@ -249,7 +226,6 @@ public class LogTraceInterceptor extends HandlerInterceptorAdapter {
 #### LTW In Jdk Or SpringBoot
 <https://www.cnblogs.com/takumicx/p/10150344.html>
 
-
-如何将Spring Boot应用程序部署到Pivotal Cloud Foundry(PCF)?
-
-Spring Boot +Apache Camel??
+#### 集成框架Spring Integration, Mule ESB or Apache Camel比较
+<https://www.jdon.com/soa/integration-framework-comparison-spring.html>
+<https://www.jianshu.com/p/68aba8d09a89>
