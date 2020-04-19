@@ -8,9 +8,35 @@ tags:
 categories:
 - 技术
 ---
+### find & locate
+```shell
+Linux上提供了两款工具用于查找文件，一款是locate，另一款是find。
+locate的特点是根据已生成的数据库查找，速度较快，但是查找的是快照数据，不准确。
+
+# 查找2*24小时内修改过的文件 
+$ find -atime -2
+# 根据关键字查找
+$ find . -name "*.log"
+# 按照目录或文件的权限来查找文件
+$ find /opt/soft/test/ -perm 777
+# 按类型查找
+$ find . -type f -name "*.log"
+# 查找当前所有目录并排序
+$ find . -type d | sort
+# 查找当前目录大于1K的文件 
+$ find . -size +1000c -print
+# 在目录中查找更改时间在n日以前的文件并删除它们，在删除之前先给出提示
+$ find . -name "*.log" -mtime +5 -ok rm {} \;
+
+$ locate passwd
+$ locate passwd vim shadow | wc -l
+
+```
+<https://blog.csdn.net/zjq001X/article/details/68941833>
+<https://blog.csdn.net/zjq001X/article/details/68941865>
 ### 系统负载查看命令top
 ```shell
-top
+$ top
 # m键:切换内存使用率进度条模式
 
 # N:根据pid大小进行排序
@@ -20,23 +46,23 @@ top
 ```
 ### 内存查看命令free
 ```shell
-free -h
+$ free -h
 #free命令信息来自 cat /proc/meminfo
 ```
 ### 磁盘查看命令df
 ```shell
-df -h
+$ df -h
 ```
 ### 目录文件大小查看命令du
 ```shell
-du
+$ du
 # 只显示当前目录下面的子目录的目录大小和当前目录的总的大小
 
-du  -sh
+$ du  -sh
 # 查看当前目录总大小
 
-du  -sh ./* 
-du -h  --max-depth=1
+$ du  -sh ./* 
+$ du -h  --max-depth=1
 # 查看当前目录各个文件大小
 ```
 
@@ -70,7 +96,7 @@ $ systemctl show -p CPUShares httpd.service
 $ sudo systemctl set-property httpd.service CPUShares=500
 
 # 默认目录
-/etc/systemd/system
+$ /etc/systemd/system
 
 # service example start
 [Unit]
@@ -110,17 +136,17 @@ $ service apache2 start
 # 查看所有进程的状态
 $ supervisorctl status 
 # 停止es
-supervisorctl stop es
+$ supervisorctl stop es
 # 启动es
-supervisorctl start es
+$ supervisorctl start es
 # 重启es
-supervisorctl restart es
+$ supervisorctl restart es
 # 配置文件修改后可以使用该命令加载新的配置
-supervisorctl update 
+$ supervisorctl update 
 # 重新启动配置中的所有程序
-supervisorctl reload
+$ supervisorctl reload
 # 修改配置
-vi /etc/supervisord.conf
+$ vi /etc/supervisord.conf
 # 修改子service
 [include]
 
@@ -141,28 +167,234 @@ logfile_maxbytes=50MB
 supervisor 使用详解
 <https://blog.csdn.net/zou79189747/article/details/80403016>
 
-### sed命令
+### sed命令 ：stream editor
 ```shell
-sed -n '/20:00:00/,/23:00:00/p' app.log|grep 'callback'
+-e：可以指定多个命令
+-f：指定命令文件	
+-n：取消默认控制台输出，与p一起使用可打印指定内容
+-i：输出到原文件，静默执行（修改原文件的意思）
+	
+a：新增
+c：替换
+p：打印，要和-n参数一起使用
+d：删除
+i：插入
+s：替换（匹配局部替换）
+	
+# 查找 两个时间点所在的行之间的数据，如果时间乱序可能不准确
+$ sed -n '/20:00:00/,/23:00:00/p' app.log|grep 'callback'
+# 如果开始时间点行不存在比如60秒，就直接结束，如果结束的时间点行不存在就会查询到尾
+$ sed -n '/2018-07-23 17:45:60/,/2018-07-23 17:48:60/p' access.log
+
+# 在第 2 行后面新增一行内容
+$ sed '2a testContent' test.txt
+# 在原文的第 1~3 行后面各新增一行内容
+$ sed '1,3a testContent' test.txt
+	
+# 将第 2 行内容整行替换
+$ sed '2c testContent' test.txt
+# 将第 1~3 行内容替换成一行指定内容
+$ sed '1,3c testContent' test.txt	
+
+# 删除第 2 行
+$ sed '2d' test.txt
+# 删除第1~3行
+$ sed '1,3d' test.txt	
+
+# 在第 2 行前面插入一行内容
+$ sed '2i testContent' test.txt
+# 在原文的第 1~3 行前面各插入一行内容
+$ sed '1,3i testContent' test.txt
+
+# 重复打印第 2 行
+$ sed '2p' test.txt
+# 重复打印第1~3行
+$ sed '1,3p' test.txt
+	
+# 只打印第 2 行
+$ sed -n '2p' test.txt
+# 只打印第 1~3 行
+$ sed -n '1,3p' test.txt
+# 打印匹配到user的行，类似grep
+$ sed -n '/user/p' test.txt
+# ! 反选，打印没有匹配到user的行
+$ sed -n '/user/!p' test.txt	
+# 只打印匹配替换的行
+$ sed -n 's/old/new/gp' test
+
+# 匹配每一行的第一个old替换为new
+$ sed 's/old/new/' test.txt
+# 匹配所有old替换为new，g 代表一行多个，i 代表匹配忽略大小写
+$ sed 's/old/new/gi' test.txt
+# 匹配第 3~9 行所有old替换为new
+$ sed '3,9s/old/new/gi' test.txt	
+
+# 执行多个指令
+$ sed -e 's/系统/00/g' -e '2d' test.txt
+	
+# 多个命令写进ab.log文件里，一行一条命令，效果同-e
+$ sed -f ab.log test.txt
 ```
-### awk命令
+### ps ：process status
+```shell
+-A 显示所有进程（等价于-e）
+-a 显示一个终端的所有进程，除了会话引线
+-x 显示没有控制终端的进程，同时显示各个命令的具体路径。dx不可合用。（utility）
+-u uid or username 选择有效的用户id或者是用户名
+-f 全部列出，通常和其他选项联用。如：ps -fa or ps -fx and so on.
 
-### tail命令
-
-### cat命令
-
-### crontab配置 
-
-### curl wget
-
-### ps
-
+# 显示所有进程
+$ ps -aux
+# 以树形结构显示进程
+$ ps -axjf  
+$ pstree
+# 用标准的格式显示进程
+$ ps -ef
+# 根据 CPU 使用来升序排序
+$ ps -aux --sort -pcpu | less
+# 根据内存使用来升序排序
+$ ps -aux --sort -pmem | less
+```
+ps命令详解，原来ps如此庞大
+<https://mp.weixin.qq.com/s/PBEpjoOFW4f0eG5bwa5AvQ>
 ### netstat
+```shell
+-a (all)显示所有选项，默认不显示LISTEN相关
+-t (tcp)仅显示tcp相关选项
+-u (udp)仅显示udp相关选项
+-n 拒绝显示别名或域名，能显示ip数字的全部转化成数字。
+-l 仅列出有在 Listen (监听) 的服務状态
+-p 显示建立相关链接的程序名 pid/program
+-r 显示路由信息，路由表
+提示：LISTEN和LISTENING的状态只有用-a或者-l才能看到
 
-#### CPU常用命令：top、vmstat、pidstat、sar、perf
-#### 内存常用命令：top、free、vmstat、cachetop、cachestat、sar
-#### 磁盘常用命令：top、iostat、vmstat、pidstat
-#### 网络常用命令：netstat、sar、dstat、tcpdump
+# 显示t:tcp下的l:listen中的进程的p:pid$progame网络信息n:not dns
+$ netstat -tlnp
 
+```
+一些netstat实用例子
+<https://blog.csdn.net/qq_33326449/article/details/88241139>
+### awk命令
+```shell
+awk -F ":" '{print $2}' app.log |awk -F "," '{print $1}' > result.log
+```
+### tail命令
+```shell
+# 显示 notes.log 文件的最后 10 行
+$ tail notes.log
+# 跟踪名为 notes.log 的文件的增长情况
+$ tail -f notes.log
+# 显示文件 notes.log 的内容，从第20行至文件末尾:
+$ tail +20 notes.log
+# 显示文件 notes.log 的内容，从倒数第20行至文件末尾:
+$ tail +20 notes.log
+# 显示文件 notes.log 的最后 10 个字符:
+$ tail -c 10 notes.log
+```
+### cat more less
+众所周知linux中命令cat、more、less均可用来查看文件内容，主要区别有：
+cat是一次性显示整个文件的内容，还可以将多个文件连接起来显示，它常与重定向符号配合使用，适用于文件内容少的情况；
+more和less一般用于显示文件内容超过一屏的内容，并且提供翻页的功能。more比cat强大，提供分页显示的功能，less比more更强大，提供翻页，跳转，查找等命令。
+而且more和less都支持：用空格显示下一页，按键b显示上一页
 
+linux中cat、more、less命令区别详解
+<https://www.cnblogs.com/lidabo/p/6196457.html>
+### crontab配置 
+```shell 
+# crontab各参数说明：
+-e : 执行文字编辑器来编辑crontab，内定的文字编辑器是VI
+-r : 删除目前的crontab
+-l : 列出目前的crontab(查看专用)
+-i : 会和-r 配合使用，在删除当前的crontab时询问，输入y 则删除
+   # 注意crontab是分用户的，以谁登录就会编辑到谁的crontab
 
+# crontab特殊的符号说明：
+# "*"代表所有的取值范围内的数字。特别要注意哦!
+# "/"代表每的意思，如"*/5"表示每5个单位
+# "-"代表从某个数字到某个数字
+# ","分散的数字
+
+# crontab文件的使用示例：
+# 30 21 * * * 表示每晚的21:30
+# 45 4 1,10,22 * * 表示每月1、10、22日的4 : 45
+# 10 1 * * 6,0 表示每周六、周日的1 : 10
+# 0,30 18-23 * * * 表示在每天18 : 00至23 : 00之间每隔30分钟
+# 0 23 * * 6 表示每星期六的11 : 00 pm
+# * */1 * * * 每一小时
+# * 23-7/1 * * * 晚上11点到早上7点之间，每隔一小时
+# * 8,13 * * 1-5 从周一到周五的上午8点和下午1点
+# 0 11 4 * mon-wed 每月的4号与每周一到周三的11点
+# 0 4 1 jan * 一月一号的4点
+```
+### sar System ActivityReporter系统活动情况报告
+```shell
+# CPU利用率
+$ sar -p （查看全天）
+$ sar -u 1 10 （1：每隔一秒，10：写入10次）
+
+# 内存利用率
+$ sar -r （查看全天）
+$ sar -r 1 10 （1：每隔一秒，10：写入10次）
+
+# 磁盘I/O
+$ sar -d （查看全天）
+$ sar -d 1 2 （1：每隔一秒，2：写入2次）
+
+# 网络流量
+$ sar -n DEV （查看全天）
+$ sar -n DEV 1 2 （1：每隔一秒，2：写入2次）
+-n DEV ： 网络接口统计信息。
+-n EDEV ： 网络接口错误。
+-n IP ： IP数据报统计信息。
+-n EIP ： IP错误统计信息。
+-n TCP ： TCP统计信息。
+-n ETCP ： TCP错误统计信息。
+-n SOCK ： 套接字使用。
+```
+<https://www.cnblogs.com/howhy/p/6396437.html>
+
+<https://blog.csdn.net/volitationlong/article/details/81741754>
+### vmstat mpstat iostat pidstat
+```shell 
+mpstat是Multiprocessor Statistic
+vmstat 是Virtual Meomory Statistics（虚拟内存统计）
+```
+pidstat 命令详解
+<https://www.jianshu.com/p/3991c0dba094>
+
+详解mpstat、iostat、sar、vmstat命令的使用
+<https://blog.csdn.net/suchahaerkang/article/details/80545140>
+### wget
+```shell 
+# 使用wget -O下载并以不同的文件名保存
+$ wget -O wordpress.zip http://www.minjieren.com/download.aspx?id=1080
+# 使用wget -b后台下载
+$ wget -b http://www.minjieren.com/wordpress-3.1-zh_CN.zip
+# 利用-spider: 模拟下载，不会下载，只是会检查是否网站是否好着
+$ wget --spider  www.baidu.com
+# 模拟下载打印服务器响应
+$ wget -S  www.baidu.com  
+# 指定尝试2次，2次后不再尝试
+$ wget -r --tries=2  www.baidu.com 
+# 指定尝试，且不打印中间结果
+$ wget -r --tries=2 -q www.baidu.com
+```
+### curl
+```shell 
+$ curl -d'login=emma＆password=123'-X POST https://google.com/login
+# 或者
+$ curl -d 'login=emma' -d 'password=123' -X POST  https://google.com/login
+```
+阮一峰的网络日志已经总结了
+http://www.ruanyifeng.com/blog/2019/09/curl-reference.html
+### tcpdump
+```shell 
+# -i eth0： 用eth0 接口进行抓包； -s 0：表示包有多大，抓取的数据多大； -w a.cap 表示存取到 a.cap 文件中
+$ tcpdump -i eth0 -s 0 -w a.acp
+# 查看抓包的内容
+$ tcpdump -r a.acp 
+```
+TCPDUMP——抓包、筛选、高级筛选
+<https://blog.csdn.net/suiyideali/article/details/93935877>
+### cachestat、cachetop、pcstat-linux系统缓存命中率分析工具
+<https://blog.51cto.com/liuzhengwei521/2360734?source=dra>
