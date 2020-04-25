@@ -5,9 +5,57 @@
     <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 20 Apr 2020 08:51:48 +0800</pubDate>
-    <lastBuildDate>Mon, 20 Apr 2020 08:51:48 +0800</lastBuildDate>
+    <pubDate>Sat, 25 Apr 2020 21:36:12 +0800</pubDate>
+    <lastBuildDate>Sat, 25 Apr 2020 21:36:12 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title> SpringCloud </title>
+        <description>&lt;h4 id=&quot;just-do-springcloud&quot;&gt;Just Do SpringCloud&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.springcloud.cc/&quot;&gt;springcloud.cc&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://springcloud.fun&quot;&gt;springcloud.fun&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.zhihu.com/question/283286745/answer/763040709&quot;&gt;大话SpringCloud&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html&quot;&gt;阿里Dubbo与Spring Cloud&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;常见组件&quot;&gt;常见组件&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/5c5753d2aeb0&quot;&gt;Zookeeper保证的是CP，Eureka保证的是AP&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;客户端负载均衡：Netflix Ribbon (提供云端负载均衡，有多种负载均衡策略可供选择，可配合服务发现和断路器使用。)
+    &lt;ul&gt;
+      &lt;li&gt;客户端负载均衡(Ribbon)服务实例的清单在客户端，客户端进行负载均衡算法分配。(从上面的知识我们已经知道了：客户端可以从Eureka Server中得到一份服务清单，在发送请求时通过负载均衡算法，在多个服务器之间选择一个进行访问)
+Zuul路由的业务，对业务进行了归类，并交给了对应的微服务。&lt;/li&gt;
+      &lt;li&gt;服务端负载均衡(Nginx)服务实例的清单在服务端，服务器进行负载均衡算法分配,
+Nginx路由请求的压力，对请求进行平均后，交给了服务器处理。&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/kongxianghai/p/8477781.html&quot;&gt;撸一撸Spring Cloud Ribbon的原理-负载均衡策略&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;熔断器：Netflix Hystrix（Envoy)&lt;/li&gt;
+  &lt;li&gt;Spring Cloud Feign：它基于 Netflix Feign 实现，整合了 Spring Cloud Ribbon 与 Spring Cloud Hystrix, 除了整合这两者的强大功能之外，它还提 供了声明式的服务调用(不再通过RestTemplate)。&lt;/li&gt;
+  &lt;li&gt;服务网关: Netflix Zuul  、 Spring Cloud GateWay&lt;/li&gt;
+  &lt;li&gt;分布式配置：Spring Cloud Config (Chef)&lt;/li&gt;
+  &lt;li&gt;时间消息总线：Spring Cloud Bus&lt;/li&gt;
+  &lt;li&gt;链路追踪：Spring Cloud Sleuth 与 Twitter Zipkin&lt;/li&gt;
+  &lt;li&gt;数据流：Spring Cloud Stream (数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。)&lt;/li&gt;
+  &lt;li&gt;服务监控：Zabbix、Nagios、Metrics、Spectator&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Sat, 04 Apr 2020 19:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html</guid>
+        
+        <category>SpringCloud</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
     
       <item>
         <title> Nginx </title>
@@ -18,6 +66,21 @@
         <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html</guid>
         
         <category>Nginx</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
+    
+      <item>
+        <title> Ansible </title>
+        <description>
+</description>
+        <pubDate>Sat, 04 Apr 2020 19:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/04/04/Ansible.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/04/04/Ansible.html</guid>
+        
+        <category>Ansible</category>
         
         
         <category>技术</category>
@@ -451,6 +514,10 @@ Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
       <item>
         <title>Docker</title>
         <description>&lt;h4 id=&quot;docker原理-&quot;&gt;Docker原理 ☆☆☆&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;cgroups (2006年 linux推出)&lt;/li&gt;
+  &lt;li&gt;namespace&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h4 id=&quot;docker-hello-world&quot;&gt;Docker Hello World!&lt;/h4&gt;
 &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run hello-world
@@ -507,7 +574,7 @@ docker rmi ec49dbd13cf5
 &lt;h4 id=&quot;compose-machine-swarm&quot;&gt;Compose Machine Swarm&lt;/h4&gt;
 &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;kubernetes&quot;&gt;Kubernetes&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.ityouknow.com/docker/2018/03/22/docker-compose.html&quot;&gt;http://www.ityouknow.com/docker/2018/03/22/docker-compose.html&lt;/a&gt;&lt;/p&gt;
 &lt;h4 id=&quot;docker中run和start的区别&quot;&gt;docker中run和start的区别&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;docker run 后面指定的是一个镜像&lt;/li&gt;
@@ -525,6 +592,32 @@ docker rmi ec49dbd13cf5
 
 &lt;h4 id=&quot;cloud-foundry-与kubernetes-cfk8s结合简史&quot;&gt;Cloud Foundry 与Kubernetes: CF/K8s结合简史&lt;/h4&gt;
 &lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/zhanggongsw/article/details/79948420&quot;&gt;https://blog.csdn.net/zhanggongsw/article/details/79948420&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;阿里飞天云apsara-stack和openstack&quot;&gt;阿里飞天云Apsara Stack和OpenStack&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/liuxiao723846/article/details/82630926&quot;&gt;https://blog.csdn.net/liuxiao723846/article/details/82630926&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.csdn.net/gather_21/MtTaYg1sNTY5Mi1ibG9n.html&quot;&gt;https://www.csdn.net/gather_21/MtTaYg1sNTY5Mi1ibG9n.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;kubernetes-vs-openstack&quot;&gt;Kubernetes vs OpenStack&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/luanpeng825485697/article/details/86706131&quot;&gt;https://blog.csdn.net/luanpeng825485697/article/details/86706131&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/dualvencsdn/article/details/79207281&quot;&gt;https://blog.csdn.net/dualvencsdn/article/details/79207281&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.kubernetes.org.cn/2121.html&quot;&gt;https://www.kubernetes.org.cn/2121.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/goldsunshine/p/9872142.html&quot;&gt;https://www.cnblogs.com/goldsunshine/p/9872142.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;google-kubernetes--docker-swarm--mesos-marathon&quot;&gt;Google Kubernetes &amp;amp; Docker Swarm &amp;amp; Mesos Marathon&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.kubernetes.org.cn/757.html&quot;&gt;https://www.kubernetes.org.cn/757.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.zhihu.com/question/55391506&quot;&gt;https://www.zhihu.com/question/55391506&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/wzj4858/p/7910883.html&quot;&gt;https://www.cnblogs.com/wzj4858/p/7910883.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://dockone.io/article/823&quot;&gt;http://dockone.io/article/823&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/28301108&quot;&gt;https://zhuanlan.zhihu.com/p/28301108&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;国内外paas服务一览&quot;&gt;国内外PaaS服务一览&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/a4b9be650fa4&quot;&gt;https://www.jianshu.com/p/a4b9be650fa4&lt;/a&gt;&lt;/p&gt;
 
 </description>
         <pubDate>Thu, 12 Mar 2020 22:25:00 +0800</pubDate>
@@ -655,61 +748,6 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
         
         
         <category>技术</category>
-        
-      </item>
-    
-      <item>
-        <title>女人的起源</title>
-        <description>&lt;h4 id=&quot;开言&quot;&gt;开言&lt;/h4&gt;
-&lt;p&gt;以这一篇做为这个版块的开始，之所以要增加【极致思考】这个版块，根本的原因是，我认为，大多数业务或者商业甚至物理定律是在有限的条件下有规律的发生（概率其实是规律的一种形式）。
-那么，如何能在极短的时间内发现有限的规律、发现事物本质就难能可贵了。所以，我想把自己对一些事物的自认为合理的猜测记录下来，以锻炼自己的思考力。&lt;/p&gt;
-
-&lt;h4 id=&quot;女人的起源&quot;&gt;女人的起源&lt;/h4&gt;
-&lt;p&gt;今天开车回家，在路上，无意间摸到了我副驾驶的座椅，我内心一惊，拥有这辆车5年多，我第一次感受到它。由于是真皮座椅，那一刻我忽然觉得它似乎有了生命，它是我的伴侣，它是我的”小途途”。
-这个奇妙的感觉，让我想到几年前，阅读了张小龙推荐的《女人的起源》一书，该书提出了一个有意思的问题：&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;人为何没有了毛发？
- 书中的解释是：某个时段，人类为了躲避陆地大型凶兽，很长一段时间是生活在水中或浅海区域，因为大型凶兽多数怕水。在水中时间久了，毛发就脱落了。但是，水中会有蛇类，所以人类至今都会天生怕蛇。&lt;/li&gt;
-  &lt;li&gt;女性为何有凸起的乳房？&lt;/li&gt;
-  &lt;li&gt;男性为何有凸起的乳房？&lt;/li&gt;
-&lt;/ol&gt;
-
-</description>
-        <pubDate>Sun, 01 Dec 2019 16:10:02 +0800</pubDate>
-        <link>http://localhost:4000/%E9%9A%8F%E8%AE%B0/2019/12/01/WhereAreWomenFrom.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E9%9A%8F%E8%AE%B0/2019/12/01/WhereAreWomenFrom.html</guid>
-        
-        <category>极致思考</category>
-        
-        
-        <category>随记</category>
-        
-      </item>
-    
-      <item>
-        <title>《原则》Ray Dalio</title>
-        <description>&lt;h4 id=&quot;原则&quot;&gt;原则&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;发现问题、分析问题、正视问题、找出解决问题的路径、彻底解决问题。&lt;/li&gt;
-  &lt;li&gt;一部分人不知道自己不知道处于不自知，另一部分人知道自己不知道处于自知但是不行动，只有及少数自知并且不容忍自己的问题并加以行动。&lt;/li&gt;
-  &lt;li&gt;如果你的见解不比一般人搞，你就不会是领导者；如果你的见解比他们更高，那就不必担心你做得事情不受欢迎。&lt;/li&gt;
-  &lt;li&gt;创意择优（可信度加权决策）。&lt;/li&gt;
-  &lt;li&gt;想方设法达成共识。（基于逻辑、数据、坦诚的沟通）&lt;/li&gt;
-  &lt;li&gt;多次确认，不如把同一个事情交给多人来做。（比如财务）&lt;/li&gt;
-  &lt;li&gt;做有意义的工作，发展有意义的人际关系。&lt;/li&gt;
-  &lt;li&gt;切勿混淆慷慨和公平。&lt;/li&gt;
-  &lt;li&gt;价值观 &amp;gt; 能力 &amp;gt; 技能。&lt;/li&gt;
-&lt;/ul&gt;
-
-</description>
-        <pubDate>Sun, 01 Dec 2019 16:10:02 +0800</pubDate>
-        <link>http://localhost:4000/%E9%9A%8F%E8%AE%B0/2019/12/01/Principles.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E9%9A%8F%E8%AE%B0/2019/12/01/Principles.html</guid>
-        
-        <category>读书笔记</category>
-        
-        
-        <category>随记</category>
         
       </item>
     

@@ -54,6 +54,99 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html">TCP/IP十问</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>tcp</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="tcp建立连接的本质含义是">TCP建立连接的本质含义是？</h4>
+<ul>
+  <li>确定整个通信链路是否接通</li>
+  <li>确定双方信息处理服务准备完毕</li>
+  <li>告知通信双方各自的初始序列号，建立连接后对每一个发送的数据包都需要以初始序列号为基准进行编号</li>
+  <li>TCP是双工的，所以建立连接后，两端都是互为客户端服务端</li>
+  <li>连接成功建立表示双方维护了一个可用连接的映射关系</li>
+</ul>
+
+<h4 id="在tcp有keepalive机制的情况下为什么还要有应用层保活">在TCP有keepalive机制的情况下，为什么还要有应用层保活？</h4>
+<ol>
+  <li>在诸如由防火墙过滤、路由器故障、运营商信令控制、网线断开等原因导致的TCP中断的情况下keepalive失效</li>
+  <li>NAT及DHCP机制也会导致keepalive失效</li>
+  <li>keepalive默认参数设置7200秒才会触发重试并且在重试10之后就终止</li>
+  <li>经过Socks封装的TCP大部分操作系统把底层的断连等细节直接忽略掉并没有抛给上层应用</li>
+  <li>keepalive机制判断的仅仅是连接的存在（只是在映射表中存在ESTABLISHED)，并不能判断应用服务是否正常</li>
+  <li>keepalive并不是TCP规范的一部分，并不是所有操作系统都完整的实现</li>
+  <li>应用层的心跳除了保活还有其他应用意义比如应用层控制的重传（断连重连后，底层并不知道应用层数据状况）</li>
+</ol>
+
+<h4 id="sync-flooding-攻击">SYNC Flooding 攻击</h4>
+<p><a href="https://blog.csdn.net/bigtree_3721/article/details/77619877">https://blog.csdn.net/bigtree_3721/article/details/77619877</a></p>
+
+<h4 id="tcp丢包及重试">TCP丢包及重试</h4>
+
+<hr />
+
+<h5 id="参考资料">参考资料</h5>
+
+<p><a href="http://www.52im.net/">即时通讯网</a></p>
+
+<p><a href="https://java-mzd.iteye.com/blog/1007577">TCP-IP的20问</a></p>
+
+<p><a href="https://www.jianshu.com/p/16c8c9e09feb">长连接及心跳保活原理简介</a></p>
+
+<p><a href="https://www.cnblogs.com/imstudy/p/5846363.html">为什么说基于TCP的移动端IM仍然需要心跳保活？</a></p>
+
+<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=195&amp;ctid=10">微信对网络影响的技术试验及分析（论文全文）</a></p>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html">Welcome to Jekyll!</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 14, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>jekyll</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>You’ll find this post in your <code class="highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
+
+<p>To add new posts, simply add a file in the <code class="highlighter-rouge">_posts</code> directory that follows the convention <code class="highlighter-rouge">YYYY-MM-DD-name-of-post.ext</code> and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.</p>
+
+<p>Jekyll also offers powerful support for code snippets:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+<span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
+<span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
+
+<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/02/27/aws-developer-associate-code-deploy-quick-note.html">aws developer associate test CodeDeploy quick note</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Feb 27, 2019</span>
@@ -322,119 +415,6 @@
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html">Use `raise_error` matcher in Rspec</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 25, 2018</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>Yesterday I came accross a tricky useage of <code class="highlighter-rouge">raise_error</code> matcher in rspec, first I try to use the one line syntax <code class="highlighter-rouge">is_expected.to</code></p>
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
-</code></pre></div></div>
-
-<p>but I got an eror which stops the test before the test is finished.</p>
-
-<p>It is confusing in the first time, because <code class="highlighter-rouge">is_expected.to</code> is shortcut for <code class="highlighter-rouge">expect(subject)</code>.</p>
-
-<p>Then I found this <a href="https://github.com/rspec/rspec-expectations/issues/805#issuecomment-112239820">excellent explanation</a> in Github isses.</p>
-
-<p>So <code class="highlighter-rouge">expect(subject)</code> is not a block, subject is executed instantly, so rspec will stop before evaluating <code class="highlighter-rouge">raise_error</code> matcher.</p>
-
-<p>In order to make it work, we can make subject itself a block</p>
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span> <span class="p">}</span>
-
-<span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
-</code></pre></div></div>
-
-<p>But this syntax is creepy, instead it’s better to use</p>
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span>
-
-<span class="n">expect</span> <span class="p">{</span> <span class="n">subject</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span>
-</code></pre></div></div>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2018/10/25/serialize-non-activerecord-model-in-rails.html">Serialize Non-ActiveRecord Model Using ActiveModel::Serializer in Rails</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 25, 2018</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2018/10/25/serialize-non-activerecord-model-in-rails.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>Recently I’ve been working in backend which connects to another API, you may need to send a specific format of JSON data which is not the same as database resource.</p>
-
-<h2 id="create-a-serializable-resource">Create A Serializable Resource</h2>
-<p>Currently I’m using <a href="https://github.com/rails-api/active_model_serializers/tree/0-10-stable">active_model_serializers 0.10.0</a>. From the documentation we know <code class="highlighter-rouge">ActiveModel::Serializer</code> wraps a serializable resource, to create a serializable resource we need to create a plain old Ruby object inherits <code class="highlighter-rouge">ActiveModelSerializers::Model</code>, then create a corresponding serializer.</p>
-
-<p>For example:</p>
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyModel</span> <span class="o">&lt;</span> <span class="no">ActiveModelSerializers</span><span class="o">::</span><span class="no">Model</span>
-  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">title</span><span class="p">:,</span> <span class="n">body</span><span class="p">:)</span>
-    <span class="vi">@title</span> <span class="o">=</span> <span class="n">title</span>
-    <span class="vi">@body</span> <span class="o">=</span> <span class="n">body</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">converted_body</span>
-    <span class="c1"># do something</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyModelSerializer</span> <span class="o">&lt;</span> <span class="no">ActiveModelSerializers</span><span class="o">::</span><span class="no">Serializer</span>
-  <span class="n">attributes</span> <span class="ss">:converted_body</span>
-<span class="k">end</span>
-</code></pre></div></div>
-
-<h2 id="handling-nested-json">Handling Nested JSON</h2>
-<p>You can use <code class="highlighter-rouge">has_many</code>, <code class="highlighter-rouge">has_one</code> method in <code class="highlighter-rouge">ActiveModel::Serializer</code> to handle nested json, although it doesn’t mean the same with Rails model relations.</p>
-
-<p>For example:</p>
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyModel</span> <span class="o">&lt;</span> <span class="no">ActiveModelSerializers</span><span class="o">::</span><span class="no">Model</span>
-  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="ss">object: </span><span class="n">object</span><span class="p">)</span>
-    <span class="vi">@title</span> <span class="o">=</span> <span class="n">title</span>
-    <span class="vi">@body</span> <span class="o">=</span> <span class="n">body</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> 
-
-  <span class="nf">def</span> <span class="n">related_models</span>
-    <span class="n">related_models</span><span class="p">.</span><span class="nf">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">related_model</span><span class="o">|</span>
-      <span class="no">RelatedModel</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">related_model: </span><span class="n">related_model</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyModelSerializer</span> <span class="o">&lt;</span> <span class="no">ActiveModelSerializers</span><span class="o">::</span><span class="no">Serializer</span>
-  <span class="n">has_many</span> <span class="ss">:related_models</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p><code class="highlighter-rouge">ActiveModelSerializers::Serializer</code> will automatically look for a serializer named <code class="highlighter-rouge">RelatedModelSerializer</code>.</p>
-
-<h2 id="reference">Reference</h2>
-<p>Find more explainations in   https://github.com/rails-api/active_model_serializers/tree/0-10-stable#what-does-a-serializable-resource-look-like</p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2018/10/25/serialize-non-activerecord-model-in-rails.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -680,8 +660,22 @@
       
       
       
+      <a  href="tag/Ansible">
+      <span class="label label-default">ansible ( 1 )</span>
+      </a><br />
+
+      
+      
+      
       <a  href="tag/Nginx">
       <span class="label label-default">nginx ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/SpringCloud">
+      <span class="label label-default">springcloud ( 1 )</span>
       </a><br />
 
       

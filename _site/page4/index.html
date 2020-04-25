@@ -54,6 +54,193 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html">DB Mysql</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>mysql DB</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="索引原理btree">索引原理(B+Tree)</h4>
+<ul>
+  <li>Tree -&gt; BelanceTree -&gt; B+Tree
+    <ul>
+      <li><a href="http://www.sohu.com/a/280609547_818692">http://www.sohu.com/a/280609547_818692</a></li>
+      <li><a href="https://www.jianshu.com/p/0371c9569736">https://www.jianshu.com/p/0371c9569736</a></li>
+      <li><a href="https://www.cnblogs.com/tiancai/p/9024351.html">https://www.cnblogs.com/tiancai/p/9024351.html</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="各种优化">各种优化</h4>
+<ul>
+  <li><a href="https://www.jianshu.com/p/efaa9005a598">https://www.jianshu.com/p/efaa9005a598</a></li>
+  <li><a href="https://www.jb51.net/article/136701.htm">https://www.jb51.net/article/136701.htm</a></li>
+  <li><a href="https://www.cnblogs.com/houss/p/10598901.html">https://www.cnblogs.com/houss/p/10598901.html</a></li>
+  <li><a href="https://coolshell.cn/articles/1846.html">https://coolshell.cn/articles/1846.html</a>
+    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="err">优化</span><span class="mi">1</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化前</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="n">a</span> <span class="k">inner</span> <span class="k">join</span> <span class="p">(</span><span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="n">b</span> <span class="k">on</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化后</span>
+</code></pre></div>    </div>
+    <h4 id="常用指标">常用指标</h4>
+  </li>
+  <li>QPS   (2w/s与机器配置及数据量有关)</li>
+  <li>TPS   (1w/s)</li>
+  <li>并发数</li>
+  <li>连接数</li>
+  <li>缓存命中率</li>
+  <li>慢查询
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>slow_query_log=on
+slow_query_log_file=存放目录
+long_query_time=0.1秒
+log_queries_not_using_indexes=on
+</code></pre></div>    </div>
+  </li>
+  <li>主从延迟
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show slave status;
+Seconds_Behind_Master
+</code></pre></div>    </div>
+  </li>
+  <li>死锁
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set global innodb_print_all_deadlocks=on; 
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="mysql-wal技术-write-ahead-logging">Mysql WAL技术 Write-Ahead Logging</h4>
+
+<p>在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
+   在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
+   为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
+   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。</p>
+
+<p><a href="https://www.cnblogs.com/hzmark/p/wal.html">https://www.cnblogs.com/hzmark/p/wal.html</a></p>
+
+<h4 id="innodb与myisamindex-sequence-access-method">InnoDB与MyISAM(Index Sequence Access Method)</h4>
+<ul>
+  <li>核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
+MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
+    <ul>
+      <li>4个隔离级别透彻分析 <a href="https://www.jianshu.com/p/db334404d909">https://www.jianshu.com/p/db334404d909</a></li>
+      <li><a href="https://blog.csdn.net/w2064004678/article/details/83012387">https://blog.csdn.net/w2064004678/article/details/83012387</a></li>
+    </ul>
+  </li>
+  <li>索引结构不同
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew">https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew</a></li>
+    </ul>
+  </li>
+  <li>其他不同
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg">https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A">https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A</a></li>
+    </ul>
+  </li>
+  <li>引擎不同的几个方面：Storage mechanism、Locking levels、Indexing、Capabilities and functions</li>
+</ul>
+
+<h4 id="faq">FAQ</h4>
+<ul>
+  <li>
+    <p>问题：INT(M)中M究竟有何用？</p>
+
+    <p>int类型占四个字节，一个字节8比特位，也就是4*8=32比特位，可以表示的数字个数是2的32次方个(2^32)。声明一个int类型的数据，长度便已经固定，那么这个M究竟有何用？
+  结论：INT(M)中的M与数据存储长度没有关系，只是标识数据显示长度，在显示时不足无数会自动填充0进行补齐，必须配合AutoFill使用。</p>
+  </li>
+  <li>
+    <p>MySQL 中 InnoDB 引擎的行锁是通过加在什么上完成(或称实现) 的?</p>
+
+    <p>InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。
+  InnoDB 这 种行锁实现特点意味着:只有通过索引条件检索数据，InnoDB 才使用行级 锁，否则，InnoDB 将使用表锁!</p>
+  </li>
+  <li>各种锁
+    <ul>
+      <li>本质都为了实现数据一致性及各种事务控制</li>
+      <li>悲观锁：读取数据时就加锁排他</li>
+      <li>乐观锁：读取数据不加锁，更新时处理（比如版本号机制、CAS compare and swap算法）</li>
+      <li>共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁
+  <a href="https://www.jianshu.com/p/c456f726e9c7">https://www.jianshu.com/p/c456f726e9c7</a></li>
+    </ul>
+  </li>
+  <li>数据库三范式
+    <ul>
+      <li>表中的每个字段不可分割</li>
+      <li>表都需要有主键</li>
+      <li>字段不能出现在多个表中，有时为了查询效率也冗余个别字段</li>
+    </ul>
+  </li>
+  <li>
+    <p>一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?</p>
+
+    <p>(1)如果表的类型是 MyISAM，那么是 18
+      因为 MyISAM 表会把自增主键的最大 ID 记录到数据文件里，重启 MySQL 自增主键的最大 ID 也不会丢失
+  (2)如果表的类型是 InnoDB，那么是 15
+      InnoDB 表只是把自增主键的最大 ID 记录到内存中，所以重启数据库或者是对表进行 OPTIMIZE 操作，都会导致最大 ID 丢失</p>
+  </li>
+  <li>
+    <p>如何区分 FLOAT 和 DOUBLE?</p>
+
+    <p>以下是 FLOAT 和 DOUBLE 的区别:
+  浮点数以 8 位精度存储在 FLOAT 中，并且有四个字节。 浮点数存储在 DOUBLE 中，精度为 18 位，有八个字节。</p>
+  </li>
+  <li>
+    <p>区分 CHAR_LENGTH 和 LENGTH?</p>
+
+    <p>CHAR_LENGTH 是字符数，而 LENGTH 是字节数。Latin 字符的这两个数据是相同的，但是对 于 Unicode 和其他编码，它们是不同的。</p>
+  </li>
+  <li>
+    <p>federated 表是什么?</p>
+
+    <p>federated 表，允许访问位于其他服务器数据库上的表。
+  <a href="https://blog.csdn.net/qq_33578833/article/details/80177115">https://blog.csdn.net/qq_33578833/article/details/80177115</a></p>
+  </li>
+  <li>
+    <p>可以使用多少列创建索引?</p>
+
+    <p>任何标准表最多可以创建 16 个索引列。</p>
+    <h4 id="其他">其他</h4>
+  </li>
+  <li>Mysql主从同步 <a href="https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw">https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw</a></li>
+  <li>Mysql+Keepalived实现双高可用 <a href="https://www.cnblogs.com/kevingrace/p/6710136.html">https://www.cnblogs.com/kevingrace/p/6710136.html</a></li>
+  <li>PROCEDURE ANALYSE</li>
+  <li>全文索引</li>
+  <li>分区表 <a href="https://www.jianshu.com/p/b61d767f4ff5">https://www.jianshu.com/p/b61d767f4ff5</a></li>
+  <li>UTF-8编码占几个字节 <a href="https://blog.csdn.net/bluetjs/article/details/52936943">https://blog.csdn.net/bluetjs/article/details/52936943</a></li>
+</ul>
+
+<p><a href="https://database.51cto.com/art/201910/604128.htm">数据库规范</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html">NIO-BIO-AIO</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>newSQL NoSQL</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsistencyAlgorithm.html">一致性算法</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -189,440 +376,6 @@ Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间�
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Linux-cmd.html"> Linux  Cmd </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Linux-cmd.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>linux</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="find--locate">find &amp; locate</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Linux上提供了两款工具用于查找文件，一款是locate，另一款是find。
-locate的特点是根据已生成的数据库查找，速度较快，但是查找的是快照数据，不准确。
-
-<span class="c"># 查找2*24小时内修改过的文件 </span>
-<span class="nv">$ </span>find <span class="nt">-atime</span> <span class="nt">-2</span>
-<span class="c"># 根据关键字查找</span>
-<span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-name</span> <span class="s2">"*.log"</span>
-<span class="c"># 按照目录或文件的权限来查找文件</span>
-<span class="nv">$ </span>find /opt/soft/test/ <span class="nt">-perm</span> 777
-<span class="c"># 按类型查找</span>
-<span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-type</span> f <span class="nt">-name</span> <span class="s2">"*.log"</span>
-<span class="c"># 查找当前所有目录并排序</span>
-<span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-type</span> d | <span class="nb">sort</span>
-<span class="c"># 查找当前目录大于1K的文件 </span>
-<span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-size</span> +1000c <span class="nt">-print</span>
-<span class="c"># 在目录中查找更改时间在n日以前的文件并删除它们，在删除之前先给出提示</span>
-<span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-name</span> <span class="s2">"*.log"</span> <span class="nt">-mtime</span> +5 <span class="nt">-ok</span> <span class="nb">rm</span> <span class="o">{}</span> <span class="se">\;</span>
-
-<span class="nv">$ </span>locate passwd
-<span class="nv">$ </span>locate passwd vim shadow | <span class="nb">wc</span> <span class="nt">-l</span>
-
-</code></pre></div></div>
-<p><a href="https://blog.csdn.net/zjq001X/article/details/68941833">https://blog.csdn.net/zjq001X/article/details/68941833</a>
-<a href="https://blog.csdn.net/zjq001X/article/details/68941865">https://blog.csdn.net/zjq001X/article/details/68941865</a></p>
-<h3 id="系统负载查看命令top">系统负载查看命令top</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>top
-<span class="c"># m键:切换内存使用率进度条模式</span>
-
-<span class="c"># N:根据pid大小进行排序</span>
-<span class="c"># M:根据驻留内存大小进行排序</span>
-<span class="c"># P:根据CPU使用百分比大小进行排序</span>
-<span class="c"># T:根据时间/累计时间进行排序</span>
-</code></pre></div></div>
-<h3 id="内存查看命令free">内存查看命令free</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>free <span class="nt">-h</span>
-<span class="c">#free命令信息来自 cat /proc/meminfo</span>
-</code></pre></div></div>
-<h3 id="磁盘查看命令df">磁盘查看命令df</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">df</span> <span class="nt">-h</span>
-</code></pre></div></div>
-<h3 id="目录文件大小查看命令du">目录文件大小查看命令du</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">du</span>
-<span class="c"># 只显示当前目录下面的子目录的目录大小和当前目录的总的大小</span>
-
-<span class="nv">$ </span><span class="nb">du</span>  <span class="nt">-sh</span>
-<span class="c"># 查看当前目录总大小</span>
-
-<span class="nv">$ </span><span class="nb">du</span>  <span class="nt">-sh</span> ./<span class="k">*</span> 
-<span class="nv">$ </span><span class="nb">du</span> <span class="nt">-h</span>  <span class="nt">--max-depth</span><span class="o">=</span>1
-<span class="c"># 查看当前目录各个文件大小</span>
-</code></pre></div></div>
-
-<h3 id="systemd--systemctl">systemd &amp; systemctl</h3>
-<ul>
-  <li>使用了 Systemd，就不需要再用init了。Systemd 逐渐取代了initd</li>
-  <li>/etc/init.d 是sysVinit服务的启动方式,对于一些古老的系统或者服务 使用这个</li>
-  <li>service 也是sysVinit, 比/etc/init.d先进一点,底层还是调用/etc/init.d</li>
-  <li>systemctl 是systemD命令的主要方式, 尽管一些老的系统或者命令不支持systemctl, 
-但是systemctl最后会逐渐的替代其他的命令方式的, 能用这个就优先用这个,是最时尚/方便的</li>
-</ul>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看版本</span>
-systemctl <span class="nt">--version</span>
-<span class="c"># 立即启动一个服务</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl start apache.service
-<span class="c"># 立即停止一个服务</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl stop apache.service
-<span class="c"># 重启一个服务</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl restart apache.service
-<span class="c"># 杀死一个服务的所有子进程</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl <span class="nb">kill </span>apache.service
-<span class="c"># 重新加载一个服务的配置文件</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl reload apache.service
-<span class="c"># 重载所有修改过的配置文件</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl daemon-reload
-<span class="c"># 显示某个 Unit 的所有底层参数</span>
-<span class="nv">$ </span>systemctl show httpd.service
-<span class="c"># 显示某个 Unit 的指定属性的值</span>
-<span class="nv">$ </span>systemctl show <span class="nt">-p</span> CPUShares httpd.service
-<span class="c"># 设置某个 Unit 的指定属性</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl set-property httpd.service <span class="nv">CPUShares</span><span class="o">=</span>500
-
-<span class="c"># 默认目录</span>
-<span class="nv">$ </span>/etc/systemd/system
-
-<span class="c"># service example start</span>
-<span class="o">[</span>Unit]
-<span class="nv">Description</span><span class="o">=</span>Tomcat-app
-<span class="nv">After</span><span class="o">=</span>network.target
-
-<span class="o">[</span>Service]
-<span class="nv">User</span><span class="o">=</span>web
-<span class="nv">Group</span><span class="o">=</span>web
-<span class="nv">Type</span><span class="o">=</span>forking
-<span class="nv">PIDFile</span><span class="o">=</span>/home/web/tomcat_app/pid
-<span class="nv">ExecStart</span><span class="o">=</span>/home/web/tomcat_app/bin/catalina.sh start
-<span class="nv">ExecReload</span><span class="o">=</span>/home/web/tomcat_app/bin/catalina.sh restart
-<span class="nv">ExecStop</span><span class="o">=</span>/home/web/tomcat_app/bin/catalina.sh stop
-<span class="nv">Restart</span><span class="o">=</span>on-failure
-<span class="nv">RestartSec</span><span class="o">=</span>45s
-
-<span class="o">[</span>Install]
-<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
-<span class="c"># service example end</span>
-</code></pre></div></div>
-<p>init / service方式启动管理</p>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo</span> /etc/init.d/apache2 start
-<span class="c"># 或者</span>
-<span class="nv">$ </span>service apache2 start 
-</code></pre></div></div>
-<ul>
-  <li>systemd入门及实战</li>
-</ul>
-<p><a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html">http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html</a></p>
-
-<p><a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html">http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html</a></p>
-<ul>
-  <li>Linux启动流程和服务管理(init和systemd比较)</li>
-</ul>
-<p><a href="https://blog.csdn.net/qq_36119192/article/details/82415113">https://blog.csdn.net/qq_36119192/article/details/82415113</a></p>
-
-<h3 id="supervisor">supervisor</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看所有进程的状态</span>
-<span class="nv">$ </span>supervisorctl status 
-<span class="c"># 停止es</span>
-<span class="nv">$ </span>supervisorctl stop es
-<span class="c"># 启动es</span>
-<span class="nv">$ </span>supervisorctl start es
-<span class="c"># 重启es</span>
-<span class="nv">$ </span>supervisorctl restart es
-<span class="c"># 配置文件修改后可以使用该命令加载新的配置</span>
-<span class="nv">$ </span>supervisorctl update 
-<span class="c"># 重新启动配置中的所有程序</span>
-<span class="nv">$ </span>supervisorctl reload
-<span class="c"># 修改配置</span>
-<span class="nv">$ </span>vi /etc/supervisord.conf
-<span class="c"># 修改子service</span>
-<span class="o">[</span>include]
-
-<span class="c"># service example start</span>
-files <span class="o">=</span> supervisord.d/<span class="k">*</span>.ini
-<span class="o">[</span>program:check]
-directory <span class="o">=</span> /home/web/tools
-<span class="nb">command</span> <span class="o">=</span> /home/web/tools/checkAlive.sh
-autostart <span class="o">=</span> <span class="nb">true
-</span>autorestart <span class="o">=</span> <span class="nb">true
-</span>startsecs <span class="o">=</span> 5
-user <span class="o">=</span> root
-redirect_stderr <span class="o">=</span> <span class="nb">true
-</span>stdout_logfile <span class="o">=</span> /home/web/logs/checker.log
-<span class="nv">logfile_maxbytes</span><span class="o">=</span>50MB
-<span class="c"># service example end</span>
-</code></pre></div></div>
-<p>supervisor 使用详解
-<a href="https://blog.csdn.net/zou79189747/article/details/80403016">https://blog.csdn.net/zou79189747/article/details/80403016</a></p>
-
-<h3 id="sed命令-stream-editor">sed命令 ：stream editor</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-e</span>：可以指定多个命令
-<span class="nt">-f</span>：指定命令文件	
-<span class="nt">-n</span>：取消默认控制台输出，与p一起使用可打印指定内容
-<span class="nt">-i</span>：输出到原文件，静默执行（修改原文件的意思）
-	
-a：新增
-c：替换
-p：打印，要和-n参数一起使用
-d：删除
-i：插入
-s：替换（匹配局部替换）
-	
-<span class="c"># 查找 两个时间点所在的行之间的数据，如果时间乱序可能不准确</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'/20:00:00/,/23:00:00/p'</span> app.log|grep <span class="s1">'callback'</span>
-<span class="c"># 如果开始时间点行不存在比如60秒，就直接结束，如果结束的时间点行不存在就会查询到尾</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'/2018-07-23 17:45:60/,/2018-07-23 17:48:60/p'</span> access.log
-
-<span class="c"># 在第 2 行后面新增一行内容</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'2a testContent'</span> test.txt
-<span class="c"># 在原文的第 1~3 行后面各新增一行内容</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'1,3a testContent'</span> test.txt
-	
-<span class="c"># 将第 2 行内容整行替换</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'2c testContent'</span> test.txt
-<span class="c"># 将第 1~3 行内容替换成一行指定内容</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'1,3c testContent'</span> test.txt	
-
-<span class="c"># 删除第 2 行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'2d'</span> test.txt
-<span class="c"># 删除第1~3行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'1,3d'</span> test.txt	
-
-<span class="c"># 在第 2 行前面插入一行内容</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'2i testContent'</span> test.txt
-<span class="c"># 在原文的第 1~3 行前面各插入一行内容</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'1,3i testContent'</span> test.txt
-
-<span class="c"># 重复打印第 2 行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'2p'</span> test.txt
-<span class="c"># 重复打印第1~3行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'1,3p'</span> test.txt
-	
-<span class="c"># 只打印第 2 行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'2p'</span> test.txt
-<span class="c"># 只打印第 1~3 行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'1,3p'</span> test.txt
-<span class="c"># 打印匹配到user的行，类似grep</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'/user/p'</span> test.txt
-<span class="c"># ! 反选，打印没有匹配到user的行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'/user/!p'</span> test.txt	
-<span class="c"># 只打印匹配替换的行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'s/old/new/gp'</span> <span class="nb">test</span>
-
-<span class="c"># 匹配每一行的第一个old替换为new</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'s/old/new/'</span> test.txt
-<span class="c"># 匹配所有old替换为new，g 代表一行多个，i 代表匹配忽略大小写</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'s/old/new/gi'</span> test.txt
-<span class="c"># 匹配第 3~9 行所有old替换为new</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'3,9s/old/new/gi'</span> test.txt	
-
-<span class="c"># 执行多个指令</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-e</span> <span class="s1">'s/系统/00/g'</span> <span class="nt">-e</span> <span class="s1">'2d'</span> test.txt
-	
-<span class="c"># 多个命令写进ab.log文件里，一行一条命令，效果同-e</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-f</span> ab.log test.txt
-</code></pre></div></div>
-<h3 id="ps-process-status">ps ：process status</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-A</span> 显示所有进程（等价于-e）
-<span class="nt">-a</span> 显示一个终端的所有进程，除了会话引线
-<span class="nt">-x</span> 显示没有控制终端的进程，同时显示各个命令的具体路径。dx不可合用。（utility）
-<span class="nt">-u</span> uid or username 选择有效的用户id或者是用户名
-<span class="nt">-f</span> 全部列出，通常和其他选项联用。如：ps <span class="nt">-fa</span> or ps <span class="nt">-fx</span> and so on.
-
-<span class="c"># 显示所有进程</span>
-<span class="nv">$ </span>ps <span class="nt">-aux</span>
-<span class="c"># 以树形结构显示进程</span>
-<span class="nv">$ </span>ps <span class="nt">-axjf</span>  
-<span class="nv">$ </span>pstree
-<span class="c"># 用标准的格式显示进程</span>
-<span class="nv">$ </span>ps <span class="nt">-ef</span>
-<span class="c"># 根据 CPU 使用来升序排序</span>
-<span class="nv">$ </span>ps <span class="nt">-aux</span> <span class="nt">--sort</span> <span class="nt">-pcpu</span> | less
-<span class="c"># 根据内存使用来升序排序</span>
-<span class="nv">$ </span>ps <span class="nt">-aux</span> <span class="nt">--sort</span> <span class="nt">-pmem</span> | less
-</code></pre></div></div>
-<p>ps命令详解，原来ps如此庞大
-<a href="https://mp.weixin.qq.com/s/PBEpjoOFW4f0eG5bwa5AvQ">https://mp.weixin.qq.com/s/PBEpjoOFW4f0eG5bwa5AvQ</a></p>
-<h3 id="netstat">netstat</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-a</span> <span class="o">(</span>all<span class="o">)</span>显示所有选项，默认不显示LISTEN相关
-<span class="nt">-t</span> <span class="o">(</span>tcp<span class="o">)</span>仅显示tcp相关选项
-<span class="nt">-u</span> <span class="o">(</span>udp<span class="o">)</span>仅显示udp相关选项
-<span class="nt">-n</span> 拒绝显示别名或域名，能显示ip数字的全部转化成数字。
-<span class="nt">-l</span> 仅列出有在 Listen <span class="o">(</span>监听<span class="o">)</span> 的服務状态
-<span class="nt">-p</span> 显示建立相关链接的程序名 pid/program
-<span class="nt">-r</span> 显示路由信息，路由表
-提示：LISTEN和LISTENING的状态只有用-a或者-l才能看到
-
-<span class="c"># 显示t:tcp下的l:listen中的进程的p:pid$progame网络信息n:not dns</span>
-<span class="nv">$ </span>netstat <span class="nt">-tlnp</span>
-
-</code></pre></div></div>
-<p>一些netstat实用例子
-<a href="https://blog.csdn.net/qq_33326449/article/details/88241139">https://blog.csdn.net/qq_33326449/article/details/88241139</a></p>
-<h3 id="awk命令">awk命令</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">awk</span> <span class="nt">-F</span> <span class="s2">":"</span> <span class="s1">'{print $2}'</span> app.log |awk <span class="nt">-F</span> <span class="s2">","</span> <span class="s1">'{print $1}'</span> <span class="o">&gt;</span> result.log
-</code></pre></div></div>
-<h3 id="tail命令">tail命令</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 显示 notes.log 文件的最后 10 行</span>
-<span class="nv">$ </span><span class="nb">tail </span>notes.log
-<span class="c"># 跟踪名为 notes.log 的文件的增长情况</span>
-<span class="nv">$ </span><span class="nb">tail</span> <span class="nt">-f</span> notes.log
-<span class="c"># 显示文件 notes.log 的内容，从第20行至文件末尾:</span>
-<span class="nv">$ </span><span class="nb">tail</span> +20 notes.log
-<span class="c"># 显示文件 notes.log 的内容，从倒数第20行至文件末尾:</span>
-<span class="nv">$ </span><span class="nb">tail</span> +20 notes.log
-<span class="c"># 显示文件 notes.log 的最后 10 个字符:</span>
-<span class="nv">$ </span><span class="nb">tail</span> <span class="nt">-c</span> 10 notes.log
-</code></pre></div></div>
-<h3 id="cat-more-less">cat more less</h3>
-<p>众所周知linux中命令cat、more、less均可用来查看文件内容，主要区别有：
-cat是一次性显示整个文件的内容，还可以将多个文件连接起来显示，它常与重定向符号配合使用，适用于文件内容少的情况；
-more和less一般用于显示文件内容超过一屏的内容，并且提供翻页的功能。more比cat强大，提供分页显示的功能，less比more更强大，提供翻页，跳转，查找等命令。
-而且more和less都支持：用空格显示下一页，按键b显示上一页</p>
-
-<p>linux中cat、more、less命令区别详解
-<a href="https://www.cnblogs.com/lidabo/p/6196457.html">https://www.cnblogs.com/lidabo/p/6196457.html</a></p>
-<h3 id="crontab配置">crontab配置</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># crontab各参数说明：</span>
-<span class="nt">-e</span> : 执行文字编辑器来编辑crontab，内定的文字编辑器是VI
-<span class="nt">-r</span> : 删除目前的crontab
-<span class="nt">-l</span> : 列出目前的crontab<span class="o">(</span>查看专用<span class="o">)</span>
-<span class="nt">-i</span> : 会和-r 配合使用，在删除当前的crontab时询问，输入y 则删除
-   <span class="c"># 注意crontab是分用户的，以谁登录就会编辑到谁的crontab</span>
-
-<span class="c"># crontab特殊的符号说明：</span>
-<span class="c"># "*"代表所有的取值范围内的数字。特别要注意哦!</span>
-<span class="c"># "/"代表每的意思，如"*/5"表示每5个单位</span>
-<span class="c"># "-"代表从某个数字到某个数字</span>
-<span class="c"># ","分散的数字</span>
-
-<span class="c"># crontab文件的使用示例：</span>
-<span class="c"># 30 21 * * * 表示每晚的21:30</span>
-<span class="c"># 45 4 1,10,22 * * 表示每月1、10、22日的4 : 45</span>
-<span class="c"># 10 1 * * 6,0 表示每周六、周日的1 : 10</span>
-<span class="c"># 0,30 18-23 * * * 表示在每天18 : 00至23 : 00之间每隔30分钟</span>
-<span class="c"># 0 23 * * 6 表示每星期六的11 : 00 pm</span>
-<span class="c"># * */1 * * * 每一小时</span>
-<span class="c"># * 23-7/1 * * * 晚上11点到早上7点之间，每隔一小时</span>
-<span class="c"># * 8,13 * * 1-5 从周一到周五的上午8点和下午1点</span>
-<span class="c"># 0 11 4 * mon-wed 每月的4号与每周一到周三的11点</span>
-<span class="c"># 0 4 1 jan * 一月一号的4点</span>
-</code></pre></div></div>
-<h3 id="sar-system-activityreporter系统活动情况报告">sar System ActivityReporter系统活动情况报告</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># CPU利用率</span>
-<span class="nv">$ </span>sar <span class="nt">-p</span> （查看全天）
-<span class="nv">$ </span>sar <span class="nt">-u</span> 1 10 （1：每隔一秒，10：写入10次）
-
-<span class="c"># 内存利用率</span>
-<span class="nv">$ </span>sar <span class="nt">-r</span> （查看全天）
-<span class="nv">$ </span>sar <span class="nt">-r</span> 1 10 （1：每隔一秒，10：写入10次）
-
-<span class="c"># 磁盘I/O</span>
-<span class="nv">$ </span>sar <span class="nt">-d</span> （查看全天）
-<span class="nv">$ </span>sar <span class="nt">-d</span> 1 2 （1：每隔一秒，2：写入2次）
-
-<span class="c"># 网络流量</span>
-<span class="nv">$ </span>sar <span class="nt">-n</span> DEV （查看全天）
-<span class="nv">$ </span>sar <span class="nt">-n</span> DEV 1 2 （1：每隔一秒，2：写入2次）
-<span class="nt">-n</span> DEV ： 网络接口统计信息。
-<span class="nt">-n</span> EDEV ： 网络接口错误。
-<span class="nt">-n</span> IP ： IP数据报统计信息。
-<span class="nt">-n</span> EIP ： IP错误统计信息。
-<span class="nt">-n</span> TCP ： TCP统计信息。
-<span class="nt">-n</span> ETCP ： TCP错误统计信息。
-<span class="nt">-n</span> SOCK ： 套接字使用。
-</code></pre></div></div>
-<p><a href="https://www.cnblogs.com/howhy/p/6396437.html">https://www.cnblogs.com/howhy/p/6396437.html</a></p>
-
-<p><a href="https://blog.csdn.net/volitationlong/article/details/81741754">https://blog.csdn.net/volitationlong/article/details/81741754</a></p>
-<h3 id="vmstat-mpstat-iostat-pidstat">vmstat mpstat iostat pidstat</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpstat是Multiprocessor Statistic
-vmstat 是Virtual Meomory Statistics（虚拟内存统计）
-</code></pre></div></div>
-<p>pidstat 命令详解
-<a href="https://www.jianshu.com/p/3991c0dba094">https://www.jianshu.com/p/3991c0dba094</a></p>
-
-<p>详解mpstat、iostat、sar、vmstat命令的使用
-<a href="https://blog.csdn.net/suchahaerkang/article/details/80545140">https://blog.csdn.net/suchahaerkang/article/details/80545140</a></p>
-<h3 id="wget">wget</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 使用wget -O下载并以不同的文件名保存</span>
-<span class="nv">$ </span>wget <span class="nt">-O</span> wordpress.zip http://www.minjieren.com/download.aspx?id<span class="o">=</span>1080
-<span class="c"># 使用wget -b后台下载</span>
-<span class="nv">$ </span>wget <span class="nt">-b</span> http://www.minjieren.com/wordpress-3.1-zh_CN.zip
-<span class="c"># 利用-spider: 模拟下载，不会下载，只是会检查是否网站是否好着</span>
-<span class="nv">$ </span>wget <span class="nt">--spider</span>  www.baidu.com
-<span class="c"># 模拟下载打印服务器响应</span>
-<span class="nv">$ </span>wget <span class="nt">-S</span>  www.baidu.com  
-<span class="c"># 指定尝试2次，2次后不再尝试</span>
-<span class="nv">$ </span>wget <span class="nt">-r</span> <span class="nt">--tries</span><span class="o">=</span>2  www.baidu.com 
-<span class="c"># 指定尝试，且不打印中间结果</span>
-<span class="nv">$ </span>wget <span class="nt">-r</span> <span class="nt">--tries</span><span class="o">=</span>2 <span class="nt">-q</span> www.baidu.com
-</code></pre></div></div>
-<h3 id="curl">curl</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-d</span><span class="s1">'login=emma＆password=123'</span><span class="nt">-X</span> POST https://google.com/login
-<span class="c"># 或者</span>
-<span class="nv">$ </span>curl <span class="nt">-d</span> <span class="s1">'login=emma'</span> <span class="nt">-d</span> <span class="s1">'password=123'</span> <span class="nt">-X</span> POST  https://google.com/login
-</code></pre></div></div>
-<p>阮一峰的网络日志已经总结了
-http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
-<h3 id="tcpdump">tcpdump</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -i eth0： 用eth0 接口进行抓包； -s 0：表示包有多大，抓取的数据多大； -w a.cap 表示存取到 a.cap 文件中</span>
-<span class="nv">$ </span>tcpdump <span class="nt">-i</span> eth0 <span class="nt">-s</span> 0 <span class="nt">-w</span> a.acp
-<span class="c"># 查看抓包的内容</span>
-<span class="nv">$ </span>tcpdump <span class="nt">-r</span> a.acp 
-</code></pre></div></div>
-<p>TCPDUMP——抓包、筛选、高级筛选
-<a href="https://blog.csdn.net/suiyideali/article/details/93935877">https://blog.csdn.net/suiyideali/article/details/93935877</a></p>
-<h3 id="cachestatcachetoppcstat-linux系统缓存命中率分析工具">cachestat、cachetop、pcstat-linux系统缓存命中率分析工具</h3>
-<p><a href="https://blog.51cto.com/liuzhengwei521/2360734?source=dra">https://blog.51cto.com/liuzhengwei521/2360734?source=dra</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/Linux-cmd.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html">算法时间复杂度</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>算法</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="时间复杂度原则">时间复杂度原则</h4>
-<ul>
-  <li>如果运行时间是常数量级，用常数1表示</li>
-  <li>只保留时间函数中的最高阶项
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 0.5n^2 + 0.5n
-T(n) = O(n^2)
-</code></pre></div>    </div>
-  </li>
-  <li>如果最高阶项存在，则省去最高阶项前面的系数
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 3n
-T(n) = O(n)
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h4 id="时间复杂度排序">时间复杂度排序</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>O(1) &lt; O(logN) &lt; O(n) &lt; O(n^2)
-</code></pre></div></div>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -872,8 +625,22 @@ T(n) = O(n)
       
       
       
+      <a  href="tag/Ansible">
+      <span class="label label-default">ansible ( 1 )</span>
+      </a><br />
+
+      
+      
+      
       <a  href="tag/Nginx">
       <span class="label label-default">nginx ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/SpringCloud">
+      <span class="label label-default">springcloud ( 1 )</span>
       </a><br />
 
       

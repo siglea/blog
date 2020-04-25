@@ -54,6 +54,59 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html"> SpringCloud </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>SpringCloud</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="just-do-springcloud">Just Do SpringCloud</h4>
+<ul>
+  <li><a href="https://www.springcloud.cc/">springcloud.cc</a></li>
+  <li><a href="http://springcloud.fun">springcloud.fun</a></li>
+  <li><a href="https://www.zhihu.com/question/283286745/answer/763040709">大话SpringCloud</a></li>
+  <li><a href="http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html">阿里Dubbo与Spring Cloud</a></li>
+</ul>
+
+<h4 id="常见组件">常见组件</h4>
+<ul>
+  <li>服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul
+    <ul>
+      <li><a href="https://www.jianshu.com/p/5c5753d2aeb0">Zookeeper保证的是CP，Eureka保证的是AP</a></li>
+    </ul>
+  </li>
+  <li>客户端负载均衡：Netflix Ribbon (提供云端负载均衡，有多种负载均衡策略可供选择，可配合服务发现和断路器使用。)
+    <ul>
+      <li>客户端负载均衡(Ribbon)服务实例的清单在客户端，客户端进行负载均衡算法分配。(从上面的知识我们已经知道了：客户端可以从Eureka Server中得到一份服务清单，在发送请求时通过负载均衡算法，在多个服务器之间选择一个进行访问)
+Zuul路由的业务，对业务进行了归类，并交给了对应的微服务。</li>
+      <li>服务端负载均衡(Nginx)服务实例的清单在服务端，服务器进行负载均衡算法分配,
+Nginx路由请求的压力，对请求进行平均后，交给了服务器处理。</li>
+      <li><a href="https://www.cnblogs.com/kongxianghai/p/8477781.html">撸一撸Spring Cloud Ribbon的原理-负载均衡策略</a></li>
+    </ul>
+  </li>
+  <li>熔断器：Netflix Hystrix（Envoy)</li>
+  <li>Spring Cloud Feign：它基于 Netflix Feign 实现，整合了 Spring Cloud Ribbon 与 Spring Cloud Hystrix, 除了整合这两者的强大功能之外，它还提 供了声明式的服务调用(不再通过RestTemplate)。</li>
+  <li>服务网关: Netflix Zuul  、 Spring Cloud GateWay</li>
+  <li>分布式配置：Spring Cloud Config (Chef)</li>
+  <li>时间消息总线：Spring Cloud Bus</li>
+  <li>链路追踪：Spring Cloud Sleuth 与 Twitter Zipkin</li>
+  <li>数据流：Spring Cloud Stream (数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。)</li>
+  <li>服务监控：Zabbix、Nagios、Metrics、Spectator</li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html"> Nginx </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
@@ -68,6 +121,26 @@
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Ansible.html"> Ansible </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Ansible.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Ansible</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/Ansible.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -367,245 +440,6 @@
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html"> JVM 常用工具 </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 27, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>JVM</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="jmap--内存占用情况查询">jmap : 内存占用情况查询</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 查询某个pid进程对应的应用程序内存占用情况</span>
-jmap <span class="nt">-heap</span> pid
- 
-<span class="c">## 示例1</span>
-jmap <span class="nt">-heap</span> 5940
-
-<span class="o">[</span>root@VM_0_8_centos ~]# jmap <span class="nt">-heap</span> 27472
-Attaching to process ID 27472, please wait...
-Debugger attached successfully.
-Server compiler detected.
-JVM version is 25.171-b11
-
-using thread-local object allocation.
-Parallel GC with 2 thread<span class="o">(</span>s<span class="o">)</span>
-
-Heap Configuration:
-   MinHeapFreeRatio         <span class="o">=</span> 0
-   MaxHeapFreeRatio         <span class="o">=</span> 100
-   MaxHeapSize              <span class="o">=</span> 2051014656 <span class="o">(</span>1956.0MB<span class="o">)</span>
-   NewSize                  <span class="o">=</span> 42991616 <span class="o">(</span>41.0MB<span class="o">)</span>
-   MaxNewSize               <span class="o">=</span> 683671552 <span class="o">(</span>652.0MB<span class="o">)</span>
-   OldSize                  <span class="o">=</span> 87031808 <span class="o">(</span>83.0MB<span class="o">)</span>
-   NewRatio                 <span class="o">=</span> 2
-   SurvivorRatio            <span class="o">=</span> 8
-   MetaspaceSize            <span class="o">=</span> 21807104 <span class="o">(</span>20.796875MB<span class="o">)</span>
-   CompressedClassSpaceSize <span class="o">=</span> 1073741824 <span class="o">(</span>1024.0MB<span class="o">)</span>
-   MaxMetaspaceSize         <span class="o">=</span> 17592186044415 MB
-   G1HeapRegionSize         <span class="o">=</span> 0 <span class="o">(</span>0.0MB<span class="o">)</span>
-
-Heap Usage:
-PS Young Generation
-Eden Space:
-   capacity <span class="o">=</span> 37224448 <span class="o">(</span>35.5MB<span class="o">)</span>
-   used     <span class="o">=</span> 14139096 <span class="o">(</span>13.484092712402344MB<span class="o">)</span>
-   free     <span class="o">=</span> 23085352 <span class="o">(</span>22.015907287597656MB<span class="o">)</span>
-   37.98335975324604% used
-From Space:
-   capacity <span class="o">=</span> 3145728 <span class="o">(</span>3.0MB<span class="o">)</span>
-   used     <span class="o">=</span> 2929584 <span class="o">(</span>2.7938690185546875MB<span class="o">)</span>
-   free     <span class="o">=</span> 216144 <span class="o">(</span>0.2061309814453125MB<span class="o">)</span>
-   93.12896728515625% used
-To Space:
-   capacity <span class="o">=</span> 3670016 <span class="o">(</span>3.5MB<span class="o">)</span>
-   used     <span class="o">=</span> 0 <span class="o">(</span>0.0MB<span class="o">)</span>
-   free     <span class="o">=</span> 3670016 <span class="o">(</span>3.5MB<span class="o">)</span>
-   0.0% used
-PS Old Generation
-   capacity <span class="o">=</span> 165150720 <span class="o">(</span>157.5MB<span class="o">)</span>
-   used     <span class="o">=</span> 98856376 <span class="o">(</span>94.27678680419922MB<span class="o">)</span>
-   free     <span class="o">=</span> 66294344 <span class="o">(</span>63.22321319580078MB<span class="o">)</span>
-   59.8582773359995% used
-
-26452 interned Strings occupying 2659208 bytes.
-
-<span class="c">## 示例2</span>
-jmap <span class="nt">-F</span> <span class="nt">-histo</span> 16464 <span class="o">&gt;</span> 16464.log
-<span class="nt">-histo</span><span class="o">[</span>:live] 打印每个class的实例数目,内存占用,类全名信息. VM的内部类名字开头会加上前缀”<span class="k">*</span>”. 如果live子参数加上后,只统计活的对象数量. 
-
-<span class="c">## 示例2</span>
-jmap <span class="nt">-dump</span>:format<span class="o">=</span>b,file<span class="o">=</span>outfile 3024可以将3024进程的内存heap输出出来到outfile文件里，再配合MAT（内存分析工具）。
-
-</code></pre></div></div>
-
-<h4 id="jstat-可以实时监测系统资源占用与jvm运行情况">jstat: 可以实时监测系统资源占用与jvm运行情况</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 命令语法结构：
-Usage: jstat -help|-options
-       jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]]
-## 参数解释：
-Options — 选项，我们一般使用 -gcutil 查看gc情况
--t      — 输出Timestamp
-vmid    — VM的进程号，即当前运行的java进程号
-interval– 间隔时间，单位为秒或者毫秒
-count   — 打印次数，如果缺省则打印无数次
- 
-S0  — Heap上的 Survivor space 0 区已使用空间的百分比
-S1  — Heap上的 Survivor space 1 区已使用空间的百分比
-E   — Heap上的 Eden space 区已使用空间的百分比
-O   — Heap上的 Old space 区已使用空间的百分比
-P   — Perm space 区已使用空间的百分比
-YGC — 从应用程序启动到采样时发生 Young GC 的次数
-YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒)
-FGC — 从应用程序启动到采样时发生 Full GC 的次数
-FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒)
-GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒)
-
-## jstat -options
-    -class 类加载统计
-    -compiler 编译统计 
-    -gc
-    -gccapacity
-    -gccause Allocation Failure
-    -gcmetacapacity 元数据空间统计
-    -gcnew
-    -gcnewcapacity
-    -gcold
-    -gcoldcapacity
-    -gcutil 总结垃圾回收统计
-    -printcompilation JVM编译方法统计
-
-## 示例1 总结垃圾回收统计
-[root@VM_0_8_centos ~]# jstat -gcutil 27472 1000 5
-  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT
- 78.04   0.00  14.10  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  24.05  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  34.14  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  40.62  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  47.20  61.31  96.88  94.27    288    5.612     4    3.335    8.947
-
-## 示例2 类加载统计
-[root@VM_0_8_centos ~]# jstat -class -t 27472 1000 5
-Timestamp       加载class的数量  所占用空间大小  未加载数量  未加载占用空间     Time(秒)
-Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
-         5359.3  10847 20148.1        0     0.0      46.25
-         5360.4  10847 20148.1        0     0.0      46.25
-         5361.4  10847 20148.1        0     0.0      46.25
-         5362.3  10847 20148.1        0     0.0      46.25
-         5363.3  10847 20148.1        0     0.0      46.25
-
-</code></pre></div></div>
-<p>jstat命令使用
-<a href="https://www.cnblogs.com/lizhonghua34/p/7307139.html">https://www.cnblogs.com/lizhonghua34/p/7307139.html</a></p>
-
-<p>JVM运行时内存使用情况监控
-<a href="https://blog.csdn.net/zmx729618/article/details/78392715">https://blog.csdn.net/zmx729618/article/details/78392715</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html">Docker</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 12, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Docker</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="docker原理-">Docker原理 ☆☆☆</h4>
-
-<h4 id="docker-hello-world">Docker Hello World!</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run hello-world
-docker run ubuntu:15.10 /bin/echo <span class="s2">"Hello world"</span>
-</code></pre></div></div>
-<h4 id="docker-pull-image">Docker pull Image</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull library/hello-world
-</code></pre></div></div>
-<h4 id="docker-run-nginx">docker run nginx</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">--name</span> my_nginx_v1 <span class="nt">-p</span> 8080:80 <span class="nt">-d</span> nginx:v1
-<span class="c">## --name nginx-test：容器名称。</span>
-<span class="c">## -p 8080:80： 端口进行映射，将本地 8080 端口映射到容器内部的 80 端口。</span>
-<span class="c">## -d nginx： 设置容器在在后台一直运行。</span>
-</code></pre></div></div>
-<p><a href="https://www.runoob.com/docker/docker-install-nginx.html">https://www.runoob.com/docker/docker-install-nginx.html</a></p>
-
-<h4 id="docker-run-springboot">docker run springboot</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-p</span> 8080:8080 <span class="nt">-t</span> springboot/spring-boot-docker
-</code></pre></div></div>
-<p><a href="http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html">http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html</a></p>
-<h4 id="查看运行的容器">查看运行的容器</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker ps
-docker ps <span class="nt">-a</span>
-<span class="c"># 输出详情介绍：</span>
-<span class="c">## CONTAINER ID: 容器 ID。</span>
-<span class="c">## IMAGE: 使用的镜像。</span>
-<span class="c">## COMMAND: 启动容器时运行的命令。</span>
-<span class="c">## CREATED: 容器的创建时间。</span>
-
-<span class="c">## STATUS: 容器状态。</span>
-<span class="c">## 状态有7种：</span>
-<span class="c">### created（已创建）</span>
-<span class="c">### restarting（重启中）</span>
-<span class="c">### running（运行中）</span>
-<span class="c">### removing（迁移中）</span>
-<span class="c">### paused（暂停）</span>
-<span class="c">### exited（停止）</span>
-<span class="c">### dead（死亡）</span>
-
-<span class="c">## PORTS: 容器的端口信息和使用的连接类型（tcp\udp）。</span>
-<span class="c">## NAMES: 自动分配的容器名称。</span>
-</code></pre></div></div>
-<h4 id="查看容器内的标准输出日志">查看容器内的标准输出日志</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker logs 2b1b7a428627
-</code></pre></div></div>
-<h4 id="启动重启停止容器">启动/重启/停止容器</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start/restart amazing_cori
-docker stop 2b1b7a428627
-</code></pre></div></div>
-<h4 id="删除容器镜像">删除容器/镜像</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">rm </span>20ca2a70ee13
-docker rmi ec49dbd13cf5
-</code></pre></div></div>
-<h4 id="compose-machine-swarm">Compose Machine Swarm</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-</code></pre></div></div>
-<h4 id="kubernetes">Kubernetes</h4>
-<h4 id="docker中run和start的区别">docker中run和start的区别</h4>
-<ul>
-  <li>docker run 后面指定的是一个镜像</li>
-  <li>而docker start指定的是一个容器</li>
-  <li>docker run是利用镜像生成容器，并启动容器，而docker start是启动一个之前生成过的容器</li>
-</ul>
-
-<h4 id="dockerfile-命令详解">Dockerfile 命令详解</h4>
-<p><a href="http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html">http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html</a></p>
-
-<p><a href="http://www.ityouknow.com/docker.html">http://www.ityouknow.com/docker.html</a></p>
-
-<h4 id="cloud-foundry和-kubernetes-的区别">Cloud Foundry和 Kubernetes 的区别</h4>
-<p><a href="https://blog.csdn.net/qq_30154571/article/details/84955097">https://blog.csdn.net/qq_30154571/article/details/84955097</a></p>
-
-<h4 id="cloud-foundry-与kubernetes-cfk8s结合简史">Cloud Foundry 与Kubernetes: CF/K8s结合简史</h4>
-<p><a href="https://blog.csdn.net/zhanggongsw/article/details/79948420">https://blog.csdn.net/zhanggongsw/article/details/79948420</a></p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -849,8 +683,22 @@ docker rmi ec49dbd13cf5
       
       
       
+      <a  href="tag/Ansible">
+      <span class="label label-default">ansible ( 1 )</span>
+      </a><br />
+
+      
+      
+      
       <a  href="tag/Nginx">
       <span class="label label-default">nginx ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/SpringCloud">
+      <span class="label label-default">springcloud ( 1 )</span>
       </a><br />
 
       
