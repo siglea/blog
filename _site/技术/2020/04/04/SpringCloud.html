@@ -60,7 +60,7 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="just-do-springcloud">Just Do SpringCloud</h4>
+    <h3 id="just-do-springcloud">Just Do SpringCloud</h3>
 <ul>
   <li><a href="https://www.springcloud.cc/">springcloud.cc</a></li>
   <li><a href="http://springcloud.fun">springcloud.fun</a></li>
@@ -68,7 +68,7 @@
   <li><a href="http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html">阿里Dubbo与Spring Cloud</a></li>
 </ul>
 
-<h4 id="常见组件">常见组件</h4>
+<h3 id="常见组件">常见组件</h3>
 <ul>
   <li>服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul
     <ul>
@@ -92,6 +92,18 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
   <li>链路追踪：Spring Cloud Sleuth 与 Twitter Zipkin</li>
   <li>数据流：Spring Cloud Stream (数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。)</li>
   <li>服务监控：Zabbix、Nagios、Metrics、Spectator</li>
+</ul>
+
+<h3 id="相关组件">相关组件</h3>
+<h4 id="zookeeper">zookeeper</h4>
+<ul>
+  <li>简单理解，zk就是一套简单的文件系统结构，本目录(节点)可以设置value及subNode,
+并且该节点可以设置不同的权限（默认/用户名+密码/ip/秘钥，这4种)</li>
+  <li>zk集群简单理解就是，基于ZAB一致性算法的变种keep alived集群</li>
+  <li>zk集群是CP模型，强一致性的，也就是说数据出现了不一致性（通常是节点挂了），整个服务集群就会Hold住等待数据一致，
+所以，这个缺点导致zk并不是最佳的注册中心，因为服务注册中心AP模型最好，部分服务有问题并不表示所有服务不可用。</li>
+  <li>zookeeper 命令 <a href="https://blog.csdn.net/feixiang2039/article/details/79810102">https://blog.csdn.net/feixiang2039/article/details/79810102</a></li>
+  <li>Curator实现的zk分布式锁 <a href="https://www.sohu.com/a/341386202_315839">https://www.sohu.com/a/341386202_315839</a></li>
 </ul>
 
 

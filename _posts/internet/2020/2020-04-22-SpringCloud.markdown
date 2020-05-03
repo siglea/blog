@@ -7,13 +7,13 @@ tags:
 categories:
 - 技术
 ---
-#### Just Do SpringCloud
+### Just Do SpringCloud
 - [springcloud.cc][springcloud.cc]
 - [springcloud.fun][springcloud.fun]
 - [大话SpringCloud][763040709]
 - [阿里Dubbo与Spring Cloud][dubbo-update-again]
 
-#### 常见组件
+### 常见组件
 - 服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul
     - [Zookeeper保证的是CP，Eureka保证的是AP][5c5753d2aeb0]  
 - 客户端负载均衡：Netflix Ribbon (提供云端负载均衡，有多种负载均衡策略可供选择，可配合服务发现和断路器使用。)
@@ -31,6 +31,15 @@ categories:
 - 数据流：Spring Cloud Stream (数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。)
 - 服务监控：Zabbix、Nagios、Metrics、Spectator
 
+### 相关组件
+#### zookeeper
+- 简单理解，zk就是一套简单的文件系统结构，本目录(节点)可以设置value及subNode,
+  并且该节点可以设置不同的权限（默认/用户名+密码/ip/秘钥，这4种)
+- zk集群简单理解就是，基于ZAB一致性算法的变种keep alived集群
+- zk集群是CP模型，强一致性的，也就是说数据出现了不一致性（通常是节点挂了），整个服务集群就会Hold住等待数据一致，
+  所以，这个缺点导致zk并不是最佳的注册中心，因为服务注册中心AP模型最好，部分服务有问题并不表示所有服务不可用。
+- zookeeper 命令 <https://blog.csdn.net/feixiang2039/article/details/79810102>
+- Curator实现的zk分布式锁 <https://www.sohu.com/a/341386202_315839>
 
 
 [5c5753d2aeb0]: https://www.jianshu.com/p/5c5753d2aeb0
@@ -39,3 +48,5 @@ categories:
 [763040709]: https://www.zhihu.com/question/283286745/answer/763040709
 [dubbo-update-again]: http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html
 [8477781]: https://www.cnblogs.com/kongxianghai/p/8477781.html
+
+
