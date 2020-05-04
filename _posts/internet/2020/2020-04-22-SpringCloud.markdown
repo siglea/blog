@@ -7,11 +7,29 @@ tags:
 categories:
 - 技术
 ---
+### 关于微服务
+- SOA(ESB)与微服务
+    - <https://zhuanlan.zhihu.com/p/30477325>
+    - <https://www.cnblogs.com/guanghe/p/10978349.html>
+    - <https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA>
+- 微服务哪些事
+    - <https://windmt.com/2018/04/14/spring-cloud-0-microservices/>
+    - <https://windmt.com/2018/04/14/spring-cloud-1-services-governance/>
+- SpringCloud & Dubbo
+    - <https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ>
+    - <https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A>
+    - [阿里Dubbo与Spring Cloud][dubbo-update-again]
+- RPC/thrift/gRPC
+    - <https://blog.csdn.net/kesonyk/article/details/50924489>
+    - <https://developer.51cto.com/art/201908/601617.htm>
+    - <https://segmentfault.com/a/1190000011478469>
+
 ### Just Do SpringCloud
+- 首选 <https://windmt.com/tags/Spring-Cloud/>
 - [springcloud.cc][springcloud.cc]
 - [springcloud.fun][springcloud.fun]
 - [大话SpringCloud][763040709]
-- [阿里Dubbo与Spring Cloud][dubbo-update-again]
+- <https://www.geekdigging.com>
 
 ### 常见组件
 - 服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul
