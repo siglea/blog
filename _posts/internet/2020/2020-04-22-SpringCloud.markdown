@@ -19,11 +19,18 @@ categories:
     - <https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ>
     - <https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A>
     - [阿里Dubbo与Spring Cloud][dubbo-update-again]
-- RPC/thrift/gRPC
+- RPC之thrift/gRPC
     - <https://blog.csdn.net/kesonyk/article/details/50924489>
     - <https://developer.51cto.com/art/201908/601617.htm>
     - <https://segmentfault.com/a/1190000011478469>
-
+    - <https://zhuanlan.zhihu.com/p/136112210>
+- WebService某种程度上也是一种RPC
+    - WebService的历史 <https://www.iteye.com/blog/andot-662787>
+    - WebService的demo<https://blog.csdn.net/weixin_42672054/article/details/81708464>
+    - 2000年左右出现xml，借此微软等联盟推出了基于XML的SOAP协议，实现各系统之间的通信
+    - thrift/webservice等可以生成客户端代码，隐藏了底层通信细节，对象化了数据（否则需要自行解析）
+    - thrift、dobbo等方式基于TCP实现，主要是性能方面的考虑吧
+    
 ### Just Do SpringCloud
 - 首选 <https://windmt.com/tags/Spring-Cloud/>
 - [springcloud.cc][springcloud.cc]

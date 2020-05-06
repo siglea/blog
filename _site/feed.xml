@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>粉笔灰杂谈</title>
-    <description>关于互联网、金融、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
+    <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 04 May 2020 20:53:01 +0800</pubDate>
-    <lastBuildDate>Mon, 04 May 2020 20:53:01 +0800</lastBuildDate>
+    <pubDate>Wed, 06 May 2020 17:09:42 +0800</pubDate>
+    <lastBuildDate>Wed, 06 May 2020 17:09:42 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -33,11 +33,21 @@
       &lt;li&gt;&lt;a href=&quot;http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html&quot;&gt;阿里Dubbo与Spring Cloud&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
-  &lt;li&gt;RPC/thrift/gRPC
+  &lt;li&gt;RPC之thrift/gRPC
     &lt;ul&gt;
       &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/kesonyk/article/details/50924489&quot;&gt;https://blog.csdn.net/kesonyk/article/details/50924489&lt;/a&gt;&lt;/li&gt;
       &lt;li&gt;&lt;a href=&quot;https://developer.51cto.com/art/201908/601617.htm&quot;&gt;https://developer.51cto.com/art/201908/601617.htm&lt;/a&gt;&lt;/li&gt;
       &lt;li&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000011478469&quot;&gt;https://segmentfault.com/a/1190000011478469&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/136112210&quot;&gt;https://zhuanlan.zhihu.com/p/136112210&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;WebService某种程度上也是一种RPC
+    &lt;ul&gt;
+      &lt;li&gt;WebService的历史 &lt;a href=&quot;https://www.iteye.com/blog/andot-662787&quot;&gt;https://www.iteye.com/blog/andot-662787&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;WebService的demo&lt;a href=&quot;https://blog.csdn.net/weixin_42672054/article/details/81708464&quot;&gt;https://blog.csdn.net/weixin_42672054/article/details/81708464&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;2000年左右出现xml，借此微软等联盟推出了基于XML的SOAP协议，实现各系统之间的通信&lt;/li&gt;
+      &lt;li&gt;thrift/webservice等可以生成客户端代码，隐藏了底层通信细节，对象化了数据（否则需要自行解析）&lt;/li&gt;
+      &lt;li&gt;thrift、dobbo等方式基于TCP实现，主要是性能方面的考虑吧&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
