@@ -24,6 +24,8 @@ categories:
     - <https://developer.51cto.com/art/201908/601617.htm>
     - <https://segmentfault.com/a/1190000011478469>
     - <https://zhuanlan.zhihu.com/p/136112210>
+    - RPC与HTTP的关系 <https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg>
+    - 快速理解RPC技术——基本概念、原理和用途 <http://www.52im.net/forum.php?mod=viewthread&tid=2620>
 - WebService某种程度上也是一种RPC
     - WebService的历史 <https://www.iteye.com/blog/andot-662787>
     - WebService的demo<https://blog.csdn.net/weixin_42672054/article/details/81708464>
