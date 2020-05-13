@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>DB Mysql</title>
-  <meta name="description" content="索引原理(B+Tree)  Tree -&gt; BelanceTree -&gt; B+Tree          http://www.sohu.com/a/280609547_818692      https://www.jianshu.com/p/0371c9569736      https://ww...">
+  <meta name="description" content="索引原理(B+Tree)  BS树(Binary Search Tree二叉查找树) -&gt; AVL(人名，平衡二叉树) Tree -&gt; B-/B+Tree(平衡多路查找树)          http://www.sohu.com/a/280609547_818692                 ...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -62,11 +62,25 @@
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
     <h4 id="索引原理btree">索引原理(B+Tree)</h4>
 <ul>
-  <li>Tree -&gt; BelanceTree -&gt; B+Tree
+  <li>BS树(Binary Search Tree二叉查找树) -&gt; AVL(人名，平衡二叉树) Tree -&gt; B-/B+Tree(平衡多路查找树)
     <ul>
-      <li><a href="http://www.sohu.com/a/280609547_818692">http://www.sohu.com/a/280609547_818692</a></li>
-      <li><a href="https://www.jianshu.com/p/0371c9569736">https://www.jianshu.com/p/0371c9569736</a></li>
-      <li><a href="https://www.cnblogs.com/tiancai/p/9024351.html">https://www.cnblogs.com/tiancai/p/9024351.html</a></li>
+      <li><a href="http://www.sohu.com/a/280609547_818692">http://www.sohu.com/a/280609547_818692</a>
+        <ul>
+          <li>既然hash比B+树更快，为啥mysql还用B+树来存索引吗？
+            <ol>
+              <li>这和业务场景有关。如果只选一个数据，那确实是hash更快。但是数据库中经常会选择多条，这时候由于B+树索引有序，并且又有链表相连，它的查询效率比hash就快很多了。</li>
+              <li>而且数据库中的索引一般是在磁盘上，数据量大的情况可能无法一次装入内存，B+树的设计可以允许数据分批加载，同时树的高度较低，提高查找效率。</li>
+              <li>与B数相比，如果是多条的话，B树需要做局部的中序遍历，可能要跨层访问。而B+树由于所有数据都在叶子结点，不用跨层，同时由于有链表结构，只需要找到首尾，通过链表就能把所有数据取出来了。</li>
+            </ol>
+          </li>
+          <li>AVLTree 在windowsNT内核中广泛使用，写少读多</li>
+          <li>红黑树适合于内存索引查找 比如Map、Set <a href="https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag">https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag</a></li>
+          <li>B树尤其是多路B数主要用在文件存储系统,文件系统和数据库的索引都是存在硬盘上的，并且如果数据量大的话，不一定能一次性加载到内存中。
+用B树可以一路一路的查找</li>
+          <li>红黑树常用于存储内存中的有序数据，增删很快，b+树常用于文件系统和数据库索引，因为b树的子节点大于红黑树，红黑树只能有2个子节点，b树子节点大于2，子节点树多这一特点保证了存储相同大小的数据，树的高度更小，数据局部更加紧凑，而硬盘读取有局部加载的优化（把要读取数据和周围的数据一起预先读取），b树相邻数据物理上更加紧凑这一特点符合硬盘进行io优化的特性。</li>
+        </ul>
+      </li>
+      <li>更加详细的应用范围<a href="https://www.cnblogs.com/tiancai/p/9024351.html">https://www.cnblogs.com/tiancai/p/9024351.html</a></li>
     </ul>
   </li>
 </ul>
@@ -164,8 +178,8 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
   <li>数据库三范式
     <ul>
       <li>表中的每个字段不可分割</li>
-      <li>表都需要有主键</li>
-      <li>字段不能出现在多个表中，有时为了查询效率也冗余个别字段</li>
+      <li>表有且只有一个主键，也即是每个表只是描述一件事</li>
+      <li>不存在对非主键列的依赖传递，比如userId,userName不要同时出现在order中，有时为了查询效率也冗余个别字段</li>
     </ul>
   </li>
   <li>
