@@ -32,6 +32,7 @@ categories:
     - 2000年左右出现xml，借此微软等联盟推出了基于XML的SOAP协议，实现各系统之间的通信
     - thrift/webservice等可以生成客户端代码，隐藏了底层通信细节，对象化了数据（否则需要自行解析）
     - thrift、dobbo等方式基于TCP实现，主要是性能方面的考虑吧
+- hessian / sofa
     
 ### Just Do SpringCloud
 - 首选 <https://windmt.com/tags/Spring-Cloud/>
