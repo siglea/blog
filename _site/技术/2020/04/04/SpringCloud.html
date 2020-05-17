@@ -115,7 +115,7 @@
 
 <h3 id="常见组件">常见组件</h3>
 <ul>
-  <li>服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul
+  <li>服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul、携程apollo
     <ul>
       <li><a href="https://www.jianshu.com/p/5c5753d2aeb0">Zookeeper保证的是CP，Eureka保证的是AP</a></li>
     </ul>
@@ -127,11 +127,19 @@ Zuul路由的业务，对业务进行了归类，并交给了对应的微服务�
       <li>服务端负载均衡(Nginx)服务实例的清单在服务端，服务器进行负载均衡算法分配,
 Nginx路由请求的压力，对请求进行平均后，交给了服务器处理。</li>
       <li><a href="https://www.cnblogs.com/kongxianghai/p/8477781.html">撸一撸Spring Cloud Ribbon的原理-负载均衡策略</a></li>
+      <li>可以使用Ribbon + resetTemplate 或者直接使用 Feign（已经内置Ribbon）来实现客户端侧的负载均衡</li>
     </ul>
   </li>
   <li>熔断器：Netflix Hystrix（Envoy)</li>
-  <li>Spring Cloud Feign：它基于 Netflix Feign 实现，整合了 Spring Cloud Ribbon 与 Spring Cloud Hystrix, 除了整合这两者的强大功能之外，它还提 供了声明式的服务调用(不再通过RestTemplate)。</li>
-  <li>服务网关: Netflix Zuul  、 Spring Cloud GateWay</li>
+  <li>Spring Cloud Feign：它基于 Netflix Feign 实现，整合了 Spring Cloud Ribbon 与 Spring Cloud Hystrix, 除了整合这两者的强大功能之外，它还提 供了声明式的服务调用(不再通过RestTemplate)。
+  生产环境一般使用restTemplate + ribbon</li>
+  <li>服务网关: Netflix Zuul  、 Spring Cloud GateWay
+    <ul>
+      <li>Zuul相当于一个分布式的大Servlet+Filter入口可进行路由及过滤等</li>
+      <li>Zuul也可以近似的理解为是SOA里的ESB，统一入口调用</li>
+      <li>Zuul也默认集成了Hystrix与Ribbon</li>
+    </ul>
+  </li>
   <li>分布式配置：Spring Cloud Config (Chef)</li>
   <li>时间消息总线：Spring Cloud Bus</li>
   <li>链路追踪：Spring Cloud Sleuth 与 Twitter Zipkin</li>
@@ -150,6 +158,8 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
   <li>zookeeper 命令 <a href="https://blog.csdn.net/feixiang2039/article/details/79810102">https://blog.csdn.net/feixiang2039/article/details/79810102</a></li>
   <li>Curator实现的zk分布式锁 <a href="https://www.sohu.com/a/341386202_315839">https://www.sohu.com/a/341386202_315839</a></li>
 </ul>
+
+<h3 id="基于springcloud的开源项目">基于SpringCloud的开源项目</h3>
 
 
   </div>

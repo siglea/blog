@@ -54,6 +54,52 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/12/08/Keepalived.html"> Keepalived </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 8, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/12/08/Keepalived.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>linux</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="keepalived是什么">keepalived是什么</h3>
+<p>Keepalived软件起初是专为LVS负载均衡软件设计的，用来管理并监控LVS集群系统中各个服务节点的状态，后来又加入了可以实现高可用的VRRP功能。因此，Keepalived除了能够管理LVS软件外，还可以作为其他服务（例如：Nginx、Haproxy、MySQL等）的高可用解决方案软件。
+Keepalived软件主要是通过VRRP协议实现高可用功能的。VRRP是Virtual Router RedundancyProtocol(虚拟路由器冗余协议）的缩写，VRRP出现的目的就是为了解决静态路由单点故障问题的，它能够保证当个别节点宕机时，整个网络可以不间断地运行。
+所以，Keepalived 一方面具有配置管理LVS的功能，同时还具有对LVS下面节点进行健康检查的功能，另一方面也可实现系统网络服务的高可用功能。</p>
+
+<h3 id="keepalived工作原理">keepalived工作原理</h3>
+<p>keepalived是以VRRP协议为实现基础的，VRRP全称Virtual Router Redundancy Protocol，即虚拟路由冗余协议。
+虚拟路由冗余协议，可以认为是实现路由器高可用的协议，即将N台提供相同功能的路由器组成一个路由器组，这个组里面有一个master和多个backup，master上面有一个对外提供服务的vip（该路由器所在局域网内其他机器的默认路由为该vip），master会发组播，当backup收不到vrrp包时就认为master宕掉了，这时就需要根据VRRP的优先级来选举一个backup当master。这样的话就可以保证路由器的高可用了。
+keepalived主要有三个模块，分别是core、check和vrrp。core模块为keepalived的核心，负责主进程的启动、维护以及全局配置文件的加载和解析。check负责健康检查，包括常见的各种检查方式。vrrp模块是来实现VRRP协议的。</p>
+
+<h3 id="keepalived官网">keepalived官网</h3>
+<p><a href="http://www.keepalived.org">http://www.keepalived.org</a></p>
+
+<h3 id="常见容错机制">常见容错机制</h3>
+<ol>
+  <li>failover：失效转移
+Fail-Over的含义为“失效转移”，是一种备份操作模式，当主要组件异常时，其功能转移到备份组件。其要点在于有主有备，且主故障时备可启用，并设置为主。如Mysql的双Master模式，当正在使用的Master出现故障时，可以拿备Master做主使用</li>
+  <li>failfast：快速失败
+从字面含义看就是“快速失败”，尽可能的发现系统中的错误，使系统能够按照事先设定好的错误的流程执行，对应的方式是“fault-tolerant（错误容忍）”。以JAVA集合（Collection）的快速失败为例，当多个线程对同一个集合的内容进行操作时，就可能会产生fail-fast事件。例如：当某一个线程A通过iterator去遍历某集合的过程中，若该集合的内容被其他线程所改变了；那么线程A访问集合时，就会抛出ConcurrentModificationException异常（发现错误执行设定好的错误的流程），产生fail-fast事件。</li>
+  <li>failback：失效自动恢复
+Fail-over之后的自动恢复，在簇网络系统（有两台或多台服务器互联的网络）中，由于要某台服务器进行维修，需要网络资源和服务暂时重定向到备用系统。在此之后将网络资源和服务器恢复为由原始主机提供的过程，称为自动恢复</li>
+  <li>failsafe：失效安全
+Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会造成伤害或者尽量减少伤害。维基百科上一个形象的例子是红绿灯的“冲突监测模块”当监测到错误或者冲突的信号时会将十字路口的红绿灯变为闪烁错误模式，而不是全部显示为绿灯。</li>
+</ol>
+
+<p><a href="https://www.cnblogs.com/clsn/p/8052649.html">https://www.cnblogs.com/clsn/p/8052649.html</a></p>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/12/08/Keepalived.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/WhereAreWomenFrom.html">女人的起源</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 1, 2019</span>
@@ -250,93 +296,6 @@
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html">DB Shard</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>mysql DB</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分库/分表</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="主键避重问题">主键避重问题</h4>
-<ul>
-  <li>ID生成器
-    <ul>
-      <li>Twitter Snowflake</li>
-      <li>美团 LeftUid</li>
-      <li>百度 Uid-genarator</li>
-    </ul>
-  </li>
-  <li>散表规则
-    <ul>
-      <li>按照ID范围，要求ID自增</li>
-      <li>简单Hash(取模)</li>
-      <li>Hash一致性算法</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="分页查询问题">分页查询问题</h4>
-<ul>
-  <li>分表查，应用程序合并</li>
-</ul>
-
-<h4 id="关联查询问题">关联查询问题</h4>
-<ul>
-  <li>避免join操作，改造为多次查询，由应用程序合并</li>
-  <li>使用现成的中间件</li>
-  <li>实际业务中可能会结合Redis/Es等解决方案</li>
-</ul>
-
-<h4 id="公共表问题">公共表问题</h4>
-<ul>
-  <li>公共表多库冗余，多库同步</li>
-</ul>
-
-<h4 id="事务一致性">事务一致性</h4>
-<p><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a>
-<a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></p>
-<h5 id="jtaxa">JTA*XA</h5>
-
-<h4 id="比较常见的中间件cobartddlatlassharding-jdbcmycat">比较常见的中间件cobar、TDDL、atlas、sharding-jdbc、mycat</h4>
-<ul>
-  <li>cobar：阿里b2b团队开发和开源的，属于proxy层方案。早些年还可以用，但是最近几年都没更新了，基本没啥人用，差不多算是被抛弃的状态吧。而且不支持读写分离、存储过程、跨库join和分页等操作。</li>
-  <li>TDDL：淘宝团队开发的，属于client层方案。不支持join、多表查询等语法，就是基本的crud语法是ok，但是支持读写分离。目前使用的也不多，因为还依赖淘宝的diamond配置管理系统。</li>
-  <li>atlas：360开源的，属于proxy层方案，以前是有一些公司在用的，但是确实有一个很大的问题就是社区最新的维护都在5年前了。所以，现在用的公司基本也很少了。</li>
-  <li>sharding-jdbc：当当开源的，属于client层方案。确实之前用的还比较多一些，因为SQL语法支持也比较多，没有太多限制，而且目前推出到了2.0版本，支持分库分表、读写分离、分布式id生成、柔性事务（最大努力送达型事务、TCC事务）。而且确实之前使用的公司会比较多一些（这个在官网有登记使用的公司，可以看到从2017年一直到现在，是不少公司在用的），目前社区也还一直在开发和维护，还算是比较活跃，个人认为算是一个现在也可以选择的方案。</li>
-  <li>
-    <p>mycat：基于cobar改造的，属于proxy层方案，支持的功能非常完善，而且目前应该是非常火的而且不断流行的数据库中间件，社区很活跃，也有一些公司开始在用了。但是确实相比于sharding jdbc来说，年轻一些，经历的锤炼少一些。</p>
-
-    <p>所以综上所述，现在其实建议考量的，就是sharding-jdbc和mycat，这两个都可以去考虑使用。
-  sharding-jdbc这种client层方案的优点在于不用部署，运维成本低，不需要代理层的二次转发请求，性能很高，但是如果遇到升级啥的需要各个系统都重新升级版本再发布，各个系统都需要耦合sharding-jdbc的依赖；
-  mycat这种proxy层方案的缺点在于需要部署，自己及运维一套中间件，运维成本高，但是好处在于对于各个项目是透明的，如果遇到升级之类的都是自己中间件那里搞就行了。
-  通常来说，这两个方案其实都可以选用，但是我个人建议中小型公司选用sharding-jdbc，client层方案轻便，而且维护成本低，不需要额外增派人手，而且中小型公司系统复杂度会低一些，项目也没那么多；
-  但是中大型公司最好还是选用mycat这类proxy层方案，因为可能大公司系统和项目非常多，团队很大，人员充足，那么最好是专门弄个人来研究和维护mycat，然后大量项目直接透明使用即可。</p>
-  </li>
-</ul>
-
-<h4 id="主从同步">主从同步</h4>
-<ul>
-  <li>半同步复制，semi-sync复制，指的就是主库写入binlog日志之后，就会将强制此时立即将数据同步到从库，从库将日志写入自己本地的relay log之后，接着会返回一个ack给主库，主库接收到至少一个从库的ack之后才会认为写操作完成了。</li>
-  <li>并行复制，指的是从库开启多个线程，并行读取relay log中不同库的日志，然后并行重放不同库的日志，这是库级别的并行。</li>
-</ul>
-
-<h4 id="其他">其他</h4>
-<p><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651960212&amp;idx=1&amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS">58用户系统分库分表实战</a></p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -607,8 +566,8 @@
       
       
       
-      <a  href="tag/SpringCloud">
-      <span class="label label-default">springcloud ( 1 )</span>
+      <a  href="tag/微服务">
+      <span class="label label-default">微服务 ( 2 )</span>
       </a><br />
 
       
