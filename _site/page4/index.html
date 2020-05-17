@@ -377,18 +377,18 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
       </li>
       <li>业务场景中的使用，目前暂时没有发现真正能立即安全停止线程的方法，因为不可能循环或者多处判断中断状态
         <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KillThread</span><span class="o">{</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[]){</span>
-    <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyThread</span><span class="o">();</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[]){</span>
+    <span class="nc">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyThread</span><span class="o">();</span>
     <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
     <span class="c1">//此处仅仅是修改状态,通常需要再run方法内部判断来决定是否终止线程</span>
     <span class="n">t</span><span class="o">.</span><span class="na">interrupt</span><span class="o">();</span>
 <span class="o">}</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="n">Thread</span><span class="o">{</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="nc">Thread</span><span class="o">{</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(){</span>
         <span class="k">while</span> <span class="o">(!</span><span class="n">isInterrupted</span><span class="o">())</span> <span class="o">{</span>  <span class="c1">//非阻塞过程中通过判断中断标志来退出</span>
             <span class="k">try</span> <span class="o">{</span>
-                <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
                 <span class="k">break</span><span class="o">;</span>  <span class="c1">// 捕获到异常之后，执行 break 跳出循环</span>
             <span class="o">}</span>
@@ -444,36 +444,7 @@ Java编程艺术笔记<a href="https://www.jianshu.com/p/8d90dc5b341e">https://w
       </div>
     </div>
     <br />
-
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL-NewSQL.html">NoSQL-NewSQL</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL-NewSQL.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>newSQL NoSQL</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="redis">Redis</h4>
-
-<h4 id="mongodb">MongoDB</h4>
-
-<h4 id="cassandra">Cassandra</h4>
-
-<h4 id="图数据库-graph-database">“图”数据库 Graph Database</h4>
-<h4 id="leveldbrocksdb">Leveldb、Rocksdb、</h4>
-<h4 id="tidbtair">TiDB、Tair</h4>
-<h4 id="常见-tsdbinfluxdbopentsdbtimescaladbdruid-等">常见 TSDB：influxdb、opentsdb、timeScaladb、Druid 等</h4>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL-NewSQL.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-
+    
 
     <div style="text-align:center">
     
@@ -513,6 +484,10 @@ Java编程艺术笔记<a href="https://www.jianshu.com/p/8d90dc5b341e">https://w
       
       
       <a href="/page8" class="button page-button">8</a>
+      
+      
+      
+      <a href="/page9" class="button page-button">9</a>
       
       
 
