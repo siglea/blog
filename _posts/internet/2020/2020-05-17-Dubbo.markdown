@@ -10,10 +10,11 @@ categories:
 ### Dubbo
 - 官网 <http://dubbo.apache.org/>
 - start <http://start.dubbo.io/>
-- Dubbo实践 <https://www.cnblogs.com/warehouse/p/6980473.html>
+- Dubbo实践 <https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/>
 - 通俗易懂的 Dubbo 教程 <https://blog.csdn.net/Geffin/category_9931110.html>
-
+- Java RMI & Dubbo <http://dubbo.apache.org/zh-cn/blog/dubbo-101.html>
 ### Dubbo负载均衡
+<http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html>
 #### Dubbo 内置了四种负载均衡策略，分别如下：
 - RandomLoadBalance：随机负载均衡
 - RoundRobinLoadBalance：轮询负载均衡
@@ -87,5 +88,12 @@ Forking 在第一次调用就同时发起多个调用，只要其中一个调用
 - Dubbo服务之Stub和Mock <https://www.jianshu.com/p/f4255a14e53f>
 - Dubbo服务之RPC扩展和本地Mock <https://www.cnblogs.com/hyry/p/12067497.html>
 - Dubbo与断路器 Hystrix 的集成 <https://blog.csdn.net/Geffin/article/details/105808745>
+
+#### Dubbo2.7新特性
+异步化改造，三大中心改造，服务治理增强 <http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html>
+
+#### 通过QoS对服务进行动态控制
+在Dubbo中，QoS这个概念被用于动态的对服务进行查询和控制。例如对获取当前提供和消费的所有服务，以及对服务进行动态的上下线，即从注册中心上进行注册和反注册操作。
+<http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html>
 
 

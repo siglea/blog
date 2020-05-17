@@ -54,6 +54,34 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"> Java SPI </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>SPI</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。
+约束优于配置
+Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。</p>
+
+<p>https://blog.csdn.net/sweatOtt/article/details/83055191</p>
+
+<p>https://juejin.im/post/5af952fdf265da0b9e652de3</p>
+
+<p>https://www.jianshu.com/p/46b42f7f593c</p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html"> Dubbo </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
@@ -67,11 +95,13 @@
 <ul>
   <li>官网 <a href="http://dubbo.apache.org/">http://dubbo.apache.org/</a></li>
   <li>start <a href="http://start.dubbo.io/">http://start.dubbo.io/</a></li>
-  <li>Dubbo实践 <a href="https://www.cnblogs.com/warehouse/p/6980473.html">https://www.cnblogs.com/warehouse/p/6980473.html</a></li>
+  <li>Dubbo实践 <a href="https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/">https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/</a></li>
   <li>通俗易懂的 Dubbo 教程 <a href="https://blog.csdn.net/Geffin/category_9931110.html">https://blog.csdn.net/Geffin/category_9931110.html</a></li>
+  <li>Java RMI &amp; Dubbo <a href="http://dubbo.apache.org/zh-cn/blog/dubbo-101.html">http://dubbo.apache.org/zh-cn/blog/dubbo-101.html</a>
+    <h3 id="dubbo负载均衡">Dubbo负载均衡</h3>
+  </li>
 </ul>
-
-<h3 id="dubbo负载均衡">Dubbo负载均衡</h3>
+<p><a href="http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html">http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html</a></p>
 <h4 id="dubbo-内置了四种负载均衡策略分别如下">Dubbo 内置了四种负载均衡策略，分别如下：</h4>
 <ul>
   <li>RandomLoadBalance：随机负载均衡</li>
@@ -150,6 +180,13 @@ Failsafe 即使失败了也不会影响整个调用流程，它的失败不影�
   <li>Dubbo服务之RPC扩展和本地Mock <a href="https://www.cnblogs.com/hyry/p/12067497.html">https://www.cnblogs.com/hyry/p/12067497.html</a></li>
   <li>Dubbo与断路器 Hystrix 的集成 <a href="https://blog.csdn.net/Geffin/article/details/105808745">https://blog.csdn.net/Geffin/article/details/105808745</a></li>
 </ul>
+
+<h4 id="dubbo27新特性">Dubbo2.7新特性</h4>
+<p>异步化改造，三大中心改造，服务治理增强 <a href="http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html">http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html</a></p>
+
+<h4 id="通过qos对服务进行动态控制">通过QoS对服务进行动态控制</h4>
+<p>在Dubbo中，QoS这个概念被用于动态的对服务进行查询和控制。例如对获取当前提供和消费的所有服务，以及对服务进行动态的上下线，即从注册中心上进行注册和反注册操作。
+<a href="http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html">http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html</a></p>
 
 
       </div>
@@ -315,26 +352,6 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/Ansible.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html"> Java ClassLoader </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>JVM</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -609,6 +626,13 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       
       <a  href="tag/微服务">
       <span class="label label-default">微服务 ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/SPI">
+      <span class="label label-default">spi ( 1 )</span>
       </a><br />
 
       

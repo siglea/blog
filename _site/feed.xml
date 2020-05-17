@@ -5,9 +5,32 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 17 May 2020 12:34:09 +0800</pubDate>
-    <lastBuildDate>Sun, 17 May 2020 12:34:09 +0800</lastBuildDate>
+    <pubDate>Sun, 17 May 2020 15:45:27 +0800</pubDate>
+    <lastBuildDate>Sun, 17 May 2020 15:45:27 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title> Java SPI </title>
+        <description>&lt;p&gt;SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。
+约束优于配置
+Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。&lt;/p&gt;
+
+&lt;p&gt;https://blog.csdn.net/sweatOtt/article/details/83055191&lt;/p&gt;
+
+&lt;p&gt;https://juejin.im/post/5af952fdf265da0b9e652de3&lt;/p&gt;
+
+&lt;p&gt;https://www.jianshu.com/p/46b42f7f593c&lt;/p&gt;
+</description>
+        <pubDate>Fri, 01 May 2020 19:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html</guid>
+        
+        <category>SPI</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
     
       <item>
         <title> Dubbo </title>
@@ -15,11 +38,13 @@
 &lt;ul&gt;
   &lt;li&gt;官网 &lt;a href=&quot;http://dubbo.apache.org/&quot;&gt;http://dubbo.apache.org/&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;start &lt;a href=&quot;http://start.dubbo.io/&quot;&gt;http://start.dubbo.io/&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Dubbo实践 &lt;a href=&quot;https://www.cnblogs.com/warehouse/p/6980473.html&quot;&gt;https://www.cnblogs.com/warehouse/p/6980473.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Dubbo实践 &lt;a href=&quot;https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/&quot;&gt;https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;通俗易懂的 Dubbo 教程 &lt;a href=&quot;https://blog.csdn.net/Geffin/category_9931110.html&quot;&gt;https://blog.csdn.net/Geffin/category_9931110.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Java RMI &amp;amp; Dubbo &lt;a href=&quot;http://dubbo.apache.org/zh-cn/blog/dubbo-101.html&quot;&gt;http://dubbo.apache.org/zh-cn/blog/dubbo-101.html&lt;/a&gt;
+    &lt;h3 id=&quot;dubbo负载均衡&quot;&gt;Dubbo负载均衡&lt;/h3&gt;
+  &lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;h3 id=&quot;dubbo负载均衡&quot;&gt;Dubbo负载均衡&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html&quot;&gt;http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html&lt;/a&gt;&lt;/p&gt;
 &lt;h4 id=&quot;dubbo-内置了四种负载均衡策略分别如下&quot;&gt;Dubbo 内置了四种负载均衡策略，分别如下：&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;RandomLoadBalance：随机负载均衡&lt;/li&gt;
@@ -98,6 +123,13 @@ Failsafe 即使失败了也不会影响整个调用流程，它的失败不影�
   &lt;li&gt;Dubbo服务之RPC扩展和本地Mock &lt;a href=&quot;https://www.cnblogs.com/hyry/p/12067497.html&quot;&gt;https://www.cnblogs.com/hyry/p/12067497.html&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Dubbo与断路器 Hystrix 的集成 &lt;a href=&quot;https://blog.csdn.net/Geffin/article/details/105808745&quot;&gt;https://blog.csdn.net/Geffin/article/details/105808745&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h4 id=&quot;dubbo27新特性&quot;&gt;Dubbo2.7新特性&lt;/h4&gt;
+&lt;p&gt;异步化改造，三大中心改造，服务治理增强 &lt;a href=&quot;http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html&quot;&gt;http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;通过qos对服务进行动态控制&quot;&gt;通过QoS对服务进行动态控制&lt;/h4&gt;
+&lt;p&gt;在Dubbo中，QoS这个概念被用于动态的对服务进行查询和控制。例如对获取当前提供和消费的所有服务，以及对服务进行动态的上下线，即从注册中心上进行注册和反注册操作。
+&lt;a href=&quot;http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html&quot;&gt;http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html&lt;/a&gt;&lt;/p&gt;
 
 </description>
         <pubDate>Fri, 01 May 2020 19:25:00 +0800</pubDate>
@@ -855,27 +887,6 @@ docker rmi ec49dbd13cf5
         
         
         <category>技术</category>
-        
-      </item>
-    
-      <item>
-        <title>卧底经济学</title>
-        <description>&lt;h4 id=&quot;三种市场失灵&quot;&gt;三种市场失灵&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;稀缺&lt;/li&gt;
-  &lt;li&gt;信息缺失、信息不对等&lt;/li&gt;
-  &lt;li&gt;外部效应&lt;/li&gt;
-&lt;/ul&gt;
-
-</description>
-        <pubDate>Sat, 14 Dec 2019 16:10:02 +0800</pubDate>
-        <link>http://localhost:4000/%E9%9A%8F%E8%AE%B0/2019/12/14/TheUndercoverEconomist.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E9%9A%8F%E8%AE%B0/2019/12/14/TheUndercoverEconomist.html</guid>
-        
-        <category>读书笔记</category>
-        
-        
-        <category>随记</category>
         
       </item>
     
