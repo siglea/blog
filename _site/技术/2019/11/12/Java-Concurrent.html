@@ -70,6 +70,7 @@
 </ul>
 
 <h5 id="终止线程">终止线程</h5>
+
 <ul>
   <li>通过interrupt标志的方式(注意区分以下三个Java方法)
     <ul>
@@ -84,6 +85,7 @@
           <li>该方法只有在中断状态为true时，才会恢复中断状态并返回true;否则，都是返回false</li>
         </ul>
       </li>
+<<<<<<< HEAD
       <li>业务场景中的使用，目前暂时没有发现真正能立即安全停止线程的方法，因为不可能循环或者多处判断中断状态
         <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KillThread</span><span class="o">{</span>
 <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[]){</span>
@@ -100,16 +102,35 @@
             <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
                 <span class="k">break</span><span class="o">;</span>  <span class="c1">// 捕获到异常之后，执行 break 跳出循环</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-            
-    <span class="o">}</span>
-<span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div>        </div>
-      </li>
+=======
     </ul>
   </li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KillThread</span><span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[]){</span>
+        <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyThread</span><span class="o">();</span>
+        <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+        <span class="c1">//此处仅仅是修改状态,通常需要再run方法内部判断来决定是否终止线程</span>
+        <span class="n">t</span><span class="o">.</span><span class="na">interrupt</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="n">Thread</span><span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(){</span>
+            <span class="k">while</span> <span class="o">(!</span><span class="n">isInterrupted</span><span class="o">())</span> <span class="o">{</span>  <span class="c1">//非阻塞过程中通过判断中断标志来退出</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                    <span class="k">break</span><span class="o">;</span>  <span class="c1">// 捕获到异常之后，执行 break 跳出循环</span>
+                <span class="o">}</span>
+>>>>>>> Java Concurrent
+            <span class="o">}</span>
+            
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<ul>
   <li>自定义一个共享状态变量，来修改该状态来实现类似方法一的效果(注意此方法的状态变量需要用volatile修饰)</li>
   <li>stop 方法终止线程 (线程不安全)
     <ul>
@@ -118,12 +139,23 @@
 一般任何进行加锁的代码块，都是为了保护数据的一致性，如果在调用 stop 后导致了该线程所持有的所有锁的突然释放 (不可控制)，那么被保护数据就有可能呈现不一致性，其他线程在使用这些被破坏的数据时，有可能导致一些很奇怪的应用程序错误。因此，并不推荐使用 stop 方法来终止线程。</li>
     </ul>
   </li>
+  <li>业务场景中的使用，目前暂时没有发现真正能立即安全停止线程的方法
+    <ul>
+      <li>用stop方法会带来数据不同步等线程安全问题</li>
+      <li>interrupt 主要需要及时判断状态，才能实时失效（业务中不可能循环或者多处判断中断状态）</li>
+      <li>本质上，运行中的线程需要立即停止一定会带来各种问题，如需要支持kill进程</li>
+    </ul>
+  </li>
 </ul>
 
-<p>并发编程<a href="https://segmentfault.com/a/1190000022039255">https://segmentfault.com/a/1190000022039255</a>
-<a href="https://mp.weixin.qq.com/s/Gtz6aVPm-YnSh5pjs5JhkA">https://mp.weixin.qq.com/s/Gtz6aVPm-YnSh5pjs5JhkA</a>
-高频多线程&amp;并发面试题 <a href="https://c.lanmit.com/bianchengkaifa/Java/53679.html">https://c.lanmit.com/bianchengkaifa/Java/53679.html</a>
-Java编程艺术笔记<a href="https://www.jianshu.com/p/8d90dc5b341e">https://www.jianshu.com/p/8d90dc5b341e</a></p>
+<h5 id="参考资料">参考资料</h5>
+<p>并发编程 <a href="https://segmentfault.com/a/1190000022039255">https://segmentfault.com/a/1190000022039255</a></p>
+
+<p>高并发中的线程通信 <a href="https://mp.weixin.qq.com/s/Gtz6aVPm-YnSh5pjs5JhkA">https://mp.weixin.qq.com/s/Gtz6aVPm-YnSh5pjs5JhkA</a></p>
+
+<p>高频多线程&amp;并发面试题 <a href="https://c.lanmit.com/bianchengkaifa/Java/53679.html">https://c.lanmit.com/bianchengkaifa/Java/53679.html</a></p>
+
+<p>Java编程艺术笔记 <a href="https://www.jianshu.com/p/8d90dc5b341e">https://www.jianshu.com/p/8d90dc5b341e</a></p>
 
   </div>
 </article>
