@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Java Concurrent</title>
-  <meta name="description" content="可见性、有序性、原子性AQS AbstractQueuedSynchronizer  AbstractQueuedSynchronizer 类如其名，抽象的队列式的同步器，AQS 定义了一套多线程访问,共享资源的同步器框架，许多同步类实现都依赖于它，如常用的 ReentrantLock/Semaphore/Cou...">
+  <title>粉笔灰杂谈</title>
+  <meta name="description" content="关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html">
+  <link rel="canonical" href="http://localhost:4000/page4/">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -49,18 +49,61 @@
 
     <div class="page-content">
       <div class="container" style="padding-left:0;padding-right:0;">
-        <div class="row">
-  <div class="col-md-1 col-xs-0"></div>
-    <div class="col-md-10 col-xs-12">
-<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+        <div class="row" style="margin-bottom:30px">
+  <div class="home col-md-8">
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/Selector-epoll-multiIO.html">多路复用Selector epoll</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/Selector-epoll-multiIO.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>并发</span>
+      
 
-  <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">Java Concurrent</h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-12T10:25:00+08:00" itemprop="datePublished">Nov 12, 2019</time></p>
-  </header>
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	
 
-  <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <p>可见性、有序性、原子性</p>
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/Selector-epoll-multiIO.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html">NIO-BIO-AIO</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>newSQL NoSQL</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html">Java Concurrent</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Concurrent</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>可见性、有序性、原子性</p>
 <h4 id="aqs-abstractqueuedsynchronizer">AQS AbstractQueuedSynchronizer</h4>
 <ul>
   <li>AbstractQueuedSynchronizer 类如其名，抽象的队列式的同步器，AQS 定义了一套多线程访问,共享资源的同步器框架，许多同步类实现都依赖于它，如常用的 ReentrantLock/Semaphore/CountDownLatch。</li>
@@ -337,16 +380,515 @@ BlockingQueue接口是Queue的子接口，它的主要用途并不是作为容�
 
 <p>面试题 <a href="https://blog.csdn.net/qq_34039315/article/details/78549311">https://blog.csdn.net/qq_34039315/article/details/78549311</a></p>
 
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html">DB-distributed-transacion</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>mysql DB</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="数据库本地事务简述">数据库本地事务简述</h3>
+<ul>
+  <li>ACID原则
+    <ol>
+      <li>原子性(Atomicity)</li>
+      <li>一致性(Consistency)</li>
+      <li>隔离性(Isolation)</li>
+      <li>持久性(Durability)</li>
+    </ol>
+  </li>
+  <li>以Mysql的InnoDB为例，事务的ACID是通过InnoDB日志和锁来保证
+    <ol>
+      <li>事务的隔离性是通过数据库锁的机制实现的</li>
+      <li>持久性通过Redo Log（重做日志）来实现，在事务提交前，只要将 Redo Log 持久化即可，不需要将数据持久化。</li>
+      <li>原子性和一致性通过 Undo Log 来实现。（数据数据操作前的数据备份 Undo Log）</li>
+    </ol>
+  </li>
+  <li>本质都是通过一个本地事务资源管理器来统一协调调度</li>
+</ul>
+
+<h3 id="分布式事务">分布式事务</h3>
+
+<h4 id="分布式事务产生的原因">分布式事务产生的原因</h4>
+<ul>
+  <li>Service多节点部署（比如公司内的用户、账户等各种微服务)</li>
+  <li>Resource 多节点 (每个人的数据部署再不同节点的数据库里)</li>
+</ul>
+
+<h4 id="分布式系统之cap定理">分布式系统之CAP定理</h4>
+<ul>
+  <li>CAP 定理，又被叫作布鲁尔定理。对于设计分布式系统(不仅仅是分布式事务)的架构师来说，CAP 就是你的入门理论。</li>
+  <li>C (一致性)：对某个指定的客户端来说，读操作能返回一致的写操作。
+对于数据分布在不同节点上的数据来说，如果在某个节点更新了数据，那么在其他节点如果都能读取到这个***的数据，那么就称为强一致，如果有某个节点没有读取到，那就是分布式不一致。</li>
+  <li>A (可用性)：非故障的节点在合理的时间内返回合理的响应(不是错误和超时的响应)。可用性的两个关键一个是合理的时间，一个是合理的响应。
+合理的时间指的是请求不能被阻塞，应该在合理的时间给出返回。合理的响应指的是系统应该明确返回结果并且结果是正确的，这里的正确指的是比如应该返回 50，而不是返回 40。</li>
+  <li>
+    <p>P (分区容错性)：当出现网络分区后，系统能够继续工作。打个比方，这里集群有多台机器，有台机器网络出现了问题，但是这个集群仍然可以正常工作。</p>
+  </li>
+  <li>
+    <p>熟悉 CAP 的人都知道，三者不能共有，如果感兴趣可以搜索 CAP 的证明，在分布式系统中，网络无法 100% 可靠，分区其实是一个必然现象。</p>
+
+    <p>如果我们选择了 CA 而放弃了 P，那么当发生分区现象时，为了保证一致性，这个时候必须拒绝请求，但是 A 又不允许，所以分布式系统理论上不可能选择 CA 架构，只能选择 CP 或者 AP 架构。</p>
+
+    <p>对于 CP 来说，放弃可用性，追求一致性和分区容错性，我们的 ZooKeeper 其实就是追求的强一致。</p>
+
+    <p>对于 AP 来说，放弃一致性(这里说的一致性是强一致性)，追求分区容错性和可用性，这是很多分布式系统设计时的选择，后面的 BASE 也是根据 AP 来扩展。</p>
+
+    <p>顺便一提，CAP 理论中是忽略网络延迟，也就是当事务提交时，从节点 A 复制到节点 B 没有延迟，但是在现实中这个是明显不可能的，所以总会有一定的时间是不一致。</p>
+
+    <p>同时 CAP 中选择两个，比如你选择了 CP，并不是叫你放弃 A。因为 P 出现的概率实在是太小了，大部分的时间你仍然需要保证 CA。</p>
+
+    <p>就算分区出现了你也要为后来的 A 做准备，比如通过一些日志的手段，是其他机器回复至可用。</p>
+  </li>
+</ul>
+
+<h4 id="分布式系统之base定理">分布式系统之BASE定理</h4>
+<ul>
+  <li>BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩写，是对 CAP 中 AP 的一个扩展。</li>
+  <li>基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用。</li>
+  <li>软状态：允许系统中存在中间状态，这个状态不影响系统可用性，这里指的是 CAP 中的不一致。</li>
+  <li>最终一致：最终一致是指经过一段时间后，所有节点数据都将会达到一致。</li>
+  <li>BASE 解决了 CAP 中理论没有网络延迟，在 BASE 中用软状态和最终一致，保证了延迟后的一致性。</li>
+  <li>BASE 和 ACID 是相反的，它完全不同于 ACID 的强一致性模型，而是通过牺牲强一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态</li>
+</ul>
+
+<h4 id="常用分布式事务框架">常用分布式事务框架</h4>
+<ul>
+  <li>基于XA的 2PC、3PC
+   本质相当于本地事务的加强版，强一致性，引入中间事务协调者，依赖数据库，属于数据库资源层方案</li>
+  <li>Saga
+  引入补偿机制（最终一致性）</li>
+  <li>TCC
+  Try、Commit、Cancel</li>
+  <li>本地消息表</li>
+  <li>RocketMQ(阿里开源)</li>
+  <li>Seata</li>
+</ul>
+
+<h5 id="参考资料">参考资料</h5>
+<ul>
+  <li><a href="https://developer.51cto.com/art/201808/581174.htm">分布式事务概述</a></li>
+  <li><a href="https://www.jianshu.com/p/917cb4bdaa03">由Seata看分布式事务取舍</a></li>
+  <li><a href="https://cloud.tencent.com/developer/article/1401904">常用分布式事务框架</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/75843832">蚂蚁金服分布式事务实战</a></li>
+  <li><a href="https://www.infoq.cn/article/8bu33kuSyJ6P-wAAoELT">分布式事务选型的取舍infoq</a></li>
+  <li><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a></li>
+  <li><a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></li>
+  <li><a href="http://seata.io/zh-cn/">Seata官网</a></li>
+  <li><a href="https://www.cnblogs.com/firstdream/p/6585923.html">FLP不可能原理</a></li>
+  <li><a href="http://www.sohu.com/a/290897501_684445">分布式事务：深入理解什么是2PC、3PC及TCC协议 </a></li>
+  <li><a href="https://juejin.im/post/5dd0ff1af265da0c075d0af7">如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？</a></li>
+  <li><a href="http://www.ruanyifeng.com/blog/2018/07/cap.html">CAP定理</a></li>
+  <li><a href="https://blog.csdn.net/m0_38110132/article/details/76994165">分布式事务的解决方案CSDN</a></li>
+  <li><a href="https://www.bbsmax.com/A/obzb24Y0zE/">Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较</a></li>
+  <li><a href="https://blog.csdn.net/qq_27384769/category_7453176_1.html">分布式CSDN博客</a></li>
+  <li><a href="https://www.itcodemonkey.com/article/13548.html">基于RocketMQ的最终一致性</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html">DB Shard</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>mysql DB</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分库/分表</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="主键避重问题">主键避重问题</h4>
+<ul>
+  <li>ID生成器
+    <ul>
+      <li>Twitter Snowflake</li>
+      <li>美团 LeftUid</li>
+      <li>百度 Uid-genarator</li>
+    </ul>
+  </li>
+  <li>散表规则
+    <ul>
+      <li>按照ID范围，要求ID自增</li>
+      <li>简单Hash(取模)</li>
+      <li>Hash一致性算法</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="分页查询问题">分页查询问题</h4>
+<ul>
+  <li>分表查，应用程序合并</li>
+</ul>
+
+<h4 id="关联查询问题">关联查询问题</h4>
+<ul>
+  <li>避免join操作，改造为多次查询，由应用程序合并</li>
+  <li>使用现成的中间件</li>
+  <li>实际业务中可能会结合Redis/Es等解决方案</li>
+</ul>
+
+<h4 id="公共表问题">公共表问题</h4>
+<ul>
+  <li>公共表多库冗余，多库同步</li>
+</ul>
+
+<h4 id="事务一致性">事务一致性</h4>
+<p><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a>
+<a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></p>
+<h5 id="jtaxa">JTA*XA</h5>
+
+<h4 id="比较常见的中间件cobartddlatlassharding-jdbcmycat">比较常见的中间件cobar、TDDL、atlas、sharding-jdbc、mycat</h4>
+<ul>
+  <li>cobar：阿里b2b团队开发和开源的，属于proxy层方案。早些年还可以用，但是最近几年都没更新了，基本没啥人用，差不多算是被抛弃的状态吧。而且不支持读写分离、存储过程、跨库join和分页等操作。</li>
+  <li>TDDL：淘宝团队开发的，属于client层方案。不支持join、多表查询等语法，就是基本的crud语法是ok，但是支持读写分离。目前使用的也不多，因为还依赖淘宝的diamond配置管理系统。</li>
+  <li>atlas：360开源的，属于proxy层方案，以前是有一些公司在用的，但是确实有一个很大的问题就是社区最新的维护都在5年前了。所以，现在用的公司基本也很少了。</li>
+  <li>sharding-jdbc：当当开源的，属于client层方案。确实之前用的还比较多一些，因为SQL语法支持也比较多，没有太多限制，而且目前推出到了2.0版本，支持分库分表、读写分离、分布式id生成、柔性事务（最大努力送达型事务、TCC事务）。而且确实之前使用的公司会比较多一些（这个在官网有登记使用的公司，可以看到从2017年一直到现在，是不少公司在用的），目前社区也还一直在开发和维护，还算是比较活跃，个人认为算是一个现在也可以选择的方案。</li>
+  <li>
+    <p>mycat：基于cobar改造的，属于proxy层方案，支持的功能非常完善，而且目前应该是非常火的而且不断流行的数据库中间件，社区很活跃，也有一些公司开始在用了。但是确实相比于sharding jdbc来说，年轻一些，经历的锤炼少一些。</p>
+
+    <p>所以综上所述，现在其实建议考量的，就是sharding-jdbc和mycat，这两个都可以去考虑使用。
+  sharding-jdbc这种client层方案的优点在于不用部署，运维成本低，不需要代理层的二次转发请求，性能很高，但是如果遇到升级啥的需要各个系统都重新升级版本再发布，各个系统都需要耦合sharding-jdbc的依赖；
+  mycat这种proxy层方案的缺点在于需要部署，自己及运维一套中间件，运维成本高，但是好处在于对于各个项目是透明的，如果遇到升级之类的都是自己中间件那里搞就行了。
+  通常来说，这两个方案其实都可以选用，但是我个人建议中小型公司选用sharding-jdbc，client层方案轻便，而且维护成本低，不需要额外增派人手，而且中小型公司系统复杂度会低一些，项目也没那么多；
+  但是中大型公司最好还是选用mycat这类proxy层方案，因为可能大公司系统和项目非常多，团队很大，人员充足，那么最好是专门弄个人来研究和维护mycat，然后大量项目直接透明使用即可。</p>
+  </li>
+</ul>
+
+<h4 id="主从同步">主从同步</h4>
+<ul>
+  <li>半同步复制，semi-sync复制，指的就是主库写入binlog日志之后，就会将强制此时立即将数据同步到从库，从库将日志写入自己本地的relay log之后，接着会返回一个ack给主库，主库接收到至少一个从库的ack之后才会认为写操作完成了。</li>
+  <li>并行复制，指的是从库开启多个线程，并行读取relay log中不同库的日志，然后并行重放不同库的日志，这是库级别的并行。</li>
+</ul>
+
+<h4 id="其他">其他</h4>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651960212&amp;idx=1&amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS">58用户系统分库分表实战</a></p>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+
+    <div style="text-align:center">
+    
+    <div class="pagination">
+      
+      <a href="/page3" class="button page-button">&laquo;</a>
+      
+
+      
+      
+      <a href="/page3" class="button page-button">1</a>
+      
+      
+      
+      <a href="/page2" class="button page-button">2</a>
+      
+      
+      
+      <a href="/page3" class="button page-button">3</a>
+      
+      
+      
+      <a href="/page3" class="button current-page-button">4</a>
+      
+      
+      
+      <a href="/page5" class="button page-button">5</a>
+      
+      
+      
+      <a href="/page6" class="button page-button">6</a>
+      
+      
+      
+      <a href="/page7" class="button page-button">7</a>
+      
+      
+      
+      <a href="/page8" class="button page-button">8</a>
+      
+      
+      
+      <a href="/page9" class="button page-button">9</a>
+      
+      
+
+      
+      <a href="/page5" class="button page-button">&raquo;</a>
+      
+    </div>
+    
+    </div>
   </div>
-</article>
 
+    <div class="col-md-4">
+    <div class="post-contents">
+      <i class="fa fa-tags">&nbsp;&nbsp; Tags</i><br />
+      
+      
+      
+      <a  href="tag/programming">
+      <span class="label label-default">programming ( 4 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/python">
+      <span class="label label-default">python ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/aws">
+      <span class="label label-default">aws ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/study note">
+      <span class="label label-default">study-note ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/jekyll">
+      <span class="label label-default">jekyll ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/tcp">
+      <span class="label label-default">tcp ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/网络">
+      <span class="label label-default">网络 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/charles">
+      <span class="label label-default">charles ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/maven">
+      <span class="label label-default">maven ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/构建">
+      <span class="label label-default">构建 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Server">
+      <span class="label label-default">server ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/高并发">
+      <span class="label label-default">高并发 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/高可用">
+      <span class="label label-default">高可用 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/股票">
+      <span class="label label-default">股票 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/读书笔记">
+      <span class="label label-default">读书笔记 ( 4 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/分布式搜索引擎">
+      <span class="label label-default">分布式搜索引擎 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/全文搜索引擎">
+      <span class="label label-default">全文搜索引擎 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/算法">
+      <span class="label label-default">算法 ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/linux">
+      <span class="label label-default">linux ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/JVM">
+      <span class="label label-default">jvm ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/newSQL NoSQL">
+      <span class="label label-default">newsql-nosql ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/mysql DB">
+      <span class="label label-default">mysql-db ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/分库/分表">
+      <span class="label label-default">分库/分表 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Concurrent">
+      <span class="label label-default">concurrent ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/并发">
+      <span class="label label-default">并发 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/极致思考">
+      <span class="label label-default">极致思考 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Docker">
+      <span class="label label-default">docker ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Java">
+      <span class="label label-default">java ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Spring">
+      <span class="label label-default">spring ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Ansible">
+      <span class="label label-default">ansible ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Nginx">
+      <span class="label label-default">nginx ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/微服务">
+      <span class="label label-default">微服务 ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/SPI">
+      <span class="label label-default">spi ( 1 )</span>
+      </a><br />
+
+      
+    </div>
+    <br />
+    <div class="post-contents">
+      <h3>About Me</h3>
+      <img src="/img/me.jpg" style="margin:20px auto 0 auto;">
+      <p style="font-size:18px;margin-top:10px">I'm Siglea,That's All.</p>
+      <br />
+    </div>
+    </div>
 </div>
-<div class="col-md-1 col-xs-0"></div>
-</div>
-
-<div class="clearfix"></div>
-	
-
       </div>
       <div class="clearfix">
     </div>

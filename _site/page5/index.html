@@ -54,6 +54,187 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html">DB Mysql</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>mysql DB</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="索引原理btree">索引原理(B+Tree)</h4>
+<ul>
+  <li>BS树(Binary Search Tree二叉查找树) -&gt; AVL(人名，平衡二叉树) Tree -&gt; B-/B+Tree(平衡多路查找树)
+    <ul>
+      <li><a href="http://www.sohu.com/a/280609547_818692">http://www.sohu.com/a/280609547_818692</a>
+        <ul>
+          <li>既然hash比B+树更快，为啥mysql还用B+树来存索引吗？
+            <ol>
+              <li>这和业务场景有关。如果只选一个数据，那确实是hash更快。但是数据库中经常会选择多条，这时候由于B+树索引有序，并且又有链表相连，它的查询效率比hash就快很多了。</li>
+              <li>而且数据库中的索引一般是在磁盘上，数据量大的情况可能无法一次装入内存，B+树的设计可以允许数据分批加载，同时树的高度较低，提高查找效率。</li>
+              <li>与B数相比，如果是多条的话，B树需要做局部的中序遍历，可能要跨层访问。而B+树由于所有数据都在叶子结点，不用跨层，同时由于有链表结构，只需要找到首尾，通过链表就能把所有数据取出来了。</li>
+            </ol>
+          </li>
+          <li>AVLTree 在windowsNT内核中广泛使用，写少读多</li>
+          <li>红黑树适合于内存索引查找 比如Map、Set <a href="https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag">https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag</a></li>
+          <li>B树尤其是多路B数主要用在文件存储系统,文件系统和数据库的索引都是存在硬盘上的，并且如果数据量大的话，不一定能一次性加载到内存中。
+用B树可以一路一路的查找</li>
+          <li>红黑树常用于存储内存中的有序数据，增删很快，b+树常用于文件系统和数据库索引，因为b树的子节点大于红黑树，红黑树只能有2个子节点，b树子节点大于2，子节点树多这一特点保证了存储相同大小的数据，树的高度更小，数据局部更加紧凑，而硬盘读取有局部加载的优化（把要读取数据和周围的数据一起预先读取），b树相邻数据物理上更加紧凑这一特点符合硬盘进行io优化的特性。</li>
+        </ul>
+      </li>
+      <li>更加详细的应用范围<a href="https://www.cnblogs.com/tiancai/p/9024351.html">https://www.cnblogs.com/tiancai/p/9024351.html</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="各种优化">各种优化</h4>
+<ul>
+  <li><a href="https://www.jianshu.com/p/efaa9005a598">https://www.jianshu.com/p/efaa9005a598</a></li>
+  <li><a href="https://www.jb51.net/article/136701.htm">https://www.jb51.net/article/136701.htm</a></li>
+  <li><a href="https://www.cnblogs.com/houss/p/10598901.html">https://www.cnblogs.com/houss/p/10598901.html</a></li>
+  <li><a href="https://coolshell.cn/articles/1846.html">https://coolshell.cn/articles/1846.html</a>
+    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="err">优化</span><span class="mi">1</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化前</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="n">a</span> <span class="k">inner</span> <span class="k">join</span> <span class="p">(</span><span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="n">b</span> <span class="k">on</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化后</span>
+</code></pre></div>    </div>
+    <h4 id="常用指标">常用指标</h4>
+  </li>
+  <li>QPS   (2w/s与机器配置及数据量有关)</li>
+  <li>TPS   (1w/s)</li>
+  <li>并发数</li>
+  <li>连接数</li>
+  <li>缓存命中率</li>
+  <li>慢查询
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>slow_query_log=on
+slow_query_log_file=存放目录
+long_query_time=0.1秒
+log_queries_not_using_indexes=on
+</code></pre></div>    </div>
+  </li>
+  <li>主从延迟
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show slave status;
+Seconds_Behind_Master
+</code></pre></div>    </div>
+  </li>
+  <li>死锁
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set global innodb_print_all_deadlocks=on; 
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="mysql-wal技术-write-ahead-logging">Mysql WAL技术 Write-Ahead Logging</h4>
+
+<p>在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
+   在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
+   为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
+   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。</p>
+
+<p><a href="https://www.cnblogs.com/hzmark/p/wal.html">https://www.cnblogs.com/hzmark/p/wal.html</a></p>
+
+<h4 id="innodb与myisamindex-sequence-access-method">InnoDB与MyISAM(Index Sequence Access Method)</h4>
+<ul>
+  <li>核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
+MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
+    <ul>
+      <li>4个隔离级别透彻分析 <a href="https://www.jianshu.com/p/db334404d909">https://www.jianshu.com/p/db334404d909</a></li>
+      <li><a href="https://blog.csdn.net/w2064004678/article/details/83012387">https://blog.csdn.net/w2064004678/article/details/83012387</a></li>
+    </ul>
+  </li>
+  <li>索引结构不同
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew">https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew</a></li>
+    </ul>
+  </li>
+  <li>其他不同
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg">https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A">https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A</a></li>
+    </ul>
+  </li>
+  <li>引擎不同的几个方面：Storage mechanism、Locking levels、Indexing、Capabilities and functions</li>
+</ul>
+
+<h4 id="faq">FAQ</h4>
+<ul>
+  <li>
+    <p>问题：INT(M)中M究竟有何用？</p>
+
+    <p>int类型占四个字节，一个字节8比特位，也就是4*8=32比特位，可以表示的数字个数是2的32次方个(2^32)。声明一个int类型的数据，长度便已经固定，那么这个M究竟有何用？
+  结论：INT(M)中的M与数据存储长度没有关系，只是标识数据显示长度，在显示时不足无数会自动填充0进行补齐，必须配合AutoFill使用。</p>
+  </li>
+  <li>
+    <p>MySQL 中 InnoDB 引擎的行锁是通过加在什么上完成(或称实现) 的?</p>
+
+    <p>InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。
+  InnoDB 这 种行锁实现特点意味着:只有通过索引条件检索数据，InnoDB 才使用行级 锁，否则，InnoDB 将使用表锁!</p>
+  </li>
+  <li>各种锁
+    <ul>
+      <li>本质都为了实现数据一致性及各种事务控制</li>
+      <li>悲观锁：读取数据时就加锁排他</li>
+      <li>乐观锁：读取数据不加锁，更新时处理（比如版本号机制、CAS compare and swap算法）</li>
+      <li>共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁
+  <a href="https://www.jianshu.com/p/c456f726e9c7">https://www.jianshu.com/p/c456f726e9c7</a></li>
+    </ul>
+  </li>
+  <li>数据库三范式
+    <ul>
+      <li>表中的每个字段不可分割</li>
+      <li>表有且只有一个主键，也即是每个表只是描述一件事</li>
+      <li>不存在对非主键列的依赖传递，比如userId,userName不要同时出现在order中，有时为了查询效率也冗余个别字段</li>
+    </ul>
+  </li>
+  <li>
+    <p>一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?</p>
+
+    <p>(1)如果表的类型是 MyISAM，那么是 18
+      因为 MyISAM 表会把自增主键的最大 ID 记录到数据文件里，重启 MySQL 自增主键的最大 ID 也不会丢失
+  (2)如果表的类型是 InnoDB，那么是 15
+      InnoDB 表只是把自增主键的最大 ID 记录到内存中，所以重启数据库或者是对表进行 OPTIMIZE 操作，都会导致最大 ID 丢失</p>
+  </li>
+  <li>
+    <p>如何区分 FLOAT 和 DOUBLE?</p>
+
+    <p>以下是 FLOAT 和 DOUBLE 的区别:
+  浮点数以 8 位精度存储在 FLOAT 中，并且有四个字节。 浮点数存储在 DOUBLE 中，精度为 18 位，有八个字节。</p>
+  </li>
+  <li>
+    <p>区分 CHAR_LENGTH 和 LENGTH?</p>
+
+    <p>CHAR_LENGTH 是字符数，而 LENGTH 是字节数。Latin 字符的这两个数据是相同的，但是对 于 Unicode 和其他编码，它们是不同的。</p>
+  </li>
+  <li>
+    <p>federated 表是什么?</p>
+
+    <p>federated 表，允许访问位于其他服务器数据库上的表。
+  <a href="https://blog.csdn.net/qq_33578833/article/details/80177115">https://blog.csdn.net/qq_33578833/article/details/80177115</a></p>
+  </li>
+  <li>
+    <p>可以使用多少列创建索引?</p>
+
+    <p>任何标准表最多可以创建 16 个索引列。</p>
+    <h4 id="其他">其他</h4>
+  </li>
+  <li>Mysql主从同步 <a href="https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw">https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw</a></li>
+  <li>Mysql+Keepalived实现双高可用 <a href="https://www.cnblogs.com/kevingrace/p/6710136.html">https://www.cnblogs.com/kevingrace/p/6710136.html</a></li>
+  <li>PROCEDURE ANALYSE</li>
+  <li>全文索引</li>
+  <li>分区表 <a href="https://www.jianshu.com/p/b61d767f4ff5">https://www.jianshu.com/p/b61d767f4ff5</a></li>
+  <li>UTF-8编码占几个字节 <a href="https://blog.csdn.net/bluetjs/article/details/52936943">https://blog.csdn.net/bluetjs/article/details/52936943</a></li>
+</ul>
+
+<p><a href="https://database.51cto.com/art/201910/604128.htm">数据库规范</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsistencyAlgorithm.html">一致性算法</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -594,44 +775,6 @@ http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html">算法时间复杂度</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>算法</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="时间复杂度原则">时间复杂度原则</h4>
-<ul>
-  <li>如果运行时间是常数量级，用常数1表示</li>
-  <li>只保留时间函数中的最高阶项
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 0.5n^2 + 0.5n
-T(n) = O(n^2)
-</code></pre></div>    </div>
-  </li>
-  <li>如果最高阶项存在，则省去最高阶项前面的系数
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 3n
-T(n) = O(n)
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h4 id="时间复杂度排序">时间复杂度排序</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>O(1) &lt; O(logN) &lt; O(n) &lt; O(n^2)
-</code></pre></div></div>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -839,13 +982,6 @@ T(n) = O(n)
       
       
       
-      <a  href="tag/Concurrent">
-      <span class="label label-default">concurrent ( 1 )</span>
-      </a><br />
-
-      
-      
-      
       <a  href="tag/mysql DB">
       <span class="label label-default">mysql-db ( 3 )</span>
       </a><br />
@@ -855,6 +991,20 @@ T(n) = O(n)
       
       <a  href="tag/分库/分表">
       <span class="label label-default">分库/分表 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Concurrent">
+      <span class="label label-default">concurrent ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/并发">
+      <span class="label label-default">并发 ( 1 )</span>
       </a><br />
 
       
