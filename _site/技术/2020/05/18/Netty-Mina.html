@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>NIO-BIO-AIO</title>
-  <meta name="description" content="BIO、NIO、AIO区别  BIO 就是传统的 java.io 包，它是基于流模型实现的，交互的方式是同步、阻塞方式，也就是说在读入输入流或者输出流时，在读写动作完成之前，线程会一直阻塞在那里，它们之间的调用时可靠的线性顺序。它的有点就是代码比较简单、直观；缺点就是 IO 的效率和扩展性很低，容易成为应用性能瓶...">
+  <title>Netty-Mina</title>
+  <meta name="description" content="">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/18/Netty-Mina.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -55,38 +55,12 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">NIO-BIO-AIO</h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-12T10:25:00+08:00" itemprop="datePublished">Nov 12, 2019</time></p>
+    <h1 class="post-title" itemprop="name headline">Netty-Mina</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-05-18T22:25:00+08:00" itemprop="datePublished">May 18, 2020</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="bionioaio区别">BIO、NIO、AIO区别</h4>
-<ul>
-  <li>BIO 就是传统的 java.io 包，它是基于流模型实现的，交互的方式是同步、阻塞方式，也就是说在读入输入流或者输出流时，在读写动作完成之前，线程会一直阻塞在那里，它们之间的调用时可靠的线性顺序。它的有点就是代码比较简单、直观；缺点就是 IO 的效率和扩展性很低，容易成为应用性能瓶颈。</li>
-  <li>NIO 是 Java 1.4 引入的 java.nio 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。</li>
-  <li>AIO 是 Java 1.7 之后引入的包，是 NIO 的升级版本，提供了异步非堵塞的 IO 操作方式，所以人们叫它 AIO（Asynchronous IO），异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。</li>
-  <li>深入理解BIO、NIO、AIO <a href="https://zhuanlan.zhihu.com/p/51453522">https://zhuanlan.zhihu.com/p/51453522</a></li>
-</ul>
-
-<h4 id="结合selectpollepoll看nio">结合select/poll/epoll看NIO</h4>
-<p><a href="https://www.jianshu.com/p/ef418ccf2f7d">https://www.jianshu.com/p/ef418ccf2f7d</a></p>
-
-<h4 id="streambio-与-channel-nio">Stream（BIO) 与 Channel (NIO)</h4>
-<ul>
-  <li>Stream不支持异步</li>
-  <li>Channel同时支持读写</li>
-  <li>各种Channel Demo <a href="https://blog.csdn.net/dd864140130/article/details/50327649">https://blog.csdn.net/dd864140130/article/details/50327649</a></li>
-</ul>
-
-<p>https://www.cnblogs.com/fwnboke/p/8529604.html</p>
-
-<p>https://blog.csdn.net/lemon89/article/details/47152635</p>
-
-<p>https://www.jianshu.com/p/c0e7462f9e1d</p>
-
-<p>https://blog.csdn.net/QuinnNorris/article/details/81129852</p>
-
-<p>Reactor</p>
+    
 
   </div>
 </article>
