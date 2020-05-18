@@ -6,11 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Java Concurrent</title>
-<<<<<<< HEAD
-  <meta name="description" content="可见性、有序性、原子性AQS AbstractQueuedSynchronizer  AbstractQueuedSynchronizer 类如其名，抽象的队列式的同步器，AQS 定义了一套多线程访问,共享资源的同步器框架，许多同步类实现都依赖于它，如常用的 ReentrantLock/Semaphore/Cou...">
-=======
   <meta name="description" content="绝对线程安全和相对线程安全  https://www.cnblogs.com/duanxz/p/6099983.html  https://www.jianshu.com/p/98b0241bc8e2  可见性、有序性、原子性">
->>>>>>> ~
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -64,73 +60,6 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-<<<<<<< HEAD
-    <p>可见性、有序性、原子性</p>
-<h4 id="aqs-abstractqueuedsynchronizer">AQS AbstractQueuedSynchronizer</h4>
-<ul>
-  <li>AbstractQueuedSynchronizer 类如其名，抽象的队列式的同步器，AQS 定义了一套多线程访问,共享资源的同步器框架，许多同步类实现都依赖于它，如常用的 ReentrantLock/Semaphore/CountDownLatch。</li>
-  <li>AQS 定义两种资源共享方式
-    <ul>
-      <li>Exclusive(独占资源，只有一个线程能执行，如 ReentrantLock)</li>
-      <li>Share(共享资源，多个线程可同时执行，如 Semaphore/CountDownLatch)</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="cas-compare-and-swap">CAS Compare And Swap</h4>
-<ul>
-  <li>CAS(Compare And Swap/Set)比较并交换，CAS 算法的过程是这样:它包含 3 个参数 CAS(V,E,N)。V 表示要更新的变量(内存值)，E 表示预期值(旧的)，N 表示新值。当且仅当 V 值等于 E 值时，才会将 V 的值设为 N，如果 V 值和 E 值不同，则说明已经有其他线程做了更新，则当 前线程什么都不做。最后，CAS 返回当前 V 的真实值。CAS 操作是抱着乐观的态度进行的(乐观锁)，它总是认为自己可以成功完成操作。当多个线程同时 使用 CAS 操作一个变量时，只有一个会胜出，并成功更新，其余均会失败。失败的线程不会被挂 起，仅是被告知失败，并且允许再次尝试，当然也允许失败的线程放弃操作。基于这样的原理， CAS 操作即使没有锁，也可以发现其他线程对当前线程的干扰，并进行恰当的处理。</li>
-</ul>
-
-<h4 id="volatile-关键字的作用变量可见性禁止重排序">volatile 关键字的作用(变量可见性、禁止重排序)</h4>
-<ul>
-  <li>Java 语言提供了一种稍弱的同步机制，即 volatile 变量，用来确保将变量的更新操作通知到其他 线程。volatile 变量具备两种特性，volatile 变量不会被缓存在寄存器或者对其他处理器不可见的 地方，因此在读取 volatile 类型的变量时总会返回最新写入的值。</li>
-  <li>变量可见性,其一是保证该变量对所有线程可见，这里的可见性指的是当一个线程修改了变量的值，那么新的 值对于其他线程是可以立即获取的。</li>
-  <li>在访问 volatile 变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此 volatile 变量是一 种比 sychronized 关键字更轻量级的同步机制。volatile 适合这种场景:一个变量被多个线程共 享，线程直接给这个变量赋值。</li>
-  <li>当对非 volatile 变量进行读写的时候，每个线程先从内存拷贝变量到 CPU 缓存中。如果计算机有 多个 CPU，每个线程可能在不同的 CPU 上被处理，这意味着每个线程可以拷贝到不同的 CPU cache 中。而声明变量是 volatile 的，JVM 保证了每次读变量都从内存中读，跳过 CPU cache 这一步。</li>
-  <li>适用场景,值得说明的是对 volatile 变量的单次读/写操作可以保证原子性的，如 long 和 double 类型变量， 但是并不能保证 i++这种操作的原子性，因为本质上 i++是读、写两次操作。在某些场景下可以 代替 Synchronized。但是,volatile 的不能完全取代 Synchronized 的位置，只有在一些特殊的场
-景下，才能适用 volatile。总的来说，必须同时满足下面两个条件才能保证在并发环境的线程安全:
-    <ol>
-      <li>对变量的写操作不依赖于当前值(比如 i++)，或者说是单纯的变量赋值(boolean flag = true)。</li>
-      <li>该变量没有包含在具有其他变量的不变式中，也就是说，不同的 volatile 变量之间，不 能互相依赖。只有在状态真正独立于程序内其他内容时才能使用 volatile。</li>
-    </ol>
-  </li>
-</ul>
-
-<h4 id="锁状态-无锁状态偏向锁轻量级锁和重量级锁">锁状态 无锁状态、偏向锁、轻量级锁和重量级锁</h4>
-<ul>
-  <li>偏向锁，Hotspot 的作者经过以往的研究发现大多数情况下锁不仅不存在多线程竞争，而且总是由同一线
-    程多次获得。偏向锁的目的是在某个线程获得锁之后，消除这个线程锁重入(CAS)的开销，看起
-    来让这个线程得到了偏护。引入偏向锁是为了在无多线程竞争的情况下尽量减少不必要的轻量级
-    锁执行路径，因为轻量级锁的获取及释放依赖多次 CAS 原子指令，而偏向锁只需要在置换
-    ThreadID 的时候依赖一次 CAS 原子指令(由于一旦出现多线程竞争的情况就必须撤销偏向锁，所
-    以偏向锁的撤销操作的性能损耗必须小于节省下来的 CAS 原子指令的性能消耗)。上面说过，轻
-    量级锁是为了在线程交替执行同步块时提高性能，而偏向锁则是在只有一个线程执行同步块时进
-    一步提高性能。</li>
-  <li>锁升级， 随着锁的竞争，锁可以从偏向锁升级到轻量级锁，再升级的重量级锁(但是锁的升级是单向的，
-     也就是说只能从低到高升级，不会出现锁的降级)。
-    “轻量级”是相对于使用操作系统互斥量来实现的传统锁而言的。但是，首先需要强调一点的是，
-    轻量级锁并不是用来代替重量级锁的，它的本意是在没有多线程竞争的前提下，减少传统的重量
-    级锁使用产生的性能消耗。在解释轻量级锁的执行过程之前，先明白一点，轻量级锁所适应的场
-    景是线程交替执行同步块的情况，如果存在同一时间访问同一锁的情况，就会导致轻量级锁膨胀
-    为重量级锁。</li>
-  <li>重量级锁(Mutex Lock)，Synchronized 是通过对象内部的一个叫做监视器锁(monitor)来实现的。但是监视器锁本质又
-    是依赖于底层的操作系统的 Mutex Lock 来实现的。而操作系统实现线程之间的切换这就需要从用
-    户态转换到核心态，这个成本非常高，状态之间的转换需要相对比较长的时间，这就是为什么
-    Synchronized 效率低的原因。因此，这种依赖于操作系统 Mutex Lock 所实现的锁我们称之为
-    “重量级锁”。JDK 中对 Synchronized 做的种种优化，其核心都是为了减少这种重量级锁的使用。
-    JDK1.6 以后，为了减少获得锁和释放锁所带来的性能消耗，提高性能，引入了“轻量级锁”和
-    “偏向锁”。</li>
-</ul>
-
-<h4 id="锁使用">锁使用</h4>
-<ul>
-  <li>Synchronized</li>
-  <li>Lock ReentrantLock 、ReentrantReadWriteLock、StampedLock</li>
-  <li>Condition</li>
-</ul>
-
-=======
     <h4 id="绝对线程安全和相对线程安全">绝对线程安全和相对线程安全</h4>
 <ul>
   <li>https://www.cnblogs.com/duanxz/p/6099983.html</li>
@@ -230,7 +159,6 @@ CLH锁也是一种基于链表的可扩展、高性能、公平的自旋锁，�
   <li>Conditon中的await()对应Object的wait()，Condition中的signal()对应Object的notify()，Condition中的signalAll()对应Object的notifyAll()。</li>
 </ol>
 
->>>>>>> ~
 <h5 id="locksupportpark和unpark与objectwait和notify的区别">LockSupport.park()和unpark()，与object.wait()和notify()的区别？</h5>
 <ul>
   <li>主要的区别应该说是它们面向的对象不同。阻塞和唤醒是对于线程来说的，LockSupport的park/unpark更符合这个语义，以“线程”作为方法的参数， 语义更清晰，使用起来也更方便。而wait/notify的实现使得“阻塞/唤醒对线程本身来说是被动的，要准确的控制哪个线程、什么时候阻塞/唤醒很困难， 要不随机唤醒一个线程（notify）要不唤醒所有的（notifyAll）。</li>
@@ -357,18 +285,18 @@ java 中的悲观锁就是 Synchronized,AQS 框架下的锁则是先尝试 cas �
 </ul>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KillThread</span><span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[]){</span>
-        <span class="nc">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyThread</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[]){</span>
+        <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyThread</span><span class="o">();</span>
         <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
         <span class="c1">//此处仅仅是修改状态,通常需要再run方法内部判断来决定是否终止线程</span>
         <span class="n">t</span><span class="o">.</span><span class="na">interrupt</span><span class="o">();</span>
     <span class="o">}</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="nc">Thread</span><span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="n">Thread</span><span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(){</span>
             <span class="k">while</span> <span class="o">(!</span><span class="n">isInterrupted</span><span class="o">())</span> <span class="o">{</span>  <span class="c1">//非阻塞过程中通过判断中断标志来退出</span>
                 <span class="k">try</span> <span class="o">{</span>
-                    <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
-                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                     <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
                     <span class="k">break</span><span class="o">;</span>  <span class="c1">// 捕获到异常之后，执行 break 跳出循环</span>
                 <span class="o">}</span>
@@ -413,15 +341,12 @@ java 中的悲观锁就是 Synchronized,AQS 框架下的锁则是先尝试 cas �
   另外ConcurrentHashMap使用了一种不同的迭代方式。在这种迭代方式中，当iterator被创建后集合再发生改变就不再是抛出ConcurrentModificationException，取而代之的是在改变时new新的数据从而不影响原有的数据 ，iterator完成后再将头指针替换为新的数据 ，这样iterator线程可以使用原来老的数据，而写线程也可以并发的完成改变。</li>
 </ul>
 
-<<<<<<< HEAD
-=======
 <h4 id="copyonwritearraylist">CopyOnWriteArrayList</h4>
 <ul>
   <li>增删改都需要获得锁，并且锁只有一把，而读操作不需要获得锁，支持并发。为什么增删改中都需要创建一个新的数组，操作完成之后再赋给原来的引用？这是为了保证get的时候都能获取到元素，如果在增删改过程直接修改原来的数组，可能会造成执行读操作获取不到数据。</li>
   <li>我知道Vector是增删改查方法都加了synchronized，保证同步，但是每个方法执行的时候都要去获得锁，性能就会大大下降，而CopyOnWriteArrayList 只是在增删改上加锁，但是读不加锁，在读方面的性能就好于Vector，CopyOnWriteArrayList支持读多写少的并发情况。</li>
 </ul>
 
->>>>>>> ~
 <h4 id="阻塞队列">阻塞队列</h4>
 <ul>
   <li>这两个附加的操作是：在队列为空时，获取元素的线程会等待队列变为非空。当队列满时，存储元素的线程会等待队列可用。阻塞队列常用于生产者和消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。阻塞队列就是生产者存放元素的容器，而消费者也只从容器里拿元素。</li>
