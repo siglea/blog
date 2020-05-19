@@ -90,7 +90,15 @@
 
 <h4 id="tcp丢包及重试">TCP丢包及重试</h4>
 
-<hr />
+<h4 id="单台服务器并发tcp连接数到底可以有多少-">单台服务器并发TCP连接数到底可以有多少 ？</h4>
+<ul>
+  <li>只要资源够用，理论可以支持无限。</li>
+  <li>操作系统65535个端口限制，以及进程能打开的1024个文件描述符的限制，其实并没有标志唯一链接</li>
+  <li><a href="https://mp.weixin.qq.com/s/OJKWVHgbJGPwCklMRE38DA">https://mp.weixin.qq.com/s/OJKWVHgbJGPwCklMRE38DA</a></li>
+  <li>C10K到C10M <a href="http://www.52im.net/thread-561-1-1.html">http://www.52im.net/thread-561-1-1.html</a></li>
+</ul>
+
+<h4 id="p2pnat打洞">P2P、NAT、打洞</h4>
 
 <h5 id="参考资料">参考资料</h5>
 
