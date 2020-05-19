@@ -148,13 +148,13 @@ Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义C
 <p>要了解这种负载均衡策略，我们首先得学习一下一致性哈希算法。不会一致性哈希算法的同学可以看一下我之前写的这篇博客，质量保证过硬：一致性哈希算法详解
 一致性哈希可以保证相同参数的请求一定会发送到同一台机器上，即使有机器崩溃，由于一致性哈希算法的特性与虚拟节点的存在，发往该机器的请求会被发送到其它机器上，并不会引发剧烈变动。</p>
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="nc">ChangeService</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="n">ChangeService</span> <span class="o">{</span>
 
     <span class="nd">@Reference</span><span class="o">(</span><span class="n">loadbalance</span> <span class="o">=</span> <span class="s">"roundrobin"</span><span class="o">)</span>
-    <span class="nc">NameService</span> <span class="n">nameService</span><span class="o">;</span>
+    <span class="n">NameService</span> <span class="n">nameService</span><span class="o">;</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">change</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">change</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">nameService</span><span class="o">.</span><span class="na">updateName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>

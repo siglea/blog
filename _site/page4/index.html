@@ -144,7 +144,13 @@
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="bionioaio区别">BIO、NIO、AIO区别</h4>
+	<h4 id="写在前面">写在前面</h4>
+<ul>
+  <li>即便是NIO，本地文件IO依然是Block操作的，NIO主要是解决网络IO的问题。</li>
+  <li>本质都是需要操作系统层次的支持。</li>
+</ul>
+
+<h4 id="bionioaio区别">BIO、NIO、AIO区别</h4>
 <ul>
   <li>BIO 就是传统的 java.io 包，它是基于流模型实现的，交互的方式是同步、阻塞方式，也就是说在读入输入流或者输出流时，在读写动作完成之前，线程会一直阻塞在那里，它们之间的调用时可靠的线性顺序。它的有点就是代码比较简单、直观；缺点就是 IO 的效率和扩展性很低，容易成为应用性能瓶颈。</li>
   <li>NIO 是 Java 1.4 引入的 java.nio 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。</li>
@@ -159,12 +165,48 @@
 <ul>
   <li>Stream不支持异步</li>
   <li>Channel同时支持读写</li>
+  <li>NIO流是以数据块为单位来处理，缓冲区就是用于读写的数据块。缓冲区的IO操作是由底层操作系统实现的，效率很快。</li>
   <li>各种Channel Demo <a href="https://blog.csdn.net/dd864140130/article/details/50327649">https://blog.csdn.net/dd864140130/article/details/50327649</a></li>
+  <li>Channel &amp; Buffer的使用<a href="https://www.cnblogs.com/fwnboke/p/8529604.html">https://www.cnblogs.com/fwnboke/p/8529604.html</a>
+    <h4 id="buffer的读取与写入">Buffer的读取与写入</h4>
+  </li>
+  <li>Buffer相当于，操作系统与程序之间共同开辟了一份缓冲区共同读写，效率更高</li>
+  <li>本质上Buffer支持读写，又共用同一个缓冲区，在读写切换时确实需要进行相关操作</li>
+  <li>3个重要的属性</li>
+  <li>position:读的时候表示可以从哪里开始读，写的时候表示现在可以从哪里开始写。</li>
+  <li>limit:读的时候表示可以最大可读位置，写的时候表示最大可写的位置。</li>
+  <li>capacity：容量</li>
+  <li>flip() &amp; clear()，不论读写position都要从0开始
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Buffer</span><span class="o">{</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="n">Buffer</span> <span class="nf">flip</span><span class="o">()</span> <span class="o">{</span>
+      <span class="n">limit</span> <span class="o">=</span> <span class="n">position</span><span class="o">;</span>
+      <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+      <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+<span class="o">}</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="n">Buffer</span> <span class="nf">clear</span><span class="o">()</span> <span class="o">{</span>
+      <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+      <span class="n">limit</span> <span class="o">=</span> <span class="n">capacity</span><span class="o">;</span>
+      <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>参考
+    <ul>
+      <li><a href="https://www.cnblogs.com/yaowen/p/9173443.html">https://www.cnblogs.com/yaowen/p/9173443.html</a></li>
+      <li><a href="https://blog.csdn.net/u013096088/article/details/78638245">https://blog.csdn.net/u013096088/article/details/78638245</a></li>
+    </ul>
+  </li>
 </ul>
 
-<p>https://www.cnblogs.com/fwnboke/p/8529604.html</p>
-
-<p>https://blog.csdn.net/lemon89/article/details/47152635</p>
+<h4 id="java-nioscatter-与-gather">Java NIO：Scatter 与 Gather</h4>
+<ul>
+  <li>Scatter 是指允许将一个channel中的数据分散的依次写入多个buffer中存储</li>
+  <li>Gather 是指允许将多个buffer中的数据按某种顺序写入一个channel中</li>
+  <li><a href="https://blog.csdn.net/lemon89/article/details/47152635">https://blog.csdn.net/lemon89/article/details/47152635</a></li>
+</ul>
 
 <p>https://www.jianshu.com/p/c0e7462f9e1d</p>
 
@@ -416,18 +458,18 @@ java 中的悲观锁就是 Synchronized,AQS 框架下的锁则是先尝试 cas �
 </ul>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KillThread</span><span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[]){</span>
-        <span class="nc">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyThread</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[]){</span>
+        <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyThread</span><span class="o">();</span>
         <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
         <span class="c1">//此处仅仅是修改状态,通常需要再run方法内部判断来决定是否终止线程</span>
         <span class="n">t</span><span class="o">.</span><span class="na">interrupt</span><span class="o">();</span>
     <span class="o">}</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="nc">Thread</span><span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="n">Thread</span><span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(){</span>
             <span class="k">while</span> <span class="o">(!</span><span class="n">isInterrupted</span><span class="o">())</span> <span class="o">{</span>  <span class="c1">//非阻塞过程中通过判断中断标志来退出</span>
                 <span class="k">try</span> <span class="o">{</span>
-                    <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
-                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                     <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
                     <span class="k">break</span><span class="o">;</span>  <span class="c1">// 捕获到异常之后，执行 break 跳出循环</span>
                 <span class="o">}</span>

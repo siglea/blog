@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>NIO-BIO-AIO</title>
-  <meta name="description" content="BIO、NIO、AIO区别  BIO 就是传统的 java.io 包，它是基于流模型实现的，交互的方式是同步、阻塞方式，也就是说在读入输入流或者输出流时，在读写动作完成之前，线程会一直阻塞在那里，它们之间的调用时可靠的线性顺序。它的有点就是代码比较简单、直观；缺点就是 IO 的效率和扩展性很低，容易成为应用性能瓶...">
+  <meta name="description" content="写在前面  即便是NIO，本地文件IO依然是Block操作的，NIO主要是解决网络IO的问题。  本质都是需要操作系统层次的支持。">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,7 +60,13 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="bionioaio区别">BIO、NIO、AIO区别</h4>
+    <h4 id="写在前面">写在前面</h4>
+<ul>
+  <li>即便是NIO，本地文件IO依然是Block操作的，NIO主要是解决网络IO的问题。</li>
+  <li>本质都是需要操作系统层次的支持。</li>
+</ul>
+
+<h4 id="bionioaio区别">BIO、NIO、AIO区别</h4>
 <ul>
   <li>BIO 就是传统的 java.io 包，它是基于流模型实现的，交互的方式是同步、阻塞方式，也就是说在读入输入流或者输出流时，在读写动作完成之前，线程会一直阻塞在那里，它们之间的调用时可靠的线性顺序。它的有点就是代码比较简单、直观；缺点就是 IO 的效率和扩展性很低，容易成为应用性能瓶颈。</li>
   <li>NIO 是 Java 1.4 引入的 java.nio 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。</li>
@@ -75,12 +81,48 @@
 <ul>
   <li>Stream不支持异步</li>
   <li>Channel同时支持读写</li>
+  <li>NIO流是以数据块为单位来处理，缓冲区就是用于读写的数据块。缓冲区的IO操作是由底层操作系统实现的，效率很快。</li>
   <li>各种Channel Demo <a href="https://blog.csdn.net/dd864140130/article/details/50327649">https://blog.csdn.net/dd864140130/article/details/50327649</a></li>
+  <li>Channel &amp; Buffer的使用<a href="https://www.cnblogs.com/fwnboke/p/8529604.html">https://www.cnblogs.com/fwnboke/p/8529604.html</a>
+    <h4 id="buffer的读取与写入">Buffer的读取与写入</h4>
+  </li>
+  <li>Buffer相当于，操作系统与程序之间共同开辟了一份缓冲区共同读写，效率更高</li>
+  <li>本质上Buffer支持读写，又共用同一个缓冲区，在读写切换时确实需要进行相关操作</li>
+  <li>3个重要的属性</li>
+  <li>position:读的时候表示可以从哪里开始读，写的时候表示现在可以从哪里开始写。</li>
+  <li>limit:读的时候表示可以最大可读位置，写的时候表示最大可写的位置。</li>
+  <li>capacity：容量</li>
+  <li>flip() &amp; clear()，不论读写position都要从0开始
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Buffer</span><span class="o">{</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="n">Buffer</span> <span class="nf">flip</span><span class="o">()</span> <span class="o">{</span>
+      <span class="n">limit</span> <span class="o">=</span> <span class="n">position</span><span class="o">;</span>
+      <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+      <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+<span class="o">}</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="n">Buffer</span> <span class="nf">clear</span><span class="o">()</span> <span class="o">{</span>
+      <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+      <span class="n">limit</span> <span class="o">=</span> <span class="n">capacity</span><span class="o">;</span>
+      <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>参考
+    <ul>
+      <li><a href="https://www.cnblogs.com/yaowen/p/9173443.html">https://www.cnblogs.com/yaowen/p/9173443.html</a></li>
+      <li><a href="https://blog.csdn.net/u013096088/article/details/78638245">https://blog.csdn.net/u013096088/article/details/78638245</a></li>
+    </ul>
+  </li>
 </ul>
 
-<p>https://www.cnblogs.com/fwnboke/p/8529604.html</p>
-
-<p>https://blog.csdn.net/lemon89/article/details/47152635</p>
+<h4 id="java-nioscatter-与-gather">Java NIO：Scatter 与 Gather</h4>
+<ul>
+  <li>Scatter 是指允许将一个channel中的数据分散的依次写入多个buffer中存储</li>
+  <li>Gather 是指允许将多个buffer中的数据按某种顺序写入一个channel中</li>
+  <li><a href="https://blog.csdn.net/lemon89/article/details/47152635">https://blog.csdn.net/lemon89/article/details/47152635</a></li>
+</ul>
 
 <p>https://www.jianshu.com/p/c0e7462f9e1d</p>
 
