@@ -46,3 +46,18 @@ HAProxy nginx LVS
 - <https://juejin.im/post/5d46ce64f265da03e05af722>
 - ET和LT的区别在于触发事件的条件不同，LT比较符合编程思维（有满足条件的就触发），ET触发的条件更苛刻一些（仅在发生变化时才触发），对使用者的要求也更高，理论效率更高
 - 边缘触发和水平触发<https://juejin.im/post/5cdaa67f518825691b4a5cc0>
+
+实际上git 也是分布式的
+#### Basic Paxos
+1. 多个Proposer，都可以拿最新的编号N，进行prepare()，
+1. 每个Acceptor会响应大于本地编号的所有prepare()，并且只会promise()最大的那个编号的提案
+1. 最大编号的Proposer，收集够过半的票数之后，立即发送accept()给对应的Acceptor
+1. 接受到accept()的Acceptor就有了最新的确认提案结果
+    - 如果此时有新的大于N的prepare()就会进入下次选举循环，否则Acceptor会返回最新的提议结果给调用方
+    - 如果此时收到不大于N的accept()则拒绝回应或者回应error；
+                         
+https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg
+
+
+
+
