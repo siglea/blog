@@ -54,6 +54,122 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html">DB-distributed-transacion</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>mysql DB</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="数据库本地事务简述">数据库本地事务简述</h3>
+<ul>
+  <li>ACID原则
+    <ol>
+      <li>原子性(Atomicity)</li>
+      <li>一致性(Consistency)</li>
+      <li>隔离性(Isolation)</li>
+      <li>持久性(Durability)</li>
+    </ol>
+  </li>
+  <li>以Mysql的InnoDB为例，事务的ACID是通过InnoDB日志和锁来保证
+    <ol>
+      <li>事务的隔离性是通过数据库锁的机制实现的</li>
+      <li>持久性通过Redo Log（重做日志）来实现，在事务提交前，只要将 Redo Log 持久化即可，不需要将数据持久化。</li>
+      <li>原子性和一致性通过 Undo Log 来实现。（数据数据操作前的数据备份 Undo Log）</li>
+    </ol>
+  </li>
+  <li>本质都是通过一个本地事务资源管理器来统一协调调度</li>
+</ul>
+
+<h3 id="分布式事务">分布式事务</h3>
+
+<h4 id="分布式事务产生的原因">分布式事务产生的原因</h4>
+<ul>
+  <li>Service多节点部署（比如公司内的用户、账户等各种微服务)</li>
+  <li>Resource 多节点 (每个人的数据部署再不同节点的数据库里)</li>
+</ul>
+
+<h4 id="分布式系统之cap定理">分布式系统之CAP定理</h4>
+<ul>
+  <li>CAP 定理，又被叫作布鲁尔定理。对于设计分布式系统(不仅仅是分布式事务)的架构师来说，CAP 就是你的入门理论。</li>
+  <li>C (一致性)：对某个指定的客户端来说，读操作能返回一致的写操作。
+对于数据分布在不同节点上的数据来说，如果在某个节点更新了数据，那么在其他节点如果都能读取到这个***的数据，那么就称为强一致，如果有某个节点没有读取到，那就是分布式不一致。</li>
+  <li>A (可用性)：非故障的节点在合理的时间内返回合理的响应(不是错误和超时的响应)。可用性的两个关键一个是合理的时间，一个是合理的响应。
+合理的时间指的是请求不能被阻塞，应该在合理的时间给出返回。合理的响应指的是系统应该明确返回结果并且结果是正确的，这里的正确指的是比如应该返回 50，而不是返回 40。</li>
+  <li>
+    <p>P (分区容错性)：当出现网络分区后，系统能够继续工作。打个比方，这里集群有多台机器，有台机器网络出现了问题，但是这个集群仍然可以正常工作。</p>
+  </li>
+  <li>
+    <p>熟悉 CAP 的人都知道，三者不能共有，如果感兴趣可以搜索 CAP 的证明，在分布式系统中，网络无法 100% 可靠，分区其实是一个必然现象。</p>
+
+    <p>如果我们选择了 CA 而放弃了 P，那么当发生分区现象时，为了保证一致性，这个时候必须拒绝请求，但是 A 又不允许，所以分布式系统理论上不可能选择 CA 架构，只能选择 CP 或者 AP 架构。</p>
+
+    <p>对于 CP 来说，放弃可用性，追求一致性和分区容错性，我们的 ZooKeeper 其实就是追求的强一致。</p>
+
+    <p>对于 AP 来说，放弃一致性(这里说的一致性是强一致性)，追求分区容错性和可用性，这是很多分布式系统设计时的选择，后面的 BASE 也是根据 AP 来扩展。</p>
+
+    <p>顺便一提，CAP 理论中是忽略网络延迟，也就是当事务提交时，从节点 A 复制到节点 B 没有延迟，但是在现实中这个是明显不可能的，所以总会有一定的时间是不一致。</p>
+
+    <p>同时 CAP 中选择两个，比如你选择了 CP，并不是叫你放弃 A。因为 P 出现的概率实在是太小了，大部分的时间你仍然需要保证 CA。</p>
+
+    <p>就算分区出现了你也要为后来的 A 做准备，比如通过一些日志的手段，是其他机器回复至可用。</p>
+  </li>
+</ul>
+
+<h4 id="分布式系统之base定理">分布式系统之BASE定理</h4>
+<ul>
+  <li>BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩写，是对 CAP 中 AP 的一个扩展。</li>
+  <li>基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用。</li>
+  <li>软状态：允许系统中存在中间状态，这个状态不影响系统可用性，这里指的是 CAP 中的不一致。</li>
+  <li>最终一致：最终一致是指经过一段时间后，所有节点数据都将会达到一致。</li>
+  <li>BASE 解决了 CAP 中理论没有网络延迟，在 BASE 中用软状态和最终一致，保证了延迟后的一致性。</li>
+  <li>BASE 和 ACID 是相反的，它完全不同于 ACID 的强一致性模型，而是通过牺牲强一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态</li>
+</ul>
+
+<h4 id="常用分布式事务框架">常用分布式事务框架</h4>
+<ul>
+  <li>基于XA的 2PC、3PC
+   本质相当于本地事务的加强版，强一致性，引入中间事务协调者，依赖数据库，属于数据库资源层方案</li>
+  <li>Saga
+  引入补偿机制（最终一致性）</li>
+  <li>TCC
+  Try、Commit、Cancel</li>
+  <li>本地消息表</li>
+  <li>RocketMQ(阿里开源)</li>
+  <li>Seata</li>
+</ul>
+
+<h5 id="参考资料">参考资料</h5>
+<ul>
+  <li><a href="https://developer.51cto.com/art/201808/581174.htm">分布式事务概述</a></li>
+  <li><a href="https://www.jianshu.com/p/917cb4bdaa03">由Seata看分布式事务取舍</a></li>
+  <li><a href="https://cloud.tencent.com/developer/article/1401904">常用分布式事务框架</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/75843832">蚂蚁金服分布式事务实战</a></li>
+  <li><a href="https://www.infoq.cn/article/8bu33kuSyJ6P-wAAoELT">分布式事务选型的取舍infoq</a></li>
+  <li><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a></li>
+  <li><a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></li>
+  <li><a href="http://seata.io/zh-cn/">Seata官网</a></li>
+  <li><a href="https://www.cnblogs.com/firstdream/p/6585923.html">FLP不可能原理</a></li>
+  <li><a href="http://www.sohu.com/a/290897501_684445">分布式事务：深入理解什么是2PC、3PC及TCC协议 </a></li>
+  <li><a href="https://juejin.im/post/5dd0ff1af265da0c075d0af7">如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？</a></li>
+  <li><a href="http://www.ruanyifeng.com/blog/2018/07/cap.html">CAP定理</a></li>
+  <li><a href="https://blog.csdn.net/m0_38110132/article/details/76994165">分布式事务的解决方案CSDN</a></li>
+  <li><a href="https://www.bbsmax.com/A/obzb24Y0zE/">Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较</a></li>
+  <li><a href="https://blog.csdn.net/qq_27384769/category_7453176_1.html">分布式CSDN博客</a></li>
+  <li><a href="https://www.itcodemonkey.com/article/13548.html">基于RocketMQ的最终一致性</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html">DB Shard</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -322,28 +438,6 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
     
     <div class="post-contents">
       <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsistencyAlgorithm.html">一致性算法</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsistencyAlgorithm.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>算法</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>强一致性的2PC、3PC、Paxos、Raft、Zab；</p>
-
-<p>https://www.cnblogs.com/think90/p/11443428.html</p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsistencyAlgorithm.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL-NewSQL.html">NoSQL-NewSQL</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -362,7 +456,7 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
 <h4 id="图数据库-graph-database">“图”数据库 Graph Database</h4>
 <h4 id="leveldbrocksdb">Leveldb、Rocksdb、</h4>
 <h4 id="tidbtair">TiDB、Tair</h4>
-<h4 id="常见-tsdbinfluxdbopentsdbtimescaladbdruid-等">常见 TSDB：influxdb、opentsdb、timeScaladb、Druid 等</h4>
+<h4 id="常见-tsdbinfluxdbopentsdbtimescaladbdruid-tablestore等">常见 TSDB：influxdb、opentsdb、timeScaladb、Druid 、tablestore等</h4>
 
       </div>
       <div style="height:50px;">
@@ -373,92 +467,20 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
     
     <div class="post-contents">
       <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html"> Jvm内存模型、垃圾回收机制与调优 </a>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html">2PC 3PC</a>
       </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html#disqus_thread"></a></span>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html#disqus_thread"></a></span>
       
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>JVM</span>
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="gc的收集算法实战中是集中算法组合使用">GC的收集算法（实战中是集中算法组合使用）</h4>
-<ul>
-  <li>标记-复制
-  Serial New、Parallel New、Parallel Scavenge New、G1</li>
-  <li>标记-清除
-  CMS</li>
-  <li>标记-整理
-  Serial Old、Parallel Old、G1</li>
-</ul>
-
-<h4 id="分代为了更高效的区别回收g1的分区region也是为了发挥多核并发优势">分代（为了更高效的区别回收，G1的分区region也是为了发挥多核并发优势）</h4>
-<ul>
-  <li>Young Generation
-  Eden 伊甸园
-  Survivor 幸存者（from/to，S0/S1)</li>
-  <li>Tenured/Old Generation</li>
-  <li>Permanent Generation (Java8之前）</li>
-  <li>Metaspace (Java8之后）</li>
-</ul>
-
-<h5 id="参考">参考</h5>
-<p>JVM的4种垃圾回收算法、垃圾回收机制与总结 <a href="https://zhuanlan.zhihu.com/p/54851319">https://zhuanlan.zhihu.com/p/54851319</a></p>
-
-<h4 id="gc收集器">GC收集器</h4>
-<ul>
-  <li>Serial（串行）收集器
-  新生代、老生代</li>
-  <li>Parallel（并行）收集器
-  新生代、老生代</li>
-  <li>Parallel Scavenge New （GC自适应的调节策略GC Ergonomics）
-  新生代、通过调整相关参数，比如新生代的大小，达到以合适的时间和耗时，达到高吞吐量
-  吞吐量 = 运行用户代码时间 /（运行用户代码时间 + 垃圾收集时间）</li>
-  <li>CMS（Concurrent Mark Sweep 并发）收集器 （并发低停顿收集器 Concurrent Low Pause Collector）
-  老生代</li>
-  <li>G1（并发）收集器（优先回收价值最大的Region（这也就是Garbage-First名称的来由）
-  新生代、老生代</li>
-  <li>JDK11的ZGC <a href="https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw">https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw</a></li>
-</ul>
-
-<h5 id="参考-1">参考</h5>
-<ul>
-  <li>7种JVM垃圾收集器特点，优劣势、及使用场景 <a href="https://zhuanlan.zhihu.com/p/58896728">https://zhuanlan.zhihu.com/p/58896728</a></li>
-  <li>深入理解JVM，7种垃圾收集器 <a href="http://blog.itpub.net/69917606/viewspace-2656882">http://blog.itpub.net/69917606/viewspace-2656882</a></li>
-  <li>深入详解JVM内存模型与JVM参数详细配置 <a href="https://zhuanlan.zhihu.com/p/58896619">https://zhuanlan.zhihu.com/p/58896619</a>
-    <ul>
-      <li>堆内存（Heap）此内存区域的唯一目的就是存放对象实例（new的对象），几乎所有的对象实例都在这里分配内存。</li>
-      <li>方法区（Method Area）方法区也称”永久代“，它用于存储虚拟机加载的类信息、常量、静态变量、是各个线程共享的内存区域。</li>
-      <li>虚拟机栈(JVM Stack) Java虚拟机栈是线程私有，生命周期与线程相同。创建线程的时候就会创建一个java虚拟机栈。
-虚拟机执行java程序的时候，每个方法都会创建一个栈帧，栈帧存放在java虚拟机栈中，通过压栈出栈的方式进行方法调用。
-栈帧又分为一下几个区域：局部变量表、操作数栈、动态连接、方法出口等。</li>
-      <li>本地方法栈(Native Stack) 本地方法栈（Native Method Stacks）与虚拟机栈所发挥的作用是非常相似的，其区别不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的Native方法服务。</li>
-      <li>程序计数器（PC Register）
-程序计数器就是记录当前线程执行程序的位置，改变计数器的值来确定执行的下一条指令，比如循环、分支、方法跳转、异常处理，线程恢复都是依赖程序计数器来完成。
-Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间的方式实现的。为了线程切换能恢复到正确的位置，每条线程都需要一个独立的程序计数器，所以它是线程私有的。</li>
-      <li>直接内存
-直接内存并不是虚拟机内存的一部分，也不是Java虚拟机规范中定义的内存区域。jdk1.4中新加入的NIO，引入了通道与缓冲区的IO方式，它可以调用Native方法直接分配堆外内存，这个堆外内存就是本机内存，不会影响到堆内存的大小。</li>
-    </ul>
-  </li>
-  <li>JVM性能调优的6大步骤，及关键调优参数详解 <a href="https://zhuanlan.zhihu.com/p/58897189">https://zhuanlan.zhihu.com/p/58897189</a></li>
-  <li>深入剖析JVM：G1收集器+回收流程+推荐用例 <a href="https://zhuanlan.zhihu.com/p/59861022">https://zhuanlan.zhihu.com/p/59861022</a></li>
-</ul>
-
-<h4 id="java-参数">java 参数</h4>
-<ul>
-  <li>查看JVM使用的默认的垃圾收集器 <a href="https://www.cnblogs.com/grey-wolf/p/9217497.html">https://www.cnblogs.com/grey-wolf/p/9217497.html</a></li>
-  <li>JVM 参数 <a href="https://blog.csdn.net/liyongbing1122/article/details/88716400">https://blog.csdn.net/liyongbing1122/article/details/88716400</a></li>
-</ul>
-
-<p>逃逸分析</p>
-<ul>
-  <li><a href="https://blog.csdn.net/w372426096/article/details/80333657">https://blog.csdn.net/w372426096/article/details/80333657</a></li>
-  <li><a href="https://blog.csdn.net/hollis_chuang/article/details/80922794">https://blog.csdn.net/hollis_chuang/article/details/80922794</a></li>
-</ul>
+	
 
       </div>
       <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html" class="button readmore-button">Read More</a>
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -658,6 +680,13 @@ Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间�
       
       <a  href="tag/JVM">
       <span class="label label-default">jvm ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/分布式">
+      <span class="label label-default">分布式 ( 1 )</span>
       </a><br />
 
       
