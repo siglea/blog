@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> kafka activeMQ RabbitMq RocketMQ </title>
+  <meta name="description" content="AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）">
+  <script src="/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+</head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-86140592-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  <body>
+
+    <header class="site-header">
+  <div class="container" style="text-align:center">
+    <div class="navbar" style="margin-bottom:0;border:0">
+    <ul class="navbar-nav nav header-nav">
+    <li><a href="/index.html" class="button">首页</a></li>
+      <li><a href="/category/技术" class="button">技术</a></li>
+      <li><a href="/category/产品商业" class="button">产品商业</a></li>
+      <li><a href="/category/随记" class="button">随记</a></li>
+    </ul>
+    </div>
+  </div>
+
+</header>
+<div class="clearfix">
+
+
+    <div class="page-content">
+      <div class="container" style="padding-left:0;padding-right:0;">
+        <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline"> kafka activeMQ RabbitMq RocketMQ </h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-05-22T19:25:00+08:00" itemprop="datePublished">May 22, 2020</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h4 id="amqp即advanced-message-queuing-protocolactivemqrabbitmq都支持">AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）</h4>
+
+<h4 id="两种消息模型">两种消息模型：</h4>
+<ul>
+  <li>点对点（单播），当采用点对点模型时，消息将发送到一个队列，该队列的消息只能被一个消费者消费。</li>
+  <li>publish-subscribe（发布订阅、广播）模型。而采用发布订阅模型时，消息可以被多个消费者消费。
+在发布订阅模型中，生产者和消费者完全独立，不需要感知对方的存在。
+例如，在用户登录后，各个其他模板更加登录进行不同的处理</li>
+</ul>
+
+<h4 id="如何保证可用性">如何保证可用性</h4>
+<ul>
+  <li>主从架构（ActiveMQ、RabbitMQ）</li>
+  <li>分布式架构（RocketMQ、kafka）</li>
+</ul>
+
+<h4 id="如何保证消息不被重复消费">如何保证消息不被重复消费？</h4>
+<ul>
+  <li>分析:这个问题其实换一种问法就是，如何保证消息队列的幂等性?这个问题可以认为是消息队列领域的基本问题。换句话来说，是在考察你的设计能力，这个问题的回答可以根据具体的业务场景来答，没有固定的答案。</li>
+  <li>回答:先来说一下为什么会造成重复消费?
+  其实无论是那种消息队列，造成重复消费原因其实都是类似的。正常情况下，消费者在消费消息时候，消费完毕后，会发送一个确认信息给消息队列，消息队列就知道该消息被消费了，就会将该消息从消息队列中删除。只是不同的消息队列发送的确认信息形式不同,例如RabbitMQ是发送一个ACK确认消息，RocketMQ是返回一个CONSUME_SUCCESS成功标志，kafka实际上有个offset的概念，简单说一下(如果还不懂，出门找一个kafka入门到精通教程),就是每一个消息都有一个offset，kafka消费过消息后，需要提交offset，让消息队列知道自己已经消费过了。那造成重复消费的原因?，就是因为网络传输等等故障，确认信息没有传送到消息队列，导致消息队列不知道自己已经消费过该消息了，再次将该消息分发给其他的消费者。
+  如何解决?这个问题针对业务场景来答分以下几点
+  - 比如，你拿到这个消息做数据库的insert操作。那就容易了，给这个消息做一个唯一主键，那么就算出现重复消费的情况，就会导致主键冲突，避免数据库出现脏数据。
+    <ul>
+      <li>再比如，你拿到这个消息做redis的set的操作，那就容易了，不用解决，因为你无论set几次结果都是一样的，set操作本来就算幂等操作。
+  - 如果上面两种情况还不行，上大招。准备一个第三方介质,来做消费记录。以redis为例，给消息分配一个全局id，只要消费过该消息，将&lt;id,message&gt;以K-V形式写入redis。那消费者开始消费前，先去redis中查询有没消费记录即可。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="消费者消费失败如何处理">消费者消费失败，如何处理？</h4>
+<ul>
+  <li>消费成功时，手动ack，这样队列会再次推送或者再次pull</li>
+  <li>用redis对立的”伪消费队列”最大的问题就是在于消费后没有ACK，发生意外会有很多脏数据</li>
+  <li>也可以用幂等的方式消费者保存业务的进展，用单独程序做补偿消费</li>
+  <li>如果消费者处理一个消息失败了，消息系统一般会把这个消息放回队列，这样其他消费者可以继续处理</li>
+</ul>
+
+<h4 id="如何保证消费的可靠性传输">如何保证消费的可靠性传输?</h4>
+<ul>
+  <li>RabbitMQ
+    <ul>
+      <li>生产者丢数据，可以用事务方式来保证发送成功或回滚，也可以队列接受后异步返回ack或nack来实现</li>
+      <li>消息队列丢数据，可以持久化队列并且配置自动重复参数</li>
+      <li>消费者丢数据，手动ack</li>
+    </ul>
+  </li>
+  <li>kafka
+    <ul>
+      <li>(1)生产者丢数据
+在kafka生产中，基本都有一个leader和多个follwer。follwer会去同步leader的信息。因此，为了避免生产者丢数据，做如下两点配置
+        <ol>
+          <li>第一个配置要在producer端设置acks=all。这个配置保证了，follwer同步完成后，才认为消息发送成功。</li>
+          <li>在producer端设置retries=MAX，一旦写入失败，这无限重试</li>
+        </ol>
+      </li>
+      <li>消息队列丢数据
+针对消息队列丢数据的情况，无外乎就是，数据还没同步，leader就挂了，这时zookpeer会将其他的follwer切换为leader,那数据就丢失了。针对这种情况，应该做两个配置。
+        <ol>
+          <li>replication.factor参数，这个值必须大于1，即要求每个partition必须有至少2个副本</li>
+          <li>min.insync.replicas参数，这个值必须大于1，这个是要求一个leader至少感知到有至少一个follower还跟自己保持联系
+这两个配置加上上面生产者的配置联合起来用，基本可确保kafka不丢数据</li>
+        </ol>
+      </li>
+      <li>消费者丢数据
+这种情况一般是自动提交了offset，然后你处理程序过程中挂了。kafka以为你处理好了。再强调一次offset是干嘛的
+offset：指的是kafka的topic中的每个消费组消费的下标。简单的来说就是一条消息对应一个offset下标，每次消费数据的时候如果提交offset，那么下次消费就会从提交的offset加一那里开始消费。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="推拉模式">推拉模式</h4>
+<p>消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。</p>
+
+<h4 id="关于kafka">关于kafka</h4>
+<ul>
+  <li>Apache Kafka不是消息中间件的一种实现。相反，它只是一种分布式流式系统。
+不同于基于队列和交换器的RabbitMQ，Kafka的存储层是使用分区事务日志来实现的。</li>
+  <li>过期日志会根据时间或大小，进行清除</li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>消息队列常见问题
+    <ul>
+      <li><a href="https://www.cnblogs.com/williamjie/p/9481780.html">https://www.cnblogs.com/williamjie/p/9481780.html</a></li>
+    </ul>
+  </li>
+  <li>优知学院消息队列
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/60288173">https://zhuanlan.zhihu.com/p/60288173</a></li>
+      <li><a href="https://zhuanlan.zhihu.com/p/60288391">https://zhuanlan.zhihu.com/p/60288391</a></li>
+    </ul>
+  </li>
+  <li>IM系统的MQ消息中间件选型：Kafka还是RabbitMQ？
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/37993013">https://zhuanlan.zhihu.com/p/37993013</a></li>
+    </ul>
+  </li>
+  <li>MQ消息队列的12点核心原理总结
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/60289322">https://zhuanlan.zhihu.com/p/60289322</a></li>
+    </ul>
+  </li>
+</ul>
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+      </div>
+      <div class="clearfix">
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="container">
+
+    <h2 class="footer-heading">粉笔灰杂谈</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>粉笔灰杂谈</li>
+          <li><a href="mailto:siglea@sina.com">siglea@sina.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/siglea"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">siglea</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

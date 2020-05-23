@@ -5,9 +5,128 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 23 May 2020 14:19:12 +0800</pubDate>
-    <lastBuildDate>Sat, 23 May 2020 14:19:12 +0800</lastBuildDate>
+    <pubDate>Sat, 23 May 2020 18:11:07 +0800</pubDate>
+    <lastBuildDate>Sat, 23 May 2020 18:11:07 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title> kafka activeMQ RabbitMq RocketMQ </title>
+        <description>&lt;h4 id=&quot;amqp即advanced-message-queuing-protocolactivemqrabbitmq都支持&quot;&gt;AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）&lt;/h4&gt;
+
+&lt;h4 id=&quot;两种消息模型&quot;&gt;两种消息模型：&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;点对点（单播），当采用点对点模型时，消息将发送到一个队列，该队列的消息只能被一个消费者消费。&lt;/li&gt;
+  &lt;li&gt;publish-subscribe（发布订阅、广播）模型。而采用发布订阅模型时，消息可以被多个消费者消费。
+在发布订阅模型中，生产者和消费者完全独立，不需要感知对方的存在。
+例如，在用户登录后，各个其他模板更加登录进行不同的处理&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;如何保证可用性&quot;&gt;如何保证可用性&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;主从架构（ActiveMQ、RabbitMQ）&lt;/li&gt;
+  &lt;li&gt;分布式架构（RocketMQ、kafka）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;如何保证消息不被重复消费&quot;&gt;如何保证消息不被重复消费？&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;分析:这个问题其实换一种问法就是，如何保证消息队列的幂等性?这个问题可以认为是消息队列领域的基本问题。换句话来说，是在考察你的设计能力，这个问题的回答可以根据具体的业务场景来答，没有固定的答案。&lt;/li&gt;
+  &lt;li&gt;回答:先来说一下为什么会造成重复消费?
+  其实无论是那种消息队列，造成重复消费原因其实都是类似的。正常情况下，消费者在消费消息时候，消费完毕后，会发送一个确认信息给消息队列，消息队列就知道该消息被消费了，就会将该消息从消息队列中删除。只是不同的消息队列发送的确认信息形式不同,例如RabbitMQ是发送一个ACK确认消息，RocketMQ是返回一个CONSUME_SUCCESS成功标志，kafka实际上有个offset的概念，简单说一下(如果还不懂，出门找一个kafka入门到精通教程),就是每一个消息都有一个offset，kafka消费过消息后，需要提交offset，让消息队列知道自己已经消费过了。那造成重复消费的原因?，就是因为网络传输等等故障，确认信息没有传送到消息队列，导致消息队列不知道自己已经消费过该消息了，再次将该消息分发给其他的消费者。
+  如何解决?这个问题针对业务场景来答分以下几点
+  - 比如，你拿到这个消息做数据库的insert操作。那就容易了，给这个消息做一个唯一主键，那么就算出现重复消费的情况，就会导致主键冲突，避免数据库出现脏数据。
+    &lt;ul&gt;
+      &lt;li&gt;再比如，你拿到这个消息做redis的set的操作，那就容易了，不用解决，因为你无论set几次结果都是一样的，set操作本来就算幂等操作。
+  - 如果上面两种情况还不行，上大招。准备一个第三方介质,来做消费记录。以redis为例，给消息分配一个全局id，只要消费过该消息，将&amp;lt;id,message&amp;gt;以K-V形式写入redis。那消费者开始消费前，先去redis中查询有没消费记录即可。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;消费者消费失败如何处理&quot;&gt;消费者消费失败，如何处理？&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;消费成功时，手动ack，这样队列会再次推送或者再次pull&lt;/li&gt;
+  &lt;li&gt;用redis对立的”伪消费队列”最大的问题就是在于消费后没有ACK，发生意外会有很多脏数据&lt;/li&gt;
+  &lt;li&gt;也可以用幂等的方式消费者保存业务的进展，用单独程序做补偿消费&lt;/li&gt;
+  &lt;li&gt;如果消费者处理一个消息失败了，消息系统一般会把这个消息放回队列，这样其他消费者可以继续处理&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;如何保证消费的可靠性传输&quot;&gt;如何保证消费的可靠性传输?&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;RabbitMQ
+    &lt;ul&gt;
+      &lt;li&gt;生产者丢数据，可以用事务方式来保证发送成功或回滚，也可以队列接受后异步返回ack或nack来实现&lt;/li&gt;
+      &lt;li&gt;消息队列丢数据，可以持久化队列并且配置自动重复参数&lt;/li&gt;
+      &lt;li&gt;消费者丢数据，手动ack&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;kafka
+    &lt;ul&gt;
+      &lt;li&gt;(1)生产者丢数据
+在kafka生产中，基本都有一个leader和多个follwer。follwer会去同步leader的信息。因此，为了避免生产者丢数据，做如下两点配置
+        &lt;ol&gt;
+          &lt;li&gt;第一个配置要在producer端设置acks=all。这个配置保证了，follwer同步完成后，才认为消息发送成功。&lt;/li&gt;
+          &lt;li&gt;在producer端设置retries=MAX，一旦写入失败，这无限重试&lt;/li&gt;
+        &lt;/ol&gt;
+      &lt;/li&gt;
+      &lt;li&gt;消息队列丢数据
+针对消息队列丢数据的情况，无外乎就是，数据还没同步，leader就挂了，这时zookpeer会将其他的follwer切换为leader,那数据就丢失了。针对这种情况，应该做两个配置。
+        &lt;ol&gt;
+          &lt;li&gt;replication.factor参数，这个值必须大于1，即要求每个partition必须有至少2个副本&lt;/li&gt;
+          &lt;li&gt;min.insync.replicas参数，这个值必须大于1，这个是要求一个leader至少感知到有至少一个follower还跟自己保持联系
+这两个配置加上上面生产者的配置联合起来用，基本可确保kafka不丢数据&lt;/li&gt;
+        &lt;/ol&gt;
+      &lt;/li&gt;
+      &lt;li&gt;消费者丢数据
+这种情况一般是自动提交了offset，然后你处理程序过程中挂了。kafka以为你处理好了。再强调一次offset是干嘛的
+offset：指的是kafka的topic中的每个消费组消费的下标。简单的来说就是一条消息对应一个offset下标，每次消费数据的时候如果提交offset，那么下次消费就会从提交的offset加一那里开始消费。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;推拉模式&quot;&gt;推拉模式&lt;/h4&gt;
+&lt;p&gt;消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。&lt;/p&gt;
+
+&lt;h4 id=&quot;关于kafka&quot;&gt;关于kafka&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Apache Kafka不是消息中间件的一种实现。相反，它只是一种分布式流式系统。
+不同于基于队列和交换器的RabbitMQ，Kafka的存储层是使用分区事务日志来实现的。&lt;/li&gt;
+  &lt;li&gt;过期日志会根据时间或大小，进行清除&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;参考&quot;&gt;参考&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;消息队列常见问题
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/williamjie/p/9481780.html&quot;&gt;https://www.cnblogs.com/williamjie/p/9481780.html&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;优知学院消息队列
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/60288173&quot;&gt;https://zhuanlan.zhihu.com/p/60288173&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/60288391&quot;&gt;https://zhuanlan.zhihu.com/p/60288391&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;IM系统的MQ消息中间件选型：Kafka还是RabbitMQ？
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/37993013&quot;&gt;https://zhuanlan.zhihu.com/p/37993013&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;MQ消息队列的12点核心原理总结
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/60289322&quot;&gt;https://zhuanlan.zhihu.com/p/60289322&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Fri, 22 May 2020 19:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html</guid>
+        
+        <category>MQ</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
     
       <item>
         <title>Netty-Mina</title>
@@ -1061,64 +1180,6 @@ docker rmi ec49dbd13cf5
         <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html</guid>
         
         <category>Docker</category>
-        
-        
-        <category>技术</category>
-        
-      </item>
-    
-      <item>
-        <title> 主流互联网公司系统概况及指标 </title>
-        <description>&lt;h4 id=&quot;微信&quot;&gt;微信&lt;/h4&gt;
-
-&lt;h4 id=&quot;淘宝&quot;&gt;淘宝&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;2018年双11 交易创建30万QPS&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw&quot;&gt;https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw&lt;/a&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;2019年双11 交易峰值54.5万笔/秒&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ&quot;&gt;https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ&lt;/a&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;阿里巴巴双11千万级实时监控系统技术揭秘&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q&quot;&gt;https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q&lt;/a&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;2019双11，支付宝有哪些“秘密武器”&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g&quot;&gt;https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g&lt;/a&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;诺亚 (Noah) 自适应流控&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6&quot;&gt;https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;12306&quot;&gt;12306&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=2771&amp;amp;ctid=22&quot;&gt;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=2771&amp;amp;ctid=22&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;微博&quot;&gt;微博&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/shanyou/p/5048099.html&quot;&gt;https://www.cnblogs.com/shanyou/p/5048099.html&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;唯品会&quot;&gt;唯品会&lt;/h4&gt;
-&lt;p&gt;唯品会OSP 微服务架构
-用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力
-&lt;a href=&quot;https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ&quot;&gt;https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;达达&quot;&gt;达达&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/67b710267d10&quot;&gt;https://www.jianshu.com/p/67b710267d10&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;指标概述&quot;&gt;指标概述&lt;/h4&gt;
-&lt;p&gt;https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA&lt;/p&gt;
-</description>
-        <pubDate>Fri, 03 Jan 2020 10:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html</guid>
-        
-        <category>linux</category>
         
         
         <category>技术</category>

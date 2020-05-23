@@ -54,6 +54,125 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html">2PC 3PC</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="mysql实现事务acid特性的方式总结如下">MySQL实现事务ACID特性的方式总结如下：</h4>
+<ul>
+  <li>原子性：使用 undo log来实现，如果事务执行过程中出错或者用户执行了rollback，系统通过undo log日志返回事务开始的状态。</li>
+  <li>持久性：使用 redo log来实现，只要redo log日志持久化了，当系统崩溃，即可通过redo log把数据恢复。</li>
+  <li>隔离性：通过锁以及MVCC来实现。</li>
+  <li>一致性：通过回滚、恢复以及并发情况下的隔离性，从而实现一致性。</li>
+</ul>
+
+<h4 id="在分布式服务中经常出现直接或间接调用数据库此时的事务保证如何进行">在分布式服务中，经常出现直接或间接调用数据库，此时的事务保证如何进行？</h4>
+<ul>
+  <li>解决此问题，唯一的方法就是引入”中间人”事务管理器（Transaction Manager，简称 TM，也被称之为“协调者”）</li>
+  <li>无论哪种方案，都需要制定”协议”，由各个数据库配合实现（资源管理器 Resource Manager，简称 RM，也被称之为“参与者”）</li>
+  <li>无论是 2PC 还是 3PC 都不能保证分布式系统中的数据 100% 一致，只能尽可能的做到</li>
+</ul>
+
+<h4 id="2pc3pc">2PC、3PC</h4>
+<ul>
+  <li>二阶段提交（Two-phase Commit，简称2PC）
+    <ul>
+      <li>步骤：Prepare（实际上是3PC的PreCommit）、Commit（DoCommit）</li>
+    </ul>
+  </li>
+  <li>三阶段提交（Three-phase Commit，简称3PC）
+    <ul>
+      <li>步骤：CanCommit(新增机制，尝试获取锁)、PreCommit、DoCommit</li>
+    </ul>
+  </li>
+  <li>区别
+    <ol>
+      <li>超时机制
+        <ul>
+          <li>2PC由于RM没有超时机制会产生各种阻塞问题，导致即使失败了RM的事务也不能回滚</li>
+          <li>3PC引入RM超时机制，在第二阶段PreCommit超时回滚，第三阶段DoCommit超时提交</li>
+        </ul>
+      </li>
+      <li>相较于2PC而言，3PC多设置了一个缓冲阶段尽可能保证了在最后提交阶段之前各参与节点的状态是一致的。</li>
+      <li>由于多个参与者最终Commit提交发生的意外(网络或者协调者故障)，还是会产生不一致，无法彻底解决</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="常用分布式事务框架">常用分布式事务框架</h4>
+<ul>
+  <li>X/Open DTP(Distributed Transaction Process)模型与XA(eXtended Architecture)
+    <ul>
+      <li>DTP模型里面定义了XA接口，TM 和 RM 通过XA接口进行双向通信（这也是XA的主要作用， 除此之外，XA还对两阶段提交协议进行了部分优化），例如：TM通知RM提交事务或者回滚事务，RM把提交结果通知给TM。XA 的全称是eXtended Architecture，它是一个分布式事务协议，它通过二阶段提交协议保证强一致性。</li>
+      <li>基于XA协议实现的分布式事务是强一致性的分布式事务，典型应用场景如JAVA中有关分布式事务的规范如JTA（Java Transaction API）和JTS（Java Transaction Service）中就涉及到了XA。</li>
+    </ul>
+  </li>
+  <li>Seata（Simple Extensible Autonomous Transaction Architecture，一站式分布式事务解决方案）与AT模式
+    <ul>
+      <li>AT（Automatic Transaction）模式是基于XA事务演进而来，核心是对业务无侵入，是一种改进后的两阶段提交，需要数据库支持。</li>
+      <li>引入补偿机制（最终一致性）</li>
+      <li>Seata 会有 4 种分布式事务解决方案，分别是 AT 模式、TCC(Try、Commit、Cancel) 模式、Saga 模式和 XA 模式。</li>
+    </ul>
+  </li>
+  <li>TCC(Try、Commit、Cancel) 模式
+    <ul>
+      <li>锁定，提交/回滚</li>
+      <li>XA两阶段提交是资源层面的，而TCC实际上把资源层面二阶段提交上提到了业务层面来实现，有效了的避免了XA两阶段提交占用资源锁时间过长导致的性能低下问题。TCC也没有AT模式中的全局行锁，所以性能也会比AT模式高很多。不过，TCC模式对业务代码有很大的侵入性，主业务服务和从业务服务都需要进行改造，从业务方改造成本更高。</li>
+    </ul>
+  </li>
+  <li>Saga 算法（https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf）于 1987 年提出，是一种异步的分布式事务解决方案。其理论基础在于，其假设所有事件按照顺序推进，总能达到系统的最终一致性，因此 Saga需要服务分别定义提交接口以及补偿接口，当某个事务分支失败时，调用其它的分支的补偿接口来进行回滚。
+在Saga模式下，分布式事务内有多个参与者，每一个参与者都是一个冲正补偿服务，需要用户根据业务场景实现其正向操作和逆向回滚操作。</li>
+  <li>本地消息表</li>
+  <li>消息事务 RocketMQ(阿里开源)</li>
+  <li>最大努力通知型（Best-effort Delivery）</li>
+</ul>
+
+<h4 id="分布式事务的取舍">分布式事务的取舍</h4>
+<ul>
+  <li>严格的ACID事务对隔离性的要求很高，在事务执行中必须将所有的资源锁定，对于长事务来说，整个事务期间对数据的独占，将严重影响系统并发性能。因此，在高并发场景中，对ACID的部分特性进行放松从而提高性能，这便产生了BASE柔性事务。柔性事务的理念则是通过业务逻辑将互斥锁操作从资源层面上移至业务层面。通过放宽对强一致性要求，来换取系统吞吐量的提升。另外提供自动的异常恢复机制，可以在发生异常后也能确保事务的最终一致。</li>
+  <li>柔性事务需要应用层进行参与，因此这类分布式事务框架一个首要的功能就是怎么最大程度降低业务改造成本，然后就是尽可能提高性能（响应时间、吞吐），最好是保证隔离性。</li>
+  <li>当然如果我们要自己设计一个分布式事务框架，还需要考虑很多其它特性，在明确目标场景偏好后进行权衡取舍，这些特性包括但不限于以下：
+    <ul>
+      <li>业务侵入性（基于注解、XML，补偿逻辑）；</li>
+      <li>隔离性（写隔离/读隔离/读未提交，业务隔离/技术隔离）；</li>
+      <li>TM/TC部署形态（单独部署、与应用部署一起）；</li>
+      <li>错误恢复（自动恢复、手动恢复）；</li>
+      <li>性能（回滚的概率、付出的代价,响应时间、吞吐）；</li>
+      <li>高可用（注册中心、数据库）；</li>
+      <li>持久化（数据库、文件、多副本一致算法）；</li>
+      <li>同步/异步（2PC执行方式）；</li>
+      <li>日志清理(自动、手动)；</li>
+      <li>……</li>
+    </ul>
+  </li>
+  <li>分布式事务一直是业界难题，难在于CAP定理，在于分布式系统8大错误假设 ，在于FLP不可能原理 ，在于我们习惯于单机事务ACID做对比。无论是数据库领域XA，还是微服务下AT、TCC、Saga、本地消息表、事务消息、最大努力通知等方案，都没有完美解决分布式事务问题，它们不过是各自在性能、一致性、可用性等方面做取舍，寻求某些场景偏好下的权衡。</li>
+</ul>
+
+<h4 id="flp-impossibilityflp不可能性-fischer-lynch-and-patterson">FLP Impossibility（FLP不可能性 Fischer, Lynch and Patterson）</h4>
+<p>在异步通信场景，即使只有一个进程失败，也没有任何算法能保证非失败进程达到一致性！
+<a href="https://www.cnblogs.com/firstdream/p/6585923.html">https://www.cnblogs.com/firstdream/p/6585923.html</a></p>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li><a href="https://zhuanlan.zhihu.com/p/91263461">https://zhuanlan.zhihu.com/p/91263461</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/ek3ycMJ1qbMXtMRAvTQDZg">https://mp.weixin.qq.com/s/ek3ycMJ1qbMXtMRAvTQDZg</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/As8QpwpJvwAViZ2otiZnPg">https://mp.weixin.qq.com/s/As8QpwpJvwAViZ2otiZnPg</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html">DB-distributed-transacion</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -465,98 +584,6 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html"> Jvm内存模型、垃圾回收机制与调优 </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>JVM</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="gc的收集算法实战中是集中算法组合使用">GC的收集算法（实战中是集中算法组合使用）</h4>
-<ul>
-  <li>标记-复制
-  Serial New、Parallel New、Parallel Scavenge New、G1</li>
-  <li>标记-清除
-  CMS</li>
-  <li>标记-整理
-  Serial Old、Parallel Old、G1</li>
-</ul>
-
-<h4 id="分代为了更高效的区别回收g1的分区region也是为了发挥多核并发优势">分代（为了更高效的区别回收，G1的分区region也是为了发挥多核并发优势）</h4>
-<ul>
-  <li>Young Generation
-  Eden 伊甸园
-  Survivor 幸存者（from/to，S0/S1)</li>
-  <li>Tenured/Old Generation</li>
-  <li>Permanent Generation (Java8之前）</li>
-  <li>Metaspace (Java8之后）</li>
-</ul>
-
-<h5 id="参考">参考</h5>
-<p>JVM的4种垃圾回收算法、垃圾回收机制与总结 <a href="https://zhuanlan.zhihu.com/p/54851319">https://zhuanlan.zhihu.com/p/54851319</a></p>
-
-<h4 id="gc收集器">GC收集器</h4>
-<ul>
-  <li>Serial（串行）收集器
-  新生代、老生代</li>
-  <li>Parallel（并行）收集器
-  新生代、老生代</li>
-  <li>Parallel Scavenge New （GC自适应的调节策略GC Ergonomics）
-  新生代、通过调整相关参数，比如新生代的大小，达到以合适的时间和耗时，达到高吞吐量
-  吞吐量 = 运行用户代码时间 /（运行用户代码时间 + 垃圾收集时间）</li>
-  <li>CMS（Concurrent Mark Sweep 并发）收集器 （并发低停顿收集器 Concurrent Low Pause Collector）
-  老生代</li>
-  <li>G1（并发）收集器（优先回收价值最大的Region（这也就是Garbage-First名称的来由）
-  新生代、老生代</li>
-  <li>JDK11的ZGC <a href="https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw">https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw</a></li>
-</ul>
-
-<h5 id="参考-1">参考</h5>
-<ul>
-  <li>7种JVM垃圾收集器特点，优劣势、及使用场景 <a href="https://zhuanlan.zhihu.com/p/58896728">https://zhuanlan.zhihu.com/p/58896728</a></li>
-  <li>深入理解JVM，7种垃圾收集器 <a href="http://blog.itpub.net/69917606/viewspace-2656882">http://blog.itpub.net/69917606/viewspace-2656882</a></li>
-  <li>深入详解JVM内存模型与JVM参数详细配置 <a href="https://zhuanlan.zhihu.com/p/58896619">https://zhuanlan.zhihu.com/p/58896619</a>
-    <ul>
-      <li>堆内存（Heap）此内存区域的唯一目的就是存放对象实例（new的对象），几乎所有的对象实例都在这里分配内存。</li>
-      <li>方法区（Method Area）方法区也称”永久代“，它用于存储虚拟机加载的类信息、常量、静态变量、是各个线程共享的内存区域。</li>
-      <li>虚拟机栈(JVM Stack) Java虚拟机栈是线程私有，生命周期与线程相同。创建线程的时候就会创建一个java虚拟机栈。
-虚拟机执行java程序的时候，每个方法都会创建一个栈帧，栈帧存放在java虚拟机栈中，通过压栈出栈的方式进行方法调用。
-栈帧又分为一下几个区域：局部变量表、操作数栈、动态连接、方法出口等。</li>
-      <li>本地方法栈(Native Stack) 本地方法栈（Native Method Stacks）与虚拟机栈所发挥的作用是非常相似的，其区别不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的Native方法服务。</li>
-      <li>程序计数器（PC Register）
-程序计数器就是记录当前线程执行程序的位置，改变计数器的值来确定执行的下一条指令，比如循环、分支、方法跳转、异常处理，线程恢复都是依赖程序计数器来完成。
-Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间的方式实现的。为了线程切换能恢复到正确的位置，每条线程都需要一个独立的程序计数器，所以它是线程私有的。</li>
-      <li>直接内存
-直接内存并不是虚拟机内存的一部分，也不是Java虚拟机规范中定义的内存区域。jdk1.4中新加入的NIO，引入了通道与缓冲区的IO方式，它可以调用Native方法直接分配堆外内存，这个堆外内存就是本机内存，不会影响到堆内存的大小。</li>
-    </ul>
-  </li>
-  <li>JVM性能调优的6大步骤，及关键调优参数详解 <a href="https://zhuanlan.zhihu.com/p/58897189">https://zhuanlan.zhihu.com/p/58897189</a></li>
-  <li>深入剖析JVM：G1收集器+回收流程+推荐用例 <a href="https://zhuanlan.zhihu.com/p/59861022">https://zhuanlan.zhihu.com/p/59861022</a></li>
-</ul>
-
-<h4 id="java-参数">java 参数</h4>
-<ul>
-  <li>查看JVM使用的默认的垃圾收集器 <a href="https://www.cnblogs.com/grey-wolf/p/9217497.html">https://www.cnblogs.com/grey-wolf/p/9217497.html</a></li>
-  <li>JVM 参数 <a href="https://blog.csdn.net/liyongbing1122/article/details/88716400">https://blog.csdn.net/liyongbing1122/article/details/88716400</a></li>
-</ul>
-
-<p>逃逸分析</p>
-<ul>
-  <li><a href="https://blog.csdn.net/w372426096/article/details/80333657">https://blog.csdn.net/w372426096/article/details/80333657</a></li>
-  <li><a href="https://blog.csdn.net/hollis_chuang/article/details/80922794">https://blog.csdn.net/hollis_chuang/article/details/80922794</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -850,6 +877,13 @@ Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间�
       
       <a  href="tag/网络编程">
       <span class="label label-default">网络编程 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/MQ">
+      <span class="label label-default">mq ( 1 )</span>
       </a><br />
 
       
