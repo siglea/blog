@@ -144,14 +144,14 @@
 	<p>SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。
 Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。
 在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。</p>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
-    <span class="kd">implements</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
+    <span class="kd">implements</span> <span class="nc">Iterable</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
 <span class="o">{</span>
 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
-            <span class="k">return</span> <span class="n">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
+            <span class="k">return</span> <span class="nc">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
@@ -217,13 +217,13 @@ Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义C
 <p>要了解这种负载均衡策略，我们首先得学习一下一致性哈希算法。不会一致性哈希算法的同学可以看一下我之前写的这篇博客，质量保证过硬：一致性哈希算法详解
 一致性哈希可以保证相同参数的请求一定会发送到同一台机器上，即使有机器崩溃，由于一致性哈希算法的特性与虚拟节点的存在，发往该机器的请求会被发送到其它机器上，并不会引发剧烈变动。</p>
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="n">ChangeService</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="nc">ChangeService</span> <span class="o">{</span>
 
     <span class="nd">@Reference</span><span class="o">(</span><span class="n">loadbalance</span> <span class="o">=</span> <span class="s">"roundrobin"</span><span class="o">)</span>
-    <span class="n">NameService</span> <span class="n">nameService</span><span class="o">;</span>
+    <span class="nc">NameService</span> <span class="n">nameService</span><span class="o">;</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">change</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">change</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">nameService</span><span class="o">.</span><span class="na">updateName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -407,48 +407,158 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
     
     <div class="post-contents">
       <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html"> Java ClassLoader </a>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html"> Nginx </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html#disqus_thread"></a></span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html#disqus_thread"></a></span>
       
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>JVM</span>
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Nginx</span>
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="类加载器步骤">类加载器步骤</h4>
-<ol>
-  <li>在特定目录找到.class文件，并读取</li>
-  <li>Java是模板系语言，读取.class文件之后，被实例化为对应的Class的对象</li>
-  <li>Class对象=类模板实例化，只有有类模板，新对象才能根据类模板进行实例化</li>
-</ol>
+	<h4 id="location-优先级从高到低">location 优先级从高到低</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. location <span class="o">=</span>    <span class="c"># 精准匹配</span>
+2. location ^~   <span class="c"># 带参前缀匹配</span>
+3. location ~    <span class="c"># 正则匹配（区分大小写）</span>
+4. location ~<span class="k">*</span>   <span class="c"># 正则匹配（不区分大小写）</span>
+5. location /a   <span class="c"># 普通前缀匹配，优先级低于带参数前缀匹配。</span>
+6. location /    <span class="c"># 任何没有匹配成功的，都会匹配这里处理</span>
+</code></pre></div></div>
+<h4 id="location-示例">location 示例</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+location  <span class="o">=</span> / <span class="o">{</span>
+    <span class="c"># 只精准匹配 / 的查询.</span>
+  <span class="o">[</span> configuration A <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 匹配成功： / </span>
 
-<h4 id="3大内置类加载器">3大内置类加载器</h4>
+location / <span class="o">{</span>
+    <span class="c"># 匹配任何请求，因为所有请求都是以”/“开始</span>
+    <span class="c"># 但是更长字符匹配或者正则表达式匹配会优先匹配</span>
+  <span class="o">[</span> configuration B <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c">#匹配成功：/index.html</span>
+
+location /documents <span class="o">{</span>
+    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
+    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
+  <span class="o">[</span> configuration C <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 匹配成功：/documents/document.html</span>
+<span class="c"># 匹配成功：/documents/abc</span>
+
+location ~ /documents/ABC <span class="o">{</span>
+    <span class="c"># 区分大小写的正则匹配</span>
+    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
+    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
+  <span class="o">[</span> configuration CC <span class="o">]</span> 
+<span class="o">}</span>
+
+location ^~ /images/ <span class="o">{</span>
+    <span class="c"># 匹配任何以 /images/ 开头的地址，匹配符合以后，立即停止往下搜索正则，采用这一条。/</span>
+  <span class="o">[</span> configuration D <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 成功匹配：/images/a.gif</span>
+
+location ~<span class="k">*</span> <span class="se">\.</span><span class="o">(</span>gif|jpg|jpeg<span class="o">)</span><span class="nv">$ </span><span class="o">{</span>
+    <span class="c"># 匹配所有以 .gif、.jpg 或 .jpeg 结尾的请求，不区分大小写</span>
+    <span class="c"># 然而，所有请求 /images/ 下的图片会被 [ config D ]  处理，因为 ^~ 到达不了这一条正则/</span>
+    <span class="o">[</span> configuration E <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 成功匹配：/documents/a.jpg</span>
+
+location /images/ <span class="o">{</span>
+    <span class="c"># 字符匹配到 /images/，继续往下，会发现 ^~ 存在/</span>
+  <span class="o">[</span> configuration F <span class="o">]</span> 
+<span class="o">}</span>
+
+location /images/abc <span class="o">{</span>
+    <span class="c"># 最长字符匹配到 /images/abc，继续往下，会发现 ^~ 存在/</span>
+    <span class="c"># F与G的放置顺序是没有关系的/</span>
+  <span class="o">[</span> configuration G <span class="o">]</span> 
+<span class="o">}</span>
+
+location ~ /images/abc/ <span class="o">{</span>
+    <span class="c"># 只有去掉 [ config D ] 才有效：先最长匹配 [ config G ] 开头的地址，继续往下搜索，匹配到这一条正则，采用/</span>
+    <span class="o">[</span> configuration H <span class="o">]</span> 
+<span class="o">}</span>
+</code></pre></div></div>
+<h4 id="命名-location">命名 location</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>location / <span class="o">{</span>
+    try_files <span class="nv">$uri</span> <span class="nv">$uri</span>/ @custom
+<span class="o">}</span>
+location @custom <span class="o">{</span>
+    <span class="c"># ...do something</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<h4 id="全局变量">全局变量</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$args</span> ： <span class="c">#这个变量等于请求行中的参数，同$query_string</span>
+<span class="nv">$content_length</span> ： 请求头中的Content-length字段。
+<span class="nv">$content_type</span> ： 请求头中的Content-Type字段。
+<span class="nv">$document_root</span> ： 当前请求在root指令中指定的值。
+<span class="nv">$host</span> ： 请求主机头字段，否则为服务器名称。
+<span class="nv">$http_user_agent</span> ： 客户端agent信息
+<span class="nv">$http_cookie</span> ： 客户端cookie信息
+<span class="nv">$limit_rate</span> ： 这个变量可以限制连接速率。
+<span class="nv">$request_method</span> ： 客户端请求的动作，通常为GET或POST。
+<span class="nv">$remote_addr</span> ： 客户端的IP地址。
+<span class="nv">$remote_port</span> ： 客户端的端口。
+<span class="nv">$remote_user</span> ： 已经经过Auth Basic Module验证的用户名。
+<span class="nv">$request_filename</span> ： 当前请求的文件路径，由root或alias指令与URI请求生成。
+<span class="nv">$scheme</span> ： HTTP方法（如http，https）。
+<span class="nv">$server_protocol</span> ： 请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
+<span class="nv">$server_addr</span> ： 服务器地址，在完成一次系统调用后可以确定这个值。
+<span class="nv">$server_name</span> ： 服务器名称。
+<span class="nv">$server_port</span> ： 请求到达服务器的端口号。
+<span class="nv">$request_uri</span> ： 包含请求参数的原始URI，不包含主机名，如：”/foo/bar.php?arg<span class="o">=</span>baz”。
+<span class="nv">$uri</span> ： 不带请求参数的当前URI，<span class="nv">$uri</span>不包含主机名，如”/foo/bar.html”。
+<span class="nv">$document_uri</span> ： 与<span class="nv">$uri</span>相同。
+</code></pre></div></div>
+<h4 id="rewrite规则">Rewrite规则</h4>
 <ul>
-  <li>启动（Bootstrap）类加载器
-启动类加载器主要加载的是JVM自身需要的类，这个类加载使用C++语言实现的，是虚拟机自身的一部分，它负责将 <JAVA_HOME>/lib路径下的核心类库或-Xbootclasspath参数指定的路径下的jar包加载到内存中，注意必由于虚拟机是按照文件名识别加载jar包的，如rt.jar，如果文件名不被虚拟机识别，即使把jar包丢到lib目录下也是没有作用的(出于安全考虑，Bootstrap启动类加载器只加载包名为java、javax、sun等开头的类)。</JAVA_HOME></li>
-  <li>扩展（Extension）类加载器
-扩展类加载器是指Sun公司(已被Oracle收购)实现的sun.misc.Launcher$ExtClassLoader类，由Java语言实现的，是Launcher的静态内部类，它负责加载<JAVA_HOME>/lib/ext目录下或者由系统变量-Djava.ext.dir指定位路径中的类库，开发者可以直接使用标准扩展类加载器。</JAVA_HOME></li>
-  <li>系统（System）类加载器
-也称应用程序加载器是指 Sun公司实现的sun.misc.Launcher$AppClassLoader。它负责加载系统类路径java -classpath或-D java.class.path 指定路径下的类库，也就是我们经常用到的classpath路径，开发者可以直接使用系统类加载器，一般情况下该类加载是程序中默认的类加载器，通过ClassLoader#getSystemClassLoader()方法可以获取到该类加载器。</li>
+  <li>rewrite功能就是，使用nginx提供的全局变量或自己设置的变量，结合正则表达式和标志位实现url重写以及重定向。rewrite只能放在server{},location{},if{}中，并且只能对域名后边的除去传递的参数外的字符串起作用，例如 http://seanlook.com/a/we/index.php?id=1&amp;u=str 只对/a/we/index.php重写。语法rewrite regex replacement [flag];</li>
+  <li>如果相对域名或参数字符串起作用，可以使用全局变量匹配，也可以使用proxy_pass反向代理。</li>
+  <li>表明看rewrite和location功能有点像，都能实现跳转，主要区别在于rewrite是在同一域名内更改获取资源的路径，而location是对一类路径做控制访问或反向代理，可以proxy_pass到其他机器。很多情况下rewrite也会写在location里，它们的执行顺序是：
+    <ul>
+      <li>执行server块的rewrite指令</li>
+      <li>执行location匹配</li>
+      <li>执行选定的location中的rewrite指令</li>
+    </ul>
+  </li>
+  <li>如果其中某步URI被重写，则重新循环执行1-3，直到找到真实存在的文件；循环超过10次，则返回500 Internal Server Error错误。</li>
 </ul>
 
-<h4 id="双亲委派模式">双亲委派模式</h4>
-<p>工作原理的是，如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器，如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>执行搜索
+这个规则的目的是为了执行搜索，搜索URL中包含的关键字。
+请求的URL //hqidi.com/search/some-search-keywords
+重写后URL //hqidi.com/search.php?p<span class="o">=</span>some-search-keywords
+重写规则         rewrite ^/search/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/search.php?p<span class="o">=</span><span class="nv">$1</span>?<span class="p">;</span>
 
-<h4 id="双亲委派模式优势">双亲委派模式优势</h4>
-<p>采用双亲委派模式的是好处是Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层级关可以避免类的重复加载，当父亲已经加载了该类时，就没有必要子ClassLoader再加载一次。其次是考虑到安全因素，java核心api中定义类型不会被随意替换，假设通过网络传递一个名为java.lang.Integer的类，通过双亲委托模式传递到启动类加载器，而启动类加载器在核心Java API发现这个名字的类，发现该类已被加载，并不会重新加载网络传递的过来的java.lang.Integer，而直接返回已加载过的Integer.class，这样便可以防止核心API库被随意篡改。可能你会想，如果我们在classpath路径下自定义一个名为java.lang.SingleInterge类(该类是胡编的)呢？该类并不存在java.lang中，经过双亲委托模式，传递到启动类加载器中，由于父类加载器路径下并没有该类，所以不会加载，将反向委托给子类加载器加载，最终会通过系统类加载器加载该类。但是这样做是不允许，因为java.lang是核心API包，需要访问权限，强制加载将会报出如下异常</p>
+用户个人资料页面
+大多数运行访问者注册的动态网站都提供一个可以查看个人资料的页面，这个页面的URL包含用户的UID和用户名
+请求的URL //hqidi.com/user/47/dige
+重写后URL //hqidi.com/user.php?id<span class="o">=</span>47&amp;name<span class="o">=</span>dige
+重写规则         rewrite ^/user/<span class="o">([</span>0-9]+<span class="o">)</span>/<span class="o">(</span>.+<span class="o">)</span><span class="nv">$ </span>/user.php?id<span class="o">=</span><span class="nv">$1</span>&amp;name<span class="o">=</span><span class="nv">$2</span>?<span class="p">;</span>
 
-<h4 id="其他">其他</h4>
+多个参数
+有些网站对字符串参数使用不同的语法，例如 通过斜线“/”来分隔非命名参数
+请求的URL //hqidi.com/index.php/param1/param2/param3
+重写后URL //hqidi.com/index.php?p1<span class="o">=</span>param1&amp;p2<span class="o">=</span>param2&amp;p3<span class="o">=</span>param3
+重写规则         rewrite ^/index.php/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/index.php?p1<span class="o">=</span><span class="nv">$1</span>&amp;p2<span class="o">=</span><span class="nv">$2</span>&amp;p3<span class="o">=</span><span class="nv">$3</span>?<span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="参考">参考</h4>
 <ul>
-  <li>不同的加载器加载了同个类，在Jvm中相当于两个不同的Class对象</li>
-  <li>双亲委派模型的破坏者-线程上下文类加载器，在Java应用中存在着很多服务提供者接口（Service Provider Interface，SPI），这些接口允许第三方为它们提供实现，如常见的 SPI 有 JDBC、JNDI等，这些 SPI 的接口属于 Java 核心库，一般存在rt.jar包中，由Bootstrap类加载器加载，而 SPI 的第三方实现代码则是作为Java应用所依赖的 jar 包被存放在classpath路径下，由于SPI接口中的代码经常需要加载具体的第三方实现类并调用其相关方法，但SPI的核心接口类是由引导类加载器来加载的，而Bootstrap类加载器无法直接加载SPI的实现类，同时由于双亲委派模式的存在，Bootstrap类加载器也无法反向委托AppClassLoader加载器SPI的实现类。在这种情况下，我们就需要一种特殊的类加载器来加载第三方的类库，而线程上下文类加载器就是很好的选择。</li>
-  <li>参考<a href="https://blog.csdn.net/javazejian/article/details/73413292">https://blog.csdn.net/javazejian/article/details/73413292</a></li>
+  <li>location 配置一 <a href="https://segmentfault.com/a/1190000022315733">https://segmentfault.com/a/1190000022315733</a></li>
+  <li>location 配置二 <a href="https://segmentfault.com/a/1190000022407797">https://segmentfault.com/a/1190000022407797</a></li>
+  <li>Nginx 架构原理科普 <a href="https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ">https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ</a></li>
+  <li>OpenResty 概要及原理科普 <a href="https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw">https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw</a></li>
+  <li>微服务网关 Kong 科普 <a href="https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g">https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g</a></li>
 </ul>
 
       </div>
       <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html" class="button readmore-button">Read More</a>
+	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />

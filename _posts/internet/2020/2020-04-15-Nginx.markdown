@@ -1,0 +1,146 @@
+---
+layout: post
+title:  " Nginx "
+date:   2020-04-04 11:25:00
+tags:
+- Nginx
+categories:
+- 技术
+---
+#### location 优先级从高到低
+```shell 
+1. location =    # 精准匹配
+2. location ^~   # 带参前缀匹配
+3. location ~    # 正则匹配（区分大小写）
+4. location ~*   # 正则匹配（不区分大小写）
+5. location /a   # 普通前缀匹配，优先级低于带参数前缀匹配。
+6. location /    # 任何没有匹配成功的，都会匹配这里处理
+```
+#### location 示例
+```shell
+
+location  = / {
+    # 只精准匹配 / 的查询.
+  [ configuration A ] 
+}
+# 匹配成功： / 
+
+location / {
+    # 匹配任何请求，因为所有请求都是以”/“开始
+    # 但是更长字符匹配或者正则表达式匹配会优先匹配
+  [ configuration B ] 
+}
+#匹配成功：/index.html
+
+location /documents {
+    # 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/
+    # 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/
+  [ configuration C ] 
+}
+# 匹配成功：/documents/document.html
+# 匹配成功：/documents/abc
+
+location ~ /documents/ABC {
+    # 区分大小写的正则匹配
+    # 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/
+    # 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/
+  [ configuration CC ] 
+}
+
+location ^~ /images/ {
+    # 匹配任何以 /images/ 开头的地址，匹配符合以后，立即停止往下搜索正则，采用这一条。/
+  [ configuration D ] 
+}
+# 成功匹配：/images/a.gif
+
+location ~* \.(gif|jpg|jpeg)$ {
+    # 匹配所有以 .gif、.jpg 或 .jpeg 结尾的请求，不区分大小写
+    # 然而，所有请求 /images/ 下的图片会被 [ config D ]  处理，因为 ^~ 到达不了这一条正则/
+    [ configuration E ] 
+}
+# 成功匹配：/documents/a.jpg
+
+location /images/ {
+    # 字符匹配到 /images/，继续往下，会发现 ^~ 存在/
+  [ configuration F ] 
+}
+
+location /images/abc {
+    # 最长字符匹配到 /images/abc，继续往下，会发现 ^~ 存在/
+    # F与G的放置顺序是没有关系的/
+  [ configuration G ] 
+}
+
+location ~ /images/abc/ {
+    # 只有去掉 [ config D ] 才有效：先最长匹配 [ config G ] 开头的地址，继续往下搜索，匹配到这一条正则，采用/
+    [ configuration H ] 
+}
+```
+#### 命名 location
+```shell 
+location / {
+    try_files $uri $uri/ @custom
+}
+location @custom {
+    # ...do something
+}
+```
+#### 全局变量
+```shell
+$args ： #这个变量等于请求行中的参数，同$query_string
+$content_length ： 请求头中的Content-length字段。
+$content_type ： 请求头中的Content-Type字段。
+$document_root ： 当前请求在root指令中指定的值。
+$host ： 请求主机头字段，否则为服务器名称。
+$http_user_agent ： 客户端agent信息
+$http_cookie ： 客户端cookie信息
+$limit_rate ： 这个变量可以限制连接速率。
+$request_method ： 客户端请求的动作，通常为GET或POST。
+$remote_addr ： 客户端的IP地址。
+$remote_port ： 客户端的端口。
+$remote_user ： 已经经过Auth Basic Module验证的用户名。
+$request_filename ： 当前请求的文件路径，由root或alias指令与URI请求生成。
+$scheme ： HTTP方法（如http，https）。
+$server_protocol ： 请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
+$server_addr ： 服务器地址，在完成一次系统调用后可以确定这个值。
+$server_name ： 服务器名称。
+$server_port ： 请求到达服务器的端口号。
+$request_uri ： 包含请求参数的原始URI，不包含主机名，如：”/foo/bar.php?arg=baz”。
+$uri ： 不带请求参数的当前URI，$uri不包含主机名，如”/foo/bar.html”。
+$document_uri ： 与$uri相同。
+```
+#### Rewrite规则
+- rewrite功能就是，使用nginx提供的全局变量或自己设置的变量，结合正则表达式和标志位实现url重写以及重定向。rewrite只能放在server{},location{},if{}中，并且只能对域名后边的除去传递的参数外的字符串起作用，例如 http://seanlook.com/a/we/index.php?id=1&u=str 只对/a/we/index.php重写。语法rewrite regex replacement [flag];
+- 如果相对域名或参数字符串起作用，可以使用全局变量匹配，也可以使用proxy_pass反向代理。
+- 表明看rewrite和location功能有点像，都能实现跳转，主要区别在于rewrite是在同一域名内更改获取资源的路径，而location是对一类路径做控制访问或反向代理，可以proxy_pass到其他机器。很多情况下rewrite也会写在location里，它们的执行顺序是：
+    - 执行server块的rewrite指令
+    - 执行location匹配
+    - 执行选定的location中的rewrite指令
+- 如果其中某步URI被重写，则重新循环执行1-3，直到找到真实存在的文件；循环超过10次，则返回500 Internal Server Error错误。    
+
+```shell
+执行搜索
+这个规则的目的是为了执行搜索，搜索URL中包含的关键字。
+请求的URL //hqidi.com/search/some-search-keywords
+重写后URL //hqidi.com/search.php?p=some-search-keywords
+重写规则         rewrite ^/search/(.*)$ /search.php?p=$1?;
+
+用户个人资料页面
+大多数运行访问者注册的动态网站都提供一个可以查看个人资料的页面，这个页面的URL包含用户的UID和用户名
+请求的URL //hqidi.com/user/47/dige
+重写后URL //hqidi.com/user.php?id=47&name=dige
+重写规则         rewrite ^/user/([0-9]+)/(.+)$ /user.php?id=$1&name=$2?;
+
+多个参数
+有些网站对字符串参数使用不同的语法，例如 通过斜线“/”来分隔非命名参数
+请求的URL //hqidi.com/index.php/param1/param2/param3
+重写后URL //hqidi.com/index.php?p1=param1&p2=param2&p3=param3
+重写规则         rewrite ^/index.php/(.*)/(.*)/(.*)$ /index.php?p1=$1&p2=$2&p3=$3?;
+```
+
+#### 参考
+- location 配置一 <https://segmentfault.com/a/1190000022315733>
+- location 配置二 <https://segmentfault.com/a/1190000022407797>
+- Nginx 架构原理科普 <https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ>
+- OpenResty 概要及原理科普 <https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw>
+- 微服务网关 Kong 科普 <https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g>
