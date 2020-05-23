@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>NoSQL-NewSQL</title>
-  <meta name="description" content="Redis">
+  <title>NoSQL(Not Only SQL)</title>
+  <meta name="description" content="NoSQL由来  传统的关系型数据库RDB，并没有实现真正意义上的分布式，即便是分库分表也仅仅是”伪分布式”，不具备诸如数据多分区备份等特性  传统的关系型数据库RDB，主从同步的集群，本质上是全量数据的备份，也不是分布式真正要求的可伸缩  传统的关系型数据库RDB，数据表结构或Meta或schema固定，扩展成...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL-NewSQL.html">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -55,21 +55,54 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">NoSQL-NewSQL</h1>
+    <h1 class="post-title" itemprop="name headline">NoSQL(Not Only SQL)</h1>
     <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-12T10:25:00+08:00" itemprop="datePublished">Nov 12, 2019</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="redis">Redis</h4>
+    <h4 id="nosql由来">NoSQL由来</h4>
+<ul>
+  <li>传统的关系型数据库RDB，并没有实现真正意义上的分布式，即便是分库分表也仅仅是”伪分布式”，不具备诸如数据多分区备份等特性</li>
+  <li>传统的关系型数据库RDB，主从同步的集群，本质上是全量数据的备份，也不是分布式真正要求的可伸缩</li>
+  <li>传统的关系型数据库RDB，数据表结构或Meta或schema固定，扩展成本高</li>
+  <li>RDB以行位核心的数据存储，NoSQl以列为核心(HBase/Cassandra)或KV(Redis)为核心</li>
+  <li>1946年，第一台通用计算机诞生。但一直到1970年RDMBS的出现，大家才找到通用的数据存储方案。到21世纪，DT时代让数据容量成为最棘手的问题，对此谷歌和亚马逊分别提出了自己的NoSQL解决方案，比如谷歌于2006年提出了Bigtable。2009年的一次技术大会上，NoSQL一词被正式提出，到现在共有225种解决方案。
+NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活性，支持很灵活的模式变更；第二，可伸缩性，原生的RDBMS只适用于单机和小集群。而NoSQL一开始就是分布式的，解决了读写和容量扩展性问题。以上两点，也是NoSQL产生的根本原因。</li>
+</ul>
+
+<h4 id="nosql分类">NoSQL分类</h4>
+<p>这些NoSQL数据库分为Graph，Document，Column Family以及Key-Value Store等四种。这四种类型的数据库分别使用了不同的数据结构来记录数据。因此它们所适用的场景也不尽相同。</p>
+
+<h4 id="redis">Redis</h4>
 
 <h4 id="mongodb">MongoDB</h4>
 
 <h4 id="cassandra">Cassandra</h4>
+<ul>
+  <li>cassandra以列为核心，相当于把RDB中的宽表，细化为随时可以扩展的动态列</li>
+  <li>应用场景
+    <ul>
+      <li>产品目录和零售应用程序Cassandra被许多零售商用于购物车数据保持和快速的产品目录输入和输出。</li>
+      <li>社交媒体分析和推荐引擎Cassandra是许多在线公司和社交媒体提供商的良好数据库，用于分析和推荐给客户。</li>
+      <li>Yelp的广告分析系统，Spotify的所有用户信息存储</li>
+    </ul>
+  </li>
+  <li>cassandra与mysql使用对比 <a href="https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/">https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/</a></li>
+  <li>cassandra使用场景判断：何时使用及何时不用 <a href="https://developer.aliyun.com/article/713847">https://developer.aliyun.com/article/713847</a></li>
+</ul>
 
-<h4 id="图数据库-graph-database">“图”数据库 Graph Database</h4>
+<h4 id="图数据库-graph-database-neo4j">“图”数据库 Graph Database Neo4J</h4>
+<p><a href="https://www.cnblogs.com/loveis715/p/5277051.html">https://www.cnblogs.com/loveis715/p/5277051.html</a></p>
+
 <h4 id="leveldbrocksdb">Leveldb、Rocksdb、</h4>
+
 <h4 id="tidbtair">TiDB、Tair</h4>
+
 <h4 id="常见-tsdbinfluxdbopentsdbtimescaladbdruid-tablestore等">常见 TSDB：influxdb、opentsdb、timeScaladb、Druid 、tablestore等</h4>
+
+<p>分布式系统之Quorum机制 <a href="https://blog.csdn.net/tb3039450/article/details/80249664">https://blog.csdn.net/tb3039450/article/details/80249664</a></p>
+
+<p>NoSQL漫谈 <a href="http://www.nosqlnotes.com/">http://www.nosqlnotes.com/</a></p>
 
   </div>
 </article>

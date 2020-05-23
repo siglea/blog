@@ -173,6 +173,68 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL.html">NoSQL(Not Only SQL)</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>NoSQL</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="nosql由来">NoSQL由来</h4>
+<ul>
+  <li>传统的关系型数据库RDB，并没有实现真正意义上的分布式，即便是分库分表也仅仅是”伪分布式”，不具备诸如数据多分区备份等特性</li>
+  <li>传统的关系型数据库RDB，主从同步的集群，本质上是全量数据的备份，也不是分布式真正要求的可伸缩</li>
+  <li>传统的关系型数据库RDB，数据表结构或Meta或schema固定，扩展成本高</li>
+  <li>RDB以行位核心的数据存储，NoSQl以列为核心(HBase/Cassandra)或KV(Redis)为核心</li>
+  <li>1946年，第一台通用计算机诞生。但一直到1970年RDMBS的出现，大家才找到通用的数据存储方案。到21世纪，DT时代让数据容量成为最棘手的问题，对此谷歌和亚马逊分别提出了自己的NoSQL解决方案，比如谷歌于2006年提出了Bigtable。2009年的一次技术大会上，NoSQL一词被正式提出，到现在共有225种解决方案。
+NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活性，支持很灵活的模式变更；第二，可伸缩性，原生的RDBMS只适用于单机和小集群。而NoSQL一开始就是分布式的，解决了读写和容量扩展性问题。以上两点，也是NoSQL产生的根本原因。</li>
+</ul>
+
+<h4 id="nosql分类">NoSQL分类</h4>
+<p>这些NoSQL数据库分为Graph，Document，Column Family以及Key-Value Store等四种。这四种类型的数据库分别使用了不同的数据结构来记录数据。因此它们所适用的场景也不尽相同。</p>
+
+<h4 id="redis">Redis</h4>
+
+<h4 id="mongodb">MongoDB</h4>
+
+<h4 id="cassandra">Cassandra</h4>
+<ul>
+  <li>cassandra以列为核心，相当于把RDB中的宽表，细化为随时可以扩展的动态列</li>
+  <li>应用场景
+    <ul>
+      <li>产品目录和零售应用程序Cassandra被许多零售商用于购物车数据保持和快速的产品目录输入和输出。</li>
+      <li>社交媒体分析和推荐引擎Cassandra是许多在线公司和社交媒体提供商的良好数据库，用于分析和推荐给客户。</li>
+      <li>Yelp的广告分析系统，Spotify的所有用户信息存储</li>
+    </ul>
+  </li>
+  <li>cassandra与mysql使用对比 <a href="https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/">https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/</a></li>
+  <li>cassandra使用场景判断：何时使用及何时不用 <a href="https://developer.aliyun.com/article/713847">https://developer.aliyun.com/article/713847</a></li>
+</ul>
+
+<h4 id="图数据库-graph-database-neo4j">“图”数据库 Graph Database Neo4J</h4>
+<p><a href="https://www.cnblogs.com/loveis715/p/5277051.html">https://www.cnblogs.com/loveis715/p/5277051.html</a></p>
+
+<h4 id="leveldbrocksdb">Leveldb、Rocksdb、</h4>
+
+<h4 id="tidbtair">TiDB、Tair</h4>
+
+<h4 id="常见-tsdbinfluxdbopentsdbtimescaladbdruid-tablestore等">常见 TSDB：influxdb、opentsdb、timeScaladb、Druid 、tablestore等</h4>
+
+<p>分布式系统之Quorum机制 <a href="https://blog.csdn.net/tb3039450/article/details/80249664">https://blog.csdn.net/tb3039450/article/details/80249664</a></p>
+
+<p>NoSQL漫谈 <a href="http://www.nosqlnotes.com/">http://www.nosqlnotes.com/</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html">DB-distributed-transacion</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -555,35 +617,6 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL-NewSQL.html">NoSQL-NewSQL</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL-NewSQL.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>newSQL NoSQL</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="redis">Redis</h4>
-
-<h4 id="mongodb">MongoDB</h4>
-
-<h4 id="cassandra">Cassandra</h4>
-
-<h4 id="图数据库-graph-database">“图”数据库 Graph Database</h4>
-<h4 id="leveldbrocksdb">Leveldb、Rocksdb、</h4>
-<h4 id="tidbtair">TiDB、Tair</h4>
-<h4 id="常见-tsdbinfluxdbopentsdbtimescaladbdruid-tablestore等">常见 TSDB：influxdb、opentsdb、timeScaladb、Druid 、tablestore等</h4>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL-NewSQL.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -784,13 +817,6 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
       
       
       
-      <a  href="tag/newSQL NoSQL">
-      <span class="label label-default">newsql-nosql ( 2 )</span>
-      </a><br />
-
-      
-      
-      
       <a  href="tag/mysql DB">
       <span class="label label-default">mysql-db ( 3 )</span>
       </a><br />
@@ -805,6 +831,13 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
       
       
       
+      <a  href="tag/NoSQL">
+      <span class="label label-default">nosql ( 1 )</span>
+      </a><br />
+
+      
+      
+      
       <a  href="tag/分布式">
       <span class="label label-default">分布式 ( 1 )</span>
       </a><br />
@@ -814,6 +847,13 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
       
       <a  href="tag/Concurrent">
       <span class="label label-default">concurrent ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/newSQL NoSQL">
+      <span class="label label-default">newsql-nosql ( 1 )</span>
       </a><br />
 
       

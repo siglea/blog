@@ -1,0 +1,46 @@
+---
+layout: post
+title:  "NoSQL(Not Only SQL)"
+date:   2019-11-12 11:25:00 +0900
+comments: true
+tags:
+- NoSQL 
+categories:
+- 技术
+---
+#### NoSQL由来
+- 传统的关系型数据库RDB，并没有实现真正意义上的分布式，即便是分库分表也仅仅是"伪分布式"，不具备诸如数据多分区备份等特性
+- 传统的关系型数据库RDB，主从同步的集群，本质上是全量数据的备份，也不是分布式真正要求的可伸缩
+- 传统的关系型数据库RDB，数据表结构或Meta或schema固定，扩展成本高
+- RDB以行位核心的数据存储，NoSQl以列为核心(HBase/Cassandra)或KV(Redis)为核心
+- 1946年，第一台通用计算机诞生。但一直到1970年RDMBS的出现，大家才找到通用的数据存储方案。到21世纪，DT时代让数据容量成为最棘手的问题，对此谷歌和亚马逊分别提出了自己的NoSQL解决方案，比如谷歌于2006年提出了Bigtable。2009年的一次技术大会上，NoSQL一词被正式提出，到现在共有225种解决方案。
+NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活性，支持很灵活的模式变更；第二，可伸缩性，原生的RDBMS只适用于单机和小集群。而NoSQL一开始就是分布式的，解决了读写和容量扩展性问题。以上两点，也是NoSQL产生的根本原因。
+
+#### NoSQL分类
+这些NoSQL数据库分为Graph，Document，Column Family以及Key-Value Store等四种。这四种类型的数据库分别使用了不同的数据结构来记录数据。因此它们所适用的场景也不尽相同。
+
+#### Redis 
+
+#### MongoDB
+
+#### Cassandra
+- cassandra以列为核心，相当于把RDB中的宽表，细化为随时可以扩展的动态列
+- 应用场景
+    - 产品目录和零售应用程序Cassandra被许多零售商用于购物车数据保持和快速的产品目录输入和输出。
+    - 社交媒体分析和推荐引擎Cassandra是许多在线公司和社交媒体提供商的良好数据库，用于分析和推荐给客户。
+    - Yelp的广告分析系统，Spotify的所有用户信息存储
+- cassandra与mysql使用对比 <https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/>
+- cassandra使用场景判断：何时使用及何时不用 <https://developer.aliyun.com/article/713847>
+
+#### "图"数据库 Graph Database Neo4J
+<https://www.cnblogs.com/loveis715/p/5277051.html>
+
+#### Leveldb、Rocksdb、
+
+#### TiDB、Tair
+
+#### 常见 TSDB：influxdb、opentsdb、timeScaladb、Druid 、tablestore等
+
+分布式系统之Quorum机制 <https://blog.csdn.net/tb3039450/article/details/80249664>
+
+NoSQL漫谈 <http://www.nosqlnotes.com/>
