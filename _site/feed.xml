@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 23 May 2020 14:09:31 +0800</pubDate>
-    <lastBuildDate>Sat, 23 May 2020 14:09:31 +0800</lastBuildDate>
+    <pubDate>Sat, 23 May 2020 14:19:12 +0800</pubDate>
+    <lastBuildDate>Sat, 23 May 2020 14:19:12 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -539,21 +539,6 @@ location @custom &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
       </item>
     
       <item>
-        <title> Ansible </title>
-        <description>
-</description>
-        <pubDate>Sat, 04 Apr 2020 19:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/04/04/Ansible.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/04/04/Ansible.html</guid>
-        
-        <category>Ansible</category>
-        
-        
-        <category>技术</category>
-        
-      </item>
-    
-      <item>
         <title> SpringBoot </title>
         <description>&lt;h4 id=&quot;spring-boot-是什么&quot;&gt;Spring Boot 是什么？&lt;/h4&gt;
 &lt;ul&gt;
@@ -1076,6 +1061,64 @@ docker rmi ec49dbd13cf5
         <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html</guid>
         
         <category>Docker</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
+    
+      <item>
+        <title> 主流互联网公司系统概况及指标 </title>
+        <description>&lt;h4 id=&quot;微信&quot;&gt;微信&lt;/h4&gt;
+
+&lt;h4 id=&quot;淘宝&quot;&gt;淘宝&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;2018年双11 交易创建30万QPS&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw&quot;&gt;https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;2019年双11 交易峰值54.5万笔/秒&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ&quot;&gt;https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;阿里巴巴双11千万级实时监控系统技术揭秘&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q&quot;&gt;https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;2019双11，支付宝有哪些“秘密武器”&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g&quot;&gt;https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;诺亚 (Noah) 自适应流控&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6&quot;&gt;https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;12306&quot;&gt;12306&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=2771&amp;amp;ctid=22&quot;&gt;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=2771&amp;amp;ctid=22&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;微博&quot;&gt;微博&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/shanyou/p/5048099.html&quot;&gt;https://www.cnblogs.com/shanyou/p/5048099.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;唯品会&quot;&gt;唯品会&lt;/h4&gt;
+&lt;p&gt;唯品会OSP 微服务架构
+用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力
+&lt;a href=&quot;https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ&quot;&gt;https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;达达&quot;&gt;达达&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/67b710267d10&quot;&gt;https://www.jianshu.com/p/67b710267d10&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;指标概述&quot;&gt;指标概述&lt;/h4&gt;
+&lt;p&gt;https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA&lt;/p&gt;
+</description>
+        <pubDate>Fri, 03 Jan 2020 10:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html</guid>
+        
+        <category>linux</category>
         
         
         <category>技术</category>
