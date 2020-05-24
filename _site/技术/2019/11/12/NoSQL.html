@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>NoSQL(Not Only SQL)</title>
-  <meta name="description" content="NoSQL由来  传统的关系型数据库RDB，并没有实现真正意义上的分布式，即便是分库分表也仅仅是”伪分布式”，不具备诸如数据多分区备份等特性  传统的关系型数据库RDB，主从同步的集群，本质上是全量数据的备份，也不是分布式真正要求的可伸缩  传统的关系型数据库RDB，数据表结构或Meta或schema固定，扩展成...">
+  <meta name="description" content="SQL-CAP">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,7 +60,12 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="nosql由来">NoSQL由来</h4>
+    <h4 id="sql-cap">SQL-CAP</h4>
+<div align="left">
+<img src="/img/nosql-cap.webp" width="500px" />
+</div>
+
+<h4 id="nosql由来">NoSQL由来</h4>
 <ul>
   <li>传统的关系型数据库RDB，并没有实现真正意义上的分布式，即便是分库分表也仅仅是”伪分布式”，不具备诸如数据多分区备份等特性</li>
   <li>传统的关系型数据库RDB，主从同步的集群，本质上是全量数据的备份，也不是分布式真正要求的可伸缩</li>
@@ -79,13 +84,36 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 
 <h4 id="cassandra">Cassandra</h4>
 <ul>
+  <li>Cassandra更加AP,可调一致性（HBase是CP)</li>
+  <li>属于宽表的一种（HBase、Alibaba TableStore、Google BigTable)</li>
+  <li>应该把 Cassandra 看做是一个有索引的、面向列的存储系统。
+    <ul>
+      <li>Cassandra 经常被看做是一种面向列（Column-Oriented）的数据库，这也并不算错。它的数据结构不是关系型的，而是一个多维稀疏哈希表。稀疏（Sparse）意味着任何一行都可能会有一列或者几列，但每行都不一定（像关系模型那样）和其他行有一样的列。每行都有一个唯一的键值，用于进行数据访问。所以，更确切地说，应该把 Cassandra 看做是一个有索引的、面向行的存储系统。</li>
+      <li>Cassandra 的数据存储结构基本可以看做是一个多维哈希表。这意味着你不必事先精确地决定你的具体数据结构或是你的记录应该包含哪些具体字段。这特别适合处于草创阶段，还在不断增加或修改服务特性的应用。而且也特别适合应用在敏捷开发项目中，不必进行长达数月的预先分析。对于使用 Cassandra 的应用，如果业务发生变化了，只需要在运行中增加或删除某些字段就行了，不会造成服务中断。</li>
+      <li>当然， 这不是说你不需要考虑数据。相反，Cassandra 需要你换个角度看数据。在 RDBMS 里， 你得首先设计一个完整的数据模型， 然后考虑查询方式， 而在 Cassandra 里，你可以首先思考如何查询数据，然后提供这些数据就可以了。</li>
+    </ul>
+  </li>
+  <li>cassandra的难点在于建模，不同于RDB的一种建模思路（KeySpaces&lt;-&gt;DataBase,ColumnFamily&lt;-&gt;Table)仅仅是概念的类似，实际上设计思想完全不同
+    <ul>
+      <li>Keyspaces：键空间是 Cassandra 的数据容器，可以理解为关系型数据库中的数据库（Database）。对于一个 Keyspace 来说，包括定义每行数据的复制节点数目、定义在一致性哈希环中某个节点的替换策略、列族（Column Families）等多个概念。</li>
+      <li>列族：列的容器，它的结构像是一个四维哈希表，[Keyspace][ColumnFamily][Key][Column]。</li>
+      <li>列：一组键值对。</li>
+    </ul>
+  </li>
   <li>cassandra以列为核心，相当于把RDB中的宽表，细化为随时可以扩展的动态列</li>
+  <li>Cassandra 是为优异的写吞吐量而特别优化的。</li>
   <li>应用场景
     <ul>
+      <li>根据项目的 wiki，Cassandra 已经被用于开发了多种不同的应用，包括窗口化的时间序列数据库，用于文档搜索的反向索引，以及分布式任务优先级队列。</li>
       <li>产品目录和零售应用程序Cassandra被许多零售商用于购物车数据保持和快速的产品目录输入和输出。</li>
       <li>社交媒体分析和推荐引擎Cassandra是许多在线公司和社交媒体提供商的良好数据库，用于分析和推荐给客户。</li>
       <li>Yelp的广告分析系统，Spotify的所有用户信息存储</li>
+      <li>Feeds场景、滴滴或物联网订单轨迹场景 <a href="https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ">https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ</a></li>
+      <li>Cassandra 在时空数据上的探索 &lt;&gt;</li>
     </ul>
+    <div align="left">
+  <img src="/img/cassandra.webp" width="500px" />
+  </div>
   </li>
   <li>cassandra与mysql使用对比 <a href="https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/">https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/</a></li>
   <li>cassandra使用场景判断：何时使用及何时不用 <a href="https://developer.aliyun.com/article/713847">https://developer.aliyun.com/article/713847</a></li>
@@ -102,7 +130,9 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 
 <p>分布式系统之Quorum机制 <a href="https://blog.csdn.net/tb3039450/article/details/80249664">https://blog.csdn.net/tb3039450/article/details/80249664</a></p>
 
-<p>NoSQL漫谈 <a href="http://www.nosqlnotes.com/">http://www.nosqlnotes.com/</a></p>
+<p>NoSQL漫谈 <a href="http://www.nosqlnotes.com/">http://www.nosqlnotes.com/</a>
+NoSQL简介 <a href="https://www.runoob.com/mongodb/nosql.html">https://www.runoob.com/mongodb/nosql.html</a>
+NoSQL 还是 SQL ? <a href="https://www.jianshu.com/p/296bacba3510">https://www.jianshu.com/p/296bacba3510</a></p>
 
   </div>
 </article>
