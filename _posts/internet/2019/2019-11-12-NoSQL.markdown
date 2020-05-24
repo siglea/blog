@@ -14,7 +14,7 @@ categories:
 </div>
 
 #### NoSQL由来
-- 传统的关系型数据库RDB，并没有实现真正意义上的分布式，即便是分库分表也仅仅是"伪分布式"，不具备诸如数据多分区备份等特性
+- 高可用 ！= 分布式，传统的关系型数据库RDB，并没有实现真正意义上的分布式，即便是分库分表也仅仅是"伪分布式"，不具备诸如数据多分区备份等特性
 - 传统的关系型数据库RDB，主从同步的集群，本质上是全量数据的备份，也不是分布式真正要求的可伸缩
 - 传统的关系型数据库RDB，数据表结构或Meta或schema固定，扩展成本高
 - RDB以行位核心的数据存储，NoSQl以列为核心(HBase/Cassandra)或KV(Redis)为核心
@@ -35,6 +35,9 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
     1. 这些数据是海量的，而且增长的速度是难以预期的，
     1. 根据数据的特点，NoSQL数据库通常具有无限（至少接近）伸缩性
     1. 按key获取数据效率很高，但是对join或其他结构化查询的支持就比较差
+
+#### BST（二叉搜索树）、AVL树、红黑树、2-3树、B树、B+树、LSM树、Radix树
+<https://www.jianshu.com/p/bb929dc75007>
 
 #### Redis 
 
@@ -77,12 +80,15 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 #### "图"数据库 Graph Database Neo4J
 <https://www.cnblogs.com/loveis715/p/5277051.html>
 
-#### Leveldb、Rocksdb、TiDB、Tair
+#### Leveldb、Rocksdb、Tair
 
-#### 常见 TSDB：influxdb、opentsdb、timeScaladb、Druid 、tablestore等
+#### 分布式RDB：oceanDB、TiDB
+
+#### 常见 TSDB 时间序列数据库 Time Series Database ：influxdb、opentsdb、timeScaladb、Druid 、tablestore等
 
 #### 其他
 - 分布式系统之Quorum机制 <https://blog.csdn.net/tb3039450/article/details/80249664>
 - NoSQL漫谈 <http://www.nosqlnotes.com/>
 - NoSQL简介 <https://www.runoob.com/mongodb/nosql.html>
 - NoSQL 还是 SQL ? <https://www.jianshu.com/p/296bacba3510>
+- OLAP、OLTP <https://www.jianshu.com/p/b1d7ca178691>
