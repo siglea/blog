@@ -10,7 +10,7 @@ categories:
 ---
 #### SQL-CAP
 <div align="left">
-<img src="/img/nosql-cap.webp" width="500px">
+<img src="/img/nosql-cap.jpg" width="500px">
 </div>
 
 #### NoSQL由来
@@ -24,9 +24,30 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 #### NoSQL分类
 这些NoSQL数据库分为Graph，Document，Column Family以及Key-Value Store等四种。这四种类型的数据库分别使用了不同的数据结构来记录数据。因此它们所适用的场景也不尽相同。
 
+#### 关系型数据库和非关系型数据库的应用场景对比
+- 关系型数据库适合存储结构化数据，如用户的帐号、地址：
+    1. 这些数据通常需要做结构化查询，比如join，这时候，关系型数据库就要胜出一筹
+    1. 这些数据的规模、增长的速度通常是可以预期的
+    1. 事务性、一致性
+　　
+- NoSQL适合存储非结构化数据，如文章、评论：
+    1. 这些数据通常用于模糊处理，如全文搜索、机器学习
+    1. 这些数据是海量的，而且增长的速度是难以预期的，
+    1. 根据数据的特点，NoSQL数据库通常具有无限（至少接近）伸缩性
+    1. 按key获取数据效率很高，但是对join或其他结构化查询的支持就比较差
+
 #### Redis 
 
 #### MongoDB
+- 典型应用场景
+    - 使用MongoDB做了O2O快递应用，·将送快递骑手、快递商家的信息（包含位置信息）存储在 MongoDB，然后通过 MongoDB 的地理位置查询，这样很方便的实现了查找附近的商家、骑手等功能，使得快递骑手能就近接单
+    - 什么场景应该用 MongoDB ？ <https://yq.aliyun.com/articles/64352>
+    - MongoDB 应用场景?（知乎）<https://www.zhihu.com/question/32071167?sort=created>
+    - 一般来讲，我会将MySQL中的部分表迁移到MongoDB中，主要是涉及到车辆历史轨迹以及温湿度数据等机器采集到的数据，而订单数据、客户数据等信息，仍然放到MySQL数据库中，主要是因为这两类数据实时采集，实时更新，会随着时间的推移，项目的扩大（PAAS服务），造成非常巨大的数据量，而一般MySQL在单表数据量超过500万后，性能就会下降的比较快，虽然可以通过分表的方式进行处理，但是随着时间的增长，仍然会给我带来比较大的麻烦（如查询等），这样，就不如将其放到MongoDB中存储，查询什么的都会比较方便，不过需要注意根据片键分片哦。
+    - 在主流的计算机语言如Java、Python中对JSON都有很好的支持，数据从MongoDB中读取出来后，可无需转换直接使用；MongoDB文档另一个特点是Key-Value键值对支持丰富的数据结构，Value可以是普通的整型、字符串，可以是数组，也可以是嵌套的子文档，使用嵌套的好处是在MongoDB中仅需一次简单的查询就能够获取到你所需的数据。举电商领域为例，网易严选上卖的上衣和裤子两种商品，除了有共同属性，如产地、价格、材质、颜色等外，还有各自有不同的属性集，如上衣的独有属性是肩宽、胸围、袖长等，裤子的独有属性是臀围、脚口和裤长等。
+- 支持的引擎，mmapv1、wiredtiger、mongorocks（rocksdb）、in-memory
+- 强大的索引，地理位置索引可用于构建 各种 O2O 应用、文本索引解决搜索的需求、TTL索引解决历史数据自动过期的需求
+- MongoDB与Mysql/Hadoop/Redis的优缺点比较 <https://blog.csdn.net/tanqian351/article/details/81744970>
 
 #### Cassandra
 - Cassandra更加AP,可调一致性（HBase是CP)
@@ -47,9 +68,8 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
     - 社交媒体分析和推荐引擎Cassandra是许多在线公司和社交媒体提供商的良好数据库，用于分析和推荐给客户。
     - Yelp的广告分析系统，Spotify的所有用户信息存储
     - Feeds场景、滴滴或物联网订单轨迹场景 <https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ>
-    - Cassandra 在时空数据上的探索 <>
     <div align="left">
-    <img src="/img/cassandra.webp" width="500px">
+    <img src="/img/cassandra.jpg" width="500px">
     </div>
 - cassandra与mysql使用对比 <https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/>
 - cassandra使用场景判断：何时使用及何时不用 <https://developer.aliyun.com/article/713847>
@@ -57,15 +77,12 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 #### "图"数据库 Graph Database Neo4J
 <https://www.cnblogs.com/loveis715/p/5277051.html>
 
-#### Leveldb、Rocksdb、
-
-#### TiDB、Tair
+#### Leveldb、Rocksdb、TiDB、Tair
 
 #### 常见 TSDB：influxdb、opentsdb、timeScaladb、Druid 、tablestore等
 
-
-分布式系统之Quorum机制 <https://blog.csdn.net/tb3039450/article/details/80249664>
-
-NoSQL漫谈 <http://www.nosqlnotes.com/>
-NoSQL简介 <https://www.runoob.com/mongodb/nosql.html>
-NoSQL 还是 SQL ? <https://www.jianshu.com/p/296bacba3510>
+#### 其他
+- 分布式系统之Quorum机制 <https://blog.csdn.net/tb3039450/article/details/80249664>
+- NoSQL漫谈 <http://www.nosqlnotes.com/>
+- NoSQL简介 <https://www.runoob.com/mongodb/nosql.html>
+- NoSQL 还是 SQL ? <https://www.jianshu.com/p/296bacba3510>
