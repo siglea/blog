@@ -10,7 +10,7 @@ categories:
 ---
 
 #### 索引原理(B+Tree)
-- BS树(Binary Search Tree二叉查找树) -> AVL(人名，平衡二叉树) Tree -> B-/B+Tree(平衡多路查找树)
+- BS树(Binary Search Tree二叉查找树) -> AVL(人名，平衡二叉树) Tree -> 红黑树 -> B-/B+Tree(平衡多路查找树) -> LSM
     - <http://www.sohu.com/a/280609547_818692>
       - 既然hash比B+树更快，为啥mysql还用B+树来存索引吗？
         1. 这和业务场景有关。如果只选一个数据，那确实是hash更快。但是数据库中经常会选择多条，这时候由于B+树索引有序，并且又有链表相连，它的查询效率比hash就快很多了。
