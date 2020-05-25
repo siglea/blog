@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>NoSQL(Not Only SQL)</title>
+  <title>Not Only SQL</title>
   <meta name="description" content="SQL-CAP">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2019/11/12/NoSQL.html">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -55,7 +55,7 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">NoSQL(Not Only SQL)</h1>
+    <h1 class="post-title" itemprop="name headline">Not Only SQL</h1>
     <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-12T10:25:00+08:00" itemprop="datePublished">Nov 12, 2019</time></p>
   </header>
 
@@ -98,8 +98,51 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
   </li>
 </ul>
 
-<h4 id="bst二叉搜索树avl树红黑树2-3树b树b树lsm树radix树">BST（二叉搜索树）、AVL树、红黑树、2-3树、B树、B+树、LSM树、Radix树</h4>
-<p><a href="https://www.jianshu.com/p/bb929dc75007">https://www.jianshu.com/p/bb929dc75007</a></p>
+<h4 id="bst二叉搜索树avl树红黑树2-3树b树b树lsm树">BST（二叉搜索树）、AVL树、红黑树、2-3树、B树、B+树、LSM树</h4>
+<ul>
+  <li><a href="https://www.jianshu.com/p/bb929dc75007">https://www.jianshu.com/p/bb929dc75007</a></li>
+  <li>AVL树
+    <ul>
+      <li>特性
+        <ul>
+          <li>要求每个节点的左右子树高度差不超过1</li>
+          <li>树的高度差越小，查找效率越高，但是调整成本高</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>红黑树
+    <ul>
+      <li>特性（保存自平衡，从根到叶子的最长路径不会超过最短路径的2倍）
+        <ol>
+          <li>结点是红色或黑色。</li>
+          <li>根结点是黑色。</li>
+          <li>每个叶子结点都是黑色的空结点（NIL结点）。</li>
+          <li>每个红色结点的两个子结点都是黑色。(从每个叶子到根的所有路径上不能有两个连续的红色结点)</li>
+          <li>从任一结点到其每个叶子的所有路径都包含相同数目的黑色结点。</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+  <li>2-3树，2-3个节点</li>
+  <li>B树，M个节点（操作系统文件目录）</li>
+  <li>B+树，B+树内部节点不保存数据，所以能在内存中存放更多索引，增加缓存命中率。另外因为叶子节点相连遍历操作很方便，而且数据也具有顺序性，便于区间查找。</li>
+  <li>LSM
+    <ul>
+      <li>原理上类似JVM的复制算法/压缩整理算法，也就是插入的新的数据不去找之前的位置插入，而是用新空间存放然后与旧数据合并，合并完成之后，最老的数据直接就清除掉了，这样磁盘上相邻的数据都是顺序的。</li>
+      <li>LSM在内存中有memtable（接受实时写） 、immutable memtable(写满了等待向磁盘flush或合并），磁盘内有分层的SSTable</li>
+      <li>LSM之所以快，就是因为写入在内容，之后是异步的去合并写入磁盘。（B/B树，写入操作都是同步的在磁盘进行）</li>
+      <li>LSM-tree 基本原理及应用 <a href="https://cloud.tencent.com/developer/news/340271">https://cloud.tencent.com/developer/news/340271</a></li>
+      <li>Cassandra、HBase、LevelDB、RocksDB、BigTable</li>
+      <li>算法细节 <a href="https://www.cnblogs.com/siegfang/archive/2013/01/12/lsm-tree.html">https://www.cnblogs.com/siegfang/archive/2013/01/12/lsm-tree.html</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="二级索引">二级索引？</h4>
+<ul>
+  <li>二级索引，其实就是倒排索引的一种变种</li>
+</ul>
 
 <h4 id="redis">Redis</h4>
 
@@ -138,6 +181,15 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
     </ul>
   </li>
   <li>cassandra以列为核心，相当于把RDB中的宽表，细化为随时可以扩展的动态列</li>
+  <li>就Cassandra而言，最关键的地方在于Key的设计。Cassandra之中一共包含下面5种Key:
+    <ul>
+      <li>Primary Key</li>
+      <li>Partition Key</li>
+      <li>Composite Key</li>
+      <li>Compound Key</li>
+      <li>Clustering Key</li>
+    </ul>
+  </li>
   <li>Cassandra 是为优异的写吞吐量而特别优化的。</li>
   <li>应用场景
     <ul>
@@ -163,9 +215,12 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 
 <h4 id="列式存储clickhouseolapcassandrahbaseolapvertica">列式存储：ClickHouse(OLAP)、Cassandra、HBase(OLAP)、Vertica</h4>
 
-<h4 id="分布式rdboceandbtidb">分布式RDB：oceanDB、TiDB</h4>
+<h4 id="newsql分布式rdboceandbtidb">NewSQL(分布式RDB)：oceanDB、TiDB</h4>
 
 <h4 id="常见-tsdb-时间序列数据库-time-series-database-influxdbopentsdbtimescaladbdruid-tablestore等">常见 TSDB 时间序列数据库 Time Series Database ：influxdb、opentsdb、timeScaladb、Druid 、tablestore等</h4>
+<ul>
+  <li>循环删除</li>
+</ul>
 
 <h4 id="其他">其他</h4>
 <ul>

@@ -1,10 +1,11 @@
 ---
 layout: post
-title:  "NoSQL(Not Only SQL)"
+title:  "Not Only SQL"
 date:   2019-11-12 11:25:00 +0900
 comments: true
 tags:
-- NoSQL 
+- NoSQL
+- 数据库 
 categories:
 - 技术
 ---
@@ -36,8 +37,32 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
     1. 根据数据的特点，NoSQL数据库通常具有无限（至少接近）伸缩性
     1. 按key获取数据效率很高，但是对join或其他结构化查询的支持就比较差
 
-#### BST（二叉搜索树）、AVL树、红黑树、2-3树、B树、B+树、LSM树、Radix树
-<https://www.jianshu.com/p/bb929dc75007>
+#### BST（二叉搜索树）、AVL树、红黑树、2-3树、B树、B+树、LSM树
+- <https://www.jianshu.com/p/bb929dc75007>
+- AVL树
+    - 特性
+        - 要求每个节点的左右子树高度差不超过1
+        - 树的高度差越小，查找效率越高，但是调整成本高
+- 红黑树
+    - 特性（保存自平衡，从根到叶子的最长路径不会超过最短路径的2倍）
+        1. 结点是红色或黑色。
+        2. 根结点是黑色。
+        3. 每个叶子结点都是黑色的空结点（NIL结点）。
+        4. 每个红色结点的两个子结点都是黑色。(从每个叶子到根的所有路径上不能有两个连续的红色结点)
+        5. 从任一结点到其每个叶子的所有路径都包含相同数目的黑色结点。
+- 2-3树，2-3个节点
+- B树，M个节点（操作系统文件目录）
+- B+树，B+树内部节点不保存数据，所以能在内存中存放更多索引，增加缓存命中率。另外因为叶子节点相连遍历操作很方便，而且数据也具有顺序性，便于区间查找。
+- LSM
+    - 原理上类似JVM的复制算法/压缩整理算法，也就是插入的新的数据不去找之前的位置插入，而是用新空间存放然后与旧数据合并，合并完成之后，最老的数据直接就清除掉了，这样磁盘上相邻的数据都是顺序的。
+    - LSM在内存中有memtable（接受实时写） 、immutable memtable(写满了等待向磁盘flush或合并），磁盘内有分层的SSTable
+    - LSM之所以快，就是因为写入在内容，之后是异步的去合并写入磁盘。（B/B树，写入操作都是同步的在磁盘进行）
+    - LSM-tree 基本原理及应用 <https://cloud.tencent.com/developer/news/340271>
+    - Cassandra、HBase、LevelDB、RocksDB、BigTable
+    - 算法细节 <https://www.cnblogs.com/siegfang/archive/2013/01/12/lsm-tree.html>
+
+#### 二级索引？
+- 二级索引，其实就是倒排索引的一种变种
 
 #### Redis 
 
@@ -64,6 +89,12 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
     - 列族：列的容器，它的结构像是一个四维哈希表，[Keyspace][ColumnFamily][Key][Column]。
     - 列：一组键值对。
 - cassandra以列为核心，相当于把RDB中的宽表，细化为随时可以扩展的动态列
+- 就Cassandra而言，最关键的地方在于Key的设计。Cassandra之中一共包含下面5种Key:
+    - Primary Key
+    - Partition Key
+    - Composite Key
+    - Compound Key
+    - Clustering Key
 - Cassandra 是为优异的写吞吐量而特别优化的。
 - 应用场景
     - 根据项目的 wiki，Cassandra 已经被用于开发了多种不同的应用，包括窗口化的时间序列数据库，用于文档搜索的反向索引，以及分布式任务优先级队列。
@@ -85,9 +116,10 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 
 #### 列式存储：ClickHouse(OLAP)、Cassandra、HBase(OLAP)、Vertica
 
-#### 分布式RDB：oceanDB、TiDB
+#### NewSQL(分布式RDB)：oceanDB、TiDB
 
 #### 常见 TSDB 时间序列数据库 Time Series Database ：influxdb、opentsdb、timeScaladb、Druid 、tablestore等
+ - 循环删除
 
 #### 其他
 - 分布式系统之Quorum机制 <https://blog.csdn.net/tb3039450/article/details/80249664>
