@@ -4,7 +4,8 @@ title:  " 主流互联网公司系统概况及指标 "
 date:   2020-01-03 11:25:00 +0900
 comments: true
 tags:
-- linux
+- 架构
+- 分布式
 categories:
 - 技术
 ---
