@@ -61,6 +61,8 @@
       
       <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>MQ</span>
       
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
 	<h4 id="amqp即advanced-message-queuing-protocolactivemqrabbitmq都支持">AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）</h4>
@@ -183,7 +185,9 @@ offset：指的是kafka的topic中的每个消费组消费的下标。简单的�
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 18, 2020</span>
       <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty-Mina.html#disqus_thread"></a></span>
       
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络编程</span>
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Network</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
@@ -256,26 +260,46 @@ offset：指的是kafka的topic中的每个消费组消费的下标。简单的�
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html"> BigData </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>BigData</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"> Java SPI </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
       <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html#disqus_thread"></a></span>
       
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>SPI</span>
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
 	<p>SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。
 Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。
 在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。</p>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
-    <span class="kd">implements</span> <span class="nc">Iterable</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
+    <span class="kd">implements</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
 <span class="o">{</span>
 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
-            <span class="nc">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
-            <span class="k">return</span> <span class="nc">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
+            <span class="k">return</span> <span class="n">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
@@ -301,6 +325,8 @@ Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义C
       <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html#disqus_thread"></a></span>
       
       <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
@@ -341,13 +367,13 @@ Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义C
 <p>要了解这种负载均衡策略，我们首先得学习一下一致性哈希算法。不会一致性哈希算法的同学可以看一下我之前写的这篇博客，质量保证过硬：一致性哈希算法详解
 一致性哈希可以保证相同参数的请求一定会发送到同一台机器上，即使有机器崩溃，由于一致性哈希算法的特性与虚拟节点的存在，发往该机器的请求会被发送到其它机器上，并不会引发剧烈变动。</p>
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="nc">ChangeService</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="n">ChangeService</span> <span class="o">{</span>
 
     <span class="nd">@Reference</span><span class="o">(</span><span class="n">loadbalance</span> <span class="o">=</span> <span class="s">"roundrobin"</span><span class="o">)</span>
-    <span class="nc">NameService</span> <span class="n">nameService</span><span class="o">;</span>
+    <span class="n">NameService</span> <span class="n">nameService</span><span class="o">;</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">change</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">change</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">nameService</span><span class="o">.</span><span class="na">updateName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -409,126 +435,6 @@ Failsafe 即使失败了也不会影响整个调用流程，它的失败不影�
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html"> SpringCloud </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="关于微服务">关于微服务</h3>
-<ul>
-  <li>SOA(ESB)与微服务
-    <ul>
-      <li><a href="https://zhuanlan.zhihu.com/p/30477325">https://zhuanlan.zhihu.com/p/30477325</a></li>
-      <li><a href="https://www.cnblogs.com/guanghe/p/10978349.html">https://www.cnblogs.com/guanghe/p/10978349.html</a></li>
-      <li><a href="https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA">https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA</a></li>
-    </ul>
-  </li>
-  <li>微服务哪些事
-    <ul>
-      <li><a href="https://windmt.com/2018/04/14/spring-cloud-0-microservices/">https://windmt.com/2018/04/14/spring-cloud-0-microservices/</a></li>
-      <li><a href="https://windmt.com/2018/04/14/spring-cloud-1-services-governance/">https://windmt.com/2018/04/14/spring-cloud-1-services-governance/</a></li>
-    </ul>
-  </li>
-  <li>SpringCloud &amp; Dubbo
-    <ul>
-      <li><a href="https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ">https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ</a></li>
-      <li><a href="https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A">https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A</a></li>
-      <li><a href="http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html">阿里Dubbo与Spring Cloud</a></li>
-    </ul>
-  </li>
-  <li>RPC之thrift/gRPC
-    <ul>
-      <li><a href="https://blog.csdn.net/kesonyk/article/details/50924489">https://blog.csdn.net/kesonyk/article/details/50924489</a></li>
-      <li><a href="https://developer.51cto.com/art/201908/601617.htm">https://developer.51cto.com/art/201908/601617.htm</a></li>
-      <li><a href="https://segmentfault.com/a/1190000011478469">https://segmentfault.com/a/1190000011478469</a></li>
-      <li><a href="https://zhuanlan.zhihu.com/p/136112210">https://zhuanlan.zhihu.com/p/136112210</a></li>
-      <li>RPC与HTTP的关系 <a href="https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg">https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg</a></li>
-      <li>快速理解RPC技术——基本概念、原理和用途 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620</a></li>
-    </ul>
-  </li>
-  <li>WebService某种程度上也是一种RPC
-    <ul>
-      <li>WebService的历史 <a href="https://www.iteye.com/blog/andot-662787">https://www.iteye.com/blog/andot-662787</a></li>
-      <li>WebService的demo<a href="https://blog.csdn.net/weixin_42672054/article/details/81708464">https://blog.csdn.net/weixin_42672054/article/details/81708464</a></li>
-      <li>2000年左右出现xml，借此微软等联盟推出了基于XML的SOAP协议，实现各系统之间的通信</li>
-      <li>thrift/webservice等可以生成客户端代码，隐藏了底层通信细节，对象化了数据（否则需要自行解析）</li>
-      <li>thrift、dobbo等方式基于TCP实现，主要是性能方面的考虑吧</li>
-    </ul>
-  </li>
-  <li>hessian / sofa</li>
-</ul>
-
-<h3 id="just-do-springcloud">Just Do SpringCloud</h3>
-<ul>
-  <li>首选 <a href="https://windmt.com/tags/Spring-Cloud/">https://windmt.com/tags/Spring-Cloud/</a></li>
-  <li><a href="https://www.springcloud.cc/">springcloud.cc</a></li>
-  <li><a href="http://springcloud.fun">springcloud.fun</a></li>
-  <li><a href="https://www.zhihu.com/question/283286745/answer/763040709">大话SpringCloud</a></li>
-  <li><a href="https://www.geekdigging.com">https://www.geekdigging.com</a></li>
-</ul>
-
-<h3 id="常见组件">常见组件</h3>
-<ul>
-  <li>服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul、携程apollo
-    <ul>
-      <li><a href="https://www.jianshu.com/p/5c5753d2aeb0">Zookeeper保证的是CP，Eureka保证的是AP</a></li>
-    </ul>
-  </li>
-  <li>客户端负载均衡：Netflix Ribbon (提供云端负载均衡，有多种负载均衡策略可供选择，可配合服务发现和断路器使用。)
-    <ul>
-      <li>客户端负载均衡(Ribbon)服务实例的清单在客户端，客户端进行负载均衡算法分配。(从上面的知识我们已经知道了：客户端可以从Eureka Server中得到一份服务清单，在发送请求时通过负载均衡算法，在多个服务器之间选择一个进行访问)
-Zuul路由的业务，对业务进行了归类，并交给了对应的微服务。</li>
-      <li>服务端负载均衡(Nginx)服务实例的清单在服务端，服务器进行负载均衡算法分配,
-Nginx路由请求的压力，对请求进行平均后，交给了服务器处理。</li>
-      <li><a href="https://www.cnblogs.com/kongxianghai/p/8477781.html">撸一撸Spring Cloud Ribbon的原理-负载均衡策略</a></li>
-      <li>可以使用Ribbon + resetTemplate 或者直接使用 Feign（已经内置Ribbon）来实现客户端侧的负载均衡</li>
-    </ul>
-  </li>
-  <li>熔断器：Netflix Hystrix（Envoy)</li>
-  <li>Spring Cloud Feign：它基于 Netflix Feign 实现，整合了 Spring Cloud Ribbon 与 Spring Cloud Hystrix, 除了整合这两者的强大功能之外，它还提 供了声明式的服务调用(不再通过RestTemplate)。
-  生产环境一般使用restTemplate + ribbon</li>
-  <li>服务网关: Netflix Zuul  、 Spring Cloud GateWay
-    <ul>
-      <li>Zuul相当于一个分布式的大Servlet+Filter入口可进行路由及过滤等</li>
-      <li>Zuul也可以近似的理解为是SOA里的ESB，统一入口调用</li>
-      <li>Zuul也默认集成了Hystrix与Ribbon</li>
-    </ul>
-  </li>
-  <li>分布式配置：Spring Cloud Config (Chef)</li>
-  <li>时间消息总线：Spring Cloud Bus</li>
-  <li>链路追踪：Spring Cloud Sleuth 与 Twitter Zipkin</li>
-  <li>数据流：Spring Cloud Stream (数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。)</li>
-  <li>服务监控：Zabbix、Nagios、Metrics、Spectator</li>
-</ul>
-
-<h3 id="相关组件">相关组件</h3>
-<h4 id="zookeeper">zookeeper</h4>
-<ul>
-  <li>简单理解，zk就是一套简单的文件系统结构，本目录(节点)可以设置value及subNode,
-并且该节点可以设置不同的权限（默认/用户名+密码/ip/秘钥，这4种)</li>
-  <li>zk集群简单理解就是，基于ZAB一致性算法的变种keep alived集群</li>
-  <li>zk集群是CP模型，强一致性的，也就是说数据出现了不一致性（通常是节点挂了），整个服务集群就会Hold住等待数据一致，
-所以，这个缺点导致zk并不是最佳的注册中心，因为服务注册中心AP模型最好，部分服务有问题并不表示所有服务不可用。</li>
-  <li>zookeeper 命令 <a href="https://blog.csdn.net/feixiang2039/article/details/79810102">https://blog.csdn.net/feixiang2039/article/details/79810102</a></li>
-  <li>Curator实现的zk分布式锁 <a href="https://www.sohu.com/a/341386202_315839">https://www.sohu.com/a/341386202_315839</a></li>
-</ul>
-
-<h3 id="基于springcloud的开源项目">基于SpringCloud的开源项目</h3>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -572,6 +478,10 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       <a href="/page9" class="button page-button">9</a>
       
       
+      
+      <a href="/page10" class="button page-button">10</a>
+      
+      
 
       
       <a href="/page2" class="button page-button">&raquo;</a>
@@ -601,50 +511,22 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       
       
       
-      <a  href="tag/aws">
-      <span class="label label-default">aws ( 2 )</span>
+      <a  href="tag/云服务">
+      <span class="label label-default">云服务 ( 2 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/study note">
-      <span class="label label-default">study-note ( 2 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/jekyll">
-      <span class="label label-default">jekyll ( 2 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/tcp">
-      <span class="label label-default">tcp ( 2 )</span>
+      <a  href="tag/工具">
+      <span class="label label-default">工具 ( 2 )</span>
       </a><br />
 
       
       
       
       <a  href="tag/网络">
-      <span class="label label-default">网络 ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/charles">
-      <span class="label label-default">charles ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/maven">
-      <span class="label label-default">maven ( 1 )</span>
+      <span class="label label-default">网络 ( 4 )</span>
       </a><br />
 
       
@@ -657,22 +539,8 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       
       
       
-      <a  href="tag/Server">
-      <span class="label label-default">server ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/高并发">
-      <span class="label label-default">高并发 ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/高可用">
-      <span class="label label-default">高可用 ( 1 )</span>
+      <a  href="tag/分布式">
+      <span class="label label-default">分布式 ( 11 )</span>
       </a><br />
 
       
@@ -692,15 +560,8 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       
       
       
-      <a  href="tag/分布式搜索引擎">
-      <span class="label label-default">分布式搜索引擎 ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/全文搜索引擎">
-      <span class="label label-default">全文搜索引擎 ( 1 )</span>
+      <a  href="tag/数据库">
+      <span class="label label-default">数据库 ( 5 )</span>
       </a><br />
 
       
@@ -713,36 +574,15 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       
       
       
-      <a  href="tag/linux">
-      <span class="label label-default">linux ( 3 )</span>
+      <a  href="tag/Linux">
+      <span class="label label-default">linux ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/JVM">
-      <span class="label label-default">jvm ( 3 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/分布式">
-      <span class="label label-default">分布式 ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/mysql DB">
-      <span class="label label-default">mysql-db ( 3 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/分库/分表">
-      <span class="label label-default">分库/分表 ( 1 )</span>
+      <a  href="tag/Java">
+      <span class="label label-default">java ( 8 )</span>
       </a><br />
 
       
@@ -755,27 +595,6 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       
       
       
-      <a  href="tag/Concurrent">
-      <span class="label label-default">concurrent ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/newSQL NoSQL">
-      <span class="label label-default">newsql-nosql ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="tag/并发">
-      <span class="label label-default">并发 ( 1 )</span>
-      </a><br />
-
-      
-      
-      
       <a  href="tag/极致思考">
       <span class="label label-default">极致思考 ( 1 )</span>
       </a><br />
@@ -783,15 +602,15 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       
       
       
-      <a  href="tag/Docker">
-      <span class="label label-default">docker ( 1 )</span>
+      <a  href="tag/linux">
+      <span class="label label-default">linux ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/Java">
-      <span class="label label-default">java ( 1 )</span>
+      <a  href="tag/容器">
+      <span class="label label-default">容器 ( 1 )</span>
       </a><br />
 
       
@@ -804,13 +623,6 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       
       
       
-      <a  href="tag/Nginx">
-      <span class="label label-default">nginx ( 1 )</span>
-      </a><br />
-
-      
-      
-      
       <a  href="tag/微服务">
       <span class="label label-default">微服务 ( 2 )</span>
       </a><br />
@@ -818,15 +630,15 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       
       
       
-      <a  href="tag/SPI">
-      <span class="label label-default">spi ( 1 )</span>
+      <a  href="tag/BigData">
+      <span class="label label-default">bigdata ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/网络编程">
-      <span class="label label-default">网络编程 ( 1 )</span>
+      <a  href="tag/Network">
+      <span class="label label-default">network ( 1 )</span>
       </a><br />
 
       

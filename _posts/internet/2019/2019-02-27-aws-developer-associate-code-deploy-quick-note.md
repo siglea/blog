@@ -4,8 +4,7 @@ title:  "aws developer associate test CodeDeploy quick note"
 date:   2019-02-27 19:00:00 +0900
 comments: true
 tags:
-- aws
-- study note
+- 云服务
 categories:
 - 技术
 ---

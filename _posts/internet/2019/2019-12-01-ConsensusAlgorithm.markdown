@@ -5,6 +5,7 @@ date:   2019-11-12 11:25:00 +0900
 comments: true
 tags:
 - 算法 
+- 分布式
 categories:
 - 技术
 ---

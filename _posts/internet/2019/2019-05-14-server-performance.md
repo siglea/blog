@@ -4,9 +4,7 @@ title:  "服务器性能"
 date:   2019-05-27 19:00:00 +0900
 comments: true
 tags:
-- Server 
-- 高并发
-- 高可用
+- 分布式
 categories:
 - 技术
 ---

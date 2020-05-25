@@ -4,8 +4,7 @@ title:  "aws developer associate test IAM quick note"
 date:   2019-01-11 23:30:09 +0900
 comments: true
 tags:
-- aws
-- study note
+- 云服务
 categories:
 - 技术
 ---

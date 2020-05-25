@@ -4,7 +4,8 @@ title:  "多路复用select poll epoll"
 date:   2019-11-12 11:25:00 +0900
 comments: true
 tags:
-- 并发
+- 网络
+- 分布式
 categories:
 - 技术
 ---

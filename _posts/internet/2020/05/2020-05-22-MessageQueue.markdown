@@ -4,6 +4,7 @@ title:  " kafka activeMQ RabbitMq RocketMQ "
 date:   2020-05-22 11:25:00
 tags:
 - MQ
+- 分布式
 categories:
 - 技术
 ---

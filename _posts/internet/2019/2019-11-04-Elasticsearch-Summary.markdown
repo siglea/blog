@@ -4,8 +4,8 @@ title:  " Elasticsearch  Summary "
 date:   2019-11-04 11:25:00 +0900
 comments: true
 tags:
-- 分布式搜索引擎
-- 全文搜索引擎
+- 数据库
+- 分布式
 categories:
 - 技术
 ---

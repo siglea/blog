@@ -4,7 +4,7 @@ title:  " Keepalived "
 date:   2019-12-08 11:25:00 +0900
 comments: true
 tags:
-- linux
+- 分布式
 categories:
 - 技术
 ---

@@ -4,7 +4,8 @@ title:  "DB-distributed-transacion"
 date:   2019-11-12 11:25:00 +0900
 comments: true
 tags:
-- mysql DB 
+- 数据库
+- 分布式
 categories:
 - 技术
 ---
