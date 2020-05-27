@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 25 May 2020 18:29:29 +0800</pubDate>
-    <lastBuildDate>Mon, 25 May 2020 18:29:29 +0800</lastBuildDate>
+    <pubDate>Wed, 27 May 2020 13:43:46 +0800</pubDate>
+    <lastBuildDate>Wed, 27 May 2020 13:43:46 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -207,7 +207,68 @@ offset：指的是kafka的topic中的每个消费组消费的下标。简单的�
     
       <item>
         <title> BigData </title>
-        <description>&lt;h4 id=&quot;hive-hbase-phoenix&quot;&gt;hive HBase Phoenix&lt;/h4&gt;
+        <description>&lt;h4 id=&quot;hdfshive-与-hbasephoenix的区别&quot;&gt;HDFS+Hive 与 HBase+Phoenix的区别&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Hive中的表是纯逻辑表，就只是表的定义等，即表的元数据。Hive本身不存储数据，它完全依赖HDFS和MapReduce。这样就可以将结构化的数据文件映射为为一张数据库表，并提供完整的SQL查询功能，并将SQL语句最终转换为MapReduce任务进行运行。 而HBase表是物理表，适合存放非结构化的数据。
+    &lt;ol&gt;
+      &lt;li&gt;两者分别是什么？
+        &lt;ul&gt;
+          &lt;li&gt;Apache Hive是数据仓库。通过Hive可以使用HQL语言查询存放在HDFS上的数据。HQL是一种类SQL语言，这种语言最终被转化为Map/Reduce. 虽然Hive提供了SQL查询功能，但是Hive不能够进行交互查询–因为它是基于MapReduce算法。&lt;/li&gt;
+          &lt;li&gt;Apache Hbase Key/Value，基础单元是cell，它运行在HDFS之上。和Hive不一样，Hbase的能够在它的数据库上实时运行，而不是运行MapReduce任务。&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;两者的特点
+        &lt;ul&gt;
+          &lt;li&gt;Hive帮助熟悉SQL的人运行MapReduce任务。因为它是JDBC兼容的。运行Hive查询会花费很长时间，因为它会默认遍历表中所有的数据。但可以通过Hive的分区来控制。因为这样一来文件大小是固定的，就这么大一块存储空间，从固定空间里查数据是很快的。&lt;/li&gt;
+          &lt;li&gt;HBase通过存储key/value来工作。注意版本的功能。你可以用Hadoop作为静态数据仓库，HBase作为数据存储，放那些进行一些操作会改变的数据。&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;限制
+        &lt;ul&gt;
+          &lt;li&gt;Hive目前不支持更新操作。另外，由于hive在hadoop上运行批量操作，它需要花费很长的时间，通常是几分钟到几个小时才可以获取到查询的结果。Hive必须提供预先定义好的schema将文件和目录映射到列，并且Hive与ACID不兼容。&lt;/li&gt;
+          &lt;li&gt;HBase查询是通过特定的语言来编写的，这种语言需要重新学习。类SQL的功能可以通过Apache Phonenix实现，但这是以必须提供schema为代价的。另外，Hbase也并不是兼容所有的ACID特性，虽然它支持某些特性。最后但不是最重要的–为了运行Hbase，Zookeeper是必须的，zookeeper是一个用来进行分布式协调的服务，这些服务包括配置服务，维护元信息和命名空间服务。&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;应用场景
+        &lt;ul&gt;
+          &lt;li&gt;Hive适合用来对一段时间内的数据进行分析查询，例如，用来计算趋势或者网站的日志。Hive不应该用来进行实时的查询。因为它需要很长时间才可以返回结果。&lt;/li&gt;
+          &lt;li&gt;Hbase非常适合用来进行大数据的实时查询。Facebook用Hbase进行消息和实时的分析。它也可以用来统计Facebook的连接数。&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;两者关系
+        &lt;ul&gt;
+          &lt;li&gt;Hive和Pig都可以与HBase组合使用，Hive和Pig还为HBase提供了高层语言支持，使得在HBase上进行数据统计处理变的非常简单&lt;/li&gt;
+          &lt;li&gt;Hive与HBase，都是在Hadoop体系使用&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;总结
+        &lt;ul&gt;
+          &lt;li&gt;Hive和Hbase是两种基于Hadoop的不同技术–Hive是一种类SQL的引擎，并且运行MapReduce任务，Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库。当然，这两种工具是可以同时使用的。就像用Google来搜索，用FaceBook进行社交一样，Hive可以用来进行统计查询，HBase可以用来进行实时查询，数据也可以从Hive写到Hbase，设置再从Hbase写回Hive。&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;其他
+        &lt;ul&gt;
+          &lt;li&gt;Pig是接近脚本方式去描述MapReduce，Hive则用的是SQL。近似理解为SQL ON Hadoop&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;hadoop--spark--storm&quot;&gt;Hadoop &amp;amp; Spark &amp;amp; Storm&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Hadoop，是实现了MapReduce的思想，将数据切片计算来处理大量的离线数据。Hadoop处理的数据必须是已经存放在HDFS上或者类似HBase的数据库中，所以Hadoop实现的时候是通过移动计算到这些存放数据的机器上来提高效率。
+适合于离线的批量数据处理适用于对实时性要求极低的场景。&lt;/li&gt;
+  &lt;li&gt;Storm，可以用来处理源源不断流进来的消息，处理之后将结果写入到某个存储中去。实时性方面做得极好。(可以脱离Hadoop体系单独使用)&lt;/li&gt;
+  &lt;li&gt;Spark，是一个基于内存计算的开源集群计算系统，目的是更快速的进行数据分析。Spark由加州伯克利大学AMP实验室Matei为主的小团队使用Scala开发，类似于Hadoop MapReduce的通用并行计算框架，Spark基于Map Reduce算法实现的分布式计算，拥有Hadoop MapReduce所具有的优点，但不同于MapReduce的是Job中间输出和结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的Map Reduce的算法。
+(可以简单理解为”另一种形式的MapReduce”或者是第二代”引擎”，需要在Hadoop体系使用)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;参考&quot;&gt;参考&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;白话大数据 &lt;a href=&quot;https://www.zhihu.com/question/27974418/answer/156227565&quot;&gt;https://www.zhihu.com/question/27974418/answer/156227565&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;一步步搭建Hadoop体系 &lt;a href=&quot;http://www.panchengming.com/archives/page/4/&quot;&gt;http://www.panchengming.com/archives/page/4/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         <pubDate>Fri, 01 May 2020 19:25:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html</link>
