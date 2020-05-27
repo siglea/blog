@@ -17,7 +17,7 @@ categories:
   例如，在用户登录后，各个其他模板更加登录进行不同的处理
 
 #### 如何保证可用性
-- 主从架构（ActiveMQ、RabbitMQ）
+- 主从架构（ActiveMQ、RabbitMQ），其实并不算是真正的分布式架构，仅仅是实现了高可用的集群
 - 分布式架构（RocketMQ、kafka）  
      
 #### 如何保证消息不被重复消费？
