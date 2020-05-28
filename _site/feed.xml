@@ -5,13 +5,16 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 27 May 2020 14:55:53 +0800</pubDate>
-    <lastBuildDate>Wed, 27 May 2020 14:55:53 +0800</lastBuildDate>
+    <pubDate>Thu, 28 May 2020 14:07:13 +0800</pubDate>
+    <lastBuildDate>Thu, 28 May 2020 14:07:13 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
         <title> kafka activeMQ RabbitMq RocketMQ </title>
         <description>&lt;h4 id=&quot;amqp即advanced-message-queuing-protocolactivemqrabbitmq都支持&quot;&gt;AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;RabbitMQ &lt;a href=&quot;https://www.jianshu.com/p/78847c203b76&quot;&gt;https://www.jianshu.com/p/78847c203b76&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h4 id=&quot;两种消息模型&quot;&gt;两种消息模型：&lt;/h4&gt;
 &lt;ul&gt;
@@ -23,7 +26,7 @@
 
 &lt;h4 id=&quot;如何保证可用性&quot;&gt;如何保证可用性&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;主从架构（ActiveMQ、RabbitMQ），其实并不算是真正的分布式架构，仅仅是实现了高可用的集群&lt;/li&gt;
+  &lt;li&gt;主从架构（ActiveMQ、RabbitMQ）&lt;/li&gt;
   &lt;li&gt;分布式架构（RocketMQ、kafka）&lt;/li&gt;
 &lt;/ul&gt;
 
