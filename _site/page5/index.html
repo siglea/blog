@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>粉笔灰杂谈</title>
+  <meta name="description" content="关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。">
+  <script src="/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="canonical" href="http://localhost:4000/page5/">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+</head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-86140592-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  <body>
+
+    <header class="site-header">
+  <div class="container" style="text-align:center">
+    <div class="navbar" style="margin-bottom:0;border:0">
+    <ul class="navbar-nav nav header-nav">
+    <li><a href="/index.html" class="button">首页</a></li>
+      <li><a href="/category/技术" class="button">技术</a></li>
+      <li><a href="/category/产品商业" class="button">产品商业</a></li>
+      <li><a href="/category/随记" class="button">随记</a></li>
+    </ul>
+    </div>
+  </div>
+
+</header>
+<div class="clearfix">
+
+
+    <div class="page-content">
+      <div class="container" style="padding-left:0;padding-right:0;">
+        <div class="row" style="margin-bottom:30px">
+  <div class="home col-md-8">
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html">一致性（Consistency）与 共识（Consensus）</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>算法</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="byzantine-fault-tolerance-分类">Byzantine Fault Tolerance 分类</h4>
+<p>在分布式系统中，这种不听指挥的坏节点，就被称为“拜占庭错误节点”。一般来说，按照对“拜占庭错误节点”的容忍程度（简称BFT，Byzantine Fault Tolerance），分布式系统可以分为以下三类：</p>
+<ul>
+  <li>非BFT类：完全无法容忍“拜占庭错误节点”，但可以容忍其他错误的系统。（包括Pasox、SOLO、RAFT等。）</li>
+  <li>BFT类：可以容忍“拜占庭错误节点”的系统。（包括PBFT、SBFT、VBFT、DBFT等。）</li>
+  <li>区块链类：不仅可以容忍“拜占庭错误节点”，还可以容忍节点的自由进出，这才是我们真正意义上的、狭义上的“区块链”。
+ （包括我们熟悉的POW、POS、DPOS等等。）</li>
+  <li>其实与git的版本分支管理思想是一致的</li>
+</ul>
+
+<p><a href="https://www.cnblogs.com/X-knight/p/9157814.html">https://www.cnblogs.com/X-knight/p/9157814.html</a></p>
+
+<h4 id="一致性consistency和共识consensus">“一致性（Consistency）”和“共识（Consensus）”</h4>
+<p>Paxos、Raft等通常被误称为“一致性算法”。但是“一致性（Consistency）”和“共识（Consensus）”并不是同一个概念。Paxos、Raft等其实都是共识（Consensus）算法。
+从专业的角度来讲，我们通常所说的一致性（Consistency）在分布式系统中指的是对于同一个数据的多个副本，其对外表现的数据一致性，如强一致性、顺序一致性、最终一致性等，都是用来描述副本问题中的一致性的。而共识（Consensus）则不同，简单来说，共识问题是要经过某种算法使多个节点达成相同状态的一个过程。一致性强调结果，共识强调过程。
+<a href="https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg">https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg</a></p>
+
+<h4 id="一致性分类">一致性分类</h4>
+<ul>
+  <li>弱一致性（最终一致性）
+    <ol>
+      <li>DNS（Domain Name System）</li>
+      <li>Gossip（Cassandra、Redis的通信协议）<a href="https://www.jianshu.com/p/54eab117e6ae">https://www.jianshu.com/p/54eab117e6ae</a></li>
+    </ol>
+  </li>
+  <li>强一致性
+    <ul>
+      <li>主从同步</li>
+      <li>多数一致，每次写都保证写入大于N/2个节点，每次读保证从大于N/2个节点中读。
+Paxos、Raft（multi-paxos）、ZAB（multi-paxos，Zookeeper atomic broadcast protocol，是Zookeeper内部用到的一致性协议。基本与Raft相同）</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="pasox">Pasox</h4>
+<p>Paxos算法是莱斯利·兰伯特(Leslie Lamport)1990年提出的一种基于消息传递的一致性算法。
+Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos</p>
+
+<h4 id="basic-paxos">Basic Paxos</h4>
+<ol>
+  <li>多个Proposer，都可以拿最新的编号N，进行prepare()，</li>
+  <li>每个Acceptor会响应大于本地编号的所有prepare()，并且只会promise()最大的那个编号的提案</li>
+  <li>最大编号的Proposer，收集够过半的票数之后，立即发送accept()给对应的Acceptor</li>
+  <li>接受到accept()的Acceptor就有了最新的确认提案结果
+    <ul>
+      <li>如果此时有新的大于N的prepare()就会进入下次选举循环，否则Acceptor会返回最新的提议结果给调用方</li>
+      <li>如果此时收到不大于N的accept()则拒绝回应或者回应error；</li>
+    </ul>
+  </li>
+  <li>活锁，可能会存在一种情况：假定有2个proposer先后向acceptor发送请求，acceptor在接收到proposer1的prepare请求后更新编号为proposer1的编号；此时，proposer2接着向acceptor发送比proposer1编号更大的prepare请求，acceptor会立刻更新成proposer2的编号，那么当proposer1发送accept请求时由于编号不满足要求就会被accept给拒绝掉，则重新获取编号再次回到第一阶段发送prepare请求；从此2个proposer之间不断重复发送prepare请求，导致系统出现活锁</li>
+</ol>
+<p><a href="https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg">https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg</a></p>
+
+<h4 id="multi-paxos之raft-reliable-replicated-redundant-and-fault-tolerant">Multi Paxos之Raft (Reliable, Replicated, Redundant, And Fault-Tolerant)</h4>
+<ul>
+  <li>多个follower变身为candidate，同时term++，投票给自己同时向其他节点发送RequestVote RPC</li>
+  <li>节点(N)会投票给term是最新的，log至少和自身(N)一样新的candidate</li>
+  <li>candidate收到多数投票，然后发送自己已经是leader的HeartBeat，接受者转变为follower，选举结束</li>
+  <li>一段时间后依然没有胜者。该种情况下会开启新一轮的选举。（Raft中使用随机选举超时时间来解决当票数相同无法确定leader的问题。）</li>
+  <li>日志复制（Log Replication）主要作用是用于保证节点的一致性，这阶段所做的操作也是为了保证一致性与高可用性。
+当Leader选举出来后便开始负责客户端的请求，所有事务（更新操作）请求都必须先经过Leader处理，日志复制（Log Replication）就是为了保证执行相同的操作序列所做的工作。
+在Raft中当接收到客户端的日志（事务请求）后先把该日志追加到本地的Log中，然后通过heartbeat把该Entry同步给其他Follower，Follower接收到日志后记录日志然后向Leader发送ACK，当Leader收到大多数（n/2+1）Follower的ACK信息后将该日志设置为已提交并追加到本地磁盘中，通知客户端并在下个heartbeat中Leader将通知所有的Follower将该日志存储在自己的本地磁盘中。</li>
+</ul>
+<p><a href="https://www.cnblogs.com/binyue/p/8647733.html">https://www.cnblogs.com/binyue/p/8647733.html</a></p>
+
+<h4 id="如何解决split-brain问题">如何解决split brain问题</h4>
+<ul>
+  <li>分布式协议一个著名问题就是 split brain 问题。
+简单说，就是比如当你的 cluster 里面有两个结点，它们都知道在这个 cluster 里需要选举出一个 master。那么当它们两之间的通信完全没有问题的时候，就会达成共识，选出其中一个作为 master。但是如果它们之间的通信出了问题，那么两个结点都会觉得现在没有 master，所以每个都把自己选举成 master。于是 cluster 里面就会有两个 master。
+区块链的分叉其实类似分布式系统的split brain。
+一般来说，Zookeeper会默认设置：
+    <ul>
+      <li>zookeeper cluster的节点数目必须是奇数。</li>
+      <li>zookeeper 集群中必须超过半数节点(Majority)可用，整个集群才能对外可用。</li>
+    </ul>
+  </li>
+  <li>Majority 就是一种 Qunroms 的方式来支持Leader选举，可以防止 split brain出现。奇数个节点可以在相同容错能力的情况下节省资源。</li>
+</ul>
+
+<h4 id="zab算法-zookeeper-atomic-broadcast-protocol">ZAB算法 Zookeeper atomic broadcast protocol</h4>
+<ul>
+  <li>基本与Raft相同，在一些名词叫起来是有区别的</li>
+  <li>ZAB将Leader的一个生命周期叫做epoch，而Raft称之为term</li>
+  <li>实现上也有些许不同，如raft保证日志的连续性，心跳是Leader向Follower发送，而ZAB方向与之相反</li>
+</ul>
+
+<h4 id="一致性算法的实践">一致性算法的实践</h4>
+<ul>
+  <li>使用Paxos的组件，Chubby(Google首次运用Multi Paxos算法到工程领域)</li>
+  <li>使用Raft的组件，Redis-Cluster、etcd</li>
+  <li>使用ZAB的组件，Zookeeper（Yahoo开源）</li>
+</ul>
+
+<p><a href="https://www.cnblogs.com/think90/p/11443428.html">https://www.cnblogs.com/think90/p/11443428.html</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html">Not Only SQL</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>NoSQL</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="sql-cap">SQL-CAP</h4>
+<div align="left">
+<img src="/img/nosql-cap.jpg" width="500px" />
+</div>
+
+<h4 id="nosql由来">NoSQL由来</h4>
+<ul>
+  <li>高可用 ！= 分布式，传统的关系型数据库RDB，并没有实现真正意义上的分布式，即便是分库分表也仅仅是”伪分布式”，不具备诸如数据多分区备份等特性</li>
+  <li>传统的关系型数据库RDB，主从同步的集群，本质上是全量数据的备份，也不是分布式真正要求的可伸缩</li>
+  <li>传统的关系型数据库RDB，数据表结构或Meta或schema固定，扩展成本高</li>
+  <li>RDB以行位核心的数据存储，NoSQl以列为核心(HBase/Cassandra)或KV(Redis)为核心</li>
+  <li>1946年，第一台通用计算机诞生。但一直到1970年RDMBS的出现，大家才找到通用的数据存储方案。到21世纪，DT时代让数据容量成为最棘手的问题，对此谷歌和亚马逊分别提出了自己的NoSQL解决方案，比如谷歌于2006年提出了Bigtable。2009年的一次技术大会上，NoSQL一词被正式提出，到现在共有225种解决方案。
+NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活性，支持很灵活的模式变更；第二，可伸缩性，原生的RDBMS只适用于单机和小集群。而NoSQL一开始就是分布式的，解决了读写和容量扩展性问题。以上两点，也是NoSQL产生的根本原因。</li>
+</ul>
+
+<h4 id="nosql分类">NoSQL分类</h4>
+<p>这些NoSQL数据库分为Graph，Document，Column Family以及Key-Value Store等四种。这四种类型的数据库分别使用了不同的数据结构来记录数据。因此它们所适用的场景也不尽相同。</p>
+
+<h4 id="关系型数据库和非关系型数据库的应用场景对比">关系型数据库和非关系型数据库的应用场景对比</h4>
+<ul>
+  <li>关系型数据库适合存储结构化数据，如用户的帐号、地址：
+    <ol>
+      <li>这些数据通常需要做结构化查询，比如join，这时候，关系型数据库就要胜出一筹</li>
+      <li>这些数据的规模、增长的速度通常是可以预期的</li>
+      <li>事务性、一致性
+　　</li>
+    </ol>
+  </li>
+  <li>NoSQL适合存储非结构化数据，如文章、评论：
+    <ol>
+      <li>这些数据通常用于模糊处理，如全文搜索、机器学习</li>
+      <li>这些数据是海量的，而且增长的速度是难以预期的，</li>
+      <li>根据数据的特点，NoSQL数据库通常具有无限（至少接近）伸缩性</li>
+      <li>按key获取数据效率很高，但是对join或其他结构化查询的支持就比较差</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="bst二叉搜索树avl树红黑树2-3树b树b树lsm树">BST（二叉搜索树）、AVL树、红黑树、2-3树、B树、B+树、LSM树</h4>
+<ul>
+  <li><a href="https://www.jianshu.com/p/bb929dc75007">https://www.jianshu.com/p/bb929dc75007</a></li>
+  <li>AVL树
+    <ul>
+      <li>特性
+        <ul>
+          <li>要求每个节点的左右子树高度差不超过1</li>
+          <li>树的高度差越小，查找效率越高，但是调整成本高</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>红黑树
+    <ul>
+      <li>特性（保存自平衡，从根到叶子的最长路径不会超过最短路径的2倍）
+        <ol>
+          <li>结点是红色或黑色。</li>
+          <li>根结点是黑色。</li>
+          <li>每个叶子结点都是黑色的空结点（NIL结点）。</li>
+          <li>每个红色结点的两个子结点都是黑色。(从每个叶子到根的所有路径上不能有两个连续的红色结点)</li>
+          <li>从任一结点到其每个叶子的所有路径都包含相同数目的黑色结点。</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+  <li>2-3树，2-3个节点</li>
+  <li>B树，M个节点（操作系统文件目录）</li>
+  <li>B+树，B+树内部节点不保存数据，所以能在内存中存放更多索引，增加缓存命中率。另外因为叶子节点相连遍历操作很方便，而且数据也具有顺序性，便于区间查找。</li>
+  <li>LSM
+    <ul>
+      <li>原理上类似JVM的复制算法/压缩整理算法，也就是插入的新的数据不去找之前的位置插入，而是用新空间存放然后与旧数据合并，合并完成之后，最老的数据直接就清除掉了，这样磁盘上相邻的数据都是顺序的。</li>
+      <li>LSM在内存中有memtable（接受实时写） 、immutable memtable(写满了等待向磁盘flush或合并），磁盘内有分层的SSTable</li>
+      <li>LSM之所以快，就是因为写入在内容，之后是异步的去合并写入磁盘。（B/B树，写入操作都是同步的在磁盘进行）</li>
+      <li>LSM-tree 基本原理及应用 <a href="https://cloud.tencent.com/developer/news/340271">https://cloud.tencent.com/developer/news/340271</a></li>
+      <li>Cassandra、HBase、LevelDB、RocksDB、BigTable</li>
+      <li>算法细节 <a href="https://www.cnblogs.com/siegfang/archive/2013/01/12/lsm-tree.html">https://www.cnblogs.com/siegfang/archive/2013/01/12/lsm-tree.html</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="二级索引">二级索引？</h4>
+<ul>
+  <li>二级索引，其实就是倒排索引的一种变种</li>
+</ul>
+
+<h4 id="redis">Redis</h4>
+
+<h4 id="mongodb">MongoDB</h4>
+<ul>
+  <li>典型应用场景
+    <ul>
+      <li>使用MongoDB做了O2O快递应用，·将送快递骑手、快递商家的信息（包含位置信息）存储在 MongoDB，然后通过 MongoDB 的地理位置查询，这样很方便的实现了查找附近的商家、骑手等功能，使得快递骑手能就近接单</li>
+      <li>什么场景应该用 MongoDB ？ <a href="https://yq.aliyun.com/articles/64352">https://yq.aliyun.com/articles/64352</a></li>
+      <li>MongoDB 应用场景?（知乎）<a href="https://www.zhihu.com/question/32071167?sort=created">https://www.zhihu.com/question/32071167?sort=created</a></li>
+      <li>一般来讲，我会将MySQL中的部分表迁移到MongoDB中，主要是涉及到车辆历史轨迹以及温湿度数据等机器采集到的数据，而订单数据、客户数据等信息，仍然放到MySQL数据库中，主要是因为这两类数据实时采集，实时更新，会随着时间的推移，项目的扩大（PAAS服务），造成非常巨大的数据量，而一般MySQL在单表数据量超过500万后，性能就会下降的比较快，虽然可以通过分表的方式进行处理，但是随着时间的增长，仍然会给我带来比较大的麻烦（如查询等），这样，就不如将其放到MongoDB中存储，查询什么的都会比较方便，不过需要注意根据片键分片哦。</li>
+      <li>在主流的计算机语言如Java、Python中对JSON都有很好的支持，数据从MongoDB中读取出来后，可无需转换直接使用；MongoDB文档另一个特点是Key-Value键值对支持丰富的数据结构，Value可以是普通的整型、字符串，可以是数组，也可以是嵌套的子文档，使用嵌套的好处是在MongoDB中仅需一次简单的查询就能够获取到你所需的数据。举电商领域为例，网易严选上卖的上衣和裤子两种商品，除了有共同属性，如产地、价格、材质、颜色等外，还有各自有不同的属性集，如上衣的独有属性是肩宽、胸围、袖长等，裤子的独有属性是臀围、脚口和裤长等。</li>
+    </ul>
+  </li>
+  <li>支持的引擎，mmapv1、wiredtiger、mongorocks（rocksdb）、in-memory</li>
+  <li>强大的索引，地理位置索引可用于构建 各种 O2O 应用、文本索引解决搜索的需求、TTL索引解决历史数据自动过期的需求</li>
+  <li>MongoDB与Mysql/Hadoop/Redis的优缺点比较 <a href="https://blog.csdn.net/tanqian351/article/details/81744970">https://blog.csdn.net/tanqian351/article/details/81744970</a></li>
+</ul>
+
+<h4 id="cassandra">Cassandra</h4>
+<ul>
+  <li>Cassandra更加AP,可调一致性（HBase是CP)</li>
+  <li>属于宽表的一种（HBase、Alibaba TableStore、Google BigTable)</li>
+  <li>应该把 Cassandra 看做是一个有索引的、面向列的存储系统。
+    <ul>
+      <li>Cassandra 经常被看做是一种面向列（Column-Oriented）的数据库，这也并不算错。它的数据结构不是关系型的，而是一个多维稀疏哈希表。稀疏（Sparse）意味着任何一行都可能会有一列或者几列，但每行都不一定（像关系模型那样）和其他行有一样的列。每行都有一个唯一的键值，用于进行数据访问。所以，更确切地说，应该把 Cassandra 看做是一个有索引的、面向行的存储系统。</li>
+      <li>Cassandra 的数据存储结构基本可以看做是一个多维哈希表。这意味着你不必事先精确地决定你的具体数据结构或是你的记录应该包含哪些具体字段。这特别适合处于草创阶段，还在不断增加或修改服务特性的应用。而且也特别适合应用在敏捷开发项目中，不必进行长达数月的预先分析。对于使用 Cassandra 的应用，如果业务发生变化了，只需要在运行中增加或删除某些字段就行了，不会造成服务中断。</li>
+      <li>当然， 这不是说你不需要考虑数据。相反，Cassandra 需要你换个角度看数据。在 RDBMS 里， 你得首先设计一个完整的数据模型， 然后考虑查询方式， 而在 Cassandra 里，你可以首先思考如何查询数据，然后提供这些数据就可以了。</li>
+    </ul>
+  </li>
+  <li>cassandra的难点在于建模，不同于RDB的一种建模思路（KeySpaces&lt;-&gt;DataBase,ColumnFamily&lt;-&gt;Table)仅仅是概念的类似，实际上设计思想完全不同
+    <ul>
+      <li>Keyspaces：键空间是 Cassandra 的数据容器，可以理解为关系型数据库中的数据库（Database）。对于一个 Keyspace 来说，包括定义每行数据的复制节点数目、定义在一致性哈希环中某个节点的替换策略、列族（Column Families）等多个概念。</li>
+      <li>列族：列的容器，它的结构像是一个四维哈希表，[Keyspace][ColumnFamily][Key][Column]。</li>
+      <li>列：一组键值对。</li>
+    </ul>
+  </li>
+  <li>cassandra以列为核心，相当于把RDB中的宽表，细化为随时可以扩展的动态列</li>
+  <li>就Cassandra而言，最关键的地方在于Key的设计。Cassandra之中一共包含下面5种Key:
+    <ul>
+      <li>Primary Key</li>
+      <li>Partition Key</li>
+      <li>Composite Key</li>
+      <li>Compound Key</li>
+      <li>Clustering Key</li>
+    </ul>
+  </li>
+  <li>Cassandra 是为优异的写吞吐量而特别优化的。</li>
+  <li>应用场景
+    <ul>
+      <li>根据项目的 wiki，Cassandra 已经被用于开发了多种不同的应用，包括窗口化的时间序列数据库，用于文档搜索的反向索引，以及分布式任务优先级队列。</li>
+      <li>产品目录和零售应用程序Cassandra被许多零售商用于购物车数据保持和快速的产品目录输入和输出。</li>
+      <li>社交媒体分析和推荐引擎Cassandra是许多在线公司和社交媒体提供商的良好数据库，用于分析和推荐给客户。</li>
+      <li>Yelp的广告分析系统，Spotify的所有用户信息存储</li>
+      <li>Feeds场景、滴滴或物联网订单轨迹场景 <a href="https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ">https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ</a></li>
+    </ul>
+    <div align="left">
+  <img src="/img/cassandra.jpg" width="500px" />
+  </div>
+  </li>
+  <li>cassandra与mysql使用对比 <a href="https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/">https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/</a></li>
+  <li>cassandra使用场景判断：何时使用及何时不用 <a href="https://developer.aliyun.com/article/713847">https://developer.aliyun.com/article/713847</a></li>
+</ul>
+
+<h4 id="图数据库-graph-database-neo4j">“图”数据库 Graph Database Neo4J</h4>
+<p><a href="https://www.cnblogs.com/loveis715/p/5277051.html">https://www.cnblogs.com/loveis715/p/5277051.html</a></p>
+
+<h4 id="其他kv的nosql-leveldbrocksdbtair">其他KV的NoSQL： Leveldb、Rocksdb、Tair</h4>
+<p><a href="https://mp.weixin.qq.com/s/JSPvpnKMzbehP7urdDOlbA">https://mp.weixin.qq.com/s/JSPvpnKMzbehP7urdDOlbA</a></p>
+
+<p>«««&lt; HEAD:_posts/internet/2019/2019-11-12-NotOnlySQL.markdown</p>
+<h4 id="列式存储clickhouseolapcassandrahbaseolapvertica">列式存储：ClickHouse(OLAP)、Cassandra、HBase(OLAP)、Vertica</h4>
+
+<h4 id="newsql分布式rdboceandbtidb">NewSQL(分布式RDB)：oceanDB、TiDB</h4>
+
+<h4 id="常见-tsdb-时间序列数据库-time-series-database-influxdbopentsdbtimescaladbdruid-tablestore等">常见 TSDB 时间序列数据库 Time Series Database ：influxdb、opentsdb、timeScaladb、Druid 、tablestore等</h4>
+<ul>
+  <li>
+    <h1 id="循环删除">循环删除</h1>
+    <h4 id="newsql分布式rdboceandbtidb-1">NewSQL(分布式RDB)：oceanDB、TiDB</h4>
+  </li>
+  <li>初识TiDB <a href="https://mp.weixin.qq.com/s/_KS4AAfynvn-sYl-7nJSkg">https://mp.weixin.qq.com/s/_KS4AAfynvn-sYl-7nJSkg</a></li>
+  <li>从NoSQL到NewSQL，谈交易型分布式数据库建设要点 <a href="https://mp.weixin.qq.com/s/HPuiCn9oyB8itsqMcXB_1w">https://mp.weixin.qq.com/s/HPuiCn9oyB8itsqMcXB_1w</a></li>
+  <li>从架构特点到功能缺陷，重新认识分析型分布式数据库 <a href="https://mp.weixin.qq.com/s/ZOelW__ON_86YgXmVeDEwA">https://mp.weixin.qq.com/s/ZOelW__ON_86YgXmVeDEwA</a></li>
+  <li>简单比较SQL、NoSQL、NewSQL <a href="https://mp.weixin.qq.com/s/AHYaFT9Du2UlufVQjb47bg">https://mp.weixin.qq.com/s/AHYaFT9Du2UlufVQjb47bg</a></li>
+  <li>NewSQL概述 <a href="https://mp.weixin.qq.com/s/AcuFiHgRJg2OcNGtfjRxYA">https://mp.weixin.qq.com/s/AcuFiHgRJg2OcNGtfjRxYA</a></li>
+  <li>滴滴放弃TiDB <a href="https://mp.weixin.qq.com/s/_h4UE1LMrO-UjE-TaGH20g">https://mp.weixin.qq.com/s/_h4UE1LMrO-UjE-TaGH20g</a></li>
+  <li>分库分表 or NewSQL数据库 ? <a href="https://mp.weixin.qq.com/s/ymVxSe8nueuG7knKwcIAMw">https://mp.weixin.qq.com/s/ymVxSe8nueuG7knKwcIAMw</a></li>
+</ul>
+
+<h4 id="常见-tsdb-时间序列数据库-time-series-database-influxdbopentsdbtimescaladbdruid-tablestore等-1">常见 TSDB 时间序列数据库 Time Series Database ：influxdb、opentsdb、timeScaladb、Druid 、tablestore等</h4>
+<p>一种集时序数据高效读写，压缩存储，实时计算能力为一体的数据库服务，可广泛应用于物联网和互联网领域，实现对设备及业务服务的实时监控，实时预测告警。
+<a href="https://www.jianshu.com/p/31afb8492eff">https://www.jianshu.com/p/31afb8492eff</a></p>
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <blockquote>
+        <blockquote>
+          <blockquote>
+            <blockquote>
+              <p>~:_posts/internet/2019/2019-11-12-NoSQL.markdown</p>
+            </blockquote>
+          </blockquote>
+        </blockquote>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+
+<h4 id="其他">其他</h4>
+<ul>
+  <li>分布式系统之Quorum机制 <a href="https://blog.csdn.net/tb3039450/article/details/80249664">https://blog.csdn.net/tb3039450/article/details/80249664</a></li>
+  <li>NoSQL漫谈 <a href="http://www.nosqlnotes.com/">http://www.nosqlnotes.com/</a></li>
+  <li>NoSQL简介 <a href="https://www.runoob.com/mongodb/nosql.html">https://www.runoob.com/mongodb/nosql.html</a></li>
+  <li>NoSQL 还是 SQL ? <a href="https://www.jianshu.com/p/296bacba3510">https://www.jianshu.com/p/296bacba3510</a></li>
+  <li>OLAP、OLTP <a href="https://www.jianshu.com/p/b1d7ca178691">https://www.jianshu.com/p/b1d7ca178691</a></li>
+  <li>BeafQPS方法论 <a href="https://mp.weixin.qq.com/s/DsdB7IuWoHnhNNJY1YUSMg">https://mp.weixin.qq.com/s/DsdB7IuWoHnhNNJY1YUSMg</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html">DB-distributed-transacion</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="数据库本地事务简述">数据库本地事务简述</h3>
+<ul>
+  <li>ACID原则
+    <ol>
+      <li>原子性(Atomicity)</li>
+      <li>一致性(Consistency)</li>
+      <li>隔离性(Isolation)</li>
+      <li>持久性(Durability)</li>
+    </ol>
+  </li>
+  <li>以Mysql的InnoDB为例，事务的ACID是通过InnoDB日志和锁来保证
+    <ol>
+      <li>事务的隔离性是通过数据库锁的机制实现的</li>
+      <li>持久性通过Redo Log（重做日志）来实现，在事务提交前，只要将 Redo Log 持久化即可，不需要将数据持久化。</li>
+      <li>原子性和一致性通过 Undo Log 来实现。（数据数据操作前的数据备份 Undo Log）</li>
+    </ol>
+  </li>
+  <li>本质都是通过一个本地事务资源管理器来统一协调调度</li>
+</ul>
+
+<h3 id="分布式事务">分布式事务</h3>
+
+<h4 id="分布式事务产生的原因">分布式事务产生的原因</h4>
+<ul>
+  <li>Service多节点部署（比如公司内的用户、账户等各种微服务)</li>
+  <li>Resource 多节点 (每个人的数据部署再不同节点的数据库里)</li>
+</ul>
+
+<h4 id="分布式系统之cap定理">分布式系统之CAP定理</h4>
+<ul>
+  <li>CAP 定理，又被叫作布鲁尔定理。对于设计分布式系统(不仅仅是分布式事务)的架构师来说，CAP 就是你的入门理论。</li>
+  <li>C (一致性)：对某个指定的客户端来说，读操作能返回一致的写操作。
+对于数据分布在不同节点上的数据来说，如果在某个节点更新了数据，那么在其他节点如果都能读取到这个***的数据，那么就称为强一致，如果有某个节点没有读取到，那就是分布式不一致。</li>
+  <li>A (可用性)：非故障的节点在合理的时间内返回合理的响应(不是错误和超时的响应)。可用性的两个关键一个是合理的时间，一个是合理的响应。
+合理的时间指的是请求不能被阻塞，应该在合理的时间给出返回。合理的响应指的是系统应该明确返回结果并且结果是正确的，这里的正确指的是比如应该返回 50，而不是返回 40。</li>
+  <li>
+    <p>P (分区容错性)：当出现网络分区后，系统能够继续工作。打个比方，这里集群有多台机器，有台机器网络出现了问题，但是这个集群仍然可以正常工作。</p>
+  </li>
+  <li>
+    <p>熟悉 CAP 的人都知道，三者不能共有，如果感兴趣可以搜索 CAP 的证明，在分布式系统中，网络无法 100% 可靠，分区其实是一个必然现象。</p>
+
+    <p>如果我们选择了 CA 而放弃了 P，那么当发生分区现象时，为了保证一致性，这个时候必须拒绝请求，但是 A 又不允许，所以分布式系统理论上不可能选择 CA 架构，只能选择 CP 或者 AP 架构。</p>
+
+    <p>对于 CP 来说，放弃可用性，追求一致性和分区容错性，我们的 ZooKeeper 其实就是追求的强一致。</p>
+
+    <p>对于 AP 来说，放弃一致性(这里说的一致性是强一致性)，追求分区容错性和可用性，这是很多分布式系统设计时的选择，后面的 BASE 也是根据 AP 来扩展。</p>
+
+    <p>顺便一提，CAP 理论中是忽略网络延迟，也就是当事务提交时，从节点 A 复制到节点 B 没有延迟，但是在现实中这个是明显不可能的，所以总会有一定的时间是不一致。</p>
+
+    <p>同时 CAP 中选择两个，比如你选择了 CP，并不是叫你放弃 A。因为 P 出现的概率实在是太小了，大部分的时间你仍然需要保证 CA。</p>
+
+    <p>就算分区出现了你也要为后来的 A 做准备，比如通过一些日志的手段，是其他机器回复至可用。</p>
+  </li>
+</ul>
+
+<h4 id="分布式系统之base定理">分布式系统之BASE定理</h4>
+<ul>
+  <li>BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩写，是对 CAP 中 AP 的一个扩展。</li>
+  <li>基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用。</li>
+  <li>软状态：允许系统中存在中间状态，这个状态不影响系统可用性，这里指的是 CAP 中的不一致。</li>
+  <li>最终一致：最终一致是指经过一段时间后，所有节点数据都将会达到一致。</li>
+  <li>BASE 解决了 CAP 中理论没有网络延迟，在 BASE 中用软状态和最终一致，保证了延迟后的一致性。</li>
+  <li>BASE 和 ACID 是相反的，它完全不同于 ACID 的强一致性模型，而是通过牺牲强一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态</li>
+</ul>
+
+<h4 id="常用分布式事务框架">常用分布式事务框架</h4>
+<ul>
+  <li>基于XA的 2PC、3PC
+   本质相当于本地事务的加强版，强一致性，引入中间事务协调者，依赖数据库，属于数据库资源层方案</li>
+  <li>Saga
+  引入补偿机制（最终一致性）</li>
+  <li>TCC
+  Try、Commit、Cancel</li>
+  <li>本地消息表</li>
+  <li>RocketMQ(阿里开源)</li>
+  <li>Seata</li>
+</ul>
+
+<h5 id="参考资料">参考资料</h5>
+<ul>
+  <li><a href="https://developer.51cto.com/art/201808/581174.htm">分布式事务概述</a></li>
+  <li><a href="https://www.jianshu.com/p/917cb4bdaa03">由Seata看分布式事务取舍</a></li>
+  <li><a href="https://cloud.tencent.com/developer/article/1401904">常用分布式事务框架</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/75843832">蚂蚁金服分布式事务实战</a></li>
+  <li><a href="https://www.infoq.cn/article/8bu33kuSyJ6P-wAAoELT">分布式事务选型的取舍infoq</a></li>
+  <li><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a></li>
+  <li><a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></li>
+  <li><a href="http://seata.io/zh-cn/">Seata官网</a></li>
+  <li><a href="https://www.cnblogs.com/firstdream/p/6585923.html">FLP不可能原理</a></li>
+  <li><a href="http://www.sohu.com/a/290897501_684445">分布式事务：深入理解什么是2PC、3PC及TCC协议 </a></li>
+  <li><a href="https://juejin.im/post/5dd0ff1af265da0c075d0af7">如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？</a></li>
+  <li><a href="http://www.ruanyifeng.com/blog/2018/07/cap.html">CAP定理</a></li>
+  <li><a href="https://blog.csdn.net/m0_38110132/article/details/76994165">分布式事务的解决方案CSDN</a></li>
+  <li><a href="https://www.bbsmax.com/A/obzb24Y0zE/">Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较</a></li>
+  <li><a href="https://blog.csdn.net/qq_27384769/category_7453176_1.html">分布式CSDN博客</a></li>
+  <li><a href="https://www.itcodemonkey.com/article/13548.html">基于RocketMQ的最终一致性</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html">DB Shard</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="主键避重问题">主键避重问题</h4>
+<ul>
+  <li>ID生成器
+    <ul>
+      <li>Twitter Snowflake</li>
+      <li>美团 LeftUid</li>
+      <li>百度 Uid-genarator</li>
+    </ul>
+  </li>
+  <li>散表规则
+    <ul>
+      <li>按照ID范围，要求ID自增</li>
+      <li>简单Hash(取模)</li>
+      <li>Hash一致性算法</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="分页查询问题">分页查询问题</h4>
+<ul>
+  <li>分表查，应用程序合并</li>
+</ul>
+
+<h4 id="关联查询问题">关联查询问题</h4>
+<ul>
+  <li>避免join操作，改造为多次查询，由应用程序合并</li>
+  <li>使用现成的中间件</li>
+  <li>实际业务中可能会结合Redis/Es等解决方案</li>
+</ul>
+
+<h4 id="公共表问题">公共表问题</h4>
+<ul>
+  <li>公共表多库冗余，多库同步</li>
+</ul>
+
+<h4 id="事务一致性">事务一致性</h4>
+<p><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a>
+<a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></p>
+<h5 id="jtaxa">JTA*XA</h5>
+
+<h4 id="比较常见的中间件cobartddlatlassharding-jdbcmycat">比较常见的中间件cobar、TDDL、atlas、sharding-jdbc、mycat</h4>
+<ul>
+  <li>cobar：阿里b2b团队开发和开源的，属于proxy层方案。早些年还可以用，但是最近几年都没更新了，基本没啥人用，差不多算是被抛弃的状态吧。而且不支持读写分离、存储过程、跨库join和分页等操作。</li>
+  <li>TDDL：淘宝团队开发的，属于client层方案。不支持join、多表查询等语法，就是基本的crud语法是ok，但是支持读写分离。目前使用的也不多，因为还依赖淘宝的diamond配置管理系统。</li>
+  <li>atlas：360开源的，属于proxy层方案，以前是有一些公司在用的，但是确实有一个很大的问题就是社区最新的维护都在5年前了。所以，现在用的公司基本也很少了。</li>
+  <li>sharding-jdbc：当当开源的，属于client层方案。确实之前用的还比较多一些，因为SQL语法支持也比较多，没有太多限制，而且目前推出到了2.0版本，支持分库分表、读写分离、分布式id生成、柔性事务（最大努力送达型事务、TCC事务）。而且确实之前使用的公司会比较多一些（这个在官网有登记使用的公司，可以看到从2017年一直到现在，是不少公司在用的），目前社区也还一直在开发和维护，还算是比较活跃，个人认为算是一个现在也可以选择的方案。</li>
+  <li>
+    <p>mycat：基于cobar改造的，属于proxy层方案，支持的功能非常完善，而且目前应该是非常火的而且不断流行的数据库中间件，社区很活跃，也有一些公司开始在用了。但是确实相比于sharding jdbc来说，年轻一些，经历的锤炼少一些。</p>
+
+    <p>所以综上所述，现在其实建议考量的，就是sharding-jdbc和mycat，这两个都可以去考虑使用。
+  sharding-jdbc这种client层方案的优点在于不用部署，运维成本低，不需要代理层的二次转发请求，性能很高，但是如果遇到升级啥的需要各个系统都重新升级版本再发布，各个系统都需要耦合sharding-jdbc的依赖；
+  mycat这种proxy层方案的缺点在于需要部署，自己及运维一套中间件，运维成本高，但是好处在于对于各个项目是透明的，如果遇到升级之类的都是自己中间件那里搞就行了。
+  通常来说，这两个方案其实都可以选用，但是我个人建议中小型公司选用sharding-jdbc，client层方案轻便，而且维护成本低，不需要额外增派人手，而且中小型公司系统复杂度会低一些，项目也没那么多；
+  但是中大型公司最好还是选用mycat这类proxy层方案，因为可能大公司系统和项目非常多，团队很大，人员充足，那么最好是专门弄个人来研究和维护mycat，然后大量项目直接透明使用即可。</p>
+  </li>
+</ul>
+
+<h4 id="主从同步">主从同步</h4>
+<ul>
+  <li>半同步复制，semi-sync复制，指的就是主库写入binlog日志之后，就会将强制此时立即将数据同步到从库，从库将日志写入自己本地的relay log之后，接着会返回一个ack给主库，主库接收到至少一个从库的ack之后才会认为写操作完成了。</li>
+  <li>并行复制，指的是从库开启多个线程，并行读取relay log中不同库的日志，然后并行重放不同库的日志，这是库级别的并行。</li>
+</ul>
+
+<h4 id="其他">其他</h4>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651960212&amp;idx=1&amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS">58用户系统分库分表实战</a></p>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html">DB Mysql</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="索引原理btree">索引原理(B+Tree)</h4>
+<ul>
+  <li>BS树(Binary Search Tree二叉查找树) -&gt; AVL(人名，平衡二叉树) Tree -&gt; 红黑树 -&gt; B-/B+Tree(平衡多路查找树) -&gt; LSM
+    <ul>
+      <li><a href="http://www.sohu.com/a/280609547_818692">http://www.sohu.com/a/280609547_818692</a>
+        <ul>
+          <li>既然hash比B+树更快，为啥mysql还用B+树来存索引吗？
+            <ol>
+              <li>这和业务场景有关。如果只选一个数据，那确实是hash更快。但是数据库中经常会选择多条，这时候由于B+树索引有序，并且又有链表相连，它的查询效率比hash就快很多了。</li>
+              <li>而且数据库中的索引一般是在磁盘上，数据量大的情况可能无法一次装入内存，B+树的设计可以允许数据分批加载，同时树的高度较低，提高查找效率。</li>
+              <li>与B数相比，如果是多条的话，B树需要做局部的中序遍历，可能要跨层访问。而B+树由于所有数据都在叶子结点，不用跨层，同时由于有链表结构，只需要找到首尾，通过链表就能把所有数据取出来了。</li>
+            </ol>
+          </li>
+          <li>AVLTree 在windowsNT内核中广泛使用，写少读多</li>
+          <li>红黑树适合于内存索引查找 比如Map、Set <a href="https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag">https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag</a></li>
+          <li>B树尤其是多路B数主要用在文件存储系统,文件系统和数据库的索引都是存在硬盘上的，并且如果数据量大的话，不一定能一次性加载到内存中。
+用B树可以一路一路的查找</li>
+          <li>红黑树常用于存储内存中的有序数据，增删很快，b+树常用于文件系统和数据库索引，因为b树的子节点大于红黑树，红黑树只能有2个子节点，b树子节点大于2，子节点树多这一特点保证了存储相同大小的数据，树的高度更小，数据局部更加紧凑，而硬盘读取有局部加载的优化（把要读取数据和周围的数据一起预先读取），b树相邻数据物理上更加紧凑这一特点符合硬盘进行io优化的特性。</li>
+        </ul>
+      </li>
+      <li>更加详细的应用范围<a href="https://www.cnblogs.com/tiancai/p/9024351.html">https://www.cnblogs.com/tiancai/p/9024351.html</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="各种优化">各种优化</h4>
+<ul>
+  <li><a href="https://www.jianshu.com/p/efaa9005a598">https://www.jianshu.com/p/efaa9005a598</a></li>
+  <li><a href="https://www.jb51.net/article/136701.htm">https://www.jb51.net/article/136701.htm</a></li>
+  <li><a href="https://www.cnblogs.com/houss/p/10598901.html">https://www.cnblogs.com/houss/p/10598901.html</a></li>
+  <li><a href="https://coolshell.cn/articles/1846.html">https://coolshell.cn/articles/1846.html</a>
+    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="err">优化</span><span class="mi">1</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化前</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="n">a</span> <span class="k">inner</span> <span class="k">join</span> <span class="p">(</span><span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="n">b</span> <span class="k">on</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化后</span>
+</code></pre></div>    </div>
+    <h4 id="常用指标">常用指标</h4>
+  </li>
+  <li>QPS   (2w/s与机器配置及数据量有关)</li>
+  <li>TPS   (1w/s)</li>
+  <li>并发数</li>
+  <li>连接数</li>
+  <li>缓存命中率</li>
+  <li>慢查询
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>slow_query_log=on
+slow_query_log_file=存放目录
+long_query_time=0.1秒
+log_queries_not_using_indexes=on
+</code></pre></div>    </div>
+  </li>
+  <li>主从延迟
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show slave status;
+Seconds_Behind_Master
+</code></pre></div>    </div>
+  </li>
+  <li>死锁
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set global innodb_print_all_deadlocks=on; 
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="mysql-wal技术-write-ahead-logging">Mysql WAL技术 Write-Ahead Logging</h4>
+
+<p>在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
+   在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
+   为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
+   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。</p>
+
+<p><a href="https://www.cnblogs.com/hzmark/p/wal.html">https://www.cnblogs.com/hzmark/p/wal.html</a></p>
+
+<h4 id="innodb与myisamindex-sequence-access-method">InnoDB与MyISAM(Index Sequence Access Method)</h4>
+<ul>
+  <li>核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
+MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
+    <ul>
+      <li>4个隔离级别透彻分析 <a href="https://www.jianshu.com/p/db334404d909">https://www.jianshu.com/p/db334404d909</a></li>
+      <li><a href="https://blog.csdn.net/w2064004678/article/details/83012387">https://blog.csdn.net/w2064004678/article/details/83012387</a></li>
+    </ul>
+  </li>
+  <li>索引结构不同
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew">https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew</a></li>
+    </ul>
+  </li>
+  <li>其他不同
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg">https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A">https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A</a></li>
+    </ul>
+  </li>
+  <li>引擎不同的几个方面：Storage mechanism、Locking levels、Indexing、Capabilities and functions</li>
+</ul>
+
+<h4 id="faq">FAQ</h4>
+<ul>
+  <li>
+    <p>问题：INT(M)中M究竟有何用？</p>
+
+    <p>int类型占四个字节，一个字节8比特位，也就是4*8=32比特位，可以表示的数字个数是2的32次方个(2^32)。声明一个int类型的数据，长度便已经固定，那么这个M究竟有何用？
+  结论：INT(M)中的M与数据存储长度没有关系，只是标识数据显示长度，在显示时不足无数会自动填充0进行补齐，必须配合AutoFill使用。</p>
+  </li>
+  <li>
+    <p>MySQL 中 InnoDB 引擎的行锁是通过加在什么上完成(或称实现) 的?</p>
+
+    <p>InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。
+  InnoDB 这 种行锁实现特点意味着:只有通过索引条件检索数据，InnoDB 才使用行级 锁，否则，InnoDB 将使用表锁!</p>
+  </li>
+  <li>各种锁
+    <ul>
+      <li>本质都为了实现数据一致性及各种事务控制</li>
+      <li>悲观锁：读取数据时就加锁排他</li>
+      <li>乐观锁：读取数据不加锁，更新时处理（比如版本号机制、CAS compare and swap算法）</li>
+      <li>共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁
+  <a href="https://www.jianshu.com/p/c456f726e9c7">https://www.jianshu.com/p/c456f726e9c7</a></li>
+    </ul>
+  </li>
+  <li>数据库三范式
+    <ul>
+      <li>表中的每个字段不可分割</li>
+      <li>表有且只有一个主键，也即是每个表只是描述一件事</li>
+      <li>不存在对非主键列的依赖传递，比如userId,userName不要同时出现在order中，有时为了查询效率也冗余个别字段</li>
+    </ul>
+  </li>
+  <li>
+    <p>一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?</p>
+
+    <p>(1)如果表的类型是 MyISAM，那么是 18
+      因为 MyISAM 表会把自增主键的最大 ID 记录到数据文件里，重启 MySQL 自增主键的最大 ID 也不会丢失
+  (2)如果表的类型是 InnoDB，那么是 15
+      InnoDB 表只是把自增主键的最大 ID 记录到内存中，所以重启数据库或者是对表进行 OPTIMIZE 操作，都会导致最大 ID 丢失</p>
+  </li>
+  <li>
+    <p>如何区分 FLOAT 和 DOUBLE?</p>
+
+    <p>以下是 FLOAT 和 DOUBLE 的区别:
+  浮点数以 8 位精度存储在 FLOAT 中，并且有四个字节。 浮点数存储在 DOUBLE 中，精度为 18 位，有八个字节。</p>
+  </li>
+  <li>
+    <p>区分 CHAR_LENGTH 和 LENGTH?</p>
+
+    <p>CHAR_LENGTH 是字符数，而 LENGTH 是字节数。Latin 字符的这两个数据是相同的，但是对 于 Unicode 和其他编码，它们是不同的。</p>
+  </li>
+  <li>
+    <p>federated 表是什么?</p>
+
+    <p>federated 表，允许访问位于其他服务器数据库上的表。
+  <a href="https://blog.csdn.net/qq_33578833/article/details/80177115">https://blog.csdn.net/qq_33578833/article/details/80177115</a></p>
+  </li>
+  <li>
+    <p>可以使用多少列创建索引?</p>
+
+    <p>任何标准表最多可以创建 16 个索引列。</p>
+    <h4 id="其他">其他</h4>
+  </li>
+  <li>Mysql主从同步 <a href="https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw">https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw</a></li>
+  <li>Mysql+Keepalived实现双高可用 <a href="https://www.cnblogs.com/kevingrace/p/6710136.html">https://www.cnblogs.com/kevingrace/p/6710136.html</a></li>
+  <li>PROCEDURE ANALYSE</li>
+  <li>全文索引</li>
+  <li>分区表 <a href="https://www.jianshu.com/p/b61d767f4ff5">https://www.jianshu.com/p/b61d767f4ff5</a></li>
+  <li>UTF-8编码占几个字节 <a href="https://blog.csdn.net/bluetjs/article/details/52936943">https://blog.csdn.net/bluetjs/article/details/52936943</a></li>
+</ul>
+
+<p><a href="https://database.51cto.com/art/201910/604128.htm">数据库规范</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+
+    <div style="text-align:center">
+    
+    <div class="pagination">
+      
+      <a href="/page4" class="button page-button">&laquo;</a>
+      
+
+      
+      
+      <a href="/page4" class="button page-button">1</a>
+      
+      
+      
+      <a href="/page2" class="button page-button">2</a>
+      
+      
+      
+      <a href="/page3" class="button page-button">3</a>
+      
+      
+      
+      <a href="/page4" class="button page-button">4</a>
+      
+      
+      
+      <a href="/page4" class="button current-page-button">5</a>
+      
+      
+      
+      <a href="/page6" class="button page-button">6</a>
+      
+      
+      
+      <a href="/page7" class="button page-button">7</a>
+      
+      
+      
+      <a href="/page8" class="button page-button">8</a>
+      
+      
+      
+      <a href="/page9" class="button page-button">9</a>
+      
+      
+      
+      <a href="/page10" class="button page-button">10</a>
+      
+      
+
+      
+      <a href="/page6" class="button page-button">&raquo;</a>
+      
+    </div>
+    
+    </div>
+  </div>
+
+    <div class="col-md-4">
+    <div class="post-contents">
+      <i class="fa fa-tags">&nbsp;&nbsp; Tags</i><br />
+      
+      
+      
+      <a  href="tag/programming">
+      <span class="label label-default">programming ( 4 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/python">
+      <span class="label label-default">python ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/云服务">
+      <span class="label label-default">云服务 ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/工具">
+      <span class="label label-default">工具 ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/网络">
+      <span class="label label-default">网络 ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/构建">
+      <span class="label label-default">构建 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/分布式">
+      <span class="label label-default">分布式 ( 12 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/股票">
+      <span class="label label-default">股票 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/读书笔记">
+      <span class="label label-default">读书笔记 ( 4 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/数据库">
+      <span class="label label-default">数据库 ( 6 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/算法">
+      <span class="label label-default">算法 ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Linux">
+      <span class="label label-default">linux ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Java">
+      <span class="label label-default">java ( 8 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/NoSQL">
+      <span class="label label-default">nosql ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/极致思考">
+      <span class="label label-default">极致思考 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/架构">
+      <span class="label label-default">架构 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/容器">
+      <span class="label label-default">容器 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Spring">
+      <span class="label label-default">spring ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/微服务">
+      <span class="label label-default">微服务 ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/BigData">
+      <span class="label label-default">bigdata ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/Network">
+      <span class="label label-default">network ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="tag/MQ">
+      <span class="label label-default">mq ( 1 )</span>
+      </a><br />
+
+      
+    </div>
+    <br />
+    <div class="post-contents">
+      <h3>About Me</h3>
+      <img src="/img/me.jpg" style="margin:20px auto 0 auto;">
+      <p style="font-size:18px;margin-top:10px">I'm Siglea,That's All.</p>
+      <br />
+    </div>
+    </div>
+</div>
+      </div>
+      <div class="clearfix">
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="container">
+
+    <h2 class="footer-heading">粉笔灰杂谈</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>粉笔灰杂谈</li>
+          <li><a href="mailto:siglea@sina.com">siglea@sina.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/siglea"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">siglea</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
