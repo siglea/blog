@@ -64,6 +64,20 @@ categories:
 不同于基于队列和交换器的RabbitMQ，Kafka的存储层是使用分区事务日志来实现的。
 - 过期日志会根据时间或大小，进行清除 
 - 极好的总结 <https://segmentfault.com/a/1190000021138998>
+- 一次事故 <https://www.jianshu.com/p/72a54f835b6b>
+```shell 
+# kafka默认只支持本地访问，如果需要外网访问，需要用hostname.com的方式配置
+# hostname.com可以是任意自定义的，不需要备案，只是起到"代名词"作用
+#1、
+config/server.properties
+listeners=PLAINTEXT://hostname.com:9092
+#2、
+#kafka broker机器配置hosts
+broker机器的内网ip  hostname.com
+#3、
+#调用端也是是kafka的Client端 的机器配置hosts
+broker机器的外网ip  hostname.com
+```
 
 #### 参考
 - 消息队列常见问题 

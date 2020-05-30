@@ -143,6 +143,20 @@ offset：指的是kafka的topic中的每个消费组消费的下标。简单的�
 不同于基于队列和交换器的RabbitMQ，Kafka的存储层是使用分区事务日志来实现的。</li>
   <li>过期日志会根据时间或大小，进行清除</li>
   <li>极好的总结 <a href="https://segmentfault.com/a/1190000021138998">https://segmentfault.com/a/1190000021138998</a></li>
+  <li>一次事故 <a href="https://www.jianshu.com/p/72a54f835b6b">https://www.jianshu.com/p/72a54f835b6b</a>
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># kafka默认只支持本地访问，如果需要外网访问，需要用hostname.com的方式配置</span>
+<span class="c"># hostname.com可以是任意自定义的，不需要备案，只是起到"代名词"作用</span>
+<span class="c">#1、</span>
+config/server.properties
+<span class="nv">listeners</span><span class="o">=</span>PLAINTEXT://hostname.com:9092
+<span class="c">#2、</span>
+<span class="c">#kafka broker机器配置hosts</span>
+broker机器的内网ip  hostname.com
+<span class="c">#3、</span>
+<span class="c">#调用端也是是kafka的Client端 的机器配置hosts</span>
+broker机器的外网ip  hostname.com
+</code></pre></div>    </div>
+  </li>
 </ul>
 
 <h4 id="参考">参考</h4>

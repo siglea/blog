@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 29 May 2020 23:42:45 +0800</pubDate>
-    <lastBuildDate>Fri, 29 May 2020 23:42:45 +0800</lastBuildDate>
+    <pubDate>Sat, 30 May 2020 16:06:58 +0800</pubDate>
+    <lastBuildDate>Sat, 30 May 2020 16:06:58 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -94,6 +94,20 @@ offset：指的是kafka的topic中的每个消费组消费的下标。简单的�
 不同于基于队列和交换器的RabbitMQ，Kafka的存储层是使用分区事务日志来实现的。&lt;/li&gt;
   &lt;li&gt;过期日志会根据时间或大小，进行清除&lt;/li&gt;
   &lt;li&gt;极好的总结 &lt;a href=&quot;https://segmentfault.com/a/1190000021138998&quot;&gt;https://segmentfault.com/a/1190000021138998&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;一次事故 &lt;a href=&quot;https://www.jianshu.com/p/72a54f835b6b&quot;&gt;https://www.jianshu.com/p/72a54f835b6b&lt;/a&gt;
+    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# kafka默认只支持本地访问，如果需要外网访问，需要用hostname.com的方式配置&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# hostname.com可以是任意自定义的，不需要备案，只是起到&quot;代名词&quot;作用&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#1、&lt;/span&gt;
+config/server.properties
+&lt;span class=&quot;nv&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;PLAINTEXT://hostname.com:9092
+&lt;span class=&quot;c&quot;&gt;#2、&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#kafka broker机器配置hosts&lt;/span&gt;
+broker机器的内网ip  hostname.com
+&lt;span class=&quot;c&quot;&gt;#3、&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#调用端也是是kafka的Client端 的机器配置hosts&lt;/span&gt;
+broker机器的外网ip  hostname.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;参考&quot;&gt;参考&lt;/h4&gt;
