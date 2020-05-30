@@ -107,7 +107,16 @@
     <ul>
       <li>生产者丢数据，可以用事务方式来保证发送成功或回滚，也可以队列接受后异步返回ack或nack来实现</li>
       <li>消息队列丢数据，可以持久化队列并且配置自动重复参数</li>
-      <li>消费者丢数据，手动ack</li>
+      <li>消费者丢数据，手动ack
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rabbitmq-server start
+service rabbitmq-server restart
+rabbitmqctl status
+rabbitmq-plugins <span class="nb">enable </span>rabbitmq_management
+rabbitmqctl add_user rabbitmq 123456
+rabbitmqctl set_user_tags rabbitmq administrator
+rabbitmqctl set_permissions <span class="nt">-p</span> / rabbitmq <span class="s2">".*"</span> <span class="s2">".*"</span> <span class="s2">".*"</span>
+</code></pre></div>        </div>
+      </li>
     </ul>
   </li>
   <li>kafka
@@ -132,7 +141,44 @@
 offset：指的是kafka的topic中的每个消费组消费的下标。简单的来说就是一条消息对应一个offset下标，每次消费数据的时候如果提交offset，那么下次消费就会从提交的offset加一那里开始消费。</li>
     </ul>
   </li>
+  <li>rocketmq</li>
 </ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># install rocketmq</span>
+unzip rocketmq-all-4.7.0-source-release.zip
+<span class="nb">cd </span>rocketmq-all-4.7.0/
+mvn <span class="nt">-Prelease-all</span> <span class="nt">-DskipTests</span> clean <span class="nb">install</span> <span class="nt">-U</span>
+<span class="nb">cd </span>distribution/target/rocketmq-4.7.0/rocketmq-4.7.0
+
+<span class="c"># config JAVA_HOME</span>
+vim ~/.bashrc
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/lib/jvm/jdk-13
+<span class="nb">export </span><span class="nv">JRE_HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/jre
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/lib:<span class="k">${</span><span class="nv">JRE_HOME</span><span class="k">}</span>/lib
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin:<span class="nv">$PATH</span>
+
+<span class="c">#Start Name Server</span>
+<span class="nb">nohup </span>sh bin/mqnamesrv &amp;
+<span class="nb">tail</span> <span class="nt">-f</span> ~/logs/rocketmqlogs/namesrv.log
+<span class="c">#The Name Server boot success...</span>
+
+<span class="c">#Start Broker</span>
+<span class="nb">nohup </span>sh bin/mqbroker <span class="nt">-n</span> localhost:9876 &amp;
+<span class="c">#The broker[%s, 172.30.30.233:10911] boot success...</span>
+
+<span class="c"># 外网访问 配置 /etc/hosts</span>
+<span class="c"># 相关报错 RemotingTooMuchRequestException: sendDefaultImpl call timeout；</span>
+broker机器的内网ip  hostname.com
+<span class="c"># 配置conf/broker.conf </span>
+<span class="nv">brokerIP1</span><span class="o">=</span>hostname.com
+./mqbroker <span class="nt">-n</span> localhost:9876 <span class="nt">-c</span> ../conf/broker.conf &amp;
+
+<span class="c"># 相关报错 No route info of this topic</span>
+<span class="c"># 保持客户端rocketmq版本号与服务器一致</span>
+<span class="c"># 设置该属性 autoCreateTopicEnable=true </span>
+./mqadmin topicList <span class="nt">-n</span> localhost:9876
+
+</code></pre></div></div>
 
 <h4 id="推拉模式">推拉模式</h4>
 <p>消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。</p>
@@ -143,8 +189,13 @@ offset：指的是kafka的topic中的每个消费组消费的下标。简单的�
 不同于基于队列和交换器的RabbitMQ，Kafka的存储层是使用分区事务日志来实现的。</li>
   <li>过期日志会根据时间或大小，进行清除</li>
   <li>极好的总结 <a href="https://segmentfault.com/a/1190000021138998">https://segmentfault.com/a/1190000021138998</a></li>
+  <li>zookeeper在kafka中的作用 <a href="https://www.jianshu.com/p/a036405f989c">https://www.jianshu.com/p/a036405f989c</a></li>
   <li>一次事故 <a href="https://www.jianshu.com/p/72a54f835b6b">https://www.jianshu.com/p/72a54f835b6b</a>
-    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># kafka默认只支持本地访问，如果需要外网访问，需要用hostname.com的方式配置</span>
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#启动zk</span>
+bin/zookeeper-server-start.sh config/zookeeper.properties &amp;
+<span class="c">#启动kafka</span>
+bin/kafka-server-start.sh config/server.properties
+<span class="c"># kafka默认只支持本地访问，如果需要外网访问，需要用hostname.com的方式配置</span>
 <span class="c"># hostname.com可以是任意自定义的，不需要备案，只是起到"代名词"作用</span>
 <span class="c">#1、</span>
 config/server.properties

@@ -41,6 +41,15 @@ categories:
     - 生产者丢数据，可以用事务方式来保证发送成功或回滚，也可以队列接受后异步返回ack或nack来实现
     - 消息队列丢数据，可以持久化队列并且配置自动重复参数
     - 消费者丢数据，手动ack
+```shell 
+rabbitmq-server start
+service rabbitmq-server restart
+rabbitmqctl status
+rabbitmq-plugins enable rabbitmq_management
+rabbitmqctl add_user rabbitmq 123456
+rabbitmqctl set_user_tags rabbitmq administrator
+rabbitmqctl set_permissions -p / rabbitmq ".*" ".*" ".*"
+```
     
 - kafka
     - (1)生产者丢数据
@@ -56,6 +65,45 @@ categories:
       这种情况一般是自动提交了offset，然后你处理程序过程中挂了。kafka以为你处理好了。再强调一次offset是干嘛的
       offset：指的是kafka的topic中的每个消费组消费的下标。简单的来说就是一条消息对应一个offset下标，每次消费数据的时候如果提交offset，那么下次消费就会从提交的offset加一那里开始消费。
 
+- rocketmq
+
+```shell
+# install rocketmq
+unzip rocketmq-all-4.7.0-source-release.zip
+cd rocketmq-all-4.7.0/
+mvn -Prelease-all -DskipTests clean install -U
+cd distribution/target/rocketmq-4.7.0/rocketmq-4.7.0
+
+# config JAVA_HOME
+vim ~/.bashrc
+export JAVA_HOME=/usr/lib/jvm/jdk-13
+export JRE_HOME=${JAVA_HOME}/jre
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib
+export PATH=${JAVA_HOME}/bin:$PATH
+
+#Start Name Server
+nohup sh bin/mqnamesrv &
+tail -f ~/logs/rocketmqlogs/namesrv.log
+#The Name Server boot success...
+
+#Start Broker
+nohup sh bin/mqbroker -n localhost:9876 &
+#The broker[%s, 172.30.30.233:10911] boot success...
+
+# 外网访问 配置 /etc/hosts
+# 相关报错 RemotingTooMuchRequestException: sendDefaultImpl call timeout；
+broker机器的内网ip  hostname.com
+# 配置conf/broker.conf 
+brokerIP1=hostname.com
+./mqbroker -n localhost:9876 -c ../conf/broker.conf &
+
+# 相关报错 No route info of this topic
+# 保持客户端rocketmq版本号与服务器一致
+# 设置该属性 autoCreateTopicEnable=true 
+./mqadmin topicList -n localhost:9876
+
+```
+
 #### 推拉模式
 消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。
 
@@ -64,8 +112,13 @@ categories:
 不同于基于队列和交换器的RabbitMQ，Kafka的存储层是使用分区事务日志来实现的。
 - 过期日志会根据时间或大小，进行清除 
 - 极好的总结 <https://segmentfault.com/a/1190000021138998>
+- zookeeper在kafka中的作用 <https://www.jianshu.com/p/a036405f989c>
 - 一次事故 <https://www.jianshu.com/p/72a54f835b6b>
 ```shell 
+#启动zk
+bin/zookeeper-server-start.sh config/zookeeper.properties &
+#启动kafka
+bin/kafka-server-start.sh config/server.properties
 # kafka默认只支持本地访问，如果需要外网访问，需要用hostname.com的方式配置
 # hostname.com可以是任意自定义的，不需要备案，只是起到"代名词"作用
 #1、

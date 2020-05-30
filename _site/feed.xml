@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 30 May 2020 16:06:58 +0800</pubDate>
-    <lastBuildDate>Sat, 30 May 2020 16:06:58 +0800</lastBuildDate>
+    <pubDate>Sun, 31 May 2020 00:15:33 +0800</pubDate>
+    <lastBuildDate>Sun, 31 May 2020 00:15:33 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -58,7 +58,16 @@
     &lt;ul&gt;
       &lt;li&gt;生产者丢数据，可以用事务方式来保证发送成功或回滚，也可以队列接受后异步返回ack或nack来实现&lt;/li&gt;
       &lt;li&gt;消息队列丢数据，可以持久化队列并且配置自动重复参数&lt;/li&gt;
-      &lt;li&gt;消费者丢数据，手动ack&lt;/li&gt;
+      &lt;li&gt;消费者丢数据，手动ack
+        &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;rabbitmq-server start
+service rabbitmq-server restart
+rabbitmqctl status
+rabbitmq-plugins &lt;span class=&quot;nb&quot;&gt;enable &lt;/span&gt;rabbitmq_management
+rabbitmqctl add_user rabbitmq 123456
+rabbitmqctl set_user_tags rabbitmq administrator
+rabbitmqctl set_permissions &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; / rabbitmq &lt;span class=&quot;s2&quot;&gt;&quot;.*&quot;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;.*&quot;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;.*&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;        &lt;/div&gt;
+      &lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
   &lt;li&gt;kafka
@@ -83,7 +92,44 @@
 offset：指的是kafka的topic中的每个消费组消费的下标。简单的来说就是一条消息对应一个offset下标，每次消费数据的时候如果提交offset，那么下次消费就会从提交的offset加一那里开始消费。&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
+  &lt;li&gt;rocketmq&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# install rocketmq&lt;/span&gt;
+unzip rocketmq-all-4.7.0-source-release.zip
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;rocketmq-all-4.7.0/
+mvn &lt;span class=&quot;nt&quot;&gt;-Prelease-all&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-DskipTests&lt;/span&gt; clean &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-U&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;distribution/target/rocketmq-4.7.0/rocketmq-4.7.0
+
+&lt;span class=&quot;c&quot;&gt;# config JAVA_HOME&lt;/span&gt;
+vim ~/.bashrc
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/lib/jvm/jdk-13
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JRE_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/jre
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;CLASSPATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.:&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/lib:&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JRE_HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/lib
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/bin:&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;#Start Name Server&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;nohup &lt;/span&gt;sh bin/mqnamesrv &amp;amp;
+&lt;span class=&quot;nb&quot;&gt;tail&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; ~/logs/rocketmqlogs/namesrv.log
+&lt;span class=&quot;c&quot;&gt;#The Name Server boot success...&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;#Start Broker&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;nohup &lt;/span&gt;sh bin/mqbroker &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; localhost:9876 &amp;amp;
+&lt;span class=&quot;c&quot;&gt;#The broker[%s, 172.30.30.233:10911] boot success...&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# 外网访问 配置 /etc/hosts&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 相关报错 RemotingTooMuchRequestException: sendDefaultImpl call timeout；&lt;/span&gt;
+broker机器的内网ip  hostname.com
+&lt;span class=&quot;c&quot;&gt;# 配置conf/broker.conf &lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;brokerIP1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;hostname.com
+./mqbroker &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; localhost:9876 &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; ../conf/broker.conf &amp;amp;
+
+&lt;span class=&quot;c&quot;&gt;# 相关报错 No route info of this topic&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 保持客户端rocketmq版本号与服务器一致&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 设置该属性 autoCreateTopicEnable=true &lt;/span&gt;
+./mqadmin topicList &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; localhost:9876
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h4 id=&quot;推拉模式&quot;&gt;推拉模式&lt;/h4&gt;
 &lt;p&gt;消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。&lt;/p&gt;
@@ -94,8 +140,13 @@ offset：指的是kafka的topic中的每个消费组消费的下标。简单的�
 不同于基于队列和交换器的RabbitMQ，Kafka的存储层是使用分区事务日志来实现的。&lt;/li&gt;
   &lt;li&gt;过期日志会根据时间或大小，进行清除&lt;/li&gt;
   &lt;li&gt;极好的总结 &lt;a href=&quot;https://segmentfault.com/a/1190000021138998&quot;&gt;https://segmentfault.com/a/1190000021138998&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;zookeeper在kafka中的作用 &lt;a href=&quot;https://www.jianshu.com/p/a036405f989c&quot;&gt;https://www.jianshu.com/p/a036405f989c&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;一次事故 &lt;a href=&quot;https://www.jianshu.com/p/72a54f835b6b&quot;&gt;https://www.jianshu.com/p/72a54f835b6b&lt;/a&gt;
-    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# kafka默认只支持本地访问，如果需要外网访问，需要用hostname.com的方式配置&lt;/span&gt;
+    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#启动zk&lt;/span&gt;
+bin/zookeeper-server-start.sh config/zookeeper.properties &amp;amp;
+&lt;span class=&quot;c&quot;&gt;#启动kafka&lt;/span&gt;
+bin/kafka-server-start.sh config/server.properties
+&lt;span class=&quot;c&quot;&gt;# kafka默认只支持本地访问，如果需要外网访问，需要用hostname.com的方式配置&lt;/span&gt;
 &lt;span class=&quot;c&quot;&gt;# hostname.com可以是任意自定义的，不需要备案，只是起到&quot;代名词&quot;作用&lt;/span&gt;
 &lt;span class=&quot;c&quot;&gt;#1、&lt;/span&gt;
 config/server.properties
