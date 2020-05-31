@@ -5,9 +5,183 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 31 May 2020 00:15:33 +0800</pubDate>
-    <lastBuildDate>Sun, 31 May 2020 00:15:33 +0800</lastBuildDate>
+    <pubDate>Sun, 31 May 2020 20:56:28 +0800</pubDate>
+    <lastBuildDate>Sun, 31 May 2020 20:56:28 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title> 数据结构 </title>
+        <description>&lt;h4 id=&quot;数组&quot;&gt;数组&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;数组可以说是最基本最常见的数据结构。数组一般用来存储相同类型的数据，可通过数组名和下标进行数据的访问和更新。数组中元素的存储是按照先后顺序进行的，同时在内存中也是按照这个顺序进行连续存放。数组相邻元素之间的内存地址的间隔一般就是数组数据类型的大小。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;链表&quot;&gt;链表&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;链表相较于数组，除了数据域，还增加了指针域用于构建链式的存储数据。链表中每一个节点都包含此节点的数据和指向下一节点地址的指针。由于是通过指针进行下一个数据元素的查找和访问，使得链表的自由度更高。&lt;/li&gt;
+  &lt;li&gt;这表现在对节点进行增加和删除时，只需要对上一节点的指针地址进行修改，而无需变动其它的节点。不过事物皆有两极，指针带来高自由度的同时，自然会牺牲数据查找的效率和多余空间的使用。&lt;/li&gt;
+  &lt;li&gt;一般常见的是有头有尾的单链表，对指针域进行反向链接，还可以形成双向链表或者循环链表。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;跳表&quot;&gt;跳表&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;链表虽然通过增加指针域提升了自由度，但是却导致数据的查询效率恶化。特别是当链表长度很长的时候，对数据的查询还得从头依次查询，这样的效率会更低。跳表的产生就是为了解决链表过长的问题，通过增加链表的多级索引来加快原始链表的查询效率。这样的方式可以让查询的时间复杂度从O(n)提升至O(logn)。&lt;/li&gt;
+  &lt;li&gt;跳表通过增加的多级索引能够实现高效的动态插入和删除，其效率和红黑树和平衡二叉树不相上下。目前redis和levelDB都有用到跳表。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;栈&quot;&gt;栈&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;后进先出&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;队列&quot;&gt;队列&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;先进先出&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;树&quot;&gt;树&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;别看树好像很高级，其实可看作是链表的高配版。树的实现就是对链表的指针域进行了扩充，增加了多个地址指向子结点。同时将“链表”竖起来，从而凸显了结点之间的层次关系，更便于分析和理解。&lt;/li&gt;
+  &lt;li&gt;树遍历
+    &lt;ul&gt;
+      &lt;li&gt;前序遍历：根结点 —&amp;gt; 左子树 —&amp;gt; 右子树&lt;/li&gt;
+      &lt;li&gt;中序遍历：左子树—&amp;gt; 根结点 —&amp;gt; 右子树&lt;/li&gt;
+      &lt;li&gt;后序遍历：左子树 —&amp;gt; 右子树 —&amp;gt; 根结点&lt;/li&gt;
+      &lt;li&gt;层次遍历：仅仅需按层次遍历就可以&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;平衡二叉树&quot;&gt;平衡二叉树&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;平衡二叉树又被称为AVL树，它是一棵二叉排序树，且具有以下性质：它是一棵空树或它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;红黑树&quot;&gt;红黑树&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;每个结点要么是红的要么是黑的。&lt;/li&gt;
+  &lt;li&gt;根结点是黑的。&lt;/li&gt;
+  &lt;li&gt;每个叶结点（叶结点即指树尾端NIL指针或NULL结点）都是黑的。&lt;/li&gt;
+  &lt;li&gt;如果一个结点是红的，那么它的两个儿子都是黑的。&lt;/li&gt;
+  &lt;li&gt;对于任意结点而言，其到叶结点树尾端NIL指针的每条路径都包含相同数目的黑结点。&lt;/li&gt;
+  &lt;li&gt;Map、Set、epoll/select中句柄集&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;堆&quot;&gt;堆&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;了解完二叉树，再来理解堆就不是什么难事了。堆通常是一个可以被看做一棵树的数组对象。堆的具体实现一般不通过指针域，而是通过构建一个一维数组与二叉树的父子结点进行对应，因此堆总是一颗完全二叉树。&lt;/li&gt;
+  &lt;li&gt;堆中某个节点的值总是不大于或不小于其父节点的值。将根节点最大的堆叫做最大堆或大根堆，根节点最小的堆叫做最小堆或小根堆。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;散列表-hash&quot;&gt;散列表 Hash&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;通过某种算法确定唯一（有些算法会出现不同的value算出相同的Hash值）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;图&quot;&gt;图&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;多维数据存储,实际应用中是通过图这种模式建立索引与关联关系&lt;/li&gt;
+  &lt;li&gt;图数据库？
+    &lt;ul&gt;
+      &lt;li&gt;图数据库(Graph database)并非指存储图片的数据库，而是以图这种数据结构存储和查询数据。&lt;/li&gt;
+      &lt;li&gt;图形数据库是一种在线数据库管理系统，具有处理图形数据模型的创建，读取，更新和删除（CRUD）操作。&lt;/li&gt;
+      &lt;li&gt;与其他数据库不同，关系在图数据库中占首要地位。这意味着应用程序不必使用外键或带外处理（如MapReduce）来推断数据连接。&lt;/li&gt;
+      &lt;li&gt;与关系数据库或其他NoSQL数据库相比，图数据库的数据模型也更加简单，更具表现力。&lt;/li&gt;
+      &lt;li&gt;图形数据库是为与事务（OLTP）系统一起使用而构建的，并且在设计时考虑了事务完整性和操作可用性。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/TFG7bWo1BFzjusQ2fEvVSA&quot;&gt;https://mp.weixin.qq.com/s/TFG7bWo1BFzjusQ2fEvVSA&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 31 May 2020 19:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html</guid>
+        
+        <category>数据结构与算法</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
+    
+      <item>
+        <title>排序算法概述</title>
+        <description>&lt;h4 id=&quot;冒泡排序&quot;&gt;冒泡排序&lt;/h4&gt;
+&lt;pre&gt;
+从左开始比较，大的往右换
+或
+从右开始比较，小的往左换
+重复上一步骤
+&lt;/pre&gt;
+&lt;h4 id=&quot;鸡尾排序&quot;&gt;鸡尾排序&lt;/h4&gt;
+&lt;pre&gt;
+也叫双向冒泡或者定向冒泡，
+从左开始比较，大的往右换
+与
+从右开始比较，小的往左换
+同时进行
+&lt;/pre&gt;
+&lt;h4 id=&quot;选择排序&quot;&gt;选择排序&lt;/h4&gt;
+&lt;pre&gt;
+与冒泡排序相比减少了多余的交换
+找出最小的元素放在最左侧，接着找第二小的...直到最后排完(不稳定)
+&lt;/pre&gt;
+&lt;h4 id=&quot;快速排序&quot;&gt;快速排序&lt;/h4&gt;
+&lt;pre&gt;
+选中一个基准元素X，小于X放在左侧，大于X放在右侧，分而治之，不断重复
+&lt;/pre&gt;
+&lt;h4 id=&quot;插入排序&quot;&gt;插入排序&lt;/h4&gt;
+&lt;pre&gt;
+从左侧开始设定一个有序区，从第二个元素开始去有序找自己的位置插入进去
+&lt;/pre&gt;
+&lt;h4 id=&quot;希尔排序&quot;&gt;希尔排序&lt;/h4&gt;
+&lt;pre&gt;
+两两分组，跨度交换，左小右大，逐渐缩小跨度为1，即完成排序
+&lt;/pre&gt;
+&lt;h4 id=&quot;归并排序比武排序&quot;&gt;归并排序(比武排序)&lt;/h4&gt;
+&lt;pre&gt;
+由一组数字分为两组，逐渐分为只包含2个元素的小组
+开始比较大小，左小右大
+比较完毕之后，开始合并，合并的时候按照小大顺序把2个小组合并成1个有序大组，直到最后1个最大有序组
+&lt;/pre&gt;
+&lt;h4 id=&quot;计数排序&quot;&gt;计数排序&lt;/h4&gt;
+&lt;pre&gt;
+建立【元素都为0】的空数组，开始遍历待排序数组
+如果待排元素值等于空数组的位置角标，则【元素+1】
+&lt;/pre&gt;
+&lt;h4 id=&quot;桶排序&quot;&gt;桶排序&lt;/h4&gt;
+&lt;pre&gt;
+计数排序的升级版，计数排序每个索引只能记录一个值，
+索引升级为桶（比如桶范围2.0-3.5）
+此时，一个桶里就可以放多个数据范围内的数据
+&lt;/pre&gt;
+&lt;h4 id=&quot;基数排序按位排序&quot;&gt;基数排序（按位排序）&lt;/h4&gt;
+&lt;pre&gt;
+提取每个元素的最后一位进行计数排序
+再提取倒数第二位进行计数排序
+直到最前一位
+比如：单词排序，长度不一的末尾用0代替
+&lt;/pre&gt;
+&lt;h4 id=&quot;堆排序&quot;&gt;堆排序&lt;/h4&gt;
+&lt;pre&gt;
+主要利用二叉堆是完全二叉堆这样的数据结构的特性
+把无序数组构建成二叉堆。
+循环删除堆顶元素，移到集合尾部，调节堆产生新的堆顶。
+&lt;/pre&gt;
+
+&lt;p&gt;参考 &lt;a href=&quot;https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA&quot;&gt;https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 31 May 2020 11:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html</guid>
+        
+        <category>数据结构与算法</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
     
       <item>
         <title> kafka activeMQ RabbitMq RocketMQ </title>
@@ -804,415 +978,6 @@ location @custom &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
         <pubDate>Sat, 04 Apr 2020 19:25:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html</link>
         <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html</guid>
-        
-        <category>Java</category>
-        
-        
-        <category>技术</category>
-        
-      </item>
-    
-      <item>
-        <title> SpringBoot </title>
-        <description>&lt;h4 id=&quot;spring-boot-是什么&quot;&gt;Spring Boot 是什么？&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;Spring 是一个“引擎”；&lt;/li&gt;
-  &lt;li&gt;Spring MVC 是基于Spring的一个 MVC 框架；&lt;/li&gt;
-  &lt;li&gt;Spring Boot 是基于Spring的条件注册的一套快速开发整合包。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;springboot启动原理-&quot;&gt;SpringBoot启动原理 ☆☆☆&lt;/h4&gt;
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;springframework&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;boot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SpringApplication&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SpringApplication&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ResourceLoader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resourceLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;primarySources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;c1&quot;&gt;// ... 省略代码&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;resourceLoader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resourceLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-            &lt;span class=&quot;nc&quot;&gt;Assert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;notNull&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;primarySources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;PrimarySources must not be null&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;primarySources&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LinkedHashSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;primarySources&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-            &lt;span class=&quot;c1&quot;&gt;// 1. 推测ApplicationType&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;webApplicationType&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;WebApplicationType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;deduceFromClasspath&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-            &lt;span class=&quot;c1&quot;&gt;// 2. 根据spring.factories初始化ApplicationContextInitializer 与 ApplicationListener&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setInitializers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getSpringFactoriesInstances&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ApplicationContextInitializer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setListeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getSpringFactoriesInstances&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ApplicationListener&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-            &lt;span class=&quot;c1&quot;&gt;// 3. 推测 Main入口&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mainApplicationClass&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;deduceMainApplicationClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ConfigurableApplicationContext&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// ... 省略代码&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;ConfigurableApplicationContext&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;Collection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;SpringBootExceptionReporter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exceptionReporters&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;configureHeadlessProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;SpringApplicationRunListeners&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getRunListeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// 4. SpringApplicationRunListeners生命周期之started()&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;starting&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// ... 省略代码&lt;/span&gt;
-       &lt;span class=&quot;nc&quot;&gt;Collection&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exceptionReporters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-       &lt;span class=&quot;nc&quot;&gt;ApplicationArguments&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationArguments&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;DefaultApplicationArguments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;c1&quot;&gt;// 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared()&lt;/span&gt;
-       &lt;span class=&quot;nc&quot;&gt;ConfigurableEnvironment&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;prepareEnvironment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationArguments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;configureIgnoreBeanInfo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;nc&quot;&gt;Banner&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;printedBanner&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printBanner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;createApplicationContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;exceptionReporters&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getSpringFactoriesInstances&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;SpringBootExceptionReporter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]{&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ConfigurableApplicationContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;c1&quot;&gt;// 6. 初始化类加载器、bean产生器、资源加载器等，打印banner&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;prepareContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationArguments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;printedBanner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;c1&quot;&gt;// 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等&lt;/span&gt;
-       &lt;span class=&quot;c1&quot;&gt;//    SpringApplicationRunListeners生命周期之contextPrepared()/contextLoaded()&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;refreshContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;afterRefresh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationArguments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;stopWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;logStartupInfo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-           &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;StartupInfoLogger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mainApplicationClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;logStarted&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getApplicationLog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stopWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;started&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;callRunners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;applicationArguments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;n&quot;&gt;listeners&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;running&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-       &lt;span class=&quot;c1&quot;&gt;// ... 省略代码&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;启动原理解析&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;http://tengj.top/2017/03/09/springboot3/&quot;&gt;http://tengj.top/2017/03/09/springboot3/&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;自动装配之@ComponentScan详解&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/mapleleafforest/article/details/86623578&quot;&gt;https://blog.csdn.net/mapleleafforest/article/details/86623578&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;自动装配之@EnableAutoConfiguration详解&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/mapleleafforest/article/details/87273213&quot;&gt;https://blog.csdn.net/mapleleafforest/article/details/87273213&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;springboot自动配置-&quot;&gt;SpringBoot自动配置 ☆☆☆&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;SpringBoot项目配置注解@EnableAutoConfiguration后&lt;/li&gt;
-  &lt;li&gt;SpringBoot启动扫描META-INF下的spring.factories&lt;/li&gt;
-  &lt;li&gt;spring.factories子配置项org.springframework.boot.autoconfigure.EnableAutoConfiguration配置了所有可以自动配置的组件&lt;/li&gt;
-  &lt;li&gt;各个XXXAutoConfiguration按照各自的ConditionalOnClass/OnBean等，判断是否加载XXX配置&lt;/li&gt;
-  &lt;li&gt;根据XXX配置的@Import加载相关的其他类，之后通过反射机制初始化Bean&lt;/li&gt;
-  &lt;li&gt;之后即可通过注入的方式使用
-    &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// 比如DataSourceAutoConfiguration的自动配置是检测到DataSource.class 与 EmbeddedDatabaseType.class存在&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// DataSource是javax包中自带，而EmbeddedDatabaseType存在于spring-boot-starter-jdbc中&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// 因此在pom中引入spring-boot-starter-jdbc后，即可触发加载操作&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// 接下来就是根据spring.datasource相关配置初始化PooledDataSource 或者 直接使用EmbeddedDatabase&lt;/span&gt;
-&lt;span class=&quot;nd&quot;&gt;@Configuration&lt;/span&gt;
-&lt;span class=&quot;nd&quot;&gt;@ConditionalOnClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;DataSource&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;EmbeddedDatabaseType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt;
-&lt;span class=&quot;nd&quot;&gt;@EnableConfigurationProperties&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;DataSourceProperties&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt;
-&lt;span class=&quot;nd&quot;&gt;@Import&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;DataSourcePoolMetadataProvidersConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;DataSourceInitializationConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;DataSourceAutoConfiguration&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// &lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-    &lt;p&gt;DataSourceAutoConfiguration解析&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/kangsa998/article/details/90231518&quot;&gt;https://blog.csdn.net/kangsa998/article/details/90231518&lt;/a&gt;&lt;/p&gt;
-&lt;h4 id=&quot;springboot的starter-&quot;&gt;SpringBoot的Starter ☆☆☆&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/lenve/p/10892011.html&quot;&gt;https://www.cnblogs.com/lenve/p/10892011.html&lt;/a&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;SpringBoot启动机制（starter机制）核心原理详解&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/d166d935217b&quot;&gt;https://www.jianshu.com/p/d166d935217b&lt;/a&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;实现一个Spring boot stater&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/fdb574e1f77c&quot;&gt;https://www.jianshu.com/p/fdb574e1f77c&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;springboot常用注解&quot;&gt;SpringBoot常用注解&lt;/h4&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@Conditional
-@SpringBootConfiguration
-@EnableAutoConfiguration
-@SpringBootApplication
-@Configuration：代表这个类是一个配置类。
-@ComponentScan：用来扫描指定包下面的注解类。
-@Import：用来导入其他的@Configuration配置类。
-@ImportResource：用来导入xml配置文件，比如某些配置一定要xml配置。
-@Bean：用来定义一个bean，可以指定初始、销毁方法，及bean范围等。
-@Controller 标识一个类为控制器。
-@RequestMapping URL的映射。
-@ResponseBody 返回结果转换为JSON字符串。
-@RequestBody 表示接收JSON格式字符串参数。
-@RestController这个注解，而不是@Controller，不过这个注解同样不是Spring boot提供的，而是Spring MVC4中的提供的注解，表示一个支持Restful的控制器。
-这个类中有三个URL映射是相同的，即都是/article/{id}，这在@Controller标识的类中是不允许出现的。这里的可以通过method来进行区分，produces的作用是表示返回结果的类型是JSON。
-@PathVariable这个注解，也是Spring MVC提供的，其作用是表示该变量的值是从访问路径中获取。
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;27个核心注解
-&lt;a href=&quot;https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA&quot;&gt;https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA&lt;/a&gt;&lt;/p&gt;
-&lt;h4 id=&quot;springwebapplication-与-servlet&quot;&gt;SpringWebApplication 与 Servlet&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;Servlet是JavaWeb的核心，可以理解为CGI的Java线程版本&lt;/li&gt;
-  &lt;li&gt;SpringMVC核心用到DispatcherServlet，可以配置多个urlMapping&lt;/li&gt;
-  &lt;li&gt;Struts2/SpringMVC是基于Servlet实现分发，而Struts1是基于Filter&lt;/li&gt;
-  &lt;li&gt;一个SpringWebApplication可以定义多个Servlet，需要区分urlMapping&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;springboot-中的-tomcat-是如何启动的&quot;&gt;SpringBoot 中的 Tomcat 是如何启动的？&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ&quot;&gt;https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;springjdbc--mybatis--spring-data--jpa&quot;&gt;SpringJDBC / Mybatis / Spring Data / JPA&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;Mybatis的集成和使用&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2018/12/03/springboot/chapter-thirty-five/&quot;&gt;https://blog.lqdev.cn/2018/12/03/springboot/chapter-thirty-five/&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Mybatis-plus的集成和使用&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2018/07/21/springboot/chapter-nine/&quot;&gt;https://blog.lqdev.cn/2018/07/21/springboot/chapter-nine/&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;spring-security--apache-shrio--jwt-javawebtoken&quot;&gt;Spring Security / Apache Shrio / JWT JavaWebToken&lt;/h4&gt;
-
-&lt;h4 id=&quot;springboot-打出来的war中的webxml消失了&quot;&gt;SpringBoot 打出来的war中的web.xml消失了&lt;/h4&gt;
-&lt;p&gt;springboot 是如何帮我们省去web.xml配置的&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app&quot;&gt;https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app&lt;/a&gt;&lt;/p&gt;
-&lt;h4 id=&quot;webmvcconfigureradapter-与-webmvcconfigurationsupport&quot;&gt;WebMvcConfigurerAdapter 与 WebMvcConfigurationSupport&lt;/h4&gt;
-&lt;p&gt;(遇到的一个坑查了半天)
-&lt;a href=&quot;https://blog.csdn.net/innovationad/article/details/79959383&quot;&gt;https://blog.csdn.net/innovationad/article/details/79959383&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;springboot之actuator&quot;&gt;SpringBoot之Actuator&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;Spring Boot Actuator:健康检查、审计、统计和监控&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/d5943e303a1f&quot;&gt;https://www.jianshu.com/p/d5943e303a1f&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;监控管理之Spring Boot Admin使用&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2018/09/14/springboot/chapter-twenty-eight/&quot;&gt;https://blog.lqdev.cn/2018/09/14/springboot/chapter-twenty-eight/&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;springboot日志管理之aop统一日志&quot;&gt;SpringBoot日志管理之AOP统一日志&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2018/08/24/springboot/chapter-twenty-four/&quot;&gt;https://blog.lqdev.cn/2018/08/24/springboot/chapter-twenty-four/&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;springboot日志管理之追加统一traceid&quot;&gt;SpringBoot日志管理之追加统一traceId&lt;/h4&gt;
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.slf4j.MDC&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.springframework.web.servlet.ModelAndView&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.springframework.web.servlet.handler.HandlerInterceptorAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;javax.servlet.http.HttpServletRequest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;javax.servlet.http.HttpServletResponse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LogTraceInterceptor&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HandlerInterceptorAdapter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;preHandle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;HttpServletRequest&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HttpServletResponse&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;no&quot;&gt;MDC&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Constant&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;traceId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Constant&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;traceId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;:&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;RandomHelper&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;generateNonceNumStr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;preHandle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;postHandle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;HttpServletRequest&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;HttpServletResponse&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ModelAndView&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modelAndView&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;postHandle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modelAndView&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;no&quot;&gt;MDC&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;remove&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Constant&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;traceId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;nt&quot;&gt;&amp;lt;appender&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;xhs&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;file&amp;gt;&lt;/span&gt;${LOG_HOME}/app.log&lt;span class=&quot;nt&quot;&gt;&amp;lt;/file&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;rollingPolicy&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;FileNamePattern&amp;gt;&lt;/span&gt;${LOG_HOME}/app.%d{yyyy-MM-dd}.log&lt;span class=&quot;nt&quot;&gt;&amp;lt;/FileNamePattern&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;MaxHistory&amp;gt;&lt;/span&gt;30&lt;span class=&quot;nt&quot;&gt;&amp;lt;/MaxHistory&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/rollingPolicy&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;encoder&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;pattern&amp;gt;&lt;/span&gt;%d{HH:mm:ss.SSS} %X{traceId} [%thread] %-5level %c{10} - %msg%n&lt;span class=&quot;nt&quot;&gt;&amp;lt;/pattern&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;charset&amp;gt;&lt;/span&gt;UTF-8&lt;span class=&quot;nt&quot;&gt;&amp;lt;/charset&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/encoder&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/appender&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h4 id=&quot;springboot--dubbo&quot;&gt;SpringBoot &amp;amp; Dubbo&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2018/09/28/springboot/chapter-twenty-nine/&quot;&gt;https://blog.lqdev.cn/2018/09/28/springboot/chapter-twenty-nine/&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;springboot-异步的各种实现&quot;&gt;SpringBoot 异步的各种实现&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;异步开发之异步请求&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2018/08/16/springboot/chapter-twenty/&quot;&gt;https://blog.lqdev.cn/2018/08/16/springboot/chapter-twenty/&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;异步开发之异步调用&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2018/08/17/springboot/chapter-twenty-one/&quot;&gt;https://blog.lqdev.cn/2018/08/17/springboot/chapter-twenty-one/&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA&quot;&gt;https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;事件的发布和监听&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2018/11/06/springboot/chapter-thirty-two/&quot;&gt;https://blog.lqdev.cn/2018/11/06/springboot/chapter-thirty-two/&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;RabbitMQ的集成和使用&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2018/07/24/springboot/chapter-twelve/&quot;&gt;https://blog.lqdev.cn/2018/07/24/springboot/chapter-twelve/&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2019/07/21/springboot/chapter-thirty-eight/&quot;&gt;https://blog.lqdev.cn/2019/07/21/springboot/chapter-thirty-eight/&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;springboot--webservice&quot;&gt;SpringBoot &amp;amp; WebService&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;Spring web Servcies集成和使用&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2018/11/09/springboot/chapter-thirty-three/&quot;&gt;https://blog.lqdev.cn/2018/11/09/springboot/chapter-thirty-three/&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;CXF构建WebService服务&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/&quot;&gt;https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;ltw-in-jdk-or-springboot&quot;&gt;LTW In Jdk Or SpringBoot&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/takumicx/p/10150344.html&quot;&gt;https://www.cnblogs.com/takumicx/p/10150344.html&lt;/a&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;集成框架spring-integration-mule-esb-or-apache-camel比较&quot;&gt;集成框架Spring Integration, Mule ESB or Apache Camel比较&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.jdon.com/soa/integration-framework-comparison-spring.html&quot;&gt;https://www.jdon.com/soa/integration-framework-comparison-spring.html&lt;/a&gt;
-&lt;a href=&quot;https://www.jianshu.com/p/68aba8d09a89&quot;&gt;https://www.jianshu.com/p/68aba8d09a89&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Fri, 27 Mar 2020 22:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html</guid>
-        
-        <category>Java</category>
-        
-        <category>Spring</category>
-        
-        
-        <category>技术</category>
-        
-      </item>
-    
-      <item>
-        <title> JVM 常用工具 </title>
-        <description>&lt;h4 id=&quot;jmap--内存占用情况查询&quot;&gt;jmap : 内存占用情况查询&lt;/h4&gt;
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;## 查询某个pid进程对应的应用程序内存占用情况&lt;/span&gt;
-jmap &lt;span class=&quot;nt&quot;&gt;-heap&lt;/span&gt; pid
- 
-&lt;span class=&quot;c&quot;&gt;## 示例1&lt;/span&gt;
-jmap &lt;span class=&quot;nt&quot;&gt;-heap&lt;/span&gt; 5940
-
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;root@VM_0_8_centos ~]# jmap &lt;span class=&quot;nt&quot;&gt;-heap&lt;/span&gt; 27472
-Attaching to process ID 27472, please wait...
-Debugger attached successfully.
-Server compiler detected.
-JVM version is 25.171-b11
-
-using thread-local object allocation.
-Parallel GC with 2 thread&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-
-Heap Configuration:
-   MinHeapFreeRatio         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0
-   MaxHeapFreeRatio         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 100
-   MaxHeapSize              &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 2051014656 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1956.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   NewSize                  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 42991616 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;41.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   MaxNewSize               &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 683671552 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;652.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   OldSize                  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 87031808 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;83.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   NewRatio                 &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 2
-   SurvivorRatio            &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 8
-   MetaspaceSize            &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 21807104 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;20.796875MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   CompressedClassSpaceSize &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1073741824 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1024.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   MaxMetaspaceSize         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 17592186044415 MB
-   G1HeapRegionSize         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-
-Heap Usage:
-PS Young Generation
-Eden Space:
-   capacity &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 37224448 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;35.5MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   used     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 14139096 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;13.484092712402344MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   free     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 23085352 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;22.015907287597656MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   37.98335975324604% used
-From Space:
-   capacity &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 3145728 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   used     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 2929584 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;2.7938690185546875MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   free     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 216144 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0.2061309814453125MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   93.12896728515625% used
-To Space:
-   capacity &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 3670016 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3.5MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   used     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0.0MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   free     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 3670016 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3.5MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   0.0% used
-PS Old Generation
-   capacity &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 165150720 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;157.5MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   used     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 98856376 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;94.27678680419922MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   free     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 66294344 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;63.22321319580078MB&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-   59.8582773359995% used
-
-26452 interned Strings occupying 2659208 bytes.
-
-&lt;span class=&quot;c&quot;&gt;## 示例2&lt;/span&gt;
-jmap &lt;span class=&quot;nt&quot;&gt;-F&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-histo&lt;/span&gt; 16464 &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; 16464.log
-&lt;span class=&quot;nt&quot;&gt;-histo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:live] 打印每个class的实例数目,内存占用,类全名信息. VM的内部类名字开头会加上前缀”&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;”. 如果live子参数加上后,只统计活的对象数量. 
-
-&lt;span class=&quot;c&quot;&gt;## 示例2&lt;/span&gt;
-jmap &lt;span class=&quot;nt&quot;&gt;-dump&lt;/span&gt;:format&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;b,file&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;outfile 3024可以将3024进程的内存heap输出出来到outfile文件里，再配合MAT（内存分析工具）。
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;jstat-可以实时监测系统资源占用与jvm运行情况&quot;&gt;jstat: 可以实时监测系统资源占用与jvm运行情况&lt;/h4&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;## 命令语法结构：
-Usage: jstat -help|-options
-       jstat -&amp;lt;option&amp;gt; [-t] [-h&amp;lt;lines&amp;gt;] &amp;lt;vmid&amp;gt; [&amp;lt;interval&amp;gt; [&amp;lt;count&amp;gt;]]
-## 参数解释：
-Options — 选项，我们一般使用 -gcutil 查看gc情况
--t      — 输出Timestamp
-vmid    — VM的进程号，即当前运行的java进程号
-interval– 间隔时间，单位为秒或者毫秒
-count   — 打印次数，如果缺省则打印无数次
- 
-S0  — Heap上的 Survivor space 0 区已使用空间的百分比
-S1  — Heap上的 Survivor space 1 区已使用空间的百分比
-E   — Heap上的 Eden space 区已使用空间的百分比
-O   — Heap上的 Old space 区已使用空间的百分比
-P   — Perm space 区已使用空间的百分比
-YGC — 从应用程序启动到采样时发生 Young GC 的次数
-YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒)
-FGC — 从应用程序启动到采样时发生 Full GC 的次数
-FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒)
-GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒)
-
-## jstat -options
-    -class 类加载统计
-    -compiler 编译统计 
-    -gc
-    -gccapacity
-    -gccause Allocation Failure
-    -gcmetacapacity 元数据空间统计
-    -gcnew
-    -gcnewcapacity
-    -gcold
-    -gcoldcapacity
-    -gcutil 总结垃圾回收统计
-    -printcompilation JVM编译方法统计
-
-## 示例1 总结垃圾回收统计
-[root@VM_0_8_centos ~]# jstat -gcutil 27472 1000 5
-  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT
- 78.04   0.00  14.10  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  24.05  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  34.14  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  40.62  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  47.20  61.31  96.88  94.27    288    5.612     4    3.335    8.947
-
-## 示例2 类加载统计
-[root@VM_0_8_centos ~]# jstat -class -t 27472 1000 5
-Timestamp       加载class的数量  所占用空间大小  未加载数量  未加载占用空间     Time(秒)
-Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
-         5359.3  10847 20148.1        0     0.0      46.25
-         5360.4  10847 20148.1        0     0.0      46.25
-         5361.4  10847 20148.1        0     0.0      46.25
-         5362.3  10847 20148.1        0     0.0      46.25
-         5363.3  10847 20148.1        0     0.0      46.25
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;jstat命令使用
-&lt;a href=&quot;https://www.cnblogs.com/lizhonghua34/p/7307139.html&quot;&gt;https://www.cnblogs.com/lizhonghua34/p/7307139.html&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;JVM运行时内存使用情况监控
-&lt;a href=&quot;https://blog.csdn.net/zmx729618/article/details/78392715&quot;&gt;https://blog.csdn.net/zmx729618/article/details/78392715&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Fri, 27 Mar 2020 22:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html</guid>
         
         <category>Java</category>
         
