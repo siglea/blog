@@ -117,10 +117,61 @@
 (可以简单理解为”另一种形式的MapReduce”或者是第二代”引擎”，需要在Hadoop体系使用)</li>
 </ul>
 
+<h4 id="搭建单机hadoop">搭建单机Hadoop</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 配置环境变量</span>
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/home/java/jdk1.8
+<span class="nb">export </span><span class="nv">JRE_HOME</span><span class="o">=</span>/home/java/jdk1.8/jre
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="nv">$JAVA_HOME</span>/lib/dt.jar:<span class="nv">$JAVA_HOME</span>/lib/tools.jar:<span class="nv">$JRE_HOME</span>/lib
+
+<span class="nb">export </span><span class="nv">HADOOP_HOME</span><span class="o">=</span>/home/hadoop/hadoop2.8
+<span class="nb">export </span><span class="nv">HADOOP_COMMON_LIB_NATIVE_DIR</span><span class="o">=</span><span class="nv">$HADOOP_HOME</span>/lib/native
+<span class="nb">export </span><span class="nv">HADOOP_OPTS</span><span class="o">=</span><span class="s2">"-Djava.library.path=</span><span class="nv">$HADOOP_HOME</span><span class="s2">/lib"</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>.:<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin:<span class="k">${</span><span class="nv">HADOOP_HOME</span><span class="k">}</span>/bin:<span class="nv">$PATH</span>
+
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hadoop  
+<span class="nb">mkdir</span>  /root/hadoop/tmp  
+<span class="nb">mkdir</span>  /root/hadoop/var  
+<span class="nb">mkdir</span>  /root/hadoop/dfs  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/name  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/data
+
+<span class="c"># 3. 修改配置文件</span>
+vim core-site.xml
+vim hadoop-env.sh
+vim hdfs-site.xml
+vim mapred-site.xml
+
+<span class="c"># 4. 启动</span>
+bin/hadoop  namenode  <span class="nt">-format</span>
+start-dfs.sh
+start-yarn.sh
+</code></pre></div></div>
+
+<h4 id="搭建单机hbase">搭建单机HBase</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 搭建好Hadoop</span>
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hbase  
+<span class="nb">mkdir</span>  /root/hbase/tmp  
+<span class="nb">mkdir</span>  /root/hbase/pids
+<span class="c"># 3. 启动</span>
+./start-hbase.sh
+<span class="c"># 4. 常用命令</span>
+<span class="c"># 进入shell</span>
+hbase shell
+create <span class="s1">'t_user'</span>,<span class="s1">'st1'</span>,<span class="s1">'st2'</span>
+put <span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st1:age'</span>,<span class="s1">'18'</span>
+put <span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st2:name'</span>,<span class="s1">'zhangsan'</span>
+scan <span class="s1">'t_user'</span> <span class="c"># 查询该表数据</span>
+describe <span class="s1">'t_user'</span>
+delete<span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st1:age'</span>
+disable <span class="s1">'t_user'</span>
+drop <span class="s1">'t_user'</span>
+</code></pre></div></div>
 <h4 id="参考">参考</h4>
 <ul>
   <li>白话大数据 <a href="https://www.zhihu.com/question/27974418/answer/156227565">https://www.zhihu.com/question/27974418/answer/156227565</a></li>
-  <li>一步步搭建Hadoop体系 <a href="http://www.panchengming.com/archives/page/4/">http://www.panchengming.com/archives/page/4/</a></li>
+  <li>一步步搭建Hadoop体系 <a href="https://blog.csdn.net/qazwsxpcm/article/list/2?t=1">https://blog.csdn.net/qazwsxpcm/article/list/2?t=1</a></li>
 </ul>
 
   </div>

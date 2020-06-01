@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 01 Jun 2020 12:08:09 +0800</pubDate>
-    <lastBuildDate>Mon, 01 Jun 2020 12:08:09 +0800</lastBuildDate>
+    <pubDate>Mon, 01 Jun 2020 15:59:47 +0800</pubDate>
+    <lastBuildDate>Mon, 01 Jun 2020 15:59:47 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -507,10 +507,61 @@ broker机器的外网ip  hostname.com
 (可以简单理解为”另一种形式的MapReduce”或者是第二代”引擎”，需要在Hadoop体系使用)&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;h4 id=&quot;搭建单机hadoop&quot;&gt;搭建单机Hadoop&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 1. 配置环境变量&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/java/jdk1.8
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JRE_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/java/jdk1.8/jre
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;CLASSPATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.:&lt;span class=&quot;nv&quot;&gt;$JAVA_HOME&lt;/span&gt;/lib/dt.jar:&lt;span class=&quot;nv&quot;&gt;$JAVA_HOME&lt;/span&gt;/lib/tools.jar:&lt;span class=&quot;nv&quot;&gt;$JRE_HOME&lt;/span&gt;/lib
+
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/hadoop/hadoop2.8
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_COMMON_LIB_NATIVE_DIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;/lib/native
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_OPTS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;-Djava.library.path=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.:&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/bin:&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/bin:&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# 2. 创建目录&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/tmp  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/var  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/dfs  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/dfs/name  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/dfs/data
+
+&lt;span class=&quot;c&quot;&gt;# 3. 修改配置文件&lt;/span&gt;
+vim core-site.xml
+vim hadoop-env.sh
+vim hdfs-site.xml
+vim mapred-site.xml
+
+&lt;span class=&quot;c&quot;&gt;# 4. 启动&lt;/span&gt;
+bin/hadoop  namenode  &lt;span class=&quot;nt&quot;&gt;-format&lt;/span&gt;
+start-dfs.sh
+start-yarn.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;搭建单机hbase&quot;&gt;搭建单机HBase&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 1. 搭建好Hadoop&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 2. 创建目录&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hbase  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hbase/tmp  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hbase/pids
+&lt;span class=&quot;c&quot;&gt;# 3. 启动&lt;/span&gt;
+./start-hbase.sh
+&lt;span class=&quot;c&quot;&gt;# 4. 常用命令&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 进入shell&lt;/span&gt;
+hbase shell
+create &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st1'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st2'&lt;/span&gt;
+put &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'1001'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st1:age'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'18'&lt;/span&gt;
+put &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'1001'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st2:name'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'zhangsan'&lt;/span&gt;
+scan &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# 查询该表数据&lt;/span&gt;
+describe &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;
+delete&lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'1001'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st1:age'&lt;/span&gt;
+disable &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;
+drop &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;h4 id=&quot;参考&quot;&gt;参考&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;白话大数据 &lt;a href=&quot;https://www.zhihu.com/question/27974418/answer/156227565&quot;&gt;https://www.zhihu.com/question/27974418/answer/156227565&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;一步步搭建Hadoop体系 &lt;a href=&quot;http://www.panchengming.com/archives/page/4/&quot;&gt;http://www.panchengming.com/archives/page/4/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;一步步搭建Hadoop体系 &lt;a href=&quot;https://blog.csdn.net/qazwsxpcm/article/list/2?t=1&quot;&gt;https://blog.csdn.net/qazwsxpcm/article/list/2?t=1&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         <pubDate>Fri, 01 May 2020 19:25:00 +0800</pubDate>

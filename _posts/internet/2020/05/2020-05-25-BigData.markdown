@@ -35,7 +35,60 @@ categories:
 - Storm，可以用来处理源源不断流进来的消息，处理之后将结果写入到某个存储中去。实时性方面做得极好。(可以脱离Hadoop体系单独使用)
 - Spark，是一个基于内存计算的开源集群计算系统，目的是更快速的进行数据分析。Spark由加州伯克利大学AMP实验室Matei为主的小团队使用Scala开发，类似于Hadoop MapReduce的通用并行计算框架，Spark基于Map Reduce算法实现的分布式计算，拥有Hadoop MapReduce所具有的优点，但不同于MapReduce的是Job中间输出和结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的Map Reduce的算法。
   (可以简单理解为"另一种形式的MapReduce"或者是第二代"引擎"，需要在Hadoop体系使用)
-  
+
+#### 搭建单机Hadoop
+```shell
+# 1. 配置环境变量
+export JAVA_HOME=/home/java/jdk1.8
+export JRE_HOME=/home/java/jdk1.8/jre
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib
+
+export HADOOP_HOME=/home/hadoop/hadoop2.8
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib"
+export PATH=.:${JAVA_HOME}/bin:${HADOOP_HOME}/bin:$PATH
+
+# 2. 创建目录
+mkdir  /root/hadoop  
+mkdir  /root/hadoop/tmp  
+mkdir  /root/hadoop/var  
+mkdir  /root/hadoop/dfs  
+mkdir  /root/hadoop/dfs/name  
+mkdir  /root/hadoop/dfs/data
+
+# 3. 修改配置文件
+vim core-site.xml
+vim hadoop-env.sh
+vim hdfs-site.xml
+vim mapred-site.xml
+
+# 4. 启动
+bin/hadoop  namenode  -format
+start-dfs.sh
+start-yarn.sh
+```  
+
+#### 搭建单机HBase
+```shell
+# 1. 搭建好Hadoop
+# 2. 创建目录
+mkdir  /root/hbase  
+mkdir  /root/hbase/tmp  
+mkdir  /root/hbase/pids
+# 3. 启动
+./start-hbase.sh
+# 4. 常用命令
+# 进入shell
+hbase shell
+create 't_user','st1','st2'
+put 't_user','1001','st1:age','18'
+put 't_user','1001','st2:name','zhangsan'
+scan 't_user' # 查询该表数据
+describe 't_user'
+delete't_user','1001','st1:age'
+disable 't_user'
+drop 't_user'
+```
 #### 参考
 - 白话大数据 <https://www.zhihu.com/question/27974418/answer/156227565>
-- 一步步搭建Hadoop体系 <http://www.panchengming.com/archives/page/4/>
+- 一步步搭建Hadoop体系 <https://blog.csdn.net/qazwsxpcm/article/list/2?t=1>
