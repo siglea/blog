@@ -115,14 +115,8 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 #### 其他KV的NoSQL： Leveldb、Rocksdb、Tair
 <https://mp.weixin.qq.com/s/JSPvpnKMzbehP7urdDOlbA>
 
-<<<<<<< HEAD:_posts/internet/2019/2019-11-12-NotOnlySQL.markdown
 #### 列式存储：ClickHouse(OLAP)、Cassandra、HBase(OLAP)、Vertica
 
-#### NewSQL(分布式RDB)：oceanDB、TiDB
-
-#### 常见 TSDB 时间序列数据库 Time Series Database ：influxdb、opentsdb、timeScaladb、Druid 、tablestore等
- - 循环删除
-=======
 #### NewSQL(分布式RDB)：oceanDB、TiDB
 - 初识TiDB <https://mp.weixin.qq.com/s/_KS4AAfynvn-sYl-7nJSkg>
 - 从NoSQL到NewSQL，谈交易型分布式数据库建设要点 <https://mp.weixin.qq.com/s/HPuiCn9oyB8itsqMcXB_1w>
@@ -135,7 +129,6 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 #### 常见 TSDB 时间序列数据库 Time Series Database ：influxdb、opentsdb、timeScaladb、Druid 、tablestore等
 一种集时序数据高效读写，压缩存储，实时计算能力为一体的数据库服务，可广泛应用于物联网和互联网领域，实现对设备及业务服务的实时监控，实时预测告警。
 <https://www.jianshu.com/p/31afb8492eff>
->>>>>>> ~:_posts/internet/2019/2019-11-12-NoSQL.markdown
 
 #### 其他
 - 分布式系统之Quorum机制 <https://blog.csdn.net/tb3039450/article/details/80249664>
