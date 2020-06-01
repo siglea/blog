@@ -36,6 +36,11 @@ categories:
 - Spark，是一个基于内存计算的开源集群计算系统，目的是更快速的进行数据分析。Spark由加州伯克利大学AMP实验室Matei为主的小团队使用Scala开发，类似于Hadoop MapReduce的通用并行计算框架，Spark基于Map Reduce算法实现的分布式计算，拥有Hadoop MapReduce所具有的优点，但不同于MapReduce的是Job中间输出和结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的Map Reduce的算法。
   (可以简单理解为"另一种形式的MapReduce"或者是第二代"引擎"，需要在Hadoop体系使用)
 
+#### flume & kafka & storm
+- flume收集日志，推到kafka缓冲一下，storm消费计算，最终结果存储
+- 基于Flume的美团日志收集系统 <https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html>
+- 流式数据采集和计算 <https://blog.csdn.net/yezonggang/article/details/85034069>
+- Flume+Kafka+Storm+Redis构建大数据实时处理系统：实时统计网站PV、UV+展示 <https://blog.51cto.com/xpleaf/2104160>
 #### 搭建单机Hadoop
 ```shell
 # 1. 配置环境变量

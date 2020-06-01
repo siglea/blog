@@ -64,7 +64,7 @@ Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos
 一般来说，Zookeeper会默认设置：
     - zookeeper cluster的节点数目必须是奇数。
     - zookeeper 集群中必须超过半数节点(Majority)可用，整个集群才能对外可用。
-- Majority 就是一种 Qunroms 的方式来支持Leader选举，可以防止 split brain出现。奇数个节点可以在相同容错能力的情况下节省资源。
+- Majority(大多数) 就是一种 Quorum(法定代表人) 的方式来支持Leader选举，可以防止 split brain出现。奇数个节点可以在相同容错能力的情况下节省资源。
 
 #### ZAB算法 Zookeeper atomic broadcast protocol
 - 基本与Raft相同，在一些名词叫起来是有区别的
