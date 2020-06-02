@@ -79,6 +79,8 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 - MongoDB与Mysql/Hadoop/Redis的优缺点比较 <https://blog.csdn.net/tanqian351/article/details/81744970>
 
 #### Cassandra
+- Cassandra数据建模 <https://www.cnblogs.com/cjsblog/p/12878330.html>
+- 一切设计都是为了查询
 - Cassandra更加AP,可调一致性（HBase是CP)
 - 属于宽表的一种（HBase、Alibaba TableStore、Google BigTable)
 - 应该把 Cassandra 看做是一个有索引的、面向列的存储系统。
@@ -109,6 +111,8 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
     </div>
 - cassandra与mysql使用对比 <https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/>
 - cassandra使用场景判断：何时使用及何时不用 <https://developer.aliyun.com/article/713847>
+- Discord 公司如何使用 Cassandra 存储上亿条线上数据(消息系统) <https://segmentfault.com/a/1190000019111842>
+- Spotify如何使用Cassandra实现个性化推荐 <https://segmentfault.com/a/1190000020976455>
 
 #### "图"数据库 Graph Database Neo4J
 <https://www.cnblogs.com/loveis715/p/5277051.html>
