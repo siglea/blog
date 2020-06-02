@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 01 Jun 2020 17:58:27 +0800</pubDate>
-    <lastBuildDate>Mon, 01 Jun 2020 17:58:27 +0800</lastBuildDate>
+    <pubDate>Tue, 02 Jun 2020 15:10:15 +0800</pubDate>
+    <lastBuildDate>Tue, 02 Jun 2020 15:10:15 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -512,61 +512,68 @@ broker机器的外网ip  hostname.com
   &lt;li&gt;flume收集日志，推到kafka缓冲一下，storm消费计算，最终结果存储&lt;/li&gt;
   &lt;li&gt;基于Flume的美团日志收集系统 &lt;a href=&quot;https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html&quot;&gt;https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;流式数据采集和计算 &lt;a href=&quot;https://blog.csdn.net/yezonggang/article/details/85034069&quot;&gt;https://blog.csdn.net/yezonggang/article/details/85034069&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Flume+Kafka+Storm+Redis构建大数据实时处理系统：实时统计网站PV、UV+展示 &lt;a href=&quot;https://blog.51cto.com/xpleaf/2104160&quot;&gt;https://blog.51cto.com/xpleaf/2104160&lt;/a&gt;
-    &lt;h4 id=&quot;搭建单机hadoop&quot;&gt;搭建单机Hadoop&lt;/h4&gt;
-    &lt;p&gt;```shell&lt;/p&gt;
-    &lt;h1 id=&quot;1-配置环境变量&quot;&gt;1. 配置环境变量&lt;/h1&gt;
-    &lt;p&gt;export JAVA_HOME=/home/java/jdk1.8
-export JRE_HOME=/home/java/jdk1.8/jre
-export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib&lt;/p&gt;
-  &lt;/li&gt;
+  &lt;li&gt;Flume+Kafka+Storm+Redis构建大数据实时处理系统：实时统计网站PV、UV+展示 &lt;a href=&quot;https://blog.51cto.com/xpleaf/2104160&quot;&gt;https://blog.51cto.com/xpleaf/2104160&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;export HADOOP_HOME=/home/hadoop/hadoop2.8
-export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
-export HADOOP_OPTS=”-Djava.library.path=$HADOOP_HOME/lib”
-export PATH=.:${JAVA_HOME}/bin:${HADOOP_HOME}/bin:$PATH&lt;/p&gt;
+&lt;h4 id=&quot;搭建单机hadoop&quot;&gt;搭建单机Hadoop&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 1. 配置环境变量&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/java/jdk1.8
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JRE_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/java/jdk1.8/jre
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;CLASSPATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.:&lt;span class=&quot;nv&quot;&gt;$JAVA_HOME&lt;/span&gt;/lib/dt.jar:&lt;span class=&quot;nv&quot;&gt;$JAVA_HOME&lt;/span&gt;/lib/tools.jar:&lt;span class=&quot;nv&quot;&gt;$JRE_HOME&lt;/span&gt;/lib
 
-&lt;h1 id=&quot;2-创建目录&quot;&gt;2. 创建目录&lt;/h1&gt;
-&lt;p&gt;mkdir  /root/hadoop&lt;br /&gt;
-mkdir  /root/hadoop/tmp&lt;br /&gt;
-mkdir  /root/hadoop/var&lt;br /&gt;
-mkdir  /root/hadoop/dfs&lt;br /&gt;
-mkdir  /root/hadoop/dfs/name&lt;br /&gt;
-mkdir  /root/hadoop/dfs/data&lt;/p&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/hadoop/hadoop2.8
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_COMMON_LIB_NATIVE_DIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;/lib/native
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_OPTS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;-Djava.library.path=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.:&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/bin:&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/bin:&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;
 
-&lt;h1 id=&quot;3-修改配置文件&quot;&gt;3. 修改配置文件&lt;/h1&gt;
-&lt;p&gt;vim core-site.xml
+&lt;span class=&quot;c&quot;&gt;# 2. 创建目录&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/tmp  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/var  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/dfs  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/dfs/name  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/dfs/data
+
+&lt;span class=&quot;c&quot;&gt;# 3. 修改配置文件&lt;/span&gt;
+vim core-site.xml
 vim hadoop-env.sh
 vim hdfs-site.xml
-vim mapred-site.xml&lt;/p&gt;
+vim mapred-site.xml
 
-&lt;h1 id=&quot;4-启动&quot;&gt;4. 启动&lt;/h1&gt;
-&lt;p&gt;bin/hadoop  namenode  -format
+&lt;span class=&quot;c&quot;&gt;# 4. 启动&lt;/span&gt;
+bin/hadoop  namenode  &lt;span class=&quot;nt&quot;&gt;-format&lt;/span&gt;
 start-dfs.sh
-start-yarn.sh&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-#### 搭建单机HBase
-```shell
-# 1. 搭建好Hadoop
-# 2. 创建目录
-mkdir  /root/hbase  
-mkdir  /root/hbase/tmp  
-mkdir  /root/hbase/pids
-# 3. 启动
-./start-hbase.sh
-# 4. 常用命令
-# 进入shell
-hbase shell
-create 't_user','st1','st2'
-put 't_user','1001','st1:age','18'
-put 't_user','1001','st2:name','zhangsan'
-scan 't_user' # 查询该表数据
-describe 't_user'
-delete't_user','1001','st1:age'
-disable 't_user'
-drop 't_user'
+start-yarn.sh
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;搭建单机hbase&quot;&gt;搭建单机HBase&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 1. 搭建好Hadoop&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 2. 创建目录&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hbase  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hbase/tmp  
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hbase/pids
+&lt;span class=&quot;c&quot;&gt;# 3. 启动&lt;/span&gt;
+./start-hbase.sh
+&lt;span class=&quot;c&quot;&gt;# 4. 常用命令&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 进入shell&lt;/span&gt;
+hbase shell
+create &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st1'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st2'&lt;/span&gt;
+put &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'1001'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st1:age'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'18'&lt;/span&gt;
+put &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'1001'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st2:name'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'zhangsan'&lt;/span&gt;
+scan &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# 查询该表数据&lt;/span&gt;
+describe &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;
+delete&lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'1001'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st1:age'&lt;/span&gt;
+disable &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;
+drop &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;用HBase实现亿级Feed &lt;a href=&quot;https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ&quot;&gt;https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;HBase案例 &lt;a href=&quot;https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw&quot;&gt;https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;HBase面试题 &lt;a href=&quot;https://www.jianshu.com/p/9ecd4367e6d0&quot;&gt;https://www.jianshu.com/p/9ecd4367e6d0&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;es结合Hbase &lt;a href=&quot;https://zhuanlan.zhihu.com/p/87563468&quot;&gt;https://zhuanlan.zhihu.com/p/87563468&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Hbase和Cassandra比较 &lt;a href=&quot;https://blog.csdn.net/aa5305123/article/details/83142514&quot;&gt;https://blog.csdn.net/aa5305123/article/details/83142514&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h4 id=&quot;参考&quot;&gt;参考&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;白话大数据 &lt;a href=&quot;https://www.zhihu.com/question/27974418/answer/156227565&quot;&gt;https://www.zhihu.com/question/27974418/answer/156227565&lt;/a&gt;&lt;/li&gt;

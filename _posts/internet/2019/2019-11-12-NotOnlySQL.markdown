@@ -103,6 +103,7 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
     - 社交媒体分析和推荐引擎Cassandra是许多在线公司和社交媒体提供商的良好数据库，用于分析和推荐给客户。
     - Yelp的广告分析系统，Spotify的所有用户信息存储
     - Feeds场景、滴滴或物联网订单轨迹场景 <https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ>
+    - cassandra在饿了么的应用 <https://zhuanlan.zhihu.com/p/42175864>
     <div align="left">
     <img src="/img/cassandra.jpg" width="500px">
     </div>

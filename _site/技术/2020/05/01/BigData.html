@@ -122,61 +122,68 @@
   <li>flume收集日志，推到kafka缓冲一下，storm消费计算，最终结果存储</li>
   <li>基于Flume的美团日志收集系统 <a href="https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html">https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html</a></li>
   <li>流式数据采集和计算 <a href="https://blog.csdn.net/yezonggang/article/details/85034069">https://blog.csdn.net/yezonggang/article/details/85034069</a></li>
-  <li>Flume+Kafka+Storm+Redis构建大数据实时处理系统：实时统计网站PV、UV+展示 <a href="https://blog.51cto.com/xpleaf/2104160">https://blog.51cto.com/xpleaf/2104160</a>
-    <h4 id="搭建单机hadoop">搭建单机Hadoop</h4>
-    <p>```shell</p>
-    <h1 id="1-配置环境变量">1. 配置环境变量</h1>
-    <p>export JAVA_HOME=/home/java/jdk1.8
-export JRE_HOME=/home/java/jdk1.8/jre
-export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib</p>
-  </li>
+  <li>Flume+Kafka+Storm+Redis构建大数据实时处理系统：实时统计网站PV、UV+展示 <a href="https://blog.51cto.com/xpleaf/2104160">https://blog.51cto.com/xpleaf/2104160</a></li>
 </ul>
 
-<p>export HADOOP_HOME=/home/hadoop/hadoop2.8
-export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
-export HADOOP_OPTS=”-Djava.library.path=$HADOOP_HOME/lib”
-export PATH=.:${JAVA_HOME}/bin:${HADOOP_HOME}/bin:$PATH</p>
+<h4 id="搭建单机hadoop">搭建单机Hadoop</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 配置环境变量</span>
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/home/java/jdk1.8
+<span class="nb">export </span><span class="nv">JRE_HOME</span><span class="o">=</span>/home/java/jdk1.8/jre
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="nv">$JAVA_HOME</span>/lib/dt.jar:<span class="nv">$JAVA_HOME</span>/lib/tools.jar:<span class="nv">$JRE_HOME</span>/lib
 
-<h1 id="2-创建目录">2. 创建目录</h1>
-<p>mkdir  /root/hadoop<br />
-mkdir  /root/hadoop/tmp<br />
-mkdir  /root/hadoop/var<br />
-mkdir  /root/hadoop/dfs<br />
-mkdir  /root/hadoop/dfs/name<br />
-mkdir  /root/hadoop/dfs/data</p>
+<span class="nb">export </span><span class="nv">HADOOP_HOME</span><span class="o">=</span>/home/hadoop/hadoop2.8
+<span class="nb">export </span><span class="nv">HADOOP_COMMON_LIB_NATIVE_DIR</span><span class="o">=</span><span class="nv">$HADOOP_HOME</span>/lib/native
+<span class="nb">export </span><span class="nv">HADOOP_OPTS</span><span class="o">=</span><span class="s2">"-Djava.library.path=</span><span class="nv">$HADOOP_HOME</span><span class="s2">/lib"</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>.:<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin:<span class="k">${</span><span class="nv">HADOOP_HOME</span><span class="k">}</span>/bin:<span class="nv">$PATH</span>
 
-<h1 id="3-修改配置文件">3. 修改配置文件</h1>
-<p>vim core-site.xml
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hadoop  
+<span class="nb">mkdir</span>  /root/hadoop/tmp  
+<span class="nb">mkdir</span>  /root/hadoop/var  
+<span class="nb">mkdir</span>  /root/hadoop/dfs  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/name  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/data
+
+<span class="c"># 3. 修改配置文件</span>
+vim core-site.xml
 vim hadoop-env.sh
 vim hdfs-site.xml
-vim mapred-site.xml</p>
+vim mapred-site.xml
 
-<h1 id="4-启动">4. 启动</h1>
-<p>bin/hadoop  namenode  -format
+<span class="c"># 4. 启动</span>
+bin/hadoop  namenode  <span class="nt">-format</span>
 start-dfs.sh
-start-yarn.sh</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-#### 搭建单机HBase
-```shell
-# 1. 搭建好Hadoop
-# 2. 创建目录
-mkdir  /root/hbase  
-mkdir  /root/hbase/tmp  
-mkdir  /root/hbase/pids
-# 3. 启动
-./start-hbase.sh
-# 4. 常用命令
-# 进入shell
-hbase shell
-create 't_user','st1','st2'
-put 't_user','1001','st1:age','18'
-put 't_user','1001','st2:name','zhangsan'
-scan 't_user' # 查询该表数据
-describe 't_user'
-delete't_user','1001','st1:age'
-disable 't_user'
-drop 't_user'
+start-yarn.sh
 </code></pre></div></div>
+
+<h4 id="搭建单机hbase">搭建单机HBase</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 搭建好Hadoop</span>
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hbase  
+<span class="nb">mkdir</span>  /root/hbase/tmp  
+<span class="nb">mkdir</span>  /root/hbase/pids
+<span class="c"># 3. 启动</span>
+./start-hbase.sh
+<span class="c"># 4. 常用命令</span>
+<span class="c"># 进入shell</span>
+hbase shell
+create <span class="s1">'t_user'</span>,<span class="s1">'st1'</span>,<span class="s1">'st2'</span>
+put <span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st1:age'</span>,<span class="s1">'18'</span>
+put <span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st2:name'</span>,<span class="s1">'zhangsan'</span>
+scan <span class="s1">'t_user'</span> <span class="c"># 查询该表数据</span>
+describe <span class="s1">'t_user'</span>
+delete<span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st1:age'</span>
+disable <span class="s1">'t_user'</span>
+drop <span class="s1">'t_user'</span>
+</code></pre></div></div>
+<ul>
+  <li>用HBase实现亿级Feed <a href="https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ">https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ</a></li>
+  <li>HBase案例 <a href="https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw">https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw</a></li>
+  <li>HBase面试题 <a href="https://www.jianshu.com/p/9ecd4367e6d0">https://www.jianshu.com/p/9ecd4367e6d0</a></li>
+  <li>es结合Hbase <a href="https://zhuanlan.zhihu.com/p/87563468">https://zhuanlan.zhihu.com/p/87563468</a></li>
+  <li>Hbase和Cassandra比较 <a href="https://blog.csdn.net/aa5305123/article/details/83142514">https://blog.csdn.net/aa5305123/article/details/83142514</a></li>
+</ul>
+
 <h4 id="参考">参考</h4>
 <ul>
   <li>白话大数据 <a href="https://www.zhihu.com/question/27974418/answer/156227565">https://www.zhihu.com/question/27974418/answer/156227565</a></li>
