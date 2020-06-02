@@ -4,7 +4,7 @@ title:  "一致性（Consistency）与 共识（Consensus）"
 date:   2019-11-12 11:25:00 +0900
 comments: true
 tags:
-- 算法 
+- 数据结构与算法 
 - 分布式
 categories:
 - 技术
