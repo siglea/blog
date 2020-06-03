@@ -80,6 +80,11 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 
 #### Cassandra
 - Cassandra数据建模 <https://www.cnblogs.com/cjsblog/p/12878330.html>
+- 详解Cassandra数据模型中的primary key <https://blog.csdn.net/Yaokai_AssultMaster/article/details/77439897>
+    - 一致性哈希算法的特点是可以接受任何输入，但总会输出位于固定范围内的（当前集群的结点有对应的）值。简而言之，某一特定的partition key总会对应集群中的某一特定的结点，而这个partition key对应的数据也总是应当在这个结点上被找到。
+      对于分布式系统而言，这一点极其重要。其原因是如果对某一特定数据，我们无法确定其所对应的结点位置的话，我们就总是需要遍历集群中的每一个结点才能找到需要的数据。对于小规模的集群，这样的操作可能还可以接受。但对于大规模的分布式数据库而言，这将会严重影响整个系统的效率。
+    - Room表是"静态表"，RoomMember就是"动态表"；User表是"静态表"，UserArticle就是"动态表"
+    - Partition Key (col1, col2)为了确定数据的位置，Clustering Key (col3, col4)，主要是为了排序。例如：PRIMARY KEY((col1, col2), col3, col4))
 - 一切设计都是为了查询
 - Cassandra更加AP,可调一致性（HBase是CP)
 - 属于宽表的一种（HBase、Alibaba TableStore、Google BigTable)
@@ -113,6 +118,7 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 - cassandra使用场景判断：何时使用及何时不用 <https://developer.aliyun.com/article/713847>
 - Discord 公司如何使用 Cassandra 存储上亿条线上数据(消息系统) <https://segmentfault.com/a/1190000019111842>
 - Spotify如何使用Cassandra实现个性化推荐 <https://segmentfault.com/a/1190000020976455>
+- CQL语法 <https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html>
 
 #### "图"数据库 Graph Database Neo4J
 <https://www.cnblogs.com/loveis715/p/5277051.html>
