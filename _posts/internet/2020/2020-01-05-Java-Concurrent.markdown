@@ -266,3 +266,10 @@ BlockingQueue接口是Queue的子接口，它的主要用途并不是作为容�
 Java编程艺术笔记 <https://www.jianshu.com/p/8d90dc5b341e>
 
 面试题 <https://blog.csdn.net/qq_34039315/article/details/78549311>
+
+
+<https://mp.weixin.qq.com/s/oL2Vrsr2IcT_8oncdcwf-g>
+
+<https://mp.weixin.qq.com/s/rqzlISVShFqmo-96Hw2ZNA>
+
+<https://mp.weixin.qq.com/s/Ya_aw4_4s8UdZ-y9YjMiFw>

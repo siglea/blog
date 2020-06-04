@@ -9,6 +9,8 @@ tags:
 categories:
 - 技术
 ---
+<https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw>
+
 #### 基础入门
 - <http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html>
 - <https://www.jianshu.com/p/d68197bc7def>
