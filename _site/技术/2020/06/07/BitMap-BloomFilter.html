@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>&#39;图&#39;相关算法</title>
-  <meta name="description" content="什么时”图”  可以简单理解我存储关系的数据结构，比如好友关系  分为有向图、无向图  存储结构          邻接矩阵（类似多维数组）      邻接表  （类似”正”索引）      逆邻接表 （类似倒排索引）      十字链表  （正倒索引联合）      ">
+  <title>BitMap-BloomFilter</title>
+  <meta name="description" content="">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -55,45 +55,12 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">'图'相关算法</h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-06-06T09:17:00+08:00" itemprop="datePublished">Jun 6, 2020</time></p>
+    <h1 class="post-title" itemprop="name headline">BitMap-BloomFilter</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-06-07T13:25:00+08:00" itemprop="datePublished">Jun 7, 2020</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="什么时图">什么时”图”</h4>
-<ul>
-  <li>可以简单理解我存储关系的数据结构，比如好友关系</li>
-  <li>分为有向图、无向图</li>
-  <li>存储结构
-    <ul>
-      <li>邻接矩阵（类似多维数组）</li>
-      <li>邻接表  （类似”正”索引）</li>
-      <li>逆邻接表 （类似倒排索引）</li>
-      <li>十字链表  （正倒索引联合）</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="深度优先遍历-和-广度优先遍历">深度优先遍历 和 广度优先遍历</h4>
-<ul>
-  <li>深度优先遍历，沿着当前分支，直到最后一个节点，然后遍历相邻节点（二叉树的前中后序遍历就是深度优先遍历），重点在回溯</li>
-  <li>广度优先遍历，遍历完当前节点的所有子节点，然后切换到下级节点（类似二叉树的层级遍历），重点在重放</li>
-</ul>
-
-<h4 id="图的-最短路径">图的 “最短路径”（</h4>
-<ul>
-  <li>迪杰斯特拉算法 Dijkstra</li>
-  <li>多源最短路径 弗洛伊德算法 Floyd-Warshall</li>
-  <li>路径规划之 A* 算法</li>
-</ul>
-
-<h4 id="ford-fulkerson-最大流算法">Ford-Fulkerson 最大流算法</h4>
-
-<h4 id="最小生成树">最小生成树</h4>
-<ul>
-  <li>Kruskal算法</li>
-  <li>prim算法</li>
-</ul>
+    
 
   </div>
 </article>
