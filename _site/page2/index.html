@@ -54,6 +54,517 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html">排序算法概述</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 31, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="冒泡排序">冒泡排序</h4>
+<pre>
+从左开始比较，大的往右换
+或
+从右开始比较，小的往左换
+重复上一步骤
+</pre>
+<h4 id="鸡尾排序">鸡尾排序</h4>
+<pre>
+也叫双向冒泡或者定向冒泡，
+从左开始比较，大的往右换
+与
+从右开始比较，小的往左换
+同时进行
+</pre>
+<h4 id="选择排序">选择排序</h4>
+<pre>
+与冒泡排序相比减少了多余的交换
+找出最小的元素放在最左侧，接着找第二小的...直到最后排完(不稳定)
+</pre>
+<h4 id="快速排序">快速排序</h4>
+<pre>
+选中一个基准元素X，小于X放在左侧，大于X放在右侧，分而治之，不断重复
+</pre>
+<h4 id="插入排序">插入排序</h4>
+<pre>
+从左侧开始设定一个有序区，从第二个元素开始去有序找自己的位置插入进去
+</pre>
+<h4 id="希尔排序">希尔排序</h4>
+<pre>
+两两分组，跨度交换，左小右大，逐渐缩小跨度为1，即完成</pre>
+<h4 id="归并排序比武排序">归并排序(比武排序)</h4>
+<pre>
+由一组数字分为两组，逐渐分为只包含2个元素的小组
+开始比较大小，左小右大
+比较完毕之后，开始合并，合并的时候按照小大顺序把2个小组合并成1个有序大组，直到最后1个最大有序组
+</pre>
+<h4 id="计数排序">计数排序</h4>
+<pre>
+建立【元素都为0】的空数组，开始遍历待排序数组
+如果待排元素值等于空数组的位置角标，则【元素+1】
+</pre>
+<h4 id="桶排序">桶排序</h4>
+<pre>
+计数排序的升级版，计数排序每个索引只能记录一个值，
+索引升级为桶（比如桶范围2.0-3.5）
+此时，一个桶里就可以放多个数据范围内的数据
+</pre>
+<h4 id="基数排序按位排序">基数排序（按位排序）</h4>
+<pre>
+提取每个元素的最后一位进行计数排序
+再提取倒数第二位进行计数排序
+直到最前一位
+比如：单词排序，长度不一的末尾用0代替
+</pre>
+<h4 id="堆排序">堆排序</h4>
+<pre>
+主要利用二叉堆是完全二叉堆这样的数据结构的特性
+把无序数组构建成二叉堆。
+循环删除堆顶元素，移到集合尾部，调节堆产生新的堆顶。
+
+二叉堆虽然是一颗完全二叉树，但它的存储方式并不是链式存储，而是顺序存储。换句话说，二叉堆的所有节点都存储在数组当中。
+利用大顶堆，删除顶点放于数组未部，此后二叉堆自我调整选出新的堆顶
+</pre>
+<ul>
+  <li><a href="https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg">https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg</a></li>
+</ul>
+
+<h4 id="参考-httpsmpweixinqqcomsteogqlslb6ap4aqrx7ttza">参考 <a href="https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA">https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA</a></h4>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html"> kafka activeMQ RabbitMq RocketMQ </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 22, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>MQ</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="amqp即advanced-message-queuing-protocolactivemqrabbitmq都支持">AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）</h4>
+<ul>
+  <li>RabbitMQ <a href="https://www.jianshu.com/p/78847c203b76">https://www.jianshu.com/p/78847c203b76</a></li>
+</ul>
+
+<h4 id="两种消息模型">两种消息模型：</h4>
+<ul>
+  <li>点对点（单播），当采用点对点模型时，消息将发送到一个队列，该队列的消息只能被一个消费者消费。</li>
+  <li>publish-subscribe（发布订阅、广播）模型。而采用发布订阅模型时，消息可以被多个消费者消费。
+在发布订阅模型中，生产者和消费者完全独立，不需要感知对方的存在。
+例如，在用户登录后，各个其他模板更加登录进行不同的处理</li>
+</ul>
+
+<h4 id="如何保证可用性">如何保证可用性</h4>
+<ul>
+  <li>主从架构（ActiveMQ、RabbitMQ）</li>
+  <li>分布式架构（RocketMQ、kafka）</li>
+</ul>
+
+<h4 id="如何保证消息不被重复消费">如何保证消息不被重复消费？</h4>
+<ul>
+  <li>分析:这个问题其实换一种问法就是，如何保证消息队列的幂等性?这个问题可以认为是消息队列领域的基本问题。换句话来说，是在考察你的设计能力，这个问题的回答可以根据具体的业务场景来答，没有固定的答案。</li>
+  <li>回答:先来说一下为什么会造成重复消费?
+  其实无论是那种消息队列，造成重复消费原因其实都是类似的。正常情况下，消费者在消费消息时候，消费完毕后，会发送一个确认信息给消息队列，消息队列就知道该消息被消费了，就会将该消息从消息队列中删除。只是不同的消息队列发送的确认信息形式不同,例如RabbitMQ是发送一个ACK确认消息，RocketMQ是返回一个CONSUME_SUCCESS成功标志，kafka实际上有个offset的概念，简单说一下(如果还不懂，出门找一个kafka入门到精通教程),就是每一个消息都有一个offset，kafka消费过消息后，需要提交offset，让消息队列知道自己已经消费过了。那造成重复消费的原因?，就是因为网络传输等等故障，确认信息没有传送到消息队列，导致消息队列不知道自己已经消费过该消息了，再次将该消息分发给其他的消费者。
+  如何解决?这个问题针对业务场景来答分以下几点
+  - 比如，你拿到这个消息做数据库的insert操作。那就容易了，给这个消息做一个唯一主键，那么就算出现重复消费的情况，就会导致主键冲突，避免数据库出现脏数据。
+    <ul>
+      <li>再比如，你拿到这个消息做redis的set的操作，那就容易了，不用解决，因为你无论set几次结果都是一样的，set操作本来就算幂等操作。
+  - 如果上面两种情况还不行，上大招。准备一个第三方介质,来做消费记录。以redis为例，给消息分配一个全局id，只要消费过该消息，将&lt;id,message&gt;以K-V形式写入redis。那消费者开始消费前，先去redis中查询有没消费记录即可。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="消费者消费失败如何处理">消费者消费失败，如何处理？</h4>
+<ul>
+  <li>消费成功时，手动ack，这样队列会再次推送或者再次pull</li>
+  <li>用redis对立的”伪消费队列”最大的问题就是在于消费后没有ACK，发生意外会有很多脏数据</li>
+  <li>也可以用幂等的方式消费者保存业务的进展，用单独程序做补偿消费</li>
+  <li>如果消费者处理一个消息失败了，消息系统一般会把这个消息放回队列，这样其他消费者可以继续处理</li>
+</ul>
+
+<h4 id="如何保证消费的可靠性传输">如何保证消费的可靠性传输?</h4>
+<ul>
+  <li>RabbitMQ
+    <ul>
+      <li>生产者丢数据，可以用事务方式来保证发送成功或回滚，也可以队列接受后异步返回ack或nack来实现</li>
+      <li>消息队列丢数据，可以持久化队列并且配置自动重复参数</li>
+      <li>消费者丢数据，手动ack
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rabbitmq-server start
+service rabbitmq-server restart
+rabbitmqctl status
+rabbitmq-plugins <span class="nb">enable </span>rabbitmq_management
+rabbitmqctl add_user rabbitmq 123456
+rabbitmqctl set_user_tags rabbitmq administrator
+rabbitmqctl set_permissions <span class="nt">-p</span> / rabbitmq <span class="s2">".*"</span> <span class="s2">".*"</span> <span class="s2">".*"</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>kafka
+    <ul>
+      <li>(1)生产者丢数据
+在kafka生产中，基本都有一个leader和多个follwer。follwer会去同步leader的信息。因此，为了避免生产者丢数据，做如下两点配置
+        <ol>
+          <li>第一个配置要在producer端设置acks=all。这个配置保证了，follwer同步完成后，才认为消息发送成功。</li>
+          <li>在producer端设置retries=MAX，一旦写入失败，这无限重试</li>
+        </ol>
+      </li>
+      <li>消息队列丢数据
+针对消息队列丢数据的情况，无外乎就是，数据还没同步，leader就挂了，这时zookpeer会将其他的follwer切换为leader,那数据就丢失了。针对这种情况，应该做两个配置。
+        <ol>
+          <li>replication.factor参数，这个值必须大于1，即要求每个partition必须有至少2个副本</li>
+          <li>min.insync.replicas参数，这个值必须大于1，这个是要求一个leader至少感知到有至少一个follower还跟自己保持联系
+这两个配置加上上面生产者的配置联合起来用，基本可确保kafka不丢数据</li>
+        </ol>
+      </li>
+      <li>消费者丢数据
+这种情况一般是自动提交了offset，然后你处理程序过程中挂了。kafka以为你处理好了。再强调一次offset是干嘛的
+offset：指的是kafka的topic中的每个消费组消费的下标。简单的来说就是一条消息对应一个offset下标，每次消费数据的时候如果提交offset，那么下次消费就会从提交的offset加一那里开始消费。</li>
+    </ul>
+  </li>
+  <li>rocketmq</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># install rocketmq</span>
+unzip rocketmq-all-4.7.0-source-release.zip
+<span class="nb">cd </span>rocketmq-all-4.7.0/
+mvn <span class="nt">-Prelease-all</span> <span class="nt">-DskipTests</span> clean <span class="nb">install</span> <span class="nt">-U</span>
+<span class="nb">cd </span>distribution/target/rocketmq-4.7.0/rocketmq-4.7.0
+
+<span class="c"># config JAVA_HOME</span>
+vim ~/.bashrc
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/lib/jvm/jdk-13
+<span class="nb">export </span><span class="nv">JRE_HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/jre
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/lib:<span class="k">${</span><span class="nv">JRE_HOME</span><span class="k">}</span>/lib
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin:<span class="nv">$PATH</span>
+
+<span class="c">#Start Name Server</span>
+<span class="nb">nohup </span>sh bin/mqnamesrv &amp;
+<span class="nb">tail</span> <span class="nt">-f</span> ~/logs/rocketmqlogs/namesrv.log
+<span class="c">#The Name Server boot success...</span>
+
+<span class="c">#Start Broker</span>
+<span class="nb">nohup </span>sh bin/mqbroker <span class="nt">-n</span> localhost:9876 &amp;
+<span class="c">#The broker[%s, 172.30.30.233:10911] boot success...</span>
+
+<span class="c"># 外网访问 配置 /etc/hosts</span>
+<span class="c"># 相关报错 RemotingTooMuchRequestException: sendDefaultImpl call timeout；</span>
+broker机器的内网ip  hostname.com
+<span class="c"># 配置conf/broker.conf </span>
+<span class="nv">brokerIP1</span><span class="o">=</span>hostname.com
+./mqbroker <span class="nt">-n</span> localhost:9876 <span class="nt">-c</span> ../conf/broker.conf &amp;
+
+<span class="c"># 相关报错 No route info of this topic</span>
+<span class="c"># 保持客户端rocketmq版本号与服务器一致</span>
+<span class="c"># 设置该属性 autoCreateTopicEnable=true </span>
+./mqadmin topicList <span class="nt">-n</span> localhost:9876
+
+</code></pre></div></div>
+
+<h4 id="推拉模式">推拉模式</h4>
+<p>消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。</p>
+
+<h4 id="关于kafka">关于kafka</h4>
+<ul>
+  <li>Apache Kafka不是消息中间件的一种实现。相反，它只是一种分布式流式系统。
+不同于基于队列和交换器的RabbitMQ，Kafka的存储层是使用分区事务日志来实现的。</li>
+  <li>过期日志会根据时间或大小，进行清除</li>
+  <li>极好的总结 <a href="https://segmentfault.com/a/1190000021138998">https://segmentfault.com/a/1190000021138998</a></li>
+  <li>zookeeper在kafka中的作用 <a href="https://www.jianshu.com/p/a036405f989c">https://www.jianshu.com/p/a036405f989c</a></li>
+  <li>一次事故 <a href="https://www.jianshu.com/p/72a54f835b6b">https://www.jianshu.com/p/72a54f835b6b</a>
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#启动zk</span>
+bin/zookeeper-server-start.sh config/zookeeper.properties &amp;
+<span class="c">#启动kafka</span>
+bin/kafka-server-start.sh config/server.properties
+<span class="c"># kafka默认只支持本地访问，如果需要外网访问，需要用hostname.com的方式配置</span>
+<span class="c"># hostname.com可以是任意自定义的，不需要备案，只是起到"代名词"作用</span>
+<span class="c">#1、</span>
+config/server.properties
+<span class="nv">listeners</span><span class="o">=</span>PLAINTEXT://hostname.com:9092
+<span class="c">#2、</span>
+<span class="c">#kafka broker机器配置hosts</span>
+broker机器的内网ip  hostname.com
+<span class="c">#3、</span>
+<span class="c">#调用端也是是kafka的Client端 的机器配置hosts</span>
+broker机器的外网ip  hostname.com
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>消息队列常见问题
+    <ul>
+      <li><a href="https://www.cnblogs.com/williamjie/p/9481780.html">https://www.cnblogs.com/williamjie/p/9481780.html</a></li>
+    </ul>
+  </li>
+  <li>优知学院消息队列
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/60288173">https://zhuanlan.zhihu.com/p/60288173</a></li>
+      <li><a href="https://zhuanlan.zhihu.com/p/60288391">https://zhuanlan.zhihu.com/p/60288391</a></li>
+    </ul>
+  </li>
+  <li>IM系统的MQ消息中间件选型：Kafka还是RabbitMQ？
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/37993013">https://zhuanlan.zhihu.com/p/37993013</a></li>
+    </ul>
+  </li>
+  <li>MQ消息队列的12点核心原理总结
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/60289322">https://zhuanlan.zhihu.com/p/60289322</a></li>
+    </ul>
+  </li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty-Mina.html">Netty-Mina</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 18, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty-Mina.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="从零开发一个im服务端">从零开发一个IM服务端</h4>
+<ul>
+  <li>通俗易懂 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty</a></li>
+  <li>基于Netty实现海量接入的推送服务技术要点 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty</a></li>
+</ul>
+
+<h4 id="必读有关为何选择netty的11个疑问及解答">必读有关“为何选择Netty”的11个疑问及解答</h4>
+<ul>
+  <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=163&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=163&amp;highlight=netty</a></li>
+</ul>
+
+<h4 id="tcp网关">TCP网关</h4>
+<p>HAProxy nginx LVS</p>
+<ul>
+  <li>生产环境大部分还是采用通过rest方式获取IpList，然后有客户端直接发起长连接的方式</li>
+  <li>京东京麦的生产级TCP网关技术实践总结 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1243&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1243&amp;highlight=netty</a></li>
+  <li>一套海量在线用户的移动端IM架构设计实践 <a href="http://www.52im.net/thread-812-1-1.html">http://www.52im.net/thread-812-1-1.html</a></li>
+</ul>
+
+<h4 id="reactor-线程模型">Reactor 线程模型</h4>
+<ul>
+  <li>Reactor 是反应堆的意思，Reactor 模型是指通过一个或多个输入同时传递给服务处理器的服务请求的事件驱动处理模式。
+服务端程序处理传入多路请求，并将它们同步分派给请求对应的处理线程，Reactor 模式也叫 Dispatcher 模式，即 I/O 多了复用统一监听事件，收到事件后分发(Dispatch 给某进程)，是编写高性能网络服务器的必备技术之一。</li>
+</ul>
+<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2043&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2043&amp;highlight=netty</a></p>
+
+<h4 id="why-nettyjdk-原生-nio-程序的问题">Why Netty?JDK 原生 NIO 程序的问题</h4>
+<ul>
+  <li>JDK 原生也有一套网络应用程序 API，但是存在一系列问题，主要如下：
+    <ol>
+      <li>NIO 的类库和 API 繁杂，使用麻烦：你需要熟练掌握 Selector、ServerSocketChannel、SocketChannel、ByteBuffer 等。</li>
+      <li>需要具备其他的额外技能做铺垫：例如熟悉 Java 多线程编程，因为 NIO 编程涉及到 Reactor 模式，你必须对多线程和网路编程非常熟悉，才能编写出高质量的 NIO 程序。</li>
+      <li>可靠性能力补齐，开发工作量和难度都非常大：例如客户端面临断连重连、网络闪断、半包读写、失败缓存、网络拥塞和异常码流的处理等等。NIO 编程的特点是功能开发相对容易，但是可靠性能力补齐工作量和难度都非常大。</li>
+      <li>JDK NIO 的 Bug：例如臭名昭著的 Epoll Bug，它会导致 Selector 空轮询，最终导致 CPU 100%。官方声称在 JDK 1.6 版本的 update 18 修复了该问题，但是直到 JDK 1.7 版本该问题仍旧存在，只不过该 Bug 发生概率降低了一些而已，它并没有被根本解决。</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="java-nio-epoll-bug-以及-netty-的解决之道">Java NIO epoll bug 以及 Netty 的解决之道</h4>
+<ul>
+  <li>epoll 空轮询导致 CPU 利用率 100% <a href="http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/">http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/</a></li>
+</ul>
+
+<h4 id="netty中的epoll实现">netty中的epoll实现</h4>
+<ul>
+  <li>在java中，IO多路复用的功能通过nio中的Selector提供，在不同的操作系统下jdk会通过spi的方式加载不同的实现，
+比如在macos下是KQueueSelectorProvider，KQueueSelectorProvider底层使用了kqueue来进行IO多路复用；
+在linux 2.6以后的版本则是EPollSelectorProvider，EPollSelectorProvider底层使用的是epoll。
+虽然jdk自身提供了selector的epoll实现，netty仍实现了自己的epoll版本，根据netty开发者在StackOverflow的回答，主要原因有两个：
+    <ul>
+      <li>支持更多socket option，比如TCP_CORK和SO_REUSEPORT</li>
+      <li>使用了边缘触发（ET）模式</li>
+    </ul>
+  </li>
+  <li><a href="https://juejin.im/post/5d46ce64f265da03e05af722">https://juejin.im/post/5d46ce64f265da03e05af722</a></li>
+  <li>ET和LT的区别在于触发事件的条件不同，LT比较符合编程思维（有满足条件的就触发），ET触发的条件更苛刻一些（仅在发生变化时才触发），对使用者的要求也更高，理论效率更高</li>
+  <li>边缘触发和水平触发<a href="https://juejin.im/post/5cdaa67f518825691b4a5cc0">https://juejin.im/post/5cdaa67f518825691b4a5cc0</a></li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty-Mina.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html"> BigData </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>BigData</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="hdfshive-与-hbasephoenix的区别">HDFS+Hive 与 HBase+Phoenix的区别</h4>
+<ul>
+  <li>Hive中的表是纯逻辑表，就只是表的定义等，即表的元数据。Hive本身不存储数据，它完全依赖HDFS和MapReduce。这样就可以将结构化的数据文件映射为为一张数据库表，并提供完整的SQL查询功能，并将SQL语句最终转换为MapReduce任务进行运行。 而HBase表是物理表，适合存放非结构化的数据。
+    <ol>
+      <li>两者分别是什么？
+        <ul>
+          <li>Apache Hive是数据仓库。通过Hive可以使用HQL语言查询存放在HDFS上的数据。HQL是一种类SQL语言，这种语言最终被转化为Map/Reduce. 虽然Hive提供了SQL查询功能，但是Hive不能够进行交互查询–因为它是基于MapReduce算法。</li>
+          <li>Apache Hbase Key/Value，基础单元是cell，它运行在HDFS之上。和Hive不一样，Hbase的能够在它的数据库上实时运行，而不是运行MapReduce任务。</li>
+        </ul>
+      </li>
+      <li>两者的特点
+        <ul>
+          <li>Hive帮助熟悉SQL的人运行MapReduce任务。因为它是JDBC兼容的。运行Hive查询会花费很长时间，因为它会默认遍历表中所有的数据。但可以通过Hive的分区来控制。因为这样一来文件大小是固定的，就这么大一块存储空间，从固定空间里查数据是很快的。</li>
+          <li>HBase通过存储key/value来工作。注意版本的功能。你可以用Hadoop作为静态数据仓库，HBase作为数据存储，放那些进行一些操作会改变的数据。</li>
+        </ul>
+      </li>
+      <li>限制
+        <ul>
+          <li>Hive目前不支持更新操作。另外，由于hive在hadoop上运行批量操作，它需要花费很长的时间，通常是几分钟到几个小时才可以获取到查询的结果。Hive必须提供预先定义好的schema将文件和目录映射到列，并且Hive与ACID不兼容。</li>
+          <li>HBase查询是通过特定的语言来编写的，这种语言需要重新学习。类SQL的功能可以通过Apache Phonenix实现，但这是以必须提供schema为代价的。另外，Hbase也并不是兼容所有的ACID特性，虽然它支持某些特性。最后但不是最重要的–为了运行Hbase，Zookeeper是必须的，zookeeper是一个用来进行分布式协调的服务，这些服务包括配置服务，维护元信息和命名空间服务。</li>
+        </ul>
+      </li>
+      <li>应用场景
+        <ul>
+          <li>Hive适合用来对一段时间内的数据进行分析查询，例如，用来计算趋势或者网站的日志。Hive不应该用来进行实时的查询。因为它需要很长时间才可以返回结果。</li>
+          <li>Hbase非常适合用来进行大数据的实时查询。Facebook用Hbase进行消息和实时的分析。它也可以用来统计Facebook的连接数。</li>
+        </ul>
+      </li>
+      <li>两者关系
+        <ul>
+          <li>Hive和Pig都可以与HBase组合使用，Hive和Pig还为HBase提供了高层语言支持，使得在HBase上进行数据统计处理变的非常简单</li>
+          <li>Hive与HBase，都是在Hadoop体系使用</li>
+        </ul>
+      </li>
+      <li>总结
+        <ul>
+          <li>Hive和Hbase是两种基于Hadoop的不同技术–Hive是一种类SQL的引擎，并且运行MapReduce任务，Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库。当然，这两种工具是可以同时使用的。就像用Google来搜索，用FaceBook进行社交一样，Hive可以用来进行统计查询，HBase可以用来进行实时查询，数据也可以从Hive写到Hbase，设置再从Hbase写回Hive。</li>
+        </ul>
+      </li>
+      <li>其他
+        <ul>
+          <li>Pig是接近脚本方式去描述MapReduce，Hive则用的是SQL。近似理解为SQL ON Hadoop</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="hadoop--spark--storm">Hadoop &amp; Spark &amp; Storm</h4>
+<ul>
+  <li>Hadoop，是实现了MapReduce的思想，将数据切片计算来处理大量的离线数据。Hadoop处理的数据必须是已经存放在HDFS上或者类似HBase的数据库中，所以Hadoop实现的时候是通过移动计算到这些存放数据的机器上来提高效率。
+适合于离线的批量数据处理适用于对实时性要求极低的场景。</li>
+  <li>Storm，可以用来处理源源不断流进来的消息，处理之后将结果写入到某个存储中去。实时性方面做得极好。(可以脱离Hadoop体系单独使用)</li>
+  <li>Spark，是一个基于内存计算的开源集群计算系统，目的是更快速的进行数据分析。Spark由加州伯克利大学AMP实验室Matei为主的小团队使用Scala开发，类似于Hadoop MapReduce的通用并行计算框架，Spark基于Map Reduce算法实现的分布式计算，拥有Hadoop MapReduce所具有的优点，但不同于MapReduce的是Job中间输出和结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的Map Reduce的算法。
+(可以简单理解为”另一种形式的MapReduce”或者是第二代”引擎”，需要在Hadoop体系使用)</li>
+</ul>
+
+<h4 id="flume--kafka--storm">flume &amp; kafka &amp; storm</h4>
+<ul>
+  <li>flume收集日志，推到kafka缓冲一下，storm消费计算，最终结果存储</li>
+  <li>基于Flume的美团日志收集系统 <a href="https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html">https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html</a></li>
+  <li>流式数据采集和计算 <a href="https://blog.csdn.net/yezonggang/article/details/85034069">https://blog.csdn.net/yezonggang/article/details/85034069</a></li>
+  <li>Flume+Kafka+Storm+Redis构建大数据实时处理系统：实时统计网站PV、UV+展示 <a href="https://blog.51cto.com/xpleaf/2104160">https://blog.51cto.com/xpleaf/2104160</a></li>
+</ul>
+
+<h4 id="搭建单机hadoop">搭建单机Hadoop</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 配置环境变量</span>
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/home/java/jdk1.8
+<span class="nb">export </span><span class="nv">JRE_HOME</span><span class="o">=</span>/home/java/jdk1.8/jre
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="nv">$JAVA_HOME</span>/lib/dt.jar:<span class="nv">$JAVA_HOME</span>/lib/tools.jar:<span class="nv">$JRE_HOME</span>/lib
+
+<span class="nb">export </span><span class="nv">HADOOP_HOME</span><span class="o">=</span>/home/hadoop/hadoop2.8
+<span class="nb">export </span><span class="nv">HADOOP_COMMON_LIB_NATIVE_DIR</span><span class="o">=</span><span class="nv">$HADOOP_HOME</span>/lib/native
+<span class="nb">export </span><span class="nv">HADOOP_OPTS</span><span class="o">=</span><span class="s2">"-Djava.library.path=</span><span class="nv">$HADOOP_HOME</span><span class="s2">/lib"</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>.:<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin:<span class="k">${</span><span class="nv">HADOOP_HOME</span><span class="k">}</span>/bin:<span class="nv">$PATH</span>
+
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hadoop  
+<span class="nb">mkdir</span>  /root/hadoop/tmp  
+<span class="nb">mkdir</span>  /root/hadoop/var  
+<span class="nb">mkdir</span>  /root/hadoop/dfs  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/name  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/data
+
+<span class="c"># 3. 修改配置文件</span>
+vim core-site.xml
+vim hadoop-env.sh
+vim hdfs-site.xml
+vim mapred-site.xml
+
+<span class="c"># 4. 启动</span>
+bin/hadoop  namenode  <span class="nt">-format</span>
+start-dfs.sh
+start-yarn.sh
+</code></pre></div></div>
+
+<h4 id="搭建单机hbase">搭建单机HBase</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 搭建好Hadoop</span>
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hbase  
+<span class="nb">mkdir</span>  /root/hbase/tmp  
+<span class="nb">mkdir</span>  /root/hbase/pids
+<span class="c"># 3. 启动</span>
+./start-hbase.sh
+<span class="c"># 4. 常用命令</span>
+<span class="c"># 进入shell</span>
+hbase shell
+create <span class="s1">'t_user'</span>,<span class="s1">'st1'</span>,<span class="s1">'st2'</span>
+put <span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st1:age'</span>,<span class="s1">'18'</span>
+put <span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st2:name'</span>,<span class="s1">'zhangsan'</span>
+scan <span class="s1">'t_user'</span> <span class="c"># 查询该表数据</span>
+describe <span class="s1">'t_user'</span>
+delete<span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st1:age'</span>
+disable <span class="s1">'t_user'</span>
+drop <span class="s1">'t_user'</span>
+</code></pre></div></div>
+<ul>
+  <li>用HBase实现亿级Feed <a href="https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ">https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ</a></li>
+  <li>HBase案例 <a href="https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw">https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw</a></li>
+  <li>HBase面试题 <a href="https://www.jianshu.com/p/9ecd4367e6d0">https://www.jianshu.com/p/9ecd4367e6d0</a></li>
+  <li>es结合Hbase <a href="https://zhuanlan.zhihu.com/p/87563468">https://zhuanlan.zhihu.com/p/87563468</a></li>
+  <li>Hbase和Cassandra比较 <a href="https://blog.csdn.net/aa5305123/article/details/83142514">https://blog.csdn.net/aa5305123/article/details/83142514</a></li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>白话大数据 <a href="https://www.zhihu.com/question/27974418/answer/156227565">https://www.zhihu.com/question/27974418/answer/156227565</a></li>
+  <li>一步步搭建Hadoop体系 <a href="https://blog.csdn.net/qazwsxpcm/article/list/2?t=1">https://blog.csdn.net/qazwsxpcm/article/list/2?t=1</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"> Java SPI </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
@@ -87,456 +598,6 @@ Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义C
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html"> Dubbo </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="dubbo">Dubbo</h3>
-<ul>
-  <li>官网 <a href="http://dubbo.apache.org/">http://dubbo.apache.org/</a></li>
-  <li>start <a href="http://start.dubbo.io/">http://start.dubbo.io/</a></li>
-  <li>Dubbo实践 <a href="https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/">https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/</a></li>
-  <li>通俗易懂的 Dubbo 教程 <a href="https://blog.csdn.net/Geffin/category_9931110.html">https://blog.csdn.net/Geffin/category_9931110.html</a></li>
-  <li>Java RMI &amp; Dubbo <a href="http://dubbo.apache.org/zh-cn/blog/dubbo-101.html">http://dubbo.apache.org/zh-cn/blog/dubbo-101.html</a>
-    <h3 id="dubbo负载均衡">Dubbo负载均衡</h3>
-  </li>
-</ul>
-<p><a href="http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html">http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html</a></p>
-<h4 id="dubbo-内置了四种负载均衡策略分别如下">Dubbo 内置了四种负载均衡策略，分别如下：</h4>
-<ul>
-  <li>RandomLoadBalance：随机负载均衡</li>
-  <li>RoundRobinLoadBalance：轮询负载均衡</li>
-  <li>LeastActiveLoadBalance：最少活跃调用数负载均衡</li>
-  <li>ConsistentHashLoadBalance：一致性哈希负载均衡</li>
-</ul>
-
-<h4 id="随机负载均衡">随机负载均衡</h4>
-<p>随机负载均衡是 Dubbo 默认的负载均衡策略，顾名思义，就是从多个服务提供者中随机选择一个。
-需要注意的是，Dubbo 的随机负载均衡并非是完全的随机，它有一个权重的概念，会按照权重来设置随机概率，举个例子，我们现在有两个服务提供者，一个的权重是100，另一个的权重是300，那么前者被分配的概率就为 25%，后者被分配的概率为 75%。
-我们可以对服务提供者设置不同的权重，例如对性能较好的机器设置大权重，对差一点的机器设置小一点的权重。</p>
-
-<h4 id="轮询负载均衡">轮询负载均衡</h4>
-<p>轮询负载均衡，即会轮询每一个服务提供者，依次对其进行调用。
-轮询负载均衡也有权重的概念，可以严格按照我们设置的比例进行分配，这个是该算法的优点，不过，该算法的缺点也很明显，可能会存在较慢的机器，那么请求会在这台机器上进行累积，很容易导致整个系统变慢。</p>
-
-<h4 id="最少活跃调用数负载均衡">最少活跃调用数负载均衡</h4>
-<p>最少活跃调用数负载均衡会将请求转发至活跃调用数最少的机器上，如果有两台机器活跃数相同，会采取随机负载均衡的策略。
-什么是活跃调用数呢？每个服务维护一个活跃数计数器，该计数器存放机器未处理完的请求。当有请求产生时，会选择活跃数最小的机器去执行。
-最少活跃调用数负载均衡可以令慢的机器收到更少的请求。</p>
-
-<h4 id="一致性哈希负载均衡">一致性哈希负载均衡</h4>
-<p>要了解这种负载均衡策略，我们首先得学习一下一致性哈希算法。不会一致性哈希算法的同学可以看一下我之前写的这篇博客，质量保证过硬：一致性哈希算法详解
-一致性哈希可以保证相同参数的请求一定会发送到同一台机器上，即使有机器崩溃，由于一致性哈希算法的特性与虚拟节点的存在，发往该机器的请求会被发送到其它机器上，并不会引发剧烈变动。</p>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="nc">ChangeService</span> <span class="o">{</span>
-
-    <span class="nd">@Reference</span><span class="o">(</span><span class="n">loadbalance</span> <span class="o">=</span> <span class="s">"roundrobin"</span><span class="o">)</span>
-    <span class="nc">NameService</span> <span class="n">nameService</span><span class="o">;</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">change</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">nameService</span><span class="o">.</span><span class="na">updateName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<h3 id="dubbo集群容错">Dubbo集群容错</h3>
-<h4 id="内置容错策略">内置容错策略</h4>
-<p>Dubbo默认内置了一些容错策略，如果还不能满足用户需求，我们可以自定义容错策略进行配置。Dubbo 内置了以下几种容错策略：</p>
-<ul>
-  <li>Failover(失败自动切换)</li>
-  <li>Failsafe(失败安全)</li>
-  <li>Failfast(快速失败)</li>
-  <li>Failback(失败自动恢复)</li>
-  <li>Forking(并行调用)</li>
-  <li>Broadcast(广播调用)</li>
-</ul>
-
-<h4 id="failover失败自动切换">Failover(失败自动切换)</h4>
-<p>Failover 是 Dubbo 默认的容错策略。
-其实，Failover 是高可用的一个常用概念，服务器通常拥有主备两套机器配置，当主服务器出现故障时，会自动切换到备服务器中，从而保证了整体的高可用性。
-当调用失败时，会根据配置的重试次数，自动从其他可用地址中重新选择一个可用的地址进行调用，直到调用成功，或者是达到重试的上限位置。
-Failover 会自动对失败进行重试，但它也带来了一些副作用。首先，重试会增加开销，再者，重试会增加调用的响应时间，最后，在某些情况下，重试会造成资源的浪费。</p>
-
-<h4 id="failsafe失败安全">Failsafe(失败安全)</h4>
-<p>Failsafe 在调用失败时，会忽略此错误，并记录一条日志，同时返回一个空结果，在上游看来调用是成功的。
-Failsafe 即使失败了也不会影响整个调用流程，它的失败不影响核心业务的正确性，通常用于旁路系统或流程中，一般用于写入审计日志等操作。</p>
-
-<h4 id="failfast快速失败">Failfast(快速失败)</h4>
-<p>有一些业务场景中，其操作是非幂等的，不能重复调用。这种情况下，重试并不是一个好办法，需要用到 Failfast，调用失败立即报错，让调用方来决定下一步的操作并保证业务的幂等性。</p>
-
-<h4 id="failback失败自动恢复">Failback(失败自动恢复)</h4>
-<p>在 Failback 中，如果调用失败，则此次失败相当于 Failsafe，将返回一个空结果，但与 Failsafe 不同的是，Failback 策略会将这次调用加入内存中的失败列表中，对于这个列表中的失败调用，会在另一个线程中进行异步重试，重试如果再发生失败，则会忽略，即使重试调用成功，原来的调用方也感知不到了。因此它通常适合于对于实时性要求不高，且不需要返回值的一些异步操作。</p>
-
-<h4 id="forking并行调用">Forking(并行调用)</h4>
-<p>Forking 在第一次调用就同时发起多个调用，只要其中一个调用成功，就认为成功。在资源充足，且对于失败的容忍度较低的场景下，可以采用此策略。</p>
-
-<h4 id="broadcast广播调用">Broadcast(广播调用)</h4>
-<p>在某些场景下，我们可能需要对所有服务提供者进行操作，我们可以采用广播调用策略，会逐个调用所有提供者，只要任意有一个提供者出错，则认为此次调用出错。通常用于通知所有提供者更新缓存或日志等本地资源信息。</p>
-
-<h4 id="降级容错熔断方式">降级容错熔断方式</h4>
-<ul>
-  <li>Dubbo服务之Stub和Mock <a href="https://www.jianshu.com/p/f4255a14e53f">https://www.jianshu.com/p/f4255a14e53f</a></li>
-  <li>Dubbo服务之RPC扩展和本地Mock <a href="https://www.cnblogs.com/hyry/p/12067497.html">https://www.cnblogs.com/hyry/p/12067497.html</a></li>
-  <li>Dubbo与断路器 Hystrix 的集成 <a href="https://blog.csdn.net/Geffin/article/details/105808745">https://blog.csdn.net/Geffin/article/details/105808745</a></li>
-</ul>
-
-<h4 id="dubbo27新特性">Dubbo2.7新特性</h4>
-<p>异步化改造，三大中心改造，服务治理增强 <a href="http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html">http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html</a></p>
-
-<h4 id="通过qos对服务进行动态控制">通过QoS对服务进行动态控制</h4>
-<p>在Dubbo中，QoS Quality of Service 这个概念被用于动态的对服务进行查询和控制。例如对获取当前提供和消费的所有服务，以及对服务进行动态的上下线，即从注册中心上进行注册和反注册操作。
-<a href="http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html">http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html</a></p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html"> SpringCloud </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Spring</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="关于微服务">关于微服务</h3>
-<ul>
-  <li>SOA(ESB)与微服务
-    <ul>
-      <li><a href="https://zhuanlan.zhihu.com/p/30477325">https://zhuanlan.zhihu.com/p/30477325</a></li>
-      <li><a href="https://www.cnblogs.com/guanghe/p/10978349.html">https://www.cnblogs.com/guanghe/p/10978349.html</a></li>
-      <li><a href="https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA">https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA</a></li>
-    </ul>
-  </li>
-  <li>微服务哪些事
-    <ul>
-      <li><a href="https://windmt.com/2018/04/14/spring-cloud-0-microservices/">https://windmt.com/2018/04/14/spring-cloud-0-microservices/</a></li>
-      <li><a href="https://windmt.com/2018/04/14/spring-cloud-1-services-governance/">https://windmt.com/2018/04/14/spring-cloud-1-services-governance/</a></li>
-    </ul>
-  </li>
-  <li>SpringCloud &amp; Dubbo
-    <ul>
-      <li><a href="https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ">https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ</a></li>
-      <li><a href="https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A">https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A</a></li>
-      <li><a href="http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html">阿里Dubbo与Spring Cloud</a></li>
-    </ul>
-  </li>
-  <li>RPC之thrift/gRPC
-    <ul>
-      <li><a href="https://blog.csdn.net/kesonyk/article/details/50924489">https://blog.csdn.net/kesonyk/article/details/50924489</a></li>
-      <li><a href="https://developer.51cto.com/art/201908/601617.htm">https://developer.51cto.com/art/201908/601617.htm</a></li>
-      <li><a href="https://segmentfault.com/a/1190000011478469">https://segmentfault.com/a/1190000011478469</a></li>
-      <li><a href="https://zhuanlan.zhihu.com/p/136112210">https://zhuanlan.zhihu.com/p/136112210</a></li>
-      <li>RPC与HTTP的关系 <a href="https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg">https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg</a></li>
-      <li>快速理解RPC技术——基本概念、原理和用途 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620</a></li>
-    </ul>
-  </li>
-  <li>WebService某种程度上也是一种RPC
-    <ul>
-      <li>WebService的历史 <a href="https://www.iteye.com/blog/andot-662787">https://www.iteye.com/blog/andot-662787</a></li>
-      <li>WebService的demo<a href="https://blog.csdn.net/weixin_42672054/article/details/81708464">https://blog.csdn.net/weixin_42672054/article/details/81708464</a></li>
-      <li>2000年左右出现xml，借此微软等联盟推出了基于XML的SOAP协议，实现各系统之间的通信</li>
-      <li>thrift/webservice等可以生成客户端代码，隐藏了底层通信细节，对象化了数据（否则需要自行解析）</li>
-      <li>thrift、dobbo等方式基于TCP实现，主要是性能方面的考虑吧</li>
-    </ul>
-  </li>
-  <li>hessian / sofa</li>
-</ul>
-
-<h3 id="just-do-springcloud">Just Do SpringCloud</h3>
-<ul>
-  <li>首选 <a href="https://windmt.com/tags/Spring-Cloud/">https://windmt.com/tags/Spring-Cloud/</a></li>
-  <li><a href="https://www.springcloud.cc/">springcloud.cc</a></li>
-  <li><a href="http://springcloud.fun">springcloud.fun</a></li>
-  <li><a href="https://www.zhihu.com/question/283286745/answer/763040709">大话SpringCloud</a></li>
-  <li><a href="https://www.geekdigging.com">https://www.geekdigging.com</a></li>
-</ul>
-
-<h3 id="常见组件">常见组件</h3>
-<ul>
-  <li>服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul、携程apollo
-    <ul>
-      <li><a href="https://www.jianshu.com/p/5c5753d2aeb0">Zookeeper保证的是CP，Eureka保证的是AP</a></li>
-    </ul>
-  </li>
-  <li>客户端负载均衡：Netflix Ribbon (提供云端负载均衡，有多种负载均衡策略可供选择，可配合服务发现和断路器使用。)
-    <ul>
-      <li>客户端负载均衡(Ribbon)服务实例的清单在客户端，客户端进行负载均衡算法分配。(从上面的知识我们已经知道了：客户端可以从Eureka Server中得到一份服务清单，在发送请求时通过负载均衡算法，在多个服务器之间选择一个进行访问)
-Zuul路由的业务，对业务进行了归类，并交给了对应的微服务。</li>
-      <li>服务端负载均衡(Nginx)服务实例的清单在服务端，服务器进行负载均衡算法分配,
-Nginx路由请求的压力，对请求进行平均后，交给了服务器处理。</li>
-      <li><a href="https://www.cnblogs.com/kongxianghai/p/8477781.html">撸一撸Spring Cloud Ribbon的原理-负载均衡策略</a></li>
-      <li>可以使用Ribbon + resetTemplate 或者直接使用 Feign（已经内置Ribbon）来实现客户端侧的负载均衡</li>
-    </ul>
-  </li>
-  <li>熔断器：Netflix Hystrix（Envoy)</li>
-  <li>Spring Cloud Feign：它基于 Netflix Feign 实现，整合了 Spring Cloud Ribbon 与 Spring Cloud Hystrix, 除了整合这两者的强大功能之外，它还提 供了声明式的服务调用(不再通过RestTemplate)。
-  生产环境一般使用restTemplate + ribbon</li>
-  <li>服务网关: Netflix Zuul  、 Spring Cloud GateWay
-    <ul>
-      <li>Zuul相当于一个分布式的大Servlet+Filter入口可进行路由及过滤等</li>
-      <li>Zuul也可以近似的理解为是SOA里的ESB，统一入口调用</li>
-      <li>Zuul也默认集成了Hystrix与Ribbon</li>
-    </ul>
-  </li>
-  <li>分布式配置：Spring Cloud Config (Chef)</li>
-  <li>时间消息总线：Spring Cloud Bus</li>
-  <li>链路追踪：Spring Cloud Sleuth 与 Twitter Zipkin</li>
-  <li>数据流：Spring Cloud Stream (数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。)</li>
-  <li>服务监控：Zabbix、Nagios、Metrics、Spectator</li>
-</ul>
-
-<h3 id="相关组件">相关组件</h3>
-<h4 id="zookeeper">zookeeper</h4>
-<ul>
-  <li>简单理解，zk就是一套简单的文件系统结构，本目录(节点)可以设置value及subNode,
-并且该节点可以设置不同的权限（默认/用户名+密码/ip/秘钥，这4种)</li>
-  <li>zk集群简单理解就是，基于ZAB一致性算法的变种keep alived集群</li>
-  <li>zk集群是CP模型，强一致性的，也就是说数据出现了不一致性（通常是节点挂了），整个服务集群就会Hold住等待数据一致，
-所以，这个缺点导致zk并不是最佳的注册中心，因为服务注册中心AP模型最好，部分服务有问题并不表示所有服务不可用。</li>
-  <li>zookeeper 命令 <a href="https://blog.csdn.net/feixiang2039/article/details/79810102">https://blog.csdn.net/feixiang2039/article/details/79810102</a></li>
-  <li>Curator实现的zk分布式锁 <a href="https://www.sohu.com/a/341386202_315839">https://www.sohu.com/a/341386202_315839</a></li>
-</ul>
-
-<h3 id="基于springcloud的开源项目">基于SpringCloud的开源项目</h3>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html"> Nginx </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="location-优先级从高到低">location 优先级从高到低</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. location <span class="o">=</span>    <span class="c"># 精准匹配</span>
-2. location ^~   <span class="c"># 带参前缀匹配</span>
-3. location ~    <span class="c"># 正则匹配（区分大小写）</span>
-4. location ~<span class="k">*</span>   <span class="c"># 正则匹配（不区分大小写）</span>
-5. location /a   <span class="c"># 普通前缀匹配，优先级低于带参数前缀匹配。</span>
-6. location /    <span class="c"># 任何没有匹配成功的，都会匹配这里处理</span>
-</code></pre></div></div>
-<h4 id="location-示例">location 示例</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-location  <span class="o">=</span> / <span class="o">{</span>
-    <span class="c"># 只精准匹配 / 的查询.</span>
-  <span class="o">[</span> configuration A <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 匹配成功： / </span>
-
-location / <span class="o">{</span>
-    <span class="c"># 匹配任何请求，因为所有请求都是以”/“开始</span>
-    <span class="c"># 但是更长字符匹配或者正则表达式匹配会优先匹配</span>
-  <span class="o">[</span> configuration B <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c">#匹配成功：/index.html</span>
-
-location /documents <span class="o">{</span>
-    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
-    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
-  <span class="o">[</span> configuration C <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 匹配成功：/documents/document.html</span>
-<span class="c"># 匹配成功：/documents/abc</span>
-
-location ~ /documents/ABC <span class="o">{</span>
-    <span class="c"># 区分大小写的正则匹配</span>
-    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
-    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
-  <span class="o">[</span> configuration CC <span class="o">]</span> 
-<span class="o">}</span>
-
-location ^~ /images/ <span class="o">{</span>
-    <span class="c"># 匹配任何以 /images/ 开头的地址，匹配符合以后，立即停止往下搜索正则，采用这一条。/</span>
-  <span class="o">[</span> configuration D <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 成功匹配：/images/a.gif</span>
-
-location ~<span class="k">*</span> <span class="se">\.</span><span class="o">(</span>gif|jpg|jpeg<span class="o">)</span><span class="nv">$ </span><span class="o">{</span>
-    <span class="c"># 匹配所有以 .gif、.jpg 或 .jpeg 结尾的请求，不区分大小写</span>
-    <span class="c"># 然而，所有请求 /images/ 下的图片会被 [ config D ]  处理，因为 ^~ 到达不了这一条正则/</span>
-    <span class="o">[</span> configuration E <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 成功匹配：/documents/a.jpg</span>
-
-location /images/ <span class="o">{</span>
-    <span class="c"># 字符匹配到 /images/，继续往下，会发现 ^~ 存在/</span>
-  <span class="o">[</span> configuration F <span class="o">]</span> 
-<span class="o">}</span>
-
-location /images/abc <span class="o">{</span>
-    <span class="c"># 最长字符匹配到 /images/abc，继续往下，会发现 ^~ 存在/</span>
-    <span class="c"># F与G的放置顺序是没有关系的/</span>
-  <span class="o">[</span> configuration G <span class="o">]</span> 
-<span class="o">}</span>
-
-location ~ /images/abc/ <span class="o">{</span>
-    <span class="c"># 只有去掉 [ config D ] 才有效：先最长匹配 [ config G ] 开头的地址，继续往下搜索，匹配到这一条正则，采用/</span>
-    <span class="o">[</span> configuration H <span class="o">]</span> 
-<span class="o">}</span>
-</code></pre></div></div>
-<h4 id="命名-location">命名 location</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>location / <span class="o">{</span>
-    try_files <span class="nv">$uri</span> <span class="nv">$uri</span>/ @custom
-<span class="o">}</span>
-location @custom <span class="o">{</span>
-    <span class="c"># ...do something</span>
-<span class="o">}</span>
-</code></pre></div></div>
-<h4 id="全局变量">全局变量</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$args</span> ： <span class="c">#这个变量等于请求行中的参数，同$query_string</span>
-<span class="nv">$content_length</span> ： 请求头中的Content-length字段。
-<span class="nv">$content_type</span> ： 请求头中的Content-Type字段。
-<span class="nv">$document_root</span> ： 当前请求在root指令中指定的值。
-<span class="nv">$host</span> ： 请求主机头字段，否则为服务器名称。
-<span class="nv">$http_user_agent</span> ： 客户端agent信息
-<span class="nv">$http_cookie</span> ： 客户端cookie信息
-<span class="nv">$limit_rate</span> ： 这个变量可以限制连接速率。
-<span class="nv">$request_method</span> ： 客户端请求的动作，通常为GET或POST。
-<span class="nv">$remote_addr</span> ： 客户端的IP地址。
-<span class="nv">$remote_port</span> ： 客户端的端口。
-<span class="nv">$remote_user</span> ： 已经经过Auth Basic Module验证的用户名。
-<span class="nv">$request_filename</span> ： 当前请求的文件路径，由root或alias指令与URI请求生成。
-<span class="nv">$scheme</span> ： HTTP方法（如http，https）。
-<span class="nv">$server_protocol</span> ： 请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
-<span class="nv">$server_addr</span> ： 服务器地址，在完成一次系统调用后可以确定这个值。
-<span class="nv">$server_name</span> ： 服务器名称。
-<span class="nv">$server_port</span> ： 请求到达服务器的端口号。
-<span class="nv">$request_uri</span> ： 包含请求参数的原始URI，不包含主机名，如：”/foo/bar.php?arg<span class="o">=</span>baz”。
-<span class="nv">$uri</span> ： 不带请求参数的当前URI，<span class="nv">$uri</span>不包含主机名，如”/foo/bar.html”。
-<span class="nv">$document_uri</span> ： 与<span class="nv">$uri</span>相同。
-</code></pre></div></div>
-<h4 id="rewrite规则">Rewrite规则</h4>
-<ul>
-  <li>rewrite功能就是，使用nginx提供的全局变量或自己设置的变量，结合正则表达式和标志位实现url重写以及重定向。rewrite只能放在server{},location{},if{}中，并且只能对域名后边的除去传递的参数外的字符串起作用，例如 http://seanlook.com/a/we/index.php?id=1&amp;u=str 只对/a/we/index.php重写。语法rewrite regex replacement [flag];</li>
-  <li>如果相对域名或参数字符串起作用，可以使用全局变量匹配，也可以使用proxy_pass反向代理。</li>
-  <li>表明看rewrite和location功能有点像，都能实现跳转，主要区别在于rewrite是在同一域名内更改获取资源的路径，而location是对一类路径做控制访问或反向代理，可以proxy_pass到其他机器。很多情况下rewrite也会写在location里，它们的执行顺序是：
-    <ul>
-      <li>执行server块的rewrite指令</li>
-      <li>执行location匹配</li>
-      <li>执行选定的location中的rewrite指令</li>
-    </ul>
-  </li>
-  <li>如果其中某步URI被重写，则重新循环执行1-3，直到找到真实存在的文件；循环超过10次，则返回500 Internal Server Error错误。</li>
-</ul>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>执行搜索
-这个规则的目的是为了执行搜索，搜索URL中包含的关键字。
-请求的URL //hqidi.com/search/some-search-keywords
-重写后URL //hqidi.com/search.php?p<span class="o">=</span>some-search-keywords
-重写规则         rewrite ^/search/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/search.php?p<span class="o">=</span><span class="nv">$1</span>?<span class="p">;</span>
-
-用户个人资料页面
-大多数运行访问者注册的动态网站都提供一个可以查看个人资料的页面，这个页面的URL包含用户的UID和用户名
-请求的URL //hqidi.com/user/47/dige
-重写后URL //hqidi.com/user.php?id<span class="o">=</span>47&amp;name<span class="o">=</span>dige
-重写规则         rewrite ^/user/<span class="o">([</span>0-9]+<span class="o">)</span>/<span class="o">(</span>.+<span class="o">)</span><span class="nv">$ </span>/user.php?id<span class="o">=</span><span class="nv">$1</span>&amp;name<span class="o">=</span><span class="nv">$2</span>?<span class="p">;</span>
-
-多个参数
-有些网站对字符串参数使用不同的语法，例如 通过斜线“/”来分隔非命名参数
-请求的URL //hqidi.com/index.php/param1/param2/param3
-重写后URL //hqidi.com/index.php?p1<span class="o">=</span>param1&amp;p2<span class="o">=</span>param2&amp;p3<span class="o">=</span>param3
-重写规则         rewrite ^/index.php/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/index.php?p1<span class="o">=</span><span class="nv">$1</span>&amp;p2<span class="o">=</span><span class="nv">$2</span>&amp;p3<span class="o">=</span><span class="nv">$3</span>?<span class="p">;</span>
-</code></pre></div></div>
-
-<h4 id="参考">参考</h4>
-<ul>
-  <li>location 配置一 <a href="https://segmentfault.com/a/1190000022315733">https://segmentfault.com/a/1190000022315733</a></li>
-  <li>location 配置二 <a href="https://segmentfault.com/a/1190000022407797">https://segmentfault.com/a/1190000022407797</a></li>
-  <li>Nginx 架构原理科普 <a href="https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ">https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ</a></li>
-  <li>OpenResty 概要及原理科普 <a href="https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw">https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw</a></li>
-  <li>微服务网关 Kong 科普 <a href="https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g">https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html"> Java ClassLoader </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="类加载器步骤">类加载器步骤</h4>
-<ol>
-  <li>在特定目录找到.class文件，并读取</li>
-  <li>Java是模板系语言，读取.class文件之后，被实例化为对应的Class的对象</li>
-  <li>Class对象=类模板实例化，只有有类模板，新对象才能根据类模板进行实例化</li>
-</ol>
-
-<h4 id="3大内置类加载器">3大内置类加载器</h4>
-<ul>
-  <li>启动（Bootstrap）类加载器
-启动类加载器主要加载的是JVM自身需要的类，这个类加载使用C++语言实现的，是虚拟机自身的一部分，它负责将 <JAVA_HOME>/lib路径下的核心类库或-Xbootclasspath参数指定的路径下的jar包加载到内存中，注意必由于虚拟机是按照文件名识别加载jar包的，如rt.jar，如果文件名不被虚拟机识别，即使把jar包丢到lib目录下也是没有作用的(出于安全考虑，Bootstrap启动类加载器只加载包名为java、javax、sun等开头的类)。</JAVA_HOME></li>
-  <li>扩展（Extension）类加载器
-扩展类加载器是指Sun公司(已被Oracle收购)实现的sun.misc.Launcher$ExtClassLoader类，由Java语言实现的，是Launcher的静态内部类，它负责加载<JAVA_HOME>/lib/ext目录下或者由系统变量-Djava.ext.dir指定位路径中的类库，开发者可以直接使用标准扩展类加载器。</JAVA_HOME></li>
-  <li>系统（System）类加载器
-也称应用程序加载器是指 Sun公司实现的sun.misc.Launcher$AppClassLoader。它负责加载系统类路径java -classpath或-D java.class.path 指定路径下的类库，也就是我们经常用到的classpath路径，开发者可以直接使用系统类加载器，一般情况下该类加载是程序中默认的类加载器，通过ClassLoader#getSystemClassLoader()方法可以获取到该类加载器。</li>
-</ul>
-
-<h4 id="双亲委派模式">双亲委派模式</h4>
-<p>工作原理的是，如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器，如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式</p>
-
-<h4 id="双亲委派模式优势">双亲委派模式优势</h4>
-<p>采用双亲委派模式的是好处是Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层级关可以避免类的重复加载，当父亲已经加载了该类时，就没有必要子ClassLoader再加载一次。其次是考虑到安全因素，java核心api中定义类型不会被随意替换，假设通过网络传递一个名为java.lang.Integer的类，通过双亲委托模式传递到启动类加载器，而启动类加载器在核心Java API发现这个名字的类，发现该类已被加载，并不会重新加载网络传递的过来的java.lang.Integer，而直接返回已加载过的Integer.class，这样便可以防止核心API库被随意篡改。可能你会想，如果我们在classpath路径下自定义一个名为java.lang.SingleInterge类(该类是胡编的)呢？该类并不存在java.lang中，经过双亲委托模式，传递到启动类加载器中，由于父类加载器路径下并没有该类，所以不会加载，将反向委托给子类加载器加载，最终会通过系统类加载器加载该类。但是这样做是不允许，因为java.lang是核心API包，需要访问权限，强制加载将会报出如下异常</p>
-
-<h4 id="其他">其他</h4>
-<ul>
-  <li>不同的加载器加载了同个类，在Jvm中相当于两个不同的Class对象</li>
-  <li>双亲委派模型的破坏者-线程上下文类加载器，在Java应用中存在着很多服务提供者接口（Service Provider Interface，SPI），这些接口允许第三方为它们提供实现，如常见的 SPI 有 JDBC、JNDI等，这些 SPI 的接口属于 Java 核心库，一般存在rt.jar包中，由Bootstrap类加载器加载，而 SPI 的第三方实现代码则是作为Java应用所依赖的 jar 包被存放在classpath路径下，由于SPI接口中的代码经常需要加载具体的第三方实现类并调用其相关方法，但SPI的核心接口类是由引导类加载器来加载的，而Bootstrap类加载器无法直接加载SPI的实现类，同时由于双亲委派模式的存在，Bootstrap类加载器也无法反向委托AppClassLoader加载器SPI的实现类。在这种情况下，我们就需要一种特殊的类加载器来加载第三方的类库，而线程上下文类加载器就是很好的选择。</li>
-  <li>参考<a href="https://blog.csdn.net/javazejian/article/details/73413292">https://blog.csdn.net/javazejian/article/details/73413292</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -588,6 +649,10 @@ location @custom <span class="o">{</span>
       
       
       <a href="/page10" class="button page-button">10</a>
+      
+      
+      
+      <a href="/page11" class="button page-button">11</a>
       
       
 
@@ -648,7 +713,7 @@ location @custom <span class="o">{</span>
       
       
       <a  href="tag/分布式">
-      <span class="label label-default">分布式 ( 12 )</span>
+      <span class="label label-default">分布式 ( 13 )</span>
       </a><br />
 
       
@@ -676,7 +741,7 @@ location @custom <span class="o">{</span>
       
       
       <a  href="tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 5 )</span>
+      <span class="label label-default">数据结构与算法 ( 8 )</span>
       </a><br />
 
       
@@ -732,14 +797,14 @@ location @custom <span class="o">{</span>
       
       
       <a  href="tag/微服务">
-      <span class="label label-default">微服务 ( 2 )</span>
+      <span class="label label-default">微服务 ( 3 )</span>
       </a><br />
 
       
       
       
       <a  href="tag/bigdata">
-      <span class="label label-default">Bigdata ( 1 )</span>
+      <span class="label label-default">BigData ( 2 )</span>
       </a><br />
 
       

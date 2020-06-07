@@ -54,6 +54,368 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html"> JVM 常用工具 </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 27, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="jmap--内存占用情况查询">jmap : 内存占用情况查询</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 查询某个pid进程对应的应用程序内存占用情况</span>
+jmap <span class="nt">-heap</span> pid
+ 
+<span class="c">## 示例1</span>
+jmap <span class="nt">-heap</span> 5940
+
+<span class="o">[</span>root@VM_0_8_centos ~]# jmap <span class="nt">-heap</span> 27472
+Attaching to process ID 27472, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 25.171-b11
+
+using thread-local object allocation.
+Parallel GC with 2 thread<span class="o">(</span>s<span class="o">)</span>
+
+Heap Configuration:
+   MinHeapFreeRatio         <span class="o">=</span> 0
+   MaxHeapFreeRatio         <span class="o">=</span> 100
+   MaxHeapSize              <span class="o">=</span> 2051014656 <span class="o">(</span>1956.0MB<span class="o">)</span>
+   NewSize                  <span class="o">=</span> 42991616 <span class="o">(</span>41.0MB<span class="o">)</span>
+   MaxNewSize               <span class="o">=</span> 683671552 <span class="o">(</span>652.0MB<span class="o">)</span>
+   OldSize                  <span class="o">=</span> 87031808 <span class="o">(</span>83.0MB<span class="o">)</span>
+   NewRatio                 <span class="o">=</span> 2
+   SurvivorRatio            <span class="o">=</span> 8
+   MetaspaceSize            <span class="o">=</span> 21807104 <span class="o">(</span>20.796875MB<span class="o">)</span>
+   CompressedClassSpaceSize <span class="o">=</span> 1073741824 <span class="o">(</span>1024.0MB<span class="o">)</span>
+   MaxMetaspaceSize         <span class="o">=</span> 17592186044415 MB
+   G1HeapRegionSize         <span class="o">=</span> 0 <span class="o">(</span>0.0MB<span class="o">)</span>
+
+Heap Usage:
+PS Young Generation
+Eden Space:
+   capacity <span class="o">=</span> 37224448 <span class="o">(</span>35.5MB<span class="o">)</span>
+   used     <span class="o">=</span> 14139096 <span class="o">(</span>13.484092712402344MB<span class="o">)</span>
+   free     <span class="o">=</span> 23085352 <span class="o">(</span>22.015907287597656MB<span class="o">)</span>
+   37.98335975324604% used
+From Space:
+   capacity <span class="o">=</span> 3145728 <span class="o">(</span>3.0MB<span class="o">)</span>
+   used     <span class="o">=</span> 2929584 <span class="o">(</span>2.7938690185546875MB<span class="o">)</span>
+   free     <span class="o">=</span> 216144 <span class="o">(</span>0.2061309814453125MB<span class="o">)</span>
+   93.12896728515625% used
+To Space:
+   capacity <span class="o">=</span> 3670016 <span class="o">(</span>3.5MB<span class="o">)</span>
+   used     <span class="o">=</span> 0 <span class="o">(</span>0.0MB<span class="o">)</span>
+   free     <span class="o">=</span> 3670016 <span class="o">(</span>3.5MB<span class="o">)</span>
+   0.0% used
+PS Old Generation
+   capacity <span class="o">=</span> 165150720 <span class="o">(</span>157.5MB<span class="o">)</span>
+   used     <span class="o">=</span> 98856376 <span class="o">(</span>94.27678680419922MB<span class="o">)</span>
+   free     <span class="o">=</span> 66294344 <span class="o">(</span>63.22321319580078MB<span class="o">)</span>
+   59.8582773359995% used
+
+26452 interned Strings occupying 2659208 bytes.
+
+<span class="c">## 示例2</span>
+jmap <span class="nt">-F</span> <span class="nt">-histo</span> 16464 <span class="o">&gt;</span> 16464.log
+<span class="nt">-histo</span><span class="o">[</span>:live] 打印每个class的实例数目,内存占用,类全名信息. VM的内部类名字开头会加上前缀”<span class="k">*</span>”. 如果live子参数加上后,只统计活的对象数量. 
+
+<span class="c">## 示例2</span>
+jmap <span class="nt">-dump</span>:format<span class="o">=</span>b,file<span class="o">=</span>outfile 3024可以将3024进程的内存heap输出出来到outfile文件里，再配合MAT（内存分析工具）。
+
+</code></pre></div></div>
+
+<h4 id="jstat-可以实时监测系统资源占用与jvm运行情况">jstat: 可以实时监测系统资源占用与jvm运行情况</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 命令语法结构：
+Usage: jstat -help|-options
+       jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]]
+## 参数解释：
+Options — 选项，我们一般使用 -gcutil 查看gc情况
+-t      — 输出Timestamp
+vmid    — VM的进程号，即当前运行的java进程号
+interval– 间隔时间，单位为秒或者毫秒
+count   — 打印次数，如果缺省则打印无数次
+ 
+S0  — Heap上的 Survivor space 0 区已使用空间的百分比
+S1  — Heap上的 Survivor space 1 区已使用空间的百分比
+E   — Heap上的 Eden space 区已使用空间的百分比
+O   — Heap上的 Old space 区已使用空间的百分比
+P   — Perm space 区已使用空间的百分比
+YGC — 从应用程序启动到采样时发生 Young GC 的次数
+YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒)
+FGC — 从应用程序启动到采样时发生 Full GC 的次数
+FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒)
+GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒)
+
+## jstat -options
+    -class 类加载统计
+    -compiler 编译统计 
+    -gc
+    -gccapacity
+    -gccause Allocation Failure
+    -gcmetacapacity 元数据空间统计
+    -gcnew
+    -gcnewcapacity
+    -gcold
+    -gcoldcapacity
+    -gcutil 总结垃圾回收统计
+    -printcompilation JVM编译方法统计
+
+## 示例1 总结垃圾回收统计
+[root@VM_0_8_centos ~]# jstat -gcutil 27472 1000 5
+  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT
+ 78.04   0.00  14.10  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  24.05  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  34.14  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  40.62  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  47.20  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+
+## 示例2 类加载统计
+[root@VM_0_8_centos ~]# jstat -class -t 27472 1000 5
+Timestamp       加载class的数量  所占用空间大小  未加载数量  未加载占用空间     Time(秒)
+Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
+         5359.3  10847 20148.1        0     0.0      46.25
+         5360.4  10847 20148.1        0     0.0      46.25
+         5361.4  10847 20148.1        0     0.0      46.25
+         5362.3  10847 20148.1        0     0.0      46.25
+         5363.3  10847 20148.1        0     0.0      46.25
+
+</code></pre></div></div>
+<p>jstat命令使用
+<a href="https://www.cnblogs.com/lizhonghua34/p/7307139.html">https://www.cnblogs.com/lizhonghua34/p/7307139.html</a></p>
+
+<p>JVM运行时内存使用情况监控
+<a href="https://blog.csdn.net/zmx729618/article/details/78392715">https://blog.csdn.net/zmx729618/article/details/78392715</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html">Docker</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 12, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>容器</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="docker原理-">Docker原理 ☆☆☆</h4>
+<ul>
+  <li>cgroups (2006年 linux推出)</li>
+  <li>namespace</li>
+</ul>
+
+<h4 id="docker-hello-world">Docker Hello World!</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run hello-world
+docker run ubuntu:15.10 /bin/echo <span class="s2">"Hello world"</span>
+</code></pre></div></div>
+<h4 id="docker-pull-image">Docker pull Image</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull library/hello-world
+</code></pre></div></div>
+<h4 id="docker-run-nginx">docker run nginx</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">--name</span> my_nginx_v1 <span class="nt">-p</span> 8080:80 <span class="nt">-d</span> nginx:v1
+<span class="c">## --name nginx-test：容器名称。</span>
+<span class="c">## -p 8080:80： 端口进行映射，将本地 8080 端口映射到容器内部的 80 端口。</span>
+<span class="c">## -d nginx： 设置容器在在后台一直运行。</span>
+</code></pre></div></div>
+<p><a href="https://www.runoob.com/docker/docker-install-nginx.html">https://www.runoob.com/docker/docker-install-nginx.html</a></p>
+
+<h4 id="docker-run-springboot">docker run springboot</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-p</span> 8080:8080 <span class="nt">-t</span> springboot/spring-boot-docker
+</code></pre></div></div>
+<p><a href="http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html">http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html</a></p>
+<h4 id="查看运行的容器">查看运行的容器</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker ps
+docker ps <span class="nt">-a</span>
+<span class="c"># 输出详情介绍：</span>
+<span class="c">## CONTAINER ID: 容器 ID。</span>
+<span class="c">## IMAGE: 使用的镜像。</span>
+<span class="c">## COMMAND: 启动容器时运行的命令。</span>
+<span class="c">## CREATED: 容器的创建时间。</span>
+
+<span class="c">## STATUS: 容器状态。</span>
+<span class="c">## 状态有7种：</span>
+<span class="c">### created（已创建）</span>
+<span class="c">### restarting（重启中）</span>
+<span class="c">### running（运行中）</span>
+<span class="c">### removing（迁移中）</span>
+<span class="c">### paused（暂停）</span>
+<span class="c">### exited（停止）</span>
+<span class="c">### dead（死亡）</span>
+
+<span class="c">## PORTS: 容器的端口信息和使用的连接类型（tcp\udp）。</span>
+<span class="c">## NAMES: 自动分配的容器名称。</span>
+</code></pre></div></div>
+<h4 id="查看容器内的标准输出日志">查看容器内的标准输出日志</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker logs 2b1b7a428627
+</code></pre></div></div>
+<h4 id="启动重启停止容器">启动/重启/停止容器</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start/restart amazing_cori
+docker stop 2b1b7a428627
+</code></pre></div></div>
+<h4 id="删除容器镜像">删除容器/镜像</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">rm </span>20ca2a70ee13
+docker rmi ec49dbd13cf5
+</code></pre></div></div>
+<h4 id="compose-machine-swarm">Compose Machine Swarm</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+<p><a href="http://www.ityouknow.com/docker/2018/03/22/docker-compose.html">http://www.ityouknow.com/docker/2018/03/22/docker-compose.html</a></p>
+<h4 id="docker中run和start的区别">docker中run和start的区别</h4>
+<ul>
+  <li>docker run 后面指定的是一个镜像</li>
+  <li>而docker start指定的是一个容器</li>
+  <li>docker run是利用镜像生成容器，并启动容器，而docker start是启动一个之前生成过的容器</li>
+</ul>
+
+<h4 id="dockerfile-命令详解">Dockerfile 命令详解</h4>
+<p><a href="http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html">http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html</a></p>
+
+<p><a href="http://www.ityouknow.com/docker.html">http://www.ityouknow.com/docker.html</a></p>
+
+<h4 id="cloud-foundry和-kubernetes-的区别">Cloud Foundry和 Kubernetes 的区别</h4>
+<p><a href="https://blog.csdn.net/qq_30154571/article/details/84955097">https://blog.csdn.net/qq_30154571/article/details/84955097</a></p>
+
+<h4 id="cloud-foundry-与kubernetes-cfk8s结合简史">Cloud Foundry 与Kubernetes: CF/K8s结合简史</h4>
+<p><a href="https://blog.csdn.net/zhanggongsw/article/details/79948420">https://blog.csdn.net/zhanggongsw/article/details/79948420</a></p>
+
+<h4 id="阿里飞天云apsara-stack和openstack">阿里飞天云Apsara Stack和OpenStack</h4>
+<ul>
+  <li><a href="https://blog.csdn.net/liuxiao723846/article/details/82630926">https://blog.csdn.net/liuxiao723846/article/details/82630926</a></li>
+  <li><a href="https://www.csdn.net/gather_21/MtTaYg1sNTY5Mi1ibG9n.html">https://www.csdn.net/gather_21/MtTaYg1sNTY5Mi1ibG9n.html</a></li>
+</ul>
+
+<h4 id="kubernetes-vs-openstack">Kubernetes vs OpenStack</h4>
+<ul>
+  <li><a href="https://blog.csdn.net/luanpeng825485697/article/details/86706131">https://blog.csdn.net/luanpeng825485697/article/details/86706131</a></li>
+  <li><a href="https://blog.csdn.net/dualvencsdn/article/details/79207281">https://blog.csdn.net/dualvencsdn/article/details/79207281</a></li>
+  <li><a href="https://www.kubernetes.org.cn/2121.html">https://www.kubernetes.org.cn/2121.html</a></li>
+  <li><a href="https://www.cnblogs.com/goldsunshine/p/9872142.html">https://www.cnblogs.com/goldsunshine/p/9872142.html</a></li>
+</ul>
+
+<h4 id="google-kubernetes--docker-swarm--mesos-marathon">Google Kubernetes &amp; Docker Swarm &amp; Mesos Marathon</h4>
+<ul>
+  <li><a href="https://www.kubernetes.org.cn/757.html">https://www.kubernetes.org.cn/757.html</a></li>
+  <li><a href="https://www.zhihu.com/question/55391506">https://www.zhihu.com/question/55391506</a></li>
+  <li><a href="https://www.cnblogs.com/wzj4858/p/7910883.html">https://www.cnblogs.com/wzj4858/p/7910883.html</a></li>
+  <li><a href="http://dockone.io/article/823">http://dockone.io/article/823</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/28301108">https://zhuanlan.zhihu.com/p/28301108</a></li>
+</ul>
+
+<h4 id="国内外paas服务一览">国内外PaaS服务一览</h4>
+<p><a href="https://www.jianshu.com/p/a4b9be650fa4">https://www.jianshu.com/p/a4b9be650fa4</a></p>
+
+<p><a href="https://mp.weixin.qq.com/s/_m_ZV9LdbQQqFbshxIgWrA">https://mp.weixin.qq.com/s/_m_ZV9LdbQQqFbshxIgWrA</a>
+<a href="https://mp.weixin.qq.com/s/u0LRq_NNkCtU3wkdMdYlUA">https://mp.weixin.qq.com/s/u0LRq_NNkCtU3wkdMdYlUA</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html"> 主流互联网公司系统概况及指标 </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jan 3, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>架构</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="微信">微信</h4>
+
+<h4 id="淘宝">淘宝</h4>
+<ul>
+  <li>2018年双11 交易创建30万QPS</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw">https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw</a></p>
+
+<ul>
+  <li>2019年双11 交易峰值54.5万笔/秒</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ">https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ</a></p>
+
+<ul>
+  <li>阿里巴巴双11千万级实时监控系统技术揭秘</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q">https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q</a></p>
+
+<ul>
+  <li>2019双11，支付宝有哪些“秘密武器”</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g">https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g</a></p>
+
+<ul>
+  <li>诺亚 (Noah) 自适应流控</li>
+</ul>
+<p><a href="https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6">https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6</a></p>
+
+<h4 id="12306">12306</h4>
+<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22</a></p>
+
+<h4 id="微博">微博</h4>
+<p><a href="https://www.cnblogs.com/shanyou/p/5048099.html">https://www.cnblogs.com/shanyou/p/5048099.html</a></p>
+
+<h4 id="唯品会">唯品会</h4>
+<p>唯品会OSP 微服务架构
+用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力
+<a href="https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ">https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ</a></p>
+
+<h4 id="达达">达达</h4>
+<p><a href="https://www.jianshu.com/p/67b710267d10">https://www.jianshu.com/p/67b710267d10</a></p>
+
+<h4 id="指标概述">指标概述</h4>
+<p>https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA</p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/12/14/TheUndercoverEconomist.html">卧底经济学</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 14, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2019/12/14/TheUndercoverEconomist.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>读书笔记</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="三种市场失灵">三种市场失灵</h4>
+<ul>
+  <li>稀缺</li>
+  <li>信息缺失、信息不对等</li>
+  <li>外部效应</li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E9%9A%8F%E8%AE%B0/2019/12/14/TheUndercoverEconomist.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/12/08/Keepalived.html"> Keepalived </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 8, 2019</span>
@@ -94,154 +456,6 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2019/12/08/Keepalived.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/WhereAreWomenFrom.html">女人的起源</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 1, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/WhereAreWomenFrom.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>极致思考</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="开言">开言</h4>
-<p>以这一篇做为这个版块的开始，之所以要增加【极致思考】这个版块，根本的原因是，我认为，大多数业务或者商业甚至物理定律是在有限的条件下有规律的发生（概率其实是规律的一种形式）。
-那么，如何能在极短的时间内发现有限的规律、发现事物本质就难能可贵了。所以，我想把自己对一些事物的自认为合理的猜测记录下来，以锻炼自己的思考力。</p>
-
-<h4 id="女人的起源">女人的起源</h4>
-<p>今天开车回家，在路上，无意间摸到了我副驾驶的座椅，我内心一惊，拥有这辆车5年多，我第一次感受到它。由于是真皮座椅，那一刻我忽然觉得它似乎有了生命，它是我的伴侣，它是我的”小途途”。
-这个奇妙的感觉，让我想到几年前，阅读了张小龙推荐的《女人的起源》一书，该书提出了一个有意思的问题：</p>
-<ol>
-  <li>人为何没有了毛发？
- 书中的解释是：某个时段，人类为了躲避陆地大型凶兽，很长一段时间是生活在水中或浅海区域，因为大型凶兽多数怕水。在水中时间久了，毛发就脱落了。但是，水中会有蛇类，所以人类至今都会天生怕蛇。</li>
-  <li>女性为何有凸起的乳房？</li>
-  <li>男性为何有凸起的乳房？</li>
-</ol>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E9%9A%8F%E8%AE%B0/2019/12/01/WhereAreWomenFrom.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/Principles.html">《原则》Ray Dalio</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 1, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/Principles.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>读书笔记</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="原则">原则</h4>
-<ul>
-  <li>发现问题、分析问题、正视问题、找出解决问题的路径、彻底解决问题。</li>
-  <li>一部分人不知道自己不知道处于不自知，另一部分人知道自己不知道处于自知但是不行动，只有及少数自知并且不容忍自己的问题并加以行动。</li>
-  <li>如果你的见解不比一般人搞，你就不会是领导者；如果你的见解比他们更高，那就不必担心你做得事情不受欢迎。</li>
-  <li>创意择优（可信度加权决策）。</li>
-  <li>想方设法达成共识。（基于逻辑、数据、坦诚的沟通）</li>
-  <li>多次确认，不如把同一个事情交给多人来做。（比如财务）</li>
-  <li>做有意义的工作，发展有意义的人际关系。</li>
-  <li>切勿混淆慷慨和公平。</li>
-  <li>价值观 &gt; 能力 &gt; 技能。</li>
-</ul>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E9%9A%8F%E8%AE%B0/2019/12/01/Principles.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/HowToSuccess.html">为何我们不能获得真正的成功</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 1, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/HowToSuccess.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>读书笔记</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="原则">原则</h4>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E9%9A%8F%E8%AE%B0/2019/12/01/HowToSuccess.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html">多路复用select poll epoll</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="简单总结三者区别">简单总结三者区别</h4>
-<ul>
-  <li>一切都与历史有关，都是历史发展造成差异</li>
-  <li>select最早出现（1983年在BSD里实现），由以下几个特点
-    <ol>
-      <li>无论效率如何确实实现了多路复用</li>
-      <li>原理也就是内核态监听最多1024个链接，任意一个链接有数据了，通知用户态去遍历所有链接获取数据</li>
-      <li>由于编程的原因把1024写在了linux的头文件FD_SETSIZE中</li>
-      <li>由于编程的原因数据直接写到了参数的地址上，导致需要每次需要重置参数</li>
-    </ol>
-  </li>
-  <li>poll 在1997年推出，修复select的两个问题（也是历史原因，当时机器硬件性能不高没有必要修复）
-    <ol>
-      <li>最大监听连接数修改为在 /proc/sys/fs/file-max 获取</li>
-      <li>内核通过修改pollfd.revents反馈其中的就绪时间</li>
-      <li>仍然需要遍历，效率仍然低，时间复杂度O(n)</li>
-    </ol>
-  </li>
-  <li>epoll，革新以上两种方式，内核只返回就绪的那一个链接，不需要遍历，所以效率提升了
-    <ol>
-      <li>epoll其实也需要调用epoll_wait不断轮询就绪链表，期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。</li>
-      <li>epoll对文件描述符的操作有两种模式：LT（level trigger）和ET（edge trigger）。LT模式是默认模式，LT模式与ET模式的区别如下：
-        <ul>
-          <li>LT模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。</li>
-          <li>ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。</li>
-          <li>LT模式，LT(level triggered)是缺省的工作方式，并且同时支持block和no-block socket。在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，内核还是会继续通知你的。</li>
-          <li>ET模式，ET(edge-triggered)是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知，直到你做了某些操作导致那个文件描述符不再为就绪状态了(比如，你在发送，接收或者接收请求，或者发送接收的数据少于一定量时导致了一个EWOULDBLOCK 错误）。但是请注意，如果一直不对这个fd作IO操作(从而导致它再次变成未就绪)，内核不会发送更多的通知(only once)。ET模式在很大程度上减少了epoll事件被重复触发的次数，因此效率要比LT模式高。epoll工作在ET模式的时候，必须使用非阻塞套接口，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。</li>
-          <li>在select/poll中，进程只有在调用一定的方法后，内核才对所有监视的文件描述符进行扫描，而epoll事先通过epoll_ctl()来注册一个文件描述符，一旦基于某个文件描述符就绪时，内核会采用类似callback的回调机制，迅速激活这个文件描述符，当进程调用epoll_wait()时便得到通知。(此处去掉了遍历文件描述符，而是通过监听回调的的机制。这正是epoll的魅力所在。)</li>
-        </ul>
-      </li>
-    </ol>
-  </li>
-</ul>
-
-<h4 id="参考资料">参考资料</h4>
-<ul>
-  <li><a href="https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A">https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A</a></li>
-  <li><a href="https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA">https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA</a></li>
-  <li><a href="https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA">https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA</a></li>
-  <li><a href="https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A">https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -293,6 +507,10 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       
       
       <a href="/page10" class="button page-button">10</a>
+      
+      
+      
+      <a href="/page11" class="button page-button">11</a>
       
       
 
@@ -353,7 +571,7 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       
       
       <a  href="tag/分布式">
-      <span class="label label-default">分布式 ( 12 )</span>
+      <span class="label label-default">分布式 ( 13 )</span>
       </a><br />
 
       
@@ -381,7 +599,7 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       
       
       <a  href="tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 5 )</span>
+      <span class="label label-default">数据结构与算法 ( 8 )</span>
       </a><br />
 
       
@@ -437,14 +655,14 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       
       
       <a  href="tag/微服务">
-      <span class="label label-default">微服务 ( 2 )</span>
+      <span class="label label-default">微服务 ( 3 )</span>
       </a><br />
 
       
       
       
       <a  href="tag/bigdata">
-      <span class="label label-default">Bigdata ( 1 )</span>
+      <span class="label label-default">BigData ( 2 )</span>
       </a><br />
 
       

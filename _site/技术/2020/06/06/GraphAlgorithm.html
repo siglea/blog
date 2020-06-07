@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>排序算法概述</title>
-  <meta name="description" content="冒泡排序从左开始比较，大的往右换或从右开始比较，小的往左换重复上一步骤鸡尾排序也叫双向冒泡或者定向冒泡，从左开始比较，大的往右换与从右开始比较，小的往左换同时进行选择排序与冒泡排序相比减少了多余的交换找出最小的元素放在最左侧，接着找第二小的...直到最后排完(不稳定)快速排序选中一个基准元素X，小于X放在左侧，大...">
+  <title>&#39;图&#39;相关算法</title>
+  <meta name="description" content="什么时”图”  可以简单理解我存储关系的数据结构，比如好友关系  分为有向图、无向图  存储结构          邻接矩阵（类似多维数组）      邻接表  （类似”正”索引）      逆邻接表 （类似倒排索引）      十字链表  （正倒索引联合）      ">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -55,80 +55,48 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">排序算法概述</h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-05-31T11:25:00+08:00" itemprop="datePublished">May 31, 2020</time></p>
+    <h1 class="post-title" itemprop="name headline">'图'相关算法</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-06-06T09:17:00+08:00" itemprop="datePublished">Jun 6, 2020</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="冒泡排序">冒泡排序</h4>
-<pre>
-从左开始比较，大的往右换
-或
-从右开始比较，小的往左换
-重复上一步骤
-</pre>
-<h4 id="鸡尾排序">鸡尾排序</h4>
-<pre>
-也叫双向冒泡或者定向冒泡，
-从左开始比较，大的往右换
-与
-从右开始比较，小的往左换
-同时进行
-</pre>
-<h4 id="选择排序">选择排序</h4>
-<pre>
-与冒泡排序相比减少了多余的交换
-找出最小的元素放在最左侧，接着找第二小的...直到最后排完(不稳定)
-</pre>
-<h4 id="快速排序">快速排序</h4>
-<pre>
-选中一个基准元素X，小于X放在左侧，大于X放在右侧，分而治之，不断重复
-</pre>
-<h4 id="插入排序">插入排序</h4>
-<pre>
-从左侧开始设定一个有序区，从第二个元素开始去有序找自己的位置插入进去
-</pre>
-<h4 id="希尔排序">希尔排序</h4>
-<pre>
-两两分组，跨度交换，左小右大，逐渐缩小跨度为1，即完成</pre>
-<h4 id="归并排序比武排序">归并排序(比武排序)</h4>
-<pre>
-由一组数字分为两组，逐渐分为只包含2个元素的小组
-开始比较大小，左小右大
-比较完毕之后，开始合并，合并的时候按照小大顺序把2个小组合并成1个有序大组，直到最后1个最大有序组
-</pre>
-<h4 id="计数排序">计数排序</h4>
-<pre>
-建立【元素都为0】的空数组，开始遍历待排序数组
-如果待排元素值等于空数组的位置角标，则【元素+1】
-</pre>
-<h4 id="桶排序">桶排序</h4>
-<pre>
-计数排序的升级版，计数排序每个索引只能记录一个值，
-索引升级为桶（比如桶范围2.0-3.5）
-此时，一个桶里就可以放多个数据范围内的数据
-</pre>
-<h4 id="基数排序按位排序">基数排序（按位排序）</h4>
-<pre>
-提取每个元素的最后一位进行计数排序
-再提取倒数第二位进行计数排序
-直到最前一位
-比如：单词排序，长度不一的末尾用0代替
-</pre>
-<h4 id="堆排序">堆排序</h4>
-<pre>
-主要利用二叉堆是完全二叉堆这样的数据结构的特性
-把无序数组构建成二叉堆。
-循环删除堆顶元素，移到集合尾部，调节堆产生新的堆顶。
-
-二叉堆虽然是一颗完全二叉树，但它的存储方式并不是链式存储，而是顺序存储。换句话说，二叉堆的所有节点都存储在数组当中。
-利用大顶堆，删除顶点放于数组未部，此后二叉堆自我调整选出新的堆顶
-</pre>
+    <h4 id="什么时图">什么时”图”</h4>
 <ul>
-  <li><a href="https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg">https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg</a></li>
+  <li>可以简单理解我存储关系的数据结构，比如好友关系</li>
+  <li>分为有向图、无向图</li>
+  <li>存储结构
+    <ul>
+      <li>邻接矩阵（类似多维数组）</li>
+      <li>邻接表  （类似”正”索引）</li>
+      <li>逆邻接表 （类似倒排索引）</li>
+      <li>十字链表  （正倒索引联合）</li>
+    </ul>
+  </li>
 </ul>
 
-<h4 id="参考-httpsmpweixinqqcomsteogqlslb6ap4aqrx7ttza">参考 <a href="https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA">https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA</a></h4>
+<h4 id="深度优先遍历-和-广度优先遍历">深度优先遍历 和 广度优先遍历</h4>
+<ul>
+  <li>深度优先遍历，沿着当前分支，直到最后一个节点，然后遍历相邻节点（二叉树的前中后序遍历就是深度优先遍历），重点在回溯</li>
+  <li>广度优先遍历，遍历完当前节点的所有子节点，然后切换到下级节点（类似二叉树的层级遍历），重点在重放</li>
+</ul>
+
+<h4 id="图的-最短路径">图的 “最短路径”（</h4>
+<ul>
+  <li>迪杰斯特拉算法 Dijkstra</li>
+  <li>多源最短路径 弗洛伊德算法 Floyd-Warshall</li>
+  <li>路径规划之 A* 算法</li>
+</ul>
+
+<h4 id="ford-fulkerson-最大流算法">Ford-Fulkerson 最大流算法</h4>
+
+<h4 id="最小生成树">最小生成树</h4>
+<ul>
+  <li>Kruskal算法</li>
+  <li>prim算法</li>
+</ul>
+
+<p>动态规划、贪心算法、分治算法
+回溯法、分支定界法、字符串匹配算法、排序算法</p>
 
   </div>
 </article>

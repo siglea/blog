@@ -39,8 +39,7 @@ categories:
 </pre>
 #### 希尔排序
 <pre>
-两两分组，跨度交换，左小右大，逐渐缩小跨度为1，即完成排序
-</pre>
+两两分组，跨度交换，左小右大，逐渐缩小跨度为1，即完成</pre>
 #### 归并排序(比武排序)
 <pre>
 由一组数字分为两组，逐渐分为只包含2个元素的小组
@@ -70,6 +69,10 @@ categories:
 主要利用二叉堆是完全二叉堆这样的数据结构的特性
 把无序数组构建成二叉堆。
 循环删除堆顶元素，移到集合尾部，调节堆产生新的堆顶。
-</pre>
 
-参考 <https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA>
+二叉堆虽然是一颗完全二叉树，但它的存储方式并不是链式存储，而是顺序存储。换句话说，二叉堆的所有节点都存储在数组当中。
+利用大顶堆，删除顶点放于数组未部，此后二叉堆自我调整选出新的堆顶
+</pre>
+- <https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg>
+
+#### 参考 <https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA>

@@ -54,6 +54,818 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html">Java Concurrent</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="绝对线程安全和相对线程安全">绝对线程安全和相对线程安全</h4>
+<ul>
+  <li>https://www.cnblogs.com/duanxz/p/6099983.html</li>
+  <li>https://www.jianshu.com/p/98b0241bc8e2</li>
+  <li>可见性、有序性、原子性</li>
+</ul>
+
+<h4 id="aqs-abstractqueuedsynchronizer">AQS AbstractQueuedSynchronizer</h4>
+<ul>
+  <li>AbstractQueuedSynchronizer 类如其名，抽象的队列式的同步器，AQS 定义了一套多线程访问,共享资源的同步器框架，许多同步类实现都依赖于它，如常用的 ReentrantLock/Semaphore/CountDownLatch。</li>
+  <li>AQS 定义两种资源共享方式
+    <ul>
+      <li>Exclusive(独占资源，只有一个线程能执行，如 ReentrantLock)</li>
+      <li>Share(共享资源，多个线程可同时执行，如 Semaphore/CountDownLatch)</li>
+    </ul>
+  </li>
+  <li>CLH锁,CLH CLH(Craig, Landin, and Hagersten locks): 是一个自旋锁，能确保无饥饿性，提供先来先服务的公平性。
+CLH锁也是一种基于链表的可扩展、高性能、公平的自旋锁，申请线程只在本地变量上自旋，它不断轮询前驱的状态，如果发现前驱释放了锁就结束自旋。
+<a href="https://www.jianshu.com/p/4682a6b0802d">https://www.jianshu.com/p/4682a6b0802d</a>
+<a href="https://www.jianshu.com/p/d291a6a1879c">https://www.jianshu.com/p/d291a6a1879c</a></li>
+</ul>
+
+<h4 id="cas-compare-and-swap">CAS Compare And Swap</h4>
+<ul>
+  <li>CAS(Compare And Swap/Set)比较并交换，CAS 算法的过程是这样:它包含 3 个参数 CAS(V,E,N)。V 表示要更新的变量(内存值)，E 表示预期值(旧的)，N 表示新值。当且仅当 V 值等于 E 值时，才会将 V 的值设为 N，如果 V 值和 E 值不同，则说明已经有其他线程做了更新，则当 前线程什么都不做。最后，CAS 返回当前 V 的真实值。CAS 操作是抱着乐观的态度进行的(乐观锁)，它总是认为自己可以成功完成操作。当多个线程同时 使用 CAS 操作一个变量时，只有一个会胜出，并成功更新，其余均会失败。失败的线程不会被挂 起，仅是被告知失败，并且允许再次尝试，当然也允许失败的线程放弃操作。基于这样的原理， CAS 操作即使没有锁，也可以发现其他线程对当前线程的干扰，并进行恰当的处理。</li>
+</ul>
+
+<h4 id="volatile-关键字的作用变量可见性禁止重排序">volatile 关键字的作用(变量可见性、禁止重排序)</h4>
+<ul>
+  <li>Java 语言提供了一种稍弱的同步机制，即 volatile 变量，用来确保将变量的更新操作通知到其他 线程。volatile 变量具备两种特性，volatile 变量不会被缓存在寄存器或者对其他处理器不可见的 地方，因此在读取 volatile 类型的变量时总会返回最新写入的值。</li>
+  <li>变量可见性,其一是保证该变量对所有线程可见，这里的可见性指的是当一个线程修改了变量的值，那么新的 值对于其他线程是可以立即获取的。</li>
+  <li>在访问 volatile 变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此 volatile 变量是一 种比 sychronized 关键字更轻量级的同步机制。volatile 适合这种场景:一个变量被多个线程共 享，线程直接给这个变量赋值。</li>
+  <li>当对非 volatile 变量进行读写的时候，每个线程先从内存拷贝变量到 CPU 缓存中。如果计算机有 多个 CPU，每个线程可能在不同的 CPU 上被处理，这意味着每个线程可以拷贝到不同的 CPU cache 中。而声明变量是 volatile 的，JVM 保证了每次读变量都从内存中读，跳过 CPU cache 这一步。</li>
+  <li>适用场景,值得说明的是对 volatile 变量的单次读/写操作可以保证原子性的，如 long 和 double 类型变量， 但是并不能保证 i++这种操作的原子性，因为本质上 i++是读、写两次操作。在某些场景下可以 代替 Synchronized。但是,volatile 的不能完全取代 Synchronized 的位置，只有在一些特殊的场
+景下，才能适用 volatile。总的来说，必须同时满足下面两个条件才能保证在并发环境的线程安全:
+    <ol>
+      <li>对变量的写操作不依赖于当前值(比如 i++)，或者说是单纯的变量赋值(boolean flag = true)。</li>
+      <li>该变量没有包含在具有其他变量的不变式中，也就是说，不同的 volatile 变量之间，不 能互相依赖。只有在状态真正独立于程序内其他内容时才能使用 volatile。</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="锁状态-无锁状态偏向锁轻量级锁和重量级锁">锁状态 无锁状态、偏向锁、轻量级锁和重量级锁</h4>
+<ul>
+  <li>偏向锁，Hotspot 的作者经过以往的研究发现大多数情况下锁不仅不存在多线程竞争，而且总是由同一线
+    程多次获得。偏向锁的目的是在某个线程获得锁之后，消除这个线程锁重入(CAS)的开销，看起
+    来让这个线程得到了偏护。引入偏向锁是为了在无多线程竞争的情况下尽量减少不必要的轻量级
+    锁执行路径，因为轻量级锁的获取及释放依赖多次 CAS 原子指令，而偏向锁只需要在置换
+    ThreadID 的时候依赖一次 CAS 原子指令(由于一旦出现多线程竞争的情况就必须撤销偏向锁，所
+    以偏向锁的撤销操作的性能损耗必须小于节省下来的 CAS 原子指令的性能消耗)。上面说过，轻
+    量级锁是为了在线程交替执行同步块时提高性能，而偏向锁则是在只有一个线程执行同步块时进
+    一步提高性能。</li>
+  <li>锁升级， 随着锁的竞争，锁可以从偏向锁升级到轻量级锁，再升级的重量级锁(但是锁的升级是单向的，
+     也就是说只能从低到高升级，不会出现锁的降级)。
+    “轻量级”是相对于使用操作系统互斥量来实现的传统锁而言的。但是，首先需要强调一点的是，
+    轻量级锁并不是用来代替重量级锁的，它的本意是在没有多线程竞争的前提下，减少传统的重量
+    级锁使用产生的性能消耗。在解释轻量级锁的执行过程之前，先明白一点，轻量级锁所适应的场
+    景是线程交替执行同步块的情况，如果存在同一时间访问同一锁的情况，就会导致轻量级锁膨胀
+    为重量级锁。</li>
+  <li>重量级锁(Mutex Lock)，Synchronized 是通过对象内部的一个叫做监视器锁(monitor)来实现的。但是监视器锁本质又
+    是依赖于底层的操作系统的 Mutex Lock 来实现的。而操作系统实现线程之间的切换这就需要从用
+    户态转换到核心态，这个成本非常高，状态之间的转换需要相对比较长的时间，这就是为什么
+    Synchronized 效率低的原因。因此，这种依赖于操作系统 Mutex Lock 所实现的锁我们称之为
+    “重量级锁”。JDK 中对 Synchronized 做的种种优化，其核心都是为了减少这种重量级锁的使用。
+    JDK1.6 以后，为了减少获得锁和释放锁所带来的性能消耗，提高性能，引入了“轻量级锁”和
+    “偏向锁”。</li>
+</ul>
+
+<h4 id="锁使用">锁使用</h4>
+<ul>
+  <li>Synchronized 同步锁（Jvm monitor）</li>
+  <li>ReentrantLock 可重入锁（Lock接口、Condition)
+    <ul>
+      <li>核心类AbstractQueuedSynchronizer，通过构造一个基于阻塞的CLH队列容纳所有的阻塞线程，而对该队列的操作均通过Lock-Free（CAS）操作，但对已经获得锁的线程而言，ReentrantLock实现了偏向锁的功能。</li>
+    </ul>
+  </li>
+  <li>ReentrantReadWriteLock 可重入读写锁（ReadWriteLock接口、Condition)
+    <ul>
+      <li>ReadLock和WriteLock：都是Lock实现类，分别实现了读、写锁。ReadLock是共享的，而WriteLock是独占的。于是Sync类覆盖了AQS中独占和共享模式的抽象方法(tryAcquire/tryAcquireShared等)，用同一个等待队列来维护读/写排队线程，而用一个32位int state标示和记录读/写锁重入次数–Doug Lea把状态的高16位用作读锁，记录所有读锁重入次数之和，低16位用作写锁，记录写锁重入次数。所以无论是读锁还是写锁最多只能被持有65535次。</li>
+    </ul>
+  </li>
+  <li>StampedLock 戳锁,
+    <ul>
+      <li>有三种模式（排它写，悲观读，乐观读），一个StampedLock状态是由版本和模式两个部分组成，锁获取方法返回一个数字作为票据stamp，它用相应的锁状态表示并控制访问。</li>
+    </ul>
+  </li>
+</ul>
+
+<p><a href="https://www.cnblogs.com/dennyzhangdd/p/6925473.html">https://www.cnblogs.com/dennyzhangdd/p/6925473.html</a></p>
+
+<h5 id="condition">Condition</h5>
+<ol>
+  <li>Condition是在java 1.5中才出现的，它用来替代传统的Object的wait()、notify()实现线程间的协作，相比使用Object的wait()、notify()，使用Condition的await()、signal()这种方式实现线程间协作更加安全和高效。因此通常来说比较推荐使用Condition。
+ Condition类能实现synchronized和wait、notify搭配的功能，另外比后者更灵活，Condition可以实现多路通知功能，也就是在一个Lock对象里可以创建多个Condition（即对象监视器）实例，线程对象可以注册在指定的Condition中，从而可以有选择的进行线程通知，在调度线程上更加灵活。而synchronized就相当于整个Lock对象中只有一个单一的Condition对象，所有的线程都注册在这个对象上。线程开始notifyAll时，需要通知所有的WAITING线程，没有选择权，会有相当大的效率问题。</li>
+  <li>Condition是个接口，基本的方法就是await()和signal()方法。</li>
+  <li>Condition依赖于Lock接口，生成一个Condition的基本代码是lock.newCondition()，参考下图。</li>
+  <li>调用Condition的await()和signal()方法，都必须在lock保护之内，就是说必须在lock.lock()和lock.unlock之间才可以使用。</li>
+  <li>Conditon中的await()对应Object的wait()，Condition中的signal()对应Object的notify()，Condition中的signalAll()对应Object的notifyAll()。</li>
+</ol>
+
+<h5 id="locksupportpark和unpark与objectwait和notify的区别">LockSupport.park()和unpark()，与object.wait()和notify()的区别？</h5>
+<ul>
+  <li>主要的区别应该说是它们面向的对象不同。阻塞和唤醒是对于线程来说的，LockSupport的park/unpark更符合这个语义，以“线程”作为方法的参数， 语义更清晰，使用起来也更方便。而wait/notify的实现使得“阻塞/唤醒对线程本身来说是被动的，要准确的控制哪个线程、什么时候阻塞/唤醒很困难， 要不随机唤醒一个线程（notify）要不唤醒所有的（notifyAll）。</li>
+  <li><a href="https://www.jianshu.com/p/ceb8870ef2c5">https://www.jianshu.com/p/ceb8870ef2c5</a></li>
+  <li><a href="https://www.jianshu.com/p/e3afe8ab8364">https://www.jianshu.com/p/e3afe8ab8364</a></li>
+</ul>
+
+<h5 id="synchronized-和-reentrantlock-的区别">synchronized 和 ReentrantLock 的区别</h5>
+<ul>
+  <li>两者的共同点:
+    <ol>
+      <li>都是用来协调多线程对共享对象、变量的访问</li>
+      <li>都是可重入锁，同一线程可以多次获得同一个锁</li>
+      <li>都保证了可见性和互斥性</li>
+    </ol>
+  </li>
+  <li>两者的不同点:
+    <ol>
+      <li>ReentrantLock 显示的获得、释放锁，synchronized 隐式获得释放锁</li>
+      <li>ReentrantLock 可响应中断、可轮回，synchronized 是不可以响应中断的，为处理锁的不可用性提供了更高的灵活性</li>
+      <li>ReentrantLock 是 API 级别的，synchronized 是 JVM 级别的</li>
+      <li>ReentrantLock 可以实现公平锁</li>
+      <li>ReentrantLock 通过 Condition 可以绑定多个条件</li>
+      <li>底层实现不一样， synchronized 是同步阻塞，使用的是悲观并发策略，lock 是同步非阻塞，采用的是乐观并发策略</li>
+      <li>Lock 是一个接口，而 synchronized 是 Java 中的关键字，synchronized 是内置的语言实现。</li>
+      <li>synchronized 在发生异常时，会自动释放线程占有的锁，因此不会导致死锁现象发生;而Lock 在发生异常时，如果没有主动通过 unLock()去释放锁，则很可能造成死锁现象，因此使用 Lock 时需要在 finally 块中释放锁。</li>
+      <li>Lock 可以让等待锁的线程响应中断，而 synchronized 却不行，使用 synchronized 时，等待的线程会一直等待下去，不能够响应中断。</li>
+      <li>通过 Lock 可以知道有没有成功获取锁，而 synchronized 却无法办到。</li>
+      <li>Lock 可以提高多个线程进行读操作的效率，既就是实现读写锁等。</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="锁优化">锁优化</h4>
+<ul>
+  <li>减少锁持有时间，
+只用在有线程安全要求的程序上加锁</li>
+  <li>减小锁粒度，<br />
+  将大对象(这个对象可能会被很多线程访问)，拆成小对象，大大增加并行度，降低锁竞争。
+  降低了锁的竞争，偏向锁，轻量级锁成功率才会提高。最最典型的减小锁粒度的案例就是ConcurrentHashMap</li>
+  <li>锁分离，
+  最常见的锁分离就是读写锁 ReadWriteLock，根据功能进行分离成读锁和写锁，这样读读不互
+  斥，读写互斥，写写互斥，即保证了线程安全，又提高了性能。
+  JDK 并发包 1。读写分离思想可以延伸，只要操作互不影响，锁就可以分离。比如
+  LinkedBlockingQueue 从头部取出，从尾部放数据</li>
+  <li>锁粗化，通常情况下，为了保证多线程间的有效并发，会要求每个线程持有锁的时间尽量短，即在使用完
+    公共资源后，应该立即释放锁。但是，凡事都有一个度，如果对同一个锁不停的进行请求、同步
+    和释放，其本身也会消耗系统宝贵的资源，反而不利于性能的优化 。</li>
+  <li>锁消除， 锁消除是在编译器级别的事情。在即时编译器时，如果发现不可能被共享的对象，则可以消除这
+     些对象的锁操作，多数是因为程序员编码不规范引起。</li>
+</ul>
+
+<h4 id="自旋锁">自旋锁</h4>
+<ul>
+  <li>自旋锁原理非常简单，如果持有锁的线程能在很短时间内释放锁资源，那么那些等待竞争锁
+  的线程就不需要做内核态和用户态之间的切换进入阻塞挂起状态，它们只需要等一等(自旋)，
+  等持有锁的线程释放锁后即可立即获取锁，这样就避免用户线程和内核的切换的消耗。
+  线程自旋是需要消耗 cup 的，说白了就是让 cup 在做无用功，如果一直获取不到锁，那线程
+  也不能一直占用 cup 自旋做无用功，所以需要设定一个自旋等待的最大时间。
+  如果持有锁的线程执行的时间超过自旋等待的最大时间扔没有释放锁，就会导致其它争用锁
+  的线程在最大等待时间内还是获取不到锁，这时争用线程会停止自旋进入阻塞状态。</li>
+  <li>自旋锁的优缺点
+  自旋锁尽可能的减少线程的阻塞，这对于锁的竞争不激烈，且占用锁时间非常短的代码块来
+  说性能能大幅度的提升，因为自旋的消耗会小于线程阻塞挂起再唤醒的操作的消耗，这些操作会
+  导致线程发生两次上下文切换!
+  但是如果锁的竞争激烈，或者持有锁的线程需要长时间占用锁执行同步块，这时候就不适合
+  使用自旋锁了，因为自旋锁在获取锁前一直都是占用 cpu 做无用功，占着 XX 不 XX，同时有大量
+  线程在竞争一个锁，会导致获取锁的时间很长，线程自旋的消耗大于线程阻塞挂起操作的消耗，
+  其它需要 cup 的线程又不能获取到 cpu，造成 cpu 的浪费。所以这种情况下我们要关闭自旋锁;</li>
+  <li>自旋锁时间阈值(1.6 引入了适应性自旋锁)
+  自旋锁的目的是为了占着 CPU 的资源不释放，等到获取到锁立即进行处理。但是如何去选择
+  自旋的执行时间呢?如果自旋执行时间太长，会有大量的线程处于自旋状态占用 CPU 资源，进而
+  会影响整体系统的性能。因此自旋的周期选的额外重要!
+  JVM 对于自旋周期的选择，jdk1.5 这个限度是一定的写死的，在 1.6 引入了适应性自旋锁，适应
+  性自旋锁意味着自旋的时间不在是固定的了，而是由前一次在同一个锁上的自旋时间以及锁的拥
+  有者的状态来决定，基本认为一个线程上下文切换的时间是最佳的一个时间，同时 JVM 还针对当
+  前 CPU 的负荷情况做了较多的优化，如果平均负载小于 CPUs 则一直自旋，如果有超过(CPUs/2)
+  个线程正在自旋，则后来线程直接阻塞，如果正在自旋的线程发现 Owner 发生了变化则延迟自旋
+  时间(自旋计数)或进入阻塞，如果 CPU 处于节电模式则停止自旋，自旋时间的最坏情况是 CPU
+  的存储延迟(CPU A 存储了一个数据，到 CPU B 得知这个数据直接的时间差)，自旋时会适当放
+  弃线程优先级之间的差异。
+  自旋锁的开启</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-XX</span>:+UseSpinning 开启<span class="p">;</span> <span class="nt">-XX</span>:PreBlockSpin<span class="o">=</span>10 为自旋次数<span class="p">;</span> // JDK1.6<span class="o">(</span>JDK1.7 后，去掉此参数，由 jvm 控制<span class="o">)</span>
+</code></pre></div></div>
+
+<h4 id="重入锁">重入锁</h4>
+<p>广义上的可重入锁，而不是单指 JAVA 下的 ReentrantLock。可重入锁，也叫
+做递归锁，指的是同一线程 外层函数获得锁之后 ，内层递归函数仍然有获取该锁的代码，但不受
+影响。在 JAVA 环境下 ReentrantLock 和 synchronized 都是 可重入锁。</p>
+
+<h4 id="乐观锁悲观锁">乐观锁、悲观锁</h4>
+<ul>
+  <li>乐观锁是一种乐观思想，即认为读多写少，遇到并发写的可能性低，每次去拿数据的时候都认为
+别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数
+据，采取在写时先读出当前版本号，然后加锁操作(比较跟上一次的版本号，如果一样则更新)，
+如果失败则要重复读-比较-写的操作。
+ java 中的乐观锁基本都是通过 CAS 操作实现的，CAS 是一种更新的原子操作，比较当前值跟传入
+ 值是否一样，一样则更新，否则失败。</li>
+  <li>悲观锁是就是悲观思想，即认为写多，遇到并发写的可能性高，每次去拿数据的时候都认为别人
+会修改，所以每次在读写数据的时候都会上锁，这样别人想读写这个数据就会 block 直到拿到锁。
+java 中的悲观锁就是 Synchronized,AQS 框架下的锁则是先尝试 cas 乐观锁去获取锁，获取不到，
+才会转换为悲观锁，如 RetreenLock。</li>
+</ul>
+
+<h4 id="终止线程">终止线程</h4>
+<ul>
+  <li>通过interrupt标志的方式(注意区分以下三个Java方法)
+    <ul>
+      <li>t.interrupt(); // 修改标志，其他地方根据该标志或者捕获异常来决定处理方式</li>
+      <li>t.isInterrupted(); 内部调用了当前线程的currentThread().isInterrupted(false);
+        <ul>
+          <li>该方法仅仅是查询中断状态，不恢复中断状态</li>
+        </ul>
+      </li>
+      <li>Thread有个类方法Thread.interrupted(); 内部调用了当前线程的currentThread().isInterrupted(true);
+        <ul>
+          <li>该方法只有在中断状态为true时，才会恢复中断状态并返回true;否则，都是返回false</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KillThread</span><span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[]){</span>
+        <span class="nc">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyThread</span><span class="o">();</span>
+        <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+        <span class="c1">//此处仅仅是修改状态,通常需要再run方法内部判断来决定是否终止线程</span>
+        <span class="n">t</span><span class="o">.</span><span class="na">interrupt</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="nc">Thread</span><span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(){</span>
+            <span class="k">while</span> <span class="o">(!</span><span class="n">isInterrupted</span><span class="o">())</span> <span class="o">{</span>  <span class="c1">//非阻塞过程中通过判断中断标志来退出</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                    <span class="k">break</span><span class="o">;</span>  <span class="c1">// 捕获到异常之后，执行 break 跳出循环</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li>自定义一个共享状态变量，来修改该状态来实现类似方法一的效果(注意此方法的状态变量需要用volatile修饰)</li>
+  <li>stop 方法终止线程 (线程不安全)
+    <ul>
+      <li>程序中可以直接使用 stop 来强行终止线程，但是 stop 方法是很危险的，就象突然关闭计算机电源，而不是按正常程序关机一样，可能会产生不可预料的结果。
+不安全主要是：stop 调用之后，创建子线程的线程就会抛出 ThreadDeatherror 的错误，并且会释放子线程所持有的所有锁。
+一般任何进行加锁的代码块，都是为了保护数据的一致性，如果在调用 stop 后导致了该线程所持有的所有锁的突然释放 (不可控制)，那么被保护数据就有可能呈现不一致性，其他线程在使用这些被破坏的数据时，有可能导致一些很奇怪的应用程序错误。因此，并不推荐使用 stop 方法来终止线程。</li>
+    </ul>
+  </li>
+  <li>业务场景中的使用，目前暂时没有发现真正能立即安全停止线程的方法
+    <ul>
+      <li>用stop方法会带来数据不同步等线程安全问题</li>
+      <li>interrupt 主要需要及时判断状态，才能实时失效（业务中不可能循环或者多处判断中断状态）</li>
+      <li>本质上，运行中的线程需要立即停止一定会带来各种问题，如需要支持kill进程</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="cyclicbarrier-countdownlatch-semphore">CyclicBarrier CountDownLatch Semphore</h4>
+<ul>
+  <li>CountDownLatch和CyclicBarrier都能够实现线程之间的等待，只不过它们侧重点不同：
+  CountDownLatch一般用于某个线程A等待若干个其他线程执行完任务之后，它(发起await()的线程)才执行；
+  而CyclicBarrier一般用于一组线程互相等待至某个状态，然后这一组线程再同时执行；
+  另外，CountDownLatch是不能够重用的，而CyclicBarrier是可以重用的。</li>
+  <li>Semaphore其实和锁有点类似，它一般用于控制对某组资源的访问权限</li>
+</ul>
+<p><a href="https://www.cnblogs.com/dolphin0520/p/3920397.html">https://www.cnblogs.com/dolphin0520/p/3920397.html</a></p>
+
+<h4 id="concurrenthashmap-concurrentskiplistmap-concurrentlinkedqueue">ConcurrentHashMap ConcurrentSkipListMap ConcurrentLinkedQueue</h4>
+<ul>
+  <li>SynchronizedMap一次锁住整张表来保证线程安全，所以每次只能有一个线程来访为map。
+  ConcurrentHashMap使用分段锁来保证在多线程下的性能。ConcurrentHashMap中则是一次锁住一个桶。ConcurrentHashMap默认将hash表分为16个桶，诸如get,put,remove等常用操作只锁当前需要用到的桶。这样，原来只能一个线程进入，现在却能同时有16个写线程执行，并发性能的提升是显而易见的。
+  另外ConcurrentHashMap使用了一种不同的迭代方式。在这种迭代方式中，当iterator被创建后集合再发生改变就不再是抛出ConcurrentModificationException，取而代之的是在改变时new新的数据从而不影响原有的数据 ，iterator完成后再将头指针替换为新的数据 ，这样iterator线程可以使用原来老的数据，而写线程也可以并发的完成改变。</li>
+</ul>
+
+<h4 id="copyonwritearraylist">CopyOnWriteArrayList</h4>
+<ul>
+  <li>增删改都需要获得锁，并且锁只有一把，而读操作不需要获得锁，支持并发。为什么增删改中都需要创建一个新的数组，操作完成之后再赋给原来的引用？这是为了保证get的时候都能获取到元素，如果在增删改过程直接修改原来的数组，可能会造成执行读操作获取不到数据。</li>
+  <li>我知道Vector是增删改查方法都加了synchronized，保证同步，但是每个方法执行的时候都要去获得锁，性能就会大大下降，而CopyOnWriteArrayList 只是在增删改上加锁，但是读不加锁，在读方面的性能就好于Vector，CopyOnWriteArrayList支持读多写少的并发情况。</li>
+</ul>
+
+<h4 id="阻塞队列">阻塞队列</h4>
+<ul>
+  <li>这两个附加的操作是：在队列为空时，获取元素的线程会等待队列变为非空。当队列满时，存储元素的线程会等待队列可用。阻塞队列常用于生产者和消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。阻塞队列就是生产者存放元素的容器，而消费者也只从容器里拿元素。</li>
+  <li>JDK7提供了7个阻塞队列。分别是：
+    <ul>
+      <li>ArrayBlockingQueue ：一个由数组结构组成的有界阻塞队列。</li>
+      <li>LinkedBlockingQueue ：一个由链表结构组成的有界阻塞队列。</li>
+      <li>PriorityBlockingQueue ：一个支持优先级排序的无界阻塞队列。</li>
+      <li>DelayQueue：一个使用优先级队列实现的无界阻塞队列。</li>
+      <li>SynchronousQueue：一个不存储元素的阻塞队列。</li>
+      <li>LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。</li>
+      <li>LinkedBlockingDeque：一个由链表结构组成的双向阻塞队列。</li>
+    </ul>
+  </li>
+  <li>Java 5之前实现同步存取时，可以使用普通的一个集合，然后在使用线程的协作和线程同步可以实现生产者，消费者模式，主要的技术就是用好，wait ,notify,notifyAll,sychronized这些关键字。而在java 5之后，可以使用阻塞队列来实现，此方式大大简少了代码量，使得多线程编程更加容易，安全方面也有保障。
+BlockingQueue接口是Queue的子接口，它的主要用途并不是作为容器，而是作为线程同步的的工具，因此他具有一个很明显的特性，当生产者线程试图向BlockingQueue放入元素时，如果队列已满，则线程被阻塞，当消费者线程试图从中取出一个元素时，如果队列为空，则该线程会被阻塞，正是因为它所具有这个特性，所以在程序中多个线程交替向BlockingQueue中放入元素，取出元素，它可以很好的控制线程之间的通信。
+阻塞队列使用最经典的场景就是socket客户端数据的读取和解析，读取数据的线程不断将数据放入队列，然后解析线程不断从队列取数据解析。</li>
+</ul>
+
+<h4 id="threadsleep0的作用是什么">Thread.sleep(0)的作用是什么</h4>
+<p>由于Java采用抢占式的线程调度算法，因此可能会出现某条线程常常获取到CPU控制权的情况，为了让某些优先级比较低的线程也能获取到CPU控制权，可以使用Thread.sleep(0)手动触发一次操作系统分配时间片的操作，这也是平衡CPU控制权的一种操作。</p>
+
+<h4 id="什么是java内存模型">什么是Java内存模型</h4>
+<ul>
+  <li>Java内存模型定义了一种多线程访问Java内存的规范。Java内存模型要完整讲不是这里几句话能说清楚的，我简单总结一下Java内存模型的几部分内容：
+    <ol>
+      <li>Java内存模型将内存分为了主内存和工作内存。类的状态，也就是类之间共享的变量，是存储在主内存中的，每次Java线程用到这些主内存中的变量的时候，会读一次主内存中的变量，并让这些内存在自己的工作内存中有一份拷贝，运行自己线程代码的时候，用到这些变量，操作的都是自己工作内存中的那一份。在线程代码执行完毕之后，会将最新的值更新到主内存中去</li>
+      <li>定义了几个原子操作，用于操作主内存和工作内存中的变量</li>
+      <li>定义了volatile变量的使用规则</li>
+      <li>happens-before，即先行发生原则，定义了操作A必然先行发生于操作B的一些规则，比如在同一个线程内控制流前面的代码一定先行发生于控制流后面的代码、一个释放锁unlock的动作一定先行发生于后面对于同一个锁进行锁定lock的动作等等，只要符合这些规则，则不需要额外做同步措施，如果某段代码不符合所有的happens-before规则，则这段代码一定是线程非安全的</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="如果你提交任务时线程池队列已满这时会发生什么">如果你提交任务时，线程池队列已满，这时会发生什么</h4>
+<ol>
+  <li>如果使用的是无界队列LinkedBlockingQueue，也就是无界队列的话，没关系，继续添加任务到阻塞队列中等待执行，因为LinkedBlockingQueue可以近乎认为是一个无穷大的队列，可以无限存放任务</li>
+  <li>如果使用的是有界队列比如ArrayBlockingQueue，任务首先会被添加到ArrayBlockingQueue中，ArrayBlockingQueue满了，会根据maximumPoolSize的值增加线程数量，如果增加了线程数量还是处理不过来，ArrayBlockingQueue继续满，那么则会使用拒绝策略RejectedExecutionHandler处理满了的任务，默认是AbortPolicy</li>
+</ol>
+
+<h4 id="参考资料">参考资料</h4>
+<p>并发编程 <a href="https://segmentfault.com/a/1190000022039255">https://segmentfault.com/a/1190000022039255</a></p>
+
+<p>高并发中的线程通信 <a href="https://mp.weixin.qq.com/s/Gtz6aVPm-YnSh5pjs5JhkA">https://mp.weixin.qq.com/s/Gtz6aVPm-YnSh5pjs5JhkA</a></p>
+
+<p>高频多线程&amp;并发面试题 <a href="https://c.lanmit.com/bianchengkaifa/Java/53679.html">https://c.lanmit.com/bianchengkaifa/Java/53679.html</a></p>
+
+<p>Java编程艺术笔记 <a href="https://www.jianshu.com/p/8d90dc5b341e">https://www.jianshu.com/p/8d90dc5b341e</a></p>
+
+<p>面试题 <a href="https://blog.csdn.net/qq_34039315/article/details/78549311">https://blog.csdn.net/qq_34039315/article/details/78549311</a></p>
+
+<p><a href="https://mp.weixin.qq.com/s/oL2Vrsr2IcT_8oncdcwf-g">https://mp.weixin.qq.com/s/oL2Vrsr2IcT_8oncdcwf-g</a></p>
+
+<p><a href="https://mp.weixin.qq.com/s/rqzlISVShFqmo-96Hw2ZNA">https://mp.weixin.qq.com/s/rqzlISVShFqmo-96Hw2ZNA</a></p>
+
+<p><a href="https://mp.weixin.qq.com/s/Ya_aw4_4s8UdZ-y9YjMiFw">https://mp.weixin.qq.com/s/Ya_aw4_4s8UdZ-y9YjMiFw</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html">一致性（Consistency）与 共识（Consensus）</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="byzantine-fault-tolerance-分类">Byzantine Fault Tolerance 分类</h4>
+<p>在分布式系统中，这种不听指挥的坏节点，就被称为“拜占庭错误节点”。一般来说，按照对“拜占庭错误节点”的容忍程度（简称BFT，Byzantine Fault Tolerance），分布式系统可以分为以下三类：</p>
+<ul>
+  <li>非BFT类：完全无法容忍“拜占庭错误节点”，但可以容忍其他错误的系统。（包括Pasox、SOLO、RAFT等。）</li>
+  <li>BFT类：可以容忍“拜占庭错误节点”的系统。（包括PBFT、SBFT、VBFT、DBFT等。）</li>
+  <li>区块链类：不仅可以容忍“拜占庭错误节点”，还可以容忍节点的自由进出，这才是我们真正意义上的、狭义上的“区块链”。
+ （包括我们熟悉的POW、POS、DPOS等等。）</li>
+  <li>其实与git的版本分支管理思想是一致的</li>
+</ul>
+
+<p><a href="https://www.cnblogs.com/X-knight/p/9157814.html">https://www.cnblogs.com/X-knight/p/9157814.html</a></p>
+
+<h4 id="一致性consistency和共识consensus">“一致性（Consistency）”和“共识（Consensus）”</h4>
+<p>Paxos、Raft等通常被误称为“一致性算法”。但是“一致性（Consistency）”和“共识（Consensus）”并不是同一个概念。Paxos、Raft等其实都是共识（Consensus）算法。
+从专业的角度来讲，我们通常所说的一致性（Consistency）在分布式系统中指的是对于同一个数据的多个副本，其对外表现的数据一致性，如强一致性、顺序一致性、最终一致性等，都是用来描述副本问题中的一致性的。而共识（Consensus）则不同，简单来说，共识问题是要经过某种算法使多个节点达成相同状态的一个过程。一致性强调结果，共识强调过程。
+<a href="https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg">https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg</a></p>
+
+<h4 id="一致性分类">一致性分类</h4>
+<ul>
+  <li>弱一致性（最终一致性）
+    <ol>
+      <li>DNS（Domain Name System）</li>
+      <li>Gossip（Cassandra、Redis的通信协议）<a href="https://www.jianshu.com/p/54eab117e6ae">https://www.jianshu.com/p/54eab117e6ae</a></li>
+    </ol>
+  </li>
+  <li>强一致性
+    <ul>
+      <li>主从同步</li>
+      <li>多数一致，每次写都保证写入大于N/2个节点，每次读保证从大于N/2个节点中读。
+Paxos、Raft（multi-paxos）、ZAB（multi-paxos，Zookeeper atomic broadcast protocol，是Zookeeper内部用到的一致性协议。基本与Raft相同）</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="pasox">Pasox</h4>
+<p>Paxos算法是莱斯利·兰伯特(Leslie Lamport)1990年提出的一种基于消息传递的一致性算法。
+Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos</p>
+
+<h4 id="basic-paxos">Basic Paxos</h4>
+<ol>
+  <li>多个Proposer，都可以拿最新的编号N，进行prepare()，</li>
+  <li>每个Acceptor会响应大于本地编号的所有prepare()，并且只会promise()最大的那个编号的提案</li>
+  <li>最大编号的Proposer，收集够过半的票数之后，立即发送accept()给对应的Acceptor</li>
+  <li>接受到accept()的Acceptor就有了最新的确认提案结果
+    <ul>
+      <li>如果此时有新的大于N的prepare()就会进入下次选举循环，否则Acceptor会返回最新的提议结果给调用方</li>
+      <li>如果此时收到不大于N的accept()则拒绝回应或者回应error；</li>
+    </ul>
+  </li>
+  <li>活锁，可能会存在一种情况：假定有2个proposer先后向acceptor发送请求，acceptor在接收到proposer1的prepare请求后更新编号为proposer1的编号；此时，proposer2接着向acceptor发送比proposer1编号更大的prepare请求，acceptor会立刻更新成proposer2的编号，那么当proposer1发送accept请求时由于编号不满足要求就会被accept给拒绝掉，则重新获取编号再次回到第一阶段发送prepare请求；从此2个proposer之间不断重复发送prepare请求，导致系统出现活锁</li>
+</ol>
+<p><a href="https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg">https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg</a></p>
+
+<h4 id="multi-paxos之raft-reliable-replicated-redundant-and-fault-tolerant">Multi Paxos之Raft (Reliable, Replicated, Redundant, And Fault-Tolerant)</h4>
+<ul>
+  <li>多个follower变身为candidate，同时term++，投票给自己同时向其他节点发送RequestVote RPC</li>
+  <li>节点(N)会投票给term是最新的，log至少和自身(N)一样新的candidate</li>
+  <li>candidate收到多数投票，然后发送自己已经是leader的HeartBeat，接受者转变为follower，选举结束</li>
+  <li>一段时间后依然没有胜者。该种情况下会开启新一轮的选举。（Raft中使用随机选举超时时间来解决当票数相同无法确定leader的问题。）</li>
+  <li>日志复制（Log Replication）主要作用是用于保证节点的一致性，这阶段所做的操作也是为了保证一致性与高可用性。
+当Leader选举出来后便开始负责客户端的请求，所有事务（更新操作）请求都必须先经过Leader处理，日志复制（Log Replication）就是为了保证执行相同的操作序列所做的工作。
+在Raft中当接收到客户端的日志（事务请求）后先把该日志追加到本地的Log中，然后通过heartbeat把该Entry同步给其他Follower，Follower接收到日志后记录日志然后向Leader发送ACK，当Leader收到大多数（n/2+1）Follower的ACK信息后将该日志设置为已提交并追加到本地磁盘中，通知客户端并在下个heartbeat中Leader将通知所有的Follower将该日志存储在自己的本地磁盘中。</li>
+</ul>
+<p><a href="https://www.cnblogs.com/binyue/p/8647733.html">https://www.cnblogs.com/binyue/p/8647733.html</a></p>
+
+<h4 id="如何解决split-brain问题">如何解决split brain问题</h4>
+<ul>
+  <li>分布式协议一个著名问题就是 split brain 问题。
+简单说，就是比如当你的 cluster 里面有两个结点，它们都知道在这个 cluster 里需要选举出一个 master。那么当它们两之间的通信完全没有问题的时候，就会达成共识，选出其中一个作为 master。但是如果它们之间的通信出了问题，那么两个结点都会觉得现在没有 master，所以每个都把自己选举成 master。于是 cluster 里面就会有两个 master。
+区块链的分叉其实类似分布式系统的split brain。
+一般来说，Zookeeper会默认设置：
+    <ul>
+      <li>zookeeper cluster的节点数目必须是奇数。</li>
+      <li>zookeeper 集群中必须超过半数节点(Majority)可用，整个集群才能对外可用。</li>
+    </ul>
+  </li>
+  <li>Majority(大多数) 就是一种 Quorum(法定代表人) 的方式来支持Leader选举，可以防止 split brain出现。奇数个节点可以在相同容错能力的情况下节省资源。</li>
+</ul>
+
+<h4 id="zab算法-zookeeper-atomic-broadcast-protocol">ZAB算法 Zookeeper atomic broadcast protocol</h4>
+<ul>
+  <li>基本与Raft相同，在一些名词叫起来是有区别的</li>
+  <li>ZAB将Leader的一个生命周期叫做epoch，而Raft称之为term</li>
+  <li>实现上也有些许不同，如raft保证日志的连续性，心跳是Leader向Follower发送，而ZAB方向与之相反</li>
+</ul>
+
+<h4 id="一致性算法的实践">一致性算法的实践</h4>
+<ul>
+  <li>使用Paxos的组件，Chubby(Google首次运用Multi Paxos算法到工程领域)</li>
+  <li>使用Raft的组件，Redis-Cluster、etcd</li>
+  <li>使用ZAB的组件，Zookeeper（Yahoo开源）</li>
+</ul>
+
+<p><a href="https://www.cnblogs.com/think90/p/11443428.html">https://www.cnblogs.com/think90/p/11443428.html</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html">Not Only SQL</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>NoSQL</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="sql-cap">SQL-CAP</h4>
+<div align="left">
+<img src="/img/nosql-cap.jpg" width="500px" />
+</div>
+
+<h4 id="nosql由来">NoSQL由来</h4>
+<ul>
+  <li>高可用 ！= 分布式，传统的关系型数据库RDB，并没有实现真正意义上的分布式，即便是分库分表也仅仅是”伪分布式”，不具备诸如数据多分区备份等特性</li>
+  <li>传统的关系型数据库RDB，主从同步的集群，本质上是全量数据的备份，也不是分布式真正要求的可伸缩</li>
+  <li>传统的关系型数据库RDB，数据表结构或Meta或schema固定，扩展成本高</li>
+  <li>RDB以行位核心的数据存储，NoSQl以列为核心(HBase/Cassandra)或KV(Redis)为核心</li>
+  <li>1946年，第一台通用计算机诞生。但一直到1970年RDMBS的出现，大家才找到通用的数据存储方案。到21世纪，DT时代让数据容量成为最棘手的问题，对此谷歌和亚马逊分别提出了自己的NoSQL解决方案，比如谷歌于2006年提出了Bigtable。2009年的一次技术大会上，NoSQL一词被正式提出，到现在共有225种解决方案。
+NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活性，支持很灵活的模式变更；第二，可伸缩性，原生的RDBMS只适用于单机和小集群。而NoSQL一开始就是分布式的，解决了读写和容量扩展性问题。以上两点，也是NoSQL产生的根本原因。</li>
+</ul>
+
+<h4 id="nosql分类">NoSQL分类</h4>
+<p>这些NoSQL数据库分为Graph，Document，Column Family以及Key-Value Store等四种。这四种类型的数据库分别使用了不同的数据结构来记录数据。因此它们所适用的场景也不尽相同。</p>
+
+<h4 id="关系型数据库和非关系型数据库的应用场景对比">关系型数据库和非关系型数据库的应用场景对比</h4>
+<ul>
+  <li>关系型数据库适合存储结构化数据，如用户的帐号、地址：
+    <ol>
+      <li>这些数据通常需要做结构化查询，比如join，这时候，关系型数据库就要胜出一筹</li>
+      <li>这些数据的规模、增长的速度通常是可以预期的</li>
+      <li>事务性、一致性
+　　</li>
+    </ol>
+  </li>
+  <li>NoSQL适合存储非结构化数据，如文章、评论：
+    <ol>
+      <li>这些数据通常用于模糊处理，如全文搜索、机器学习</li>
+      <li>这些数据是海量的，而且增长的速度是难以预期的，</li>
+      <li>根据数据的特点，NoSQL数据库通常具有无限（至少接近）伸缩性</li>
+      <li>按key获取数据效率很高，但是对join或其他结构化查询的支持就比较差</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="bst二叉搜索树avl树红黑树2-3树b树b树lsm树">BST（二叉搜索树）、AVL树、红黑树、2-3树、B树、B+树、LSM树</h4>
+<ul>
+  <li><a href="https://www.jianshu.com/p/bb929dc75007">https://www.jianshu.com/p/bb929dc75007</a></li>
+  <li>AVL树
+    <ul>
+      <li>特性
+        <ul>
+          <li>要求每个节点的左右子树高度差不超过1</li>
+          <li>树的高度差越小，查找效率越高，但是调整成本高</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>红黑树
+    <ul>
+      <li>特性（保存自平衡，从根到叶子的最长路径不会超过最短路径的2倍）
+        <ol>
+          <li>结点是红色或黑色。</li>
+          <li>根结点是黑色。</li>
+          <li>每个叶子结点都是黑色的空结点（NIL结点）。</li>
+          <li>每个红色结点的两个子结点都是黑色。(从每个叶子到根的所有路径上不能有两个连续的红色结点)</li>
+          <li>从任一结点到其每个叶子的所有路径都包含相同数目的黑色结点。</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+  <li>2-3树，2-3个节点</li>
+  <li>B树，M个节点（操作系统文件目录）</li>
+  <li>B+树，B+树内部节点不保存数据，所以能在内存中存放更多索引，增加缓存命中率。另外因为叶子节点相连遍历操作很方便，而且数据也具有顺序性，便于区间查找。</li>
+  <li>LSM
+    <ul>
+      <li>原理上类似JVM的复制算法/压缩整理算法，也就是插入的新的数据不去找之前的位置插入，而是用新空间存放然后与旧数据合并，合并完成之后，最老的数据直接就清除掉了，这样磁盘上相邻的数据都是顺序的。</li>
+      <li>LSM在内存中有memtable（接受实时写） 、immutable memtable(写满了等待向磁盘flush或合并），磁盘内有分层的SSTable</li>
+      <li>LSM之所以快，就是因为写入在内容，之后是异步的去合并写入磁盘。（B/B树，写入操作都是同步的在磁盘进行）</li>
+      <li>LSM-tree 基本原理及应用 <a href="https://cloud.tencent.com/developer/news/340271">https://cloud.tencent.com/developer/news/340271</a></li>
+      <li>Cassandra、HBase、LevelDB、RocksDB、BigTable</li>
+      <li>算法细节 <a href="https://www.cnblogs.com/siegfang/archive/2013/01/12/lsm-tree.html">https://www.cnblogs.com/siegfang/archive/2013/01/12/lsm-tree.html</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="二级索引">二级索引？</h4>
+<ul>
+  <li>二级索引，其实就是倒排索引的一种变种</li>
+</ul>
+
+<h4 id="redis">Redis</h4>
+
+<h4 id="mongodb">MongoDB</h4>
+<ul>
+  <li>典型应用场景
+    <ul>
+      <li>使用MongoDB做了O2O快递应用，·将送快递骑手、快递商家的信息（包含位置信息）存储在 MongoDB，然后通过 MongoDB 的地理位置查询，这样很方便的实现了查找附近的商家、骑手等功能，使得快递骑手能就近接单</li>
+      <li>什么场景应该用 MongoDB ？ <a href="https://yq.aliyun.com/articles/64352">https://yq.aliyun.com/articles/64352</a></li>
+      <li>MongoDB 应用场景?（知乎）<a href="https://www.zhihu.com/question/32071167?sort=created">https://www.zhihu.com/question/32071167?sort=created</a></li>
+      <li>一般来讲，我会将MySQL中的部分表迁移到MongoDB中，主要是涉及到车辆历史轨迹以及温湿度数据等机器采集到的数据，而订单数据、客户数据等信息，仍然放到MySQL数据库中，主要是因为这两类数据实时采集，实时更新，会随着时间的推移，项目的扩大（PAAS服务），造成非常巨大的数据量，而一般MySQL在单表数据量超过500万后，性能就会下降的比较快，虽然可以通过分表的方式进行处理，但是随着时间的增长，仍然会给我带来比较大的麻烦（如查询等），这样，就不如将其放到MongoDB中存储，查询什么的都会比较方便，不过需要注意根据片键分片哦。</li>
+      <li>在主流的计算机语言如Java、Python中对JSON都有很好的支持，数据从MongoDB中读取出来后，可无需转换直接使用；MongoDB文档另一个特点是Key-Value键值对支持丰富的数据结构，Value可以是普通的整型、字符串，可以是数组，也可以是嵌套的子文档，使用嵌套的好处是在MongoDB中仅需一次简单的查询就能够获取到你所需的数据。举电商领域为例，网易严选上卖的上衣和裤子两种商品，除了有共同属性，如产地、价格、材质、颜色等外，还有各自有不同的属性集，如上衣的独有属性是肩宽、胸围、袖长等，裤子的独有属性是臀围、脚口和裤长等。</li>
+    </ul>
+  </li>
+  <li>支持的引擎，mmapv1、wiredtiger、mongorocks（rocksdb）、in-memory</li>
+  <li>强大的索引，地理位置索引可用于构建 各种 O2O 应用、文本索引解决搜索的需求、TTL索引解决历史数据自动过期的需求</li>
+  <li>MongoDB与Mysql/Hadoop/Redis的优缺点比较 <a href="https://blog.csdn.net/tanqian351/article/details/81744970">https://blog.csdn.net/tanqian351/article/details/81744970</a></li>
+</ul>
+
+<h4 id="cassandra">Cassandra</h4>
+<ul>
+  <li>Cassandra数据建模 <a href="https://www.cnblogs.com/cjsblog/p/12878330.html">https://www.cnblogs.com/cjsblog/p/12878330.html</a></li>
+  <li>详解Cassandra数据模型中的primary key <a href="https://blog.csdn.net/Yaokai_AssultMaster/article/details/77439897">https://blog.csdn.net/Yaokai_AssultMaster/article/details/77439897</a>
+    <ul>
+      <li>一致性哈希算法的特点是可以接受任何输入，但总会输出位于固定范围内的（当前集群的结点有对应的）值。简而言之，某一特定的partition key总会对应集群中的某一特定的结点，而这个partition key对应的数据也总是应当在这个结点上被找到。
+对于分布式系统而言，这一点极其重要。其原因是如果对某一特定数据，我们无法确定其所对应的结点位置的话，我们就总是需要遍历集群中的每一个结点才能找到需要的数据。对于小规模的集群，这样的操作可能还可以接受。但对于大规模的分布式数据库而言，这将会严重影响整个系统的效率。</li>
+      <li>Room表是”静态表”，RoomMember就是”动态表”；User表是”静态表”，UserArticle就是”动态表”</li>
+      <li>Partition Key (col1, col2)为了确定数据的位置，Clustering Key (col3, col4)，主要是为了排序。例如：PRIMARY KEY((col1, col2), col3, col4))</li>
+    </ul>
+  </li>
+  <li>一切设计都是为了查询</li>
+  <li>Cassandra更加AP,可调一致性（HBase是CP)</li>
+  <li>属于宽表的一种（HBase、Alibaba TableStore、Google BigTable)</li>
+  <li>应该把 Cassandra 看做是一个有索引的、面向列的存储系统。
+    <ul>
+      <li>Cassandra 经常被看做是一种面向列（Column-Oriented）的数据库，这也并不算错。它的数据结构不是关系型的，而是一个多维稀疏哈希表。稀疏（Sparse）意味着任何一行都可能会有一列或者几列，但每行都不一定（像关系模型那样）和其他行有一样的列。每行都有一个唯一的键值，用于进行数据访问。所以，更确切地说，应该把 Cassandra 看做是一个有索引的、面向行的存储系统。</li>
+      <li>Cassandra 的数据存储结构基本可以看做是一个多维哈希表。这意味着你不必事先精确地决定你的具体数据结构或是你的记录应该包含哪些具体字段。这特别适合处于草创阶段，还在不断增加或修改服务特性的应用。而且也特别适合应用在敏捷开发项目中，不必进行长达数月的预先分析。对于使用 Cassandra 的应用，如果业务发生变化了，只需要在运行中增加或删除某些字段就行了，不会造成服务中断。</li>
+      <li>当然， 这不是说你不需要考虑数据。相反，Cassandra 需要你换个角度看数据。在 RDBMS 里， 你得首先设计一个完整的数据模型， 然后考虑查询方式， 而在 Cassandra 里，你可以首先思考如何查询数据，然后提供这些数据就可以了。</li>
+    </ul>
+  </li>
+  <li>cassandra的难点在于建模，不同于RDB的一种建模思路（KeySpaces&lt;-&gt;DataBase,ColumnFamily&lt;-&gt;Table)仅仅是概念的类似，实际上设计思想完全不同
+    <ul>
+      <li>Keyspaces：键空间是 Cassandra 的数据容器，可以理解为关系型数据库中的数据库（Database）。对于一个 Keyspace 来说，包括定义每行数据的复制节点数目、定义在一致性哈希环中某个节点的替换策略、列族（Column Families）等多个概念。</li>
+      <li>列族：列的容器，它的结构像是一个四维哈希表，[Keyspace][ColumnFamily][Key][Column]。</li>
+      <li>列：一组键值对。</li>
+    </ul>
+  </li>
+  <li>cassandra以列为核心，相当于把RDB中的宽表，细化为随时可以扩展的动态列</li>
+  <li>就Cassandra而言，最关键的地方在于Key的设计。Cassandra之中一共包含下面5种Key:
+    <ul>
+      <li>Primary Key</li>
+      <li>Partition Key</li>
+      <li>Composite Key</li>
+      <li>Compound Key</li>
+      <li>Clustering Key</li>
+    </ul>
+  </li>
+  <li>Cassandra 是为优异的写吞吐量而特别优化的。</li>
+  <li>应用场景
+    <ul>
+      <li>根据项目的 wiki，Cassandra 已经被用于开发了多种不同的应用，包括窗口化的时间序列数据库，用于文档搜索的反向索引，以及分布式任务优先级队列。</li>
+      <li>产品目录和零售应用程序Cassandra被许多零售商用于购物车数据保持和快速的产品目录输入和输出。</li>
+      <li>社交媒体分析和推荐引擎Cassandra是许多在线公司和社交媒体提供商的良好数据库，用于分析和推荐给客户。</li>
+      <li>Yelp的广告分析系统，Spotify的所有用户信息存储</li>
+      <li>Feeds场景、滴滴或物联网订单轨迹场景 <a href="https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ">https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ</a></li>
+      <li>cassandra在饿了么的应用 <a href="https://zhuanlan.zhihu.com/p/42175864">https://zhuanlan.zhihu.com/p/42175864</a></li>
+    </ul>
+    <div align="left">
+  <img src="/img/cassandra.jpg" width="500px" />
+  </div>
+  </li>
+  <li>cassandra与mysql使用对比 <a href="https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/">https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/</a></li>
+  <li>cassandra使用场景判断：何时使用及何时不用 <a href="https://developer.aliyun.com/article/713847">https://developer.aliyun.com/article/713847</a></li>
+  <li>Discord 公司如何使用 Cassandra 存储上亿条线上数据(消息系统) <a href="https://segmentfault.com/a/1190000019111842">https://segmentfault.com/a/1190000019111842</a></li>
+  <li>Spotify如何使用Cassandra实现个性化推荐 <a href="https://segmentfault.com/a/1190000020976455">https://segmentfault.com/a/1190000020976455</a></li>
+  <li>CQL语法 <a href="https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html">https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html</a></li>
+</ul>
+
+<h4 id="图数据库-graph-database-neo4j">“图”数据库 Graph Database Neo4J</h4>
+<p><a href="https://www.cnblogs.com/loveis715/p/5277051.html">https://www.cnblogs.com/loveis715/p/5277051.html</a></p>
+
+<h4 id="其他kv的nosql-leveldbrocksdbtair">其他KV的NoSQL： Leveldb、Rocksdb、Tair</h4>
+<p><a href="https://mp.weixin.qq.com/s/JSPvpnKMzbehP7urdDOlbA">https://mp.weixin.qq.com/s/JSPvpnKMzbehP7urdDOlbA</a></p>
+
+<h4 id="列式存储clickhouseolapcassandrahbaseolapvertica">列式存储：ClickHouse(OLAP)、Cassandra、HBase(OLAP)、Vertica</h4>
+
+<h4 id="newsql分布式rdboceandbtidb">NewSQL(分布式RDB)：oceanDB、TiDB</h4>
+<ul>
+  <li>初识TiDB <a href="https://mp.weixin.qq.com/s/_KS4AAfynvn-sYl-7nJSkg">https://mp.weixin.qq.com/s/_KS4AAfynvn-sYl-7nJSkg</a></li>
+  <li>从NoSQL到NewSQL，谈交易型分布式数据库建设要点 <a href="https://mp.weixin.qq.com/s/HPuiCn9oyB8itsqMcXB_1w">https://mp.weixin.qq.com/s/HPuiCn9oyB8itsqMcXB_1w</a></li>
+  <li>从架构特点到功能缺陷，重新认识分析型分布式数据库 <a href="https://mp.weixin.qq.com/s/ZOelW__ON_86YgXmVeDEwA">https://mp.weixin.qq.com/s/ZOelW__ON_86YgXmVeDEwA</a></li>
+  <li>简单比较SQL、NoSQL、NewSQL <a href="https://mp.weixin.qq.com/s/AHYaFT9Du2UlufVQjb47bg">https://mp.weixin.qq.com/s/AHYaFT9Du2UlufVQjb47bg</a></li>
+  <li>NewSQL概述 <a href="https://mp.weixin.qq.com/s/AcuFiHgRJg2OcNGtfjRxYA">https://mp.weixin.qq.com/s/AcuFiHgRJg2OcNGtfjRxYA</a></li>
+  <li>滴滴放弃TiDB <a href="https://mp.weixin.qq.com/s/_h4UE1LMrO-UjE-TaGH20g">https://mp.weixin.qq.com/s/_h4UE1LMrO-UjE-TaGH20g</a></li>
+  <li>分库分表 or NewSQL数据库 ? <a href="https://mp.weixin.qq.com/s/ymVxSe8nueuG7knKwcIAMw">https://mp.weixin.qq.com/s/ymVxSe8nueuG7knKwcIAMw</a></li>
+</ul>
+
+<h4 id="常见-tsdb-时间序列数据库-time-series-database-influxdbopentsdbtimescaladbdruid-tablestore等">常见 TSDB 时间序列数据库 Time Series Database ：influxdb、opentsdb、timeScaladb、Druid 、tablestore等</h4>
+<p>一种集时序数据高效读写，压缩存储，实时计算能力为一体的数据库服务，可广泛应用于物联网和互联网领域，实现对设备及业务服务的实时监控，实时预测告警。
+<a href="https://www.jianshu.com/p/31afb8492eff">https://www.jianshu.com/p/31afb8492eff</a></p>
+
+<h4 id="其他">其他</h4>
+<ul>
+  <li>分布式系统之Quorum机制 <a href="https://blog.csdn.net/tb3039450/article/details/80249664">https://blog.csdn.net/tb3039450/article/details/80249664</a></li>
+  <li>NoSQL漫谈 <a href="http://www.nosqlnotes.com/">http://www.nosqlnotes.com/</a></li>
+  <li>NoSQL简介 <a href="https://www.runoob.com/mongodb/nosql.html">https://www.runoob.com/mongodb/nosql.html</a></li>
+  <li>NoSQL 还是 SQL ? <a href="https://www.jianshu.com/p/296bacba3510">https://www.jianshu.com/p/296bacba3510</a></li>
+  <li>OLAP、OLTP <a href="https://www.jianshu.com/p/b1d7ca178691">https://www.jianshu.com/p/b1d7ca178691</a></li>
+  <li>BeafQPS方法论 <a href="https://mp.weixin.qq.com/s/DsdB7IuWoHnhNNJY1YUSMg">https://mp.weixin.qq.com/s/DsdB7IuWoHnhNNJY1YUSMg</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html">DB-distributed-transacion</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="数据库本地事务简述">数据库本地事务简述</h3>
+<ul>
+  <li>ACID原则
+    <ol>
+      <li>原子性(Atomicity)</li>
+      <li>一致性(Consistency)</li>
+      <li>隔离性(Isolation)</li>
+      <li>持久性(Durability)</li>
+    </ol>
+  </li>
+  <li>以Mysql的InnoDB为例，事务的ACID是通过InnoDB日志和锁来保证
+    <ol>
+      <li>事务的隔离性是通过数据库锁的机制实现的</li>
+      <li>持久性通过Redo Log（重做日志）来实现，在事务提交前，只要将 Redo Log 持久化即可，不需要将数据持久化。</li>
+      <li>原子性和一致性通过 Undo Log 来实现。（数据数据操作前的数据备份 Undo Log）</li>
+    </ol>
+  </li>
+  <li>本质都是通过一个本地事务资源管理器来统一协调调度</li>
+</ul>
+
+<h3 id="分布式事务">分布式事务</h3>
+
+<h4 id="分布式事务产生的原因">分布式事务产生的原因</h4>
+<ul>
+  <li>Service多节点部署（比如公司内的用户、账户等各种微服务)</li>
+  <li>Resource 多节点 (每个人的数据部署再不同节点的数据库里)</li>
+</ul>
+
+<h4 id="分布式系统之cap定理">分布式系统之CAP定理</h4>
+<ul>
+  <li>CAP 定理，又被叫作布鲁尔定理。对于设计分布式系统(不仅仅是分布式事务)的架构师来说，CAP 就是你的入门理论。</li>
+  <li>C (一致性)：对某个指定的客户端来说，读操作能返回一致的写操作。
+对于数据分布在不同节点上的数据来说，如果在某个节点更新了数据，那么在其他节点如果都能读取到这个***的数据，那么就称为强一致，如果有某个节点没有读取到，那就是分布式不一致。</li>
+  <li>A (可用性)：非故障的节点在合理的时间内返回合理的响应(不是错误和超时的响应)。可用性的两个关键一个是合理的时间，一个是合理的响应。
+合理的时间指的是请求不能被阻塞，应该在合理的时间给出返回。合理的响应指的是系统应该明确返回结果并且结果是正确的，这里的正确指的是比如应该返回 50，而不是返回 40。</li>
+  <li>
+    <p>P (分区容错性)：当出现网络分区后，系统能够继续工作。打个比方，这里集群有多台机器，有台机器网络出现了问题，但是这个集群仍然可以正常工作。</p>
+  </li>
+  <li>
+    <p>熟悉 CAP 的人都知道，三者不能共有，如果感兴趣可以搜索 CAP 的证明，在分布式系统中，网络无法 100% 可靠，分区其实是一个必然现象。</p>
+
+    <p>如果我们选择了 CA 而放弃了 P，那么当发生分区现象时，为了保证一致性，这个时候必须拒绝请求，但是 A 又不允许，所以分布式系统理论上不可能选择 CA 架构，只能选择 CP 或者 AP 架构。</p>
+
+    <p>对于 CP 来说，放弃可用性，追求一致性和分区容错性，我们的 ZooKeeper 其实就是追求的强一致。</p>
+
+    <p>对于 AP 来说，放弃一致性(这里说的一致性是强一致性)，追求分区容错性和可用性，这是很多分布式系统设计时的选择，后面的 BASE 也是根据 AP 来扩展。</p>
+
+    <p>顺便一提，CAP 理论中是忽略网络延迟，也就是当事务提交时，从节点 A 复制到节点 B 没有延迟，但是在现实中这个是明显不可能的，所以总会有一定的时间是不一致。</p>
+
+    <p>同时 CAP 中选择两个，比如你选择了 CP，并不是叫你放弃 A。因为 P 出现的概率实在是太小了，大部分的时间你仍然需要保证 CA。</p>
+
+    <p>就算分区出现了你也要为后来的 A 做准备，比如通过一些日志的手段，是其他机器回复至可用。</p>
+  </li>
+</ul>
+
+<h4 id="分布式系统之base定理">分布式系统之BASE定理</h4>
+<ul>
+  <li>BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩写，是对 CAP 中 AP 的一个扩展。</li>
+  <li>基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用。</li>
+  <li>软状态：允许系统中存在中间状态，这个状态不影响系统可用性，这里指的是 CAP 中的不一致。</li>
+  <li>最终一致：最终一致是指经过一段时间后，所有节点数据都将会达到一致。</li>
+  <li>BASE 解决了 CAP 中理论没有网络延迟，在 BASE 中用软状态和最终一致，保证了延迟后的一致性。</li>
+  <li>BASE 和 ACID 是相反的，它完全不同于 ACID 的强一致性模型，而是通过牺牲强一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态</li>
+</ul>
+
+<h4 id="常用分布式事务框架">常用分布式事务框架</h4>
+<ul>
+  <li>基于XA的 2PC、3PC
+   本质相当于本地事务的加强版，强一致性，引入中间事务协调者，依赖数据库，属于数据库资源层方案</li>
+  <li>Saga
+  引入补偿机制（最终一致性）</li>
+  <li>TCC
+  Try、Commit、Cancel</li>
+  <li>本地消息表</li>
+  <li>RocketMQ(阿里开源)</li>
+  <li>Seata</li>
+</ul>
+
+<h5 id="参考资料">参考资料</h5>
+<ul>
+  <li><a href="https://developer.51cto.com/art/201808/581174.htm">分布式事务概述</a></li>
+  <li><a href="https://www.jianshu.com/p/917cb4bdaa03">由Seata看分布式事务取舍</a></li>
+  <li><a href="https://cloud.tencent.com/developer/article/1401904">常用分布式事务框架</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/75843832">蚂蚁金服分布式事务实战</a></li>
+  <li><a href="https://www.infoq.cn/article/8bu33kuSyJ6P-wAAoELT">分布式事务选型的取舍infoq</a></li>
+  <li><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a></li>
+  <li><a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></li>
+  <li><a href="http://seata.io/zh-cn/">Seata官网</a></li>
+  <li><a href="https://www.cnblogs.com/firstdream/p/6585923.html">FLP不可能原理</a></li>
+  <li><a href="http://www.sohu.com/a/290897501_684445">分布式事务：深入理解什么是2PC、3PC及TCC协议 </a></li>
+  <li><a href="https://juejin.im/post/5dd0ff1af265da0c075d0af7">如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？</a></li>
+  <li><a href="http://www.ruanyifeng.com/blog/2018/07/cap.html">CAP定理</a></li>
+  <li><a href="https://blog.csdn.net/m0_38110132/article/details/76994165">分布式事务的解决方案CSDN</a></li>
+  <li><a href="https://www.bbsmax.com/A/obzb24Y0zE/">Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较</a></li>
+  <li><a href="https://blog.csdn.net/qq_27384769/category_7453176_1.html">分布式CSDN博客</a></li>
+  <li><a href="https://www.itcodemonkey.com/article/13548.html">基于RocketMQ的最终一致性</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html">DB Shard</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -137,801 +949,6 @@
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html">DB Mysql</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="索引原理btree">索引原理(B+Tree)</h4>
-<ul>
-  <li>BS树(Binary Search Tree二叉查找树) -&gt; AVL(人名，平衡二叉树) Tree -&gt; 红黑树 -&gt; B-/B+Tree(平衡多路查找树) -&gt; LSM
-    <ul>
-      <li><a href="http://www.sohu.com/a/280609547_818692">http://www.sohu.com/a/280609547_818692</a>
-        <ul>
-          <li>既然hash比B+树更快，为啥mysql还用B+树来存索引吗？
-            <ol>
-              <li>这和业务场景有关。如果只选一个数据，那确实是hash更快。但是数据库中经常会选择多条，这时候由于B+树索引有序，并且又有链表相连，它的查询效率比hash就快很多了。</li>
-              <li>而且数据库中的索引一般是在磁盘上，数据量大的情况可能无法一次装入内存，B+树的设计可以允许数据分批加载，同时树的高度较低，提高查找效率。</li>
-              <li>与B数相比，如果是多条的话，B树需要做局部的中序遍历，可能要跨层访问。而B+树由于所有数据都在叶子结点，不用跨层，同时由于有链表结构，只需要找到首尾，通过链表就能把所有数据取出来了。</li>
-            </ol>
-          </li>
-          <li>AVLTree 在windowsNT内核中广泛使用，写少读多</li>
-          <li>红黑树适合于内存索引查找 比如Map、Set <a href="https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag">https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag</a></li>
-          <li>B树尤其是多路B数主要用在文件存储系统,文件系统和数据库的索引都是存在硬盘上的，并且如果数据量大的话，不一定能一次性加载到内存中。
-用B树可以一路一路的查找</li>
-          <li>红黑树常用于存储内存中的有序数据，增删很快，b+树常用于文件系统和数据库索引，因为b树的子节点大于红黑树，红黑树只能有2个子节点，b树子节点大于2，子节点树多这一特点保证了存储相同大小的数据，树的高度更小，数据局部更加紧凑，而硬盘读取有局部加载的优化（把要读取数据和周围的数据一起预先读取），b树相邻数据物理上更加紧凑这一特点符合硬盘进行io优化的特性。</li>
-        </ul>
-      </li>
-      <li>更加详细的应用范围<a href="https://www.cnblogs.com/tiancai/p/9024351.html">https://www.cnblogs.com/tiancai/p/9024351.html</a></li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="各种优化">各种优化</h4>
-<ul>
-  <li><a href="https://www.jianshu.com/p/efaa9005a598">https://www.jianshu.com/p/efaa9005a598</a></li>
-  <li><a href="https://www.jb51.net/article/136701.htm">https://www.jb51.net/article/136701.htm</a></li>
-  <li><a href="https://www.cnblogs.com/houss/p/10598901.html">https://www.cnblogs.com/houss/p/10598901.html</a></li>
-  <li><a href="https://coolshell.cn/articles/1846.html">https://coolshell.cn/articles/1846.html</a>
-    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="err">优化</span><span class="mi">1</span>
-<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化前</span>
-<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="n">a</span> <span class="k">inner</span> <span class="k">join</span> <span class="p">(</span><span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="n">b</span> <span class="k">on</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化后</span>
-</code></pre></div>    </div>
-    <h4 id="常用指标">常用指标</h4>
-  </li>
-  <li>QPS   (2w/s与机器配置及数据量有关)</li>
-  <li>TPS   (1w/s)</li>
-  <li>并发数</li>
-  <li>连接数</li>
-  <li>缓存命中率</li>
-  <li>慢查询
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>slow_query_log=on
-slow_query_log_file=存放目录
-long_query_time=0.1秒
-log_queries_not_using_indexes=on
-</code></pre></div>    </div>
-  </li>
-  <li>主从延迟
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show slave status;
-Seconds_Behind_Master
-</code></pre></div>    </div>
-  </li>
-  <li>死锁
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set global innodb_print_all_deadlocks=on; 
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h4 id="mysql-wal技术-write-ahead-logging">Mysql WAL技术 Write-Ahead Logging</h4>
-
-<p>在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
-   在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
-   为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
-   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。</p>
-
-<p><a href="https://www.cnblogs.com/hzmark/p/wal.html">https://www.cnblogs.com/hzmark/p/wal.html</a></p>
-
-<h4 id="innodb与myisamindex-sequence-access-method">InnoDB与MyISAM(Index Sequence Access Method)</h4>
-<ul>
-  <li>核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
-MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
-    <ul>
-      <li>4个隔离级别透彻分析 <a href="https://www.jianshu.com/p/db334404d909">https://www.jianshu.com/p/db334404d909</a></li>
-      <li><a href="https://blog.csdn.net/w2064004678/article/details/83012387">https://blog.csdn.net/w2064004678/article/details/83012387</a></li>
-    </ul>
-  </li>
-  <li>索引结构不同
-    <ul>
-      <li><a href="https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew">https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew</a></li>
-    </ul>
-  </li>
-  <li>其他不同
-    <ul>
-      <li><a href="https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg">https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg</a></li>
-      <li><a href="https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A">https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A</a></li>
-    </ul>
-  </li>
-  <li>引擎不同的几个方面：Storage mechanism、Locking levels、Indexing、Capabilities and functions</li>
-</ul>
-
-<h4 id="faq">FAQ</h4>
-<ul>
-  <li>
-    <p>问题：INT(M)中M究竟有何用？</p>
-
-    <p>int类型占四个字节，一个字节8比特位，也就是4*8=32比特位，可以表示的数字个数是2的32次方个(2^32)。声明一个int类型的数据，长度便已经固定，那么这个M究竟有何用？
-  结论：INT(M)中的M与数据存储长度没有关系，只是标识数据显示长度，在显示时不足无数会自动填充0进行补齐，必须配合AutoFill使用。</p>
-  </li>
-  <li>
-    <p>MySQL 中 InnoDB 引擎的行锁是通过加在什么上完成(或称实现) 的?</p>
-
-    <p>InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。
-  InnoDB 这 种行锁实现特点意味着:只有通过索引条件检索数据，InnoDB 才使用行级 锁，否则，InnoDB 将使用表锁!</p>
-  </li>
-  <li>各种锁
-    <ul>
-      <li>本质都为了实现数据一致性及各种事务控制</li>
-      <li>悲观锁：读取数据时就加锁排他</li>
-      <li>乐观锁：读取数据不加锁，更新时处理（比如版本号机制、CAS compare and swap算法）</li>
-      <li>共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁
-  <a href="https://www.jianshu.com/p/c456f726e9c7">https://www.jianshu.com/p/c456f726e9c7</a></li>
-    </ul>
-  </li>
-  <li>数据库三范式
-    <ul>
-      <li>表中的每个字段不可分割</li>
-      <li>表有且只有一个主键，也即是每个表只是描述一件事</li>
-      <li>不存在对非主键列的依赖传递，比如userId,userName不要同时出现在order中，有时为了查询效率也冗余个别字段</li>
-    </ul>
-  </li>
-  <li>
-    <p>一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?</p>
-
-    <p>(1)如果表的类型是 MyISAM，那么是 18
-      因为 MyISAM 表会把自增主键的最大 ID 记录到数据文件里，重启 MySQL 自增主键的最大 ID 也不会丢失
-  (2)如果表的类型是 InnoDB，那么是 15
-      InnoDB 表只是把自增主键的最大 ID 记录到内存中，所以重启数据库或者是对表进行 OPTIMIZE 操作，都会导致最大 ID 丢失</p>
-  </li>
-  <li>
-    <p>如何区分 FLOAT 和 DOUBLE?</p>
-
-    <p>以下是 FLOAT 和 DOUBLE 的区别:
-  浮点数以 8 位精度存储在 FLOAT 中，并且有四个字节。 浮点数存储在 DOUBLE 中，精度为 18 位，有八个字节。</p>
-  </li>
-  <li>
-    <p>区分 CHAR_LENGTH 和 LENGTH?</p>
-
-    <p>CHAR_LENGTH 是字符数，而 LENGTH 是字节数。Latin 字符的这两个数据是相同的，但是对 于 Unicode 和其他编码，它们是不同的。</p>
-  </li>
-  <li>
-    <p>federated 表是什么?</p>
-
-    <p>federated 表，允许访问位于其他服务器数据库上的表。
-  <a href="https://blog.csdn.net/qq_33578833/article/details/80177115">https://blog.csdn.net/qq_33578833/article/details/80177115</a></p>
-  </li>
-  <li>
-    <p>可以使用多少列创建索引?</p>
-
-    <p>任何标准表最多可以创建 16 个索引列。</p>
-    <h4 id="其他">其他</h4>
-  </li>
-  <li>Mysql主从同步 <a href="https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw">https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw</a></li>
-  <li>Mysql+Keepalived实现双高可用 <a href="https://www.cnblogs.com/kevingrace/p/6710136.html">https://www.cnblogs.com/kevingrace/p/6710136.html</a></li>
-  <li>PROCEDURE ANALYSE</li>
-  <li>全文索引</li>
-  <li>分区表 <a href="https://www.jianshu.com/p/b61d767f4ff5">https://www.jianshu.com/p/b61d767f4ff5</a></li>
-  <li>UTF-8编码占几个字节 <a href="https://blog.csdn.net/bluetjs/article/details/52936943">https://blog.csdn.net/bluetjs/article/details/52936943</a></li>
-</ul>
-
-<p><a href="https://database.51cto.com/art/201910/604128.htm">数据库规范</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html">2PC 3PC</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="mysql实现事务acid特性的方式总结如下">MySQL实现事务ACID特性的方式总结如下：</h4>
-<ul>
-  <li>原子性：使用 undo log来实现，如果事务执行过程中出错或者用户执行了rollback，系统通过undo log日志返回事务开始的状态。</li>
-  <li>持久性：使用 redo log来实现，只要redo log日志持久化了，当系统崩溃，即可通过redo log把数据恢复。</li>
-  <li>隔离性：通过锁以及MVCC来实现。</li>
-  <li>一致性：通过回滚、恢复以及并发情况下的隔离性，从而实现一致性。</li>
-</ul>
-
-<h4 id="在分布式服务中经常出现直接或间接调用数据库此时的事务保证如何进行">在分布式服务中，经常出现直接或间接调用数据库，此时的事务保证如何进行？</h4>
-<ul>
-  <li>解决此问题，唯一的方法就是引入”中间人”事务管理器（Transaction Manager，简称 TM，也被称之为“协调者”）</li>
-  <li>无论哪种方案，都需要制定”协议”，由各个数据库配合实现（资源管理器 Resource Manager，简称 RM，也被称之为“参与者”）</li>
-  <li>无论是 2PC 还是 3PC 都不能保证分布式系统中的数据 100% 一致，只能尽可能的做到</li>
-</ul>
-
-<h4 id="2pc3pc">2PC、3PC</h4>
-<ul>
-  <li>二阶段提交（Two-phase Commit，简称2PC）
-    <ul>
-      <li>步骤：Prepare（实际上是3PC的PreCommit）、Commit（DoCommit）</li>
-    </ul>
-  </li>
-  <li>三阶段提交（Three-phase Commit，简称3PC）
-    <ul>
-      <li>步骤：CanCommit(新增机制，尝试获取锁)、PreCommit、DoCommit</li>
-    </ul>
-  </li>
-  <li>区别
-    <ol>
-      <li>超时机制
-        <ul>
-          <li>2PC由于RM没有超时机制会产生各种阻塞问题，导致即使失败了RM的事务也不能回滚</li>
-          <li>3PC引入RM超时机制，在第二阶段PreCommit超时回滚，第三阶段DoCommit超时提交</li>
-        </ul>
-      </li>
-      <li>相较于2PC而言，3PC多设置了一个缓冲阶段尽可能保证了在最后提交阶段之前各参与节点的状态是一致的。</li>
-      <li>由于多个参与者最终Commit提交发生的意外(网络或者协调者故障)，还是会产生不一致，无法彻底解决</li>
-    </ol>
-  </li>
-</ul>
-
-<h4 id="常用分布式事务框架">常用分布式事务框架</h4>
-<ul>
-  <li>X/Open DTP(Distributed Transaction Process)模型与XA(eXtended Architecture)
-    <ul>
-      <li>DTP模型里面定义了XA接口，TM 和 RM 通过XA接口进行双向通信（这也是XA的主要作用， 除此之外，XA还对两阶段提交协议进行了部分优化），例如：TM通知RM提交事务或者回滚事务，RM把提交结果通知给TM。XA 的全称是eXtended Architecture，它是一个分布式事务协议，它通过二阶段提交协议保证强一致性。</li>
-      <li>基于XA协议实现的分布式事务是强一致性的分布式事务，典型应用场景如JAVA中有关分布式事务的规范如JTA（Java Transaction API）和JTS（Java Transaction Service）中就涉及到了XA。</li>
-    </ul>
-  </li>
-  <li>Seata（Simple Extensible Autonomous Transaction Architecture，一站式分布式事务解决方案）与AT模式
-    <ul>
-      <li>AT（Automatic Transaction）模式是基于XA事务演进而来，核心是对业务无侵入，是一种改进后的两阶段提交，需要数据库支持。</li>
-      <li>引入补偿机制（最终一致性）</li>
-      <li>Seata 会有 4 种分布式事务解决方案，分别是 AT 模式、TCC(Try、Commit、Cancel) 模式、Saga 模式和 XA 模式。</li>
-    </ul>
-  </li>
-  <li>TCC(Try、Commit、Cancel) 模式
-    <ul>
-      <li>锁定，提交/回滚</li>
-      <li>XA两阶段提交是资源层面的，而TCC实际上把资源层面二阶段提交上提到了业务层面来实现，有效了的避免了XA两阶段提交占用资源锁时间过长导致的性能低下问题。TCC也没有AT模式中的全局行锁，所以性能也会比AT模式高很多。不过，TCC模式对业务代码有很大的侵入性，主业务服务和从业务服务都需要进行改造，从业务方改造成本更高。</li>
-    </ul>
-  </li>
-  <li>Saga 算法（https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf）于 1987 年提出，是一种异步的分布式事务解决方案。其理论基础在于，其假设所有事件按照顺序推进，总能达到系统的最终一致性，因此 Saga需要服务分别定义提交接口以及补偿接口，当某个事务分支失败时，调用其它的分支的补偿接口来进行回滚。
-在Saga模式下，分布式事务内有多个参与者，每一个参与者都是一个冲正补偿服务，需要用户根据业务场景实现其正向操作和逆向回滚操作。</li>
-  <li>本地消息表</li>
-  <li>消息事务 RocketMQ(阿里开源)</li>
-  <li>最大努力通知型（Best-effort Delivery）</li>
-</ul>
-
-<h4 id="分布式事务的取舍">分布式事务的取舍</h4>
-<ul>
-  <li>严格的ACID事务对隔离性的要求很高，在事务执行中必须将所有的资源锁定，对于长事务来说，整个事务期间对数据的独占，将严重影响系统并发性能。因此，在高并发场景中，对ACID的部分特性进行放松从而提高性能，这便产生了BASE柔性事务。柔性事务的理念则是通过业务逻辑将互斥锁操作从资源层面上移至业务层面。通过放宽对强一致性要求，来换取系统吞吐量的提升。另外提供自动的异常恢复机制，可以在发生异常后也能确保事务的最终一致。</li>
-  <li>柔性事务需要应用层进行参与，因此这类分布式事务框架一个首要的功能就是怎么最大程度降低业务改造成本，然后就是尽可能提高性能（响应时间、吞吐），最好是保证隔离性。</li>
-  <li>当然如果我们要自己设计一个分布式事务框架，还需要考虑很多其它特性，在明确目标场景偏好后进行权衡取舍，这些特性包括但不限于以下：
-    <ul>
-      <li>业务侵入性（基于注解、XML，补偿逻辑）；</li>
-      <li>隔离性（写隔离/读隔离/读未提交，业务隔离/技术隔离）；</li>
-      <li>TM/TC部署形态（单独部署、与应用部署一起）；</li>
-      <li>错误恢复（自动恢复、手动恢复）；</li>
-      <li>性能（回滚的概率、付出的代价,响应时间、吞吐）；</li>
-      <li>高可用（注册中心、数据库）；</li>
-      <li>持久化（数据库、文件、多副本一致算法）；</li>
-      <li>同步/异步（2PC执行方式）；</li>
-      <li>日志清理(自动、手动)；</li>
-      <li>……</li>
-    </ul>
-  </li>
-  <li>分布式事务一直是业界难题，难在于CAP定理，在于分布式系统8大错误假设 ，在于FLP不可能原理 ，在于我们习惯于单机事务ACID做对比。无论是数据库领域XA，还是微服务下AT、TCC、Saga、本地消息表、事务消息、最大努力通知等方案，都没有完美解决分布式事务问题，它们不过是各自在性能、一致性、可用性等方面做取舍，寻求某些场景偏好下的权衡。</li>
-</ul>
-
-<h4 id="flp-impossibilityflp不可能性-fischer-lynch-and-patterson">FLP Impossibility（FLP不可能性 Fischer, Lynch and Patterson）</h4>
-<p>在异步通信场景，即使只有一个进程失败，也没有任何算法能保证非失败进程达到一致性！
-<a href="https://www.cnblogs.com/firstdream/p/6585923.html">https://www.cnblogs.com/firstdream/p/6585923.html</a></p>
-
-<h4 id="参考">参考</h4>
-<ul>
-  <li><a href="https://zhuanlan.zhihu.com/p/91263461">https://zhuanlan.zhihu.com/p/91263461</a></li>
-  <li><a href="https://mp.weixin.qq.com/s/ek3ycMJ1qbMXtMRAvTQDZg">https://mp.weixin.qq.com/s/ek3ycMJ1qbMXtMRAvTQDZg</a></li>
-  <li><a href="https://mp.weixin.qq.com/s/As8QpwpJvwAViZ2otiZnPg">https://mp.weixin.qq.com/s/As8QpwpJvwAViZ2otiZnPg</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html"> Jvm内存模型、垃圾回收机制与调优 </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="gc的收集算法实战中是集中算法组合使用">GC的收集算法（实战中是集中算法组合使用）</h4>
-<ul>
-  <li>标记-复制
-  Serial New、Parallel New、Parallel Scavenge New、G1</li>
-  <li>标记-清除
-  CMS</li>
-  <li>标记-整理
-  Serial Old、Parallel Old、G1</li>
-</ul>
-
-<h4 id="分代为了更高效的区别回收g1的分区region也是为了发挥多核并发优势">分代（为了更高效的区别回收，G1的分区region也是为了发挥多核并发优势）</h4>
-<ul>
-  <li>Young Generation
-  Eden 伊甸园
-  Survivor 幸存者（from/to，S0/S1)</li>
-  <li>Tenured/Old Generation</li>
-  <li>Permanent Generation (Java8之前）</li>
-  <li>Metaspace (Java8之后）</li>
-</ul>
-
-<h5 id="参考">参考</h5>
-<p>JVM的4种垃圾回收算法、垃圾回收机制与总结 <a href="https://zhuanlan.zhihu.com/p/54851319">https://zhuanlan.zhihu.com/p/54851319</a></p>
-
-<h4 id="gc收集器">GC收集器</h4>
-<ul>
-  <li>Serial（串行）收集器
-  新生代、老生代</li>
-  <li>Parallel（并行）收集器
-  新生代、老生代</li>
-  <li>Parallel Scavenge New （GC自适应的调节策略GC Ergonomics）
-  新生代、通过调整相关参数，比如新生代的大小，达到以合适的时间和耗时，达到高吞吐量
-  吞吐量 = 运行用户代码时间 /（运行用户代码时间 + 垃圾收集时间）</li>
-  <li>CMS（Concurrent Mark Sweep 并发）收集器 （并发低停顿收集器 Concurrent Low Pause Collector）
-  老生代</li>
-  <li>G1（并发）收集器（优先回收价值最大的Region（这也就是Garbage-First名称的来由）
-  新生代、老生代</li>
-  <li>JDK11的ZGC <a href="https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw">https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw</a></li>
-</ul>
-
-<h5 id="参考-1">参考</h5>
-<ul>
-  <li>7种JVM垃圾收集器特点，优劣势、及使用场景 <a href="https://zhuanlan.zhihu.com/p/58896728">https://zhuanlan.zhihu.com/p/58896728</a></li>
-  <li>深入理解JVM，7种垃圾收集器 <a href="http://blog.itpub.net/69917606/viewspace-2656882">http://blog.itpub.net/69917606/viewspace-2656882</a></li>
-  <li>深入详解JVM内存模型与JVM参数详细配置 <a href="https://zhuanlan.zhihu.com/p/58896619">https://zhuanlan.zhihu.com/p/58896619</a>
-    <ul>
-      <li>堆内存（Heap）此内存区域的唯一目的就是存放对象实例（new的对象），几乎所有的对象实例都在这里分配内存。</li>
-      <li>方法区（Method Area）方法区也称”永久代“，它用于存储虚拟机加载的类信息、常量、静态变量、是各个线程共享的内存区域。</li>
-      <li>虚拟机栈(JVM Stack) Java虚拟机栈是线程私有，生命周期与线程相同。创建线程的时候就会创建一个java虚拟机栈。
-虚拟机执行java程序的时候，每个方法都会创建一个栈帧，栈帧存放在java虚拟机栈中，通过压栈出栈的方式进行方法调用。
-栈帧又分为一下几个区域：局部变量表、操作数栈、动态连接、方法出口等。</li>
-      <li>本地方法栈(Native Stack) 本地方法栈（Native Method Stacks）与虚拟机栈所发挥的作用是非常相似的，其区别不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的Native方法服务。</li>
-      <li>程序计数器（PC Register）
-程序计数器就是记录当前线程执行程序的位置，改变计数器的值来确定执行的下一条指令，比如循环、分支、方法跳转、异常处理，线程恢复都是依赖程序计数器来完成。
-Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间的方式实现的。为了线程切换能恢复到正确的位置，每条线程都需要一个独立的程序计数器，所以它是线程私有的。</li>
-      <li>直接内存
-直接内存并不是虚拟机内存的一部分，也不是Java虚拟机规范中定义的内存区域。jdk1.4中新加入的NIO，引入了通道与缓冲区的IO方式，它可以调用Native方法直接分配堆外内存，这个堆外内存就是本机内存，不会影响到堆内存的大小。</li>
-    </ul>
-  </li>
-  <li>JVM性能调优的6大步骤，及关键调优参数详解 <a href="https://zhuanlan.zhihu.com/p/58897189">https://zhuanlan.zhihu.com/p/58897189</a></li>
-  <li>深入剖析JVM：G1收集器+回收流程+推荐用例 <a href="https://zhuanlan.zhihu.com/p/59861022">https://zhuanlan.zhihu.com/p/59861022</a></li>
-</ul>
-
-<h4 id="java-参数">java 参数</h4>
-<ul>
-  <li>查看JVM使用的默认的垃圾收集器 <a href="https://www.cnblogs.com/grey-wolf/p/9217497.html">https://www.cnblogs.com/grey-wolf/p/9217497.html</a></li>
-  <li>JVM 参数 <a href="https://blog.csdn.net/liyongbing1122/article/details/88716400">https://blog.csdn.net/liyongbing1122/article/details/88716400</a></li>
-</ul>
-
-<p>逃逸分析</p>
-<ul>
-  <li><a href="https://blog.csdn.net/w372426096/article/details/80333657">https://blog.csdn.net/w372426096/article/details/80333657</a></li>
-  <li><a href="https://blog.csdn.net/hollis_chuang/article/details/80922794">https://blog.csdn.net/hollis_chuang/article/details/80922794</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Linux-cmd.html"> Linux  Cmd </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Linux-cmd.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Linux</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="ansible">ansible</h3>
-<p><a href="http://ansible.com.cn/">http://ansible.com.cn/</a></p>
-<h3 id="tar-gzip">tar gzip</h3>
-<h3 id="telnet">telnet</h3>
-<h3 id="kill">kill</h3>
-<h3 id="find--locate">find &amp; locate</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Linux上提供了两款工具用于查找文件，一款是locate，另一款是find。
-locate的特点是根据已生成的数据库查找，速度较快，但是查找的是快照数据，不准确。
-
-<span class="c"># 查找2*24小时内修改过的文件 </span>
-<span class="nv">$ </span>find <span class="nt">-atime</span> <span class="nt">-2</span>
-<span class="c"># 根据关键字查找</span>
-<span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-name</span> <span class="s2">"*.log"</span>
-<span class="c"># 按照目录或文件的权限来查找文件</span>
-<span class="nv">$ </span>find /opt/soft/test/ <span class="nt">-perm</span> 777
-<span class="c"># 按类型查找</span>
-<span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-type</span> f <span class="nt">-name</span> <span class="s2">"*.log"</span>
-<span class="c"># 查找当前所有目录并排序</span>
-<span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-type</span> d | <span class="nb">sort</span>
-<span class="c"># 查找当前目录大于1K的文件 </span>
-<span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-size</span> +1000c <span class="nt">-print</span>
-<span class="c"># 在目录中查找更改时间在n日以前的文件并删除它们，在删除之前先给出提示</span>
-<span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-name</span> <span class="s2">"*.log"</span> <span class="nt">-mtime</span> +5 <span class="nt">-ok</span> <span class="nb">rm</span> <span class="o">{}</span> <span class="se">\;</span>
-
-<span class="nv">$ </span>locate passwd
-<span class="nv">$ </span>locate passwd vim shadow | <span class="nb">wc</span> <span class="nt">-l</span>
-
-</code></pre></div></div>
-<p><a href="https://blog.csdn.net/zjq001X/article/details/68941833">https://blog.csdn.net/zjq001X/article/details/68941833</a>
-<a href="https://blog.csdn.net/zjq001X/article/details/68941865">https://blog.csdn.net/zjq001X/article/details/68941865</a></p>
-<h3 id="系统负载查看命令top">系统负载查看命令top</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>top
-<span class="c"># m键:切换内存使用率进度条模式</span>
-
-<span class="c"># N:根据pid大小进行排序</span>
-<span class="c"># M:根据驻留内存大小进行排序</span>
-<span class="c"># P:根据CPU使用百分比大小进行排序</span>
-<span class="c"># T:根据时间/累计时间进行排序</span>
-</code></pre></div></div>
-<h3 id="内存查看命令free">内存查看命令free</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>free <span class="nt">-h</span>
-<span class="c">#free命令信息来自 cat /proc/meminfo</span>
-</code></pre></div></div>
-<h3 id="磁盘查看命令df">磁盘查看命令df</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">df</span> <span class="nt">-h</span>
-</code></pre></div></div>
-<h3 id="目录文件大小查看命令du">目录文件大小查看命令du</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">du</span>
-<span class="c"># 只显示当前目录下面的子目录的目录大小和当前目录的总的大小</span>
-
-<span class="nv">$ </span><span class="nb">du</span>  <span class="nt">-sh</span>
-<span class="c"># 查看当前目录总大小</span>
-
-<span class="nv">$ </span><span class="nb">du</span>  <span class="nt">-sh</span> ./<span class="k">*</span> 
-<span class="nv">$ </span><span class="nb">du</span> <span class="nt">-h</span>  <span class="nt">--max-depth</span><span class="o">=</span>1
-<span class="c"># 查看当前目录各个文件大小</span>
-</code></pre></div></div>
-
-<h3 id="systemd--systemctl">systemd &amp; systemctl</h3>
-<ul>
-  <li>使用了 Systemd，就不需要再用init了。Systemd 逐渐取代了initd</li>
-  <li>/etc/init.d 是sysVinit服务的启动方式,对于一些古老的系统或者服务 使用这个</li>
-  <li>service 也是sysVinit, 比/etc/init.d先进一点,底层还是调用/etc/init.d</li>
-  <li>systemctl 是systemD命令的主要方式, 尽管一些老的系统或者命令不支持systemctl, 
-但是systemctl最后会逐渐的替代其他的命令方式的, 能用这个就优先用这个,是最时尚/方便的</li>
-</ul>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看版本</span>
-systemctl <span class="nt">--version</span>
-<span class="c"># 立即启动一个服务</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl start apache.service
-<span class="c"># 立即停止一个服务</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl stop apache.service
-<span class="c"># 重启一个服务</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl restart apache.service
-<span class="c"># 杀死一个服务的所有子进程</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl <span class="nb">kill </span>apache.service
-<span class="c"># 重新加载一个服务的配置文件</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl reload apache.service
-<span class="c"># 重载所有修改过的配置文件</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl daemon-reload
-<span class="c"># 显示某个 Unit 的所有底层参数</span>
-<span class="nv">$ </span>systemctl show httpd.service
-<span class="c"># 显示某个 Unit 的指定属性的值</span>
-<span class="nv">$ </span>systemctl show <span class="nt">-p</span> CPUShares httpd.service
-<span class="c"># 设置某个 Unit 的指定属性</span>
-<span class="nv">$ </span><span class="nb">sudo </span>systemctl set-property httpd.service <span class="nv">CPUShares</span><span class="o">=</span>500
-
-<span class="c"># 默认目录</span>
-<span class="nv">$ </span>/etc/systemd/system
-
-<span class="c"># service example start</span>
-<span class="o">[</span>Unit]
-<span class="nv">Description</span><span class="o">=</span>Tomcat-app
-<span class="nv">After</span><span class="o">=</span>network.target
-
-<span class="o">[</span>Service]
-<span class="nv">User</span><span class="o">=</span>web
-<span class="nv">Group</span><span class="o">=</span>web
-<span class="nv">Type</span><span class="o">=</span>forking
-<span class="nv">PIDFile</span><span class="o">=</span>/home/web/tomcat_app/pid
-<span class="nv">ExecStart</span><span class="o">=</span>/home/web/tomcat_app/bin/catalina.sh start
-<span class="nv">ExecReload</span><span class="o">=</span>/home/web/tomcat_app/bin/catalina.sh restart
-<span class="nv">ExecStop</span><span class="o">=</span>/home/web/tomcat_app/bin/catalina.sh stop
-<span class="nv">Restart</span><span class="o">=</span>on-failure
-<span class="nv">RestartSec</span><span class="o">=</span>45s
-
-<span class="o">[</span>Install]
-<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
-<span class="c"># service example end</span>
-</code></pre></div></div>
-<p>init / service方式启动管理</p>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo</span> /etc/init.d/apache2 start
-<span class="c"># 或者</span>
-<span class="nv">$ </span>service apache2 start 
-</code></pre></div></div>
-<ul>
-  <li>systemd入门及实战</li>
-</ul>
-<p><a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html">http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html</a></p>
-
-<p><a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html">http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html</a></p>
-<ul>
-  <li>Linux启动流程和服务管理(init和systemd比较)</li>
-</ul>
-<p><a href="https://blog.csdn.net/qq_36119192/article/details/82415113">https://blog.csdn.net/qq_36119192/article/details/82415113</a></p>
-
-<h3 id="supervisor">supervisor</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看所有进程的状态</span>
-<span class="nv">$ </span>supervisorctl status 
-<span class="c"># 停止es</span>
-<span class="nv">$ </span>supervisorctl stop es
-<span class="c"># 启动es</span>
-<span class="nv">$ </span>supervisorctl start es
-<span class="c"># 重启es</span>
-<span class="nv">$ </span>supervisorctl restart es
-<span class="c"># 配置文件修改后可以使用该命令加载新的配置</span>
-<span class="nv">$ </span>supervisorctl update 
-<span class="c"># 重新启动配置中的所有程序</span>
-<span class="nv">$ </span>supervisorctl reload
-<span class="c"># 修改配置</span>
-<span class="nv">$ </span>vi /etc/supervisord.conf
-<span class="c"># 修改子service</span>
-<span class="o">[</span>include]
-
-<span class="c"># service example start</span>
-files <span class="o">=</span> supervisord.d/<span class="k">*</span>.ini
-<span class="o">[</span>program:check]
-directory <span class="o">=</span> /home/web/tools
-<span class="nb">command</span> <span class="o">=</span> /home/web/tools/checkAlive.sh
-autostart <span class="o">=</span> <span class="nb">true
-</span>autorestart <span class="o">=</span> <span class="nb">true
-</span>startsecs <span class="o">=</span> 5
-user <span class="o">=</span> root
-redirect_stderr <span class="o">=</span> <span class="nb">true
-</span>stdout_logfile <span class="o">=</span> /home/web/logs/checker.log
-<span class="nv">logfile_maxbytes</span><span class="o">=</span>50MB
-<span class="c"># service example end</span>
-</code></pre></div></div>
-<p>supervisor 使用详解
-<a href="https://blog.csdn.net/zou79189747/article/details/80403016">https://blog.csdn.net/zou79189747/article/details/80403016</a></p>
-
-<h3 id="sed命令-stream-editor">sed命令 ：stream editor</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-e</span>：可以指定多个命令
-<span class="nt">-f</span>：指定命令文件	
-<span class="nt">-n</span>：取消默认控制台输出，与p一起使用可打印指定内容
-<span class="nt">-i</span>：输出到原文件，静默执行（修改原文件的意思）
-	
-a：新增
-c：替换
-p：打印，要和-n参数一起使用
-d：删除
-i：插入
-s：替换（匹配局部替换）
-	
-<span class="c"># 查找 两个时间点所在的行之间的数据，如果时间乱序可能不准确</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'/20:00:00/,/23:00:00/p'</span> app.log|grep <span class="s1">'callback'</span>
-<span class="c"># 如果开始时间点行不存在比如60秒，就直接结束，如果结束的时间点行不存在就会查询到尾</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'/2018-07-23 17:45:60/,/2018-07-23 17:48:60/p'</span> access.log
-
-<span class="c"># 在第 2 行后面新增一行内容</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'2a testContent'</span> test.txt
-<span class="c"># 在原文的第 1~3 行后面各新增一行内容</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'1,3a testContent'</span> test.txt
-	
-<span class="c"># 将第 2 行内容整行替换</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'2c testContent'</span> test.txt
-<span class="c"># 将第 1~3 行内容替换成一行指定内容</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'1,3c testContent'</span> test.txt	
-
-<span class="c"># 删除第 2 行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'2d'</span> test.txt
-<span class="c"># 删除第1~3行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'1,3d'</span> test.txt	
-
-<span class="c"># 在第 2 行前面插入一行内容</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'2i testContent'</span> test.txt
-<span class="c"># 在原文的第 1~3 行前面各插入一行内容</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'1,3i testContent'</span> test.txt
-
-<span class="c"># 重复打印第 2 行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'2p'</span> test.txt
-<span class="c"># 重复打印第1~3行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'1,3p'</span> test.txt
-	
-<span class="c"># 只打印第 2 行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'2p'</span> test.txt
-<span class="c"># 只打印第 1~3 行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'1,3p'</span> test.txt
-<span class="c"># 打印匹配到user的行，类似grep</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'/user/p'</span> test.txt
-<span class="c"># ! 反选，打印没有匹配到user的行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'/user/!p'</span> test.txt	
-<span class="c"># 只打印匹配替换的行</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'s/old/new/gp'</span> <span class="nb">test</span>
-
-<span class="c"># 匹配每一行的第一个old替换为new</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'s/old/new/'</span> test.txt
-<span class="c"># 匹配所有old替换为new，g 代表一行多个，i 代表匹配忽略大小写</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'s/old/new/gi'</span> test.txt
-<span class="c"># 匹配第 3~9 行所有old替换为new</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'3,9s/old/new/gi'</span> test.txt	
-
-<span class="c"># 执行多个指令</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-e</span> <span class="s1">'s/系统/00/g'</span> <span class="nt">-e</span> <span class="s1">'2d'</span> test.txt
-	
-<span class="c"># 多个命令写进ab.log文件里，一行一条命令，效果同-e</span>
-<span class="nv">$ </span><span class="nb">sed</span> <span class="nt">-f</span> ab.log test.txt
-</code></pre></div></div>
-<h3 id="ps-process-status">ps ：process status</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-A</span> 显示所有进程（等价于-e）
-<span class="nt">-a</span> 显示一个终端的所有进程，除了会话引线
-<span class="nt">-x</span> 显示没有控制终端的进程，同时显示各个命令的具体路径。dx不可合用。（utility）
-<span class="nt">-u</span> uid or username 选择有效的用户id或者是用户名
-<span class="nt">-f</span> 全部列出，通常和其他选项联用。如：ps <span class="nt">-fa</span> or ps <span class="nt">-fx</span> and so on.
-
-<span class="c"># 显示所有进程</span>
-<span class="nv">$ </span>ps <span class="nt">-aux</span>
-<span class="c"># 以树形结构显示进程</span>
-<span class="nv">$ </span>ps <span class="nt">-axjf</span>  
-<span class="nv">$ </span>pstree
-<span class="c"># 用标准的格式显示进程</span>
-<span class="nv">$ </span>ps <span class="nt">-ef</span>
-<span class="c"># 根据 CPU 使用来升序排序</span>
-<span class="nv">$ </span>ps <span class="nt">-aux</span> <span class="nt">--sort</span> <span class="nt">-pcpu</span> | less
-<span class="c"># 根据内存使用来升序排序</span>
-<span class="nv">$ </span>ps <span class="nt">-aux</span> <span class="nt">--sort</span> <span class="nt">-pmem</span> | less
-</code></pre></div></div>
-<p>ps命令详解，原来ps如此庞大
-<a href="https://mp.weixin.qq.com/s/PBEpjoOFW4f0eG5bwa5AvQ">https://mp.weixin.qq.com/s/PBEpjoOFW4f0eG5bwa5AvQ</a></p>
-<h3 id="netstat">netstat</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-a</span> <span class="o">(</span>all<span class="o">)</span>显示所有选项，默认不显示LISTEN相关
-<span class="nt">-t</span> <span class="o">(</span>tcp<span class="o">)</span>仅显示tcp相关选项
-<span class="nt">-u</span> <span class="o">(</span>udp<span class="o">)</span>仅显示udp相关选项
-<span class="nt">-n</span> 拒绝显示别名或域名，能显示ip数字的全部转化成数字。
-<span class="nt">-l</span> 仅列出有在 Listen <span class="o">(</span>监听<span class="o">)</span> 的服務状态
-<span class="nt">-p</span> 显示建立相关链接的程序名 pid/program
-<span class="nt">-r</span> 显示路由信息，路由表
-提示：LISTEN和LISTENING的状态只有用-a或者-l才能看到
-
-<span class="c"># 显示t:tcp下的l:listen中的进程的p:pid$progame网络信息n:not dns</span>
-<span class="nv">$ </span>netstat <span class="nt">-tlnp</span>
-
-</code></pre></div></div>
-<p>一些netstat实用例子
-<a href="https://blog.csdn.net/qq_33326449/article/details/88241139">https://blog.csdn.net/qq_33326449/article/details/88241139</a></p>
-<h3 id="awk命令">awk命令</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">awk</span> <span class="nt">-F</span> <span class="s2">":"</span> <span class="s1">'{print $2}'</span> app.log |awk <span class="nt">-F</span> <span class="s2">","</span> <span class="s1">'{print $1}'</span> <span class="o">&gt;</span> result.log
-</code></pre></div></div>
-<h3 id="tail命令">tail命令</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 显示 notes.log 文件的最后 10 行</span>
-<span class="nv">$ </span><span class="nb">tail </span>notes.log
-<span class="c"># 跟踪名为 notes.log 的文件的增长情况</span>
-<span class="nv">$ </span><span class="nb">tail</span> <span class="nt">-f</span> notes.log
-<span class="c"># 显示文件 notes.log 的内容，从第20行至文件末尾:</span>
-<span class="nv">$ </span><span class="nb">tail</span> +20 notes.log
-<span class="c"># 显示文件 notes.log 的内容，从倒数第20行至文件末尾:</span>
-<span class="nv">$ </span><span class="nb">tail</span> +20 notes.log
-<span class="c"># 显示文件 notes.log 的最后 10 个字符:</span>
-<span class="nv">$ </span><span class="nb">tail</span> <span class="nt">-c</span> 10 notes.log
-</code></pre></div></div>
-<h3 id="cat-more-less">cat more less</h3>
-<p>众所周知linux中命令cat、more、less均可用来查看文件内容，主要区别有：
-cat是一次性显示整个文件的内容，还可以将多个文件连接起来显示，它常与重定向符号配合使用，适用于文件内容少的情况；
-more和less一般用于显示文件内容超过一屏的内容，并且提供翻页的功能。more比cat强大，提供分页显示的功能，less比more更强大，提供翻页，跳转，查找等命令。
-而且more和less都支持：用空格显示下一页，按键b显示上一页</p>
-
-<p>linux中cat、more、less命令区别详解
-<a href="https://www.cnblogs.com/lidabo/p/6196457.html">https://www.cnblogs.com/lidabo/p/6196457.html</a></p>
-<h3 id="crontab配置">crontab配置</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># crontab各参数说明：</span>
-<span class="nt">-e</span> : 执行文字编辑器来编辑crontab，内定的文字编辑器是VI
-<span class="nt">-r</span> : 删除目前的crontab
-<span class="nt">-l</span> : 列出目前的crontab<span class="o">(</span>查看专用<span class="o">)</span>
-<span class="nt">-i</span> : 会和-r 配合使用，在删除当前的crontab时询问，输入y 则删除
-   <span class="c"># 注意crontab是分用户的，以谁登录就会编辑到谁的crontab</span>
-
-<span class="c"># crontab特殊的符号说明：</span>
-<span class="c"># "*"代表所有的取值范围内的数字。特别要注意哦!</span>
-<span class="c"># "/"代表每的意思，如"*/5"表示每5个单位</span>
-<span class="c"># "-"代表从某个数字到某个数字</span>
-<span class="c"># ","分散的数字</span>
-
-<span class="c"># crontab文件的使用示例：</span>
-<span class="c"># 30 21 * * * 表示每晚的21:30</span>
-<span class="c"># 45 4 1,10,22 * * 表示每月1、10、22日的4 : 45</span>
-<span class="c"># 10 1 * * 6,0 表示每周六、周日的1 : 10</span>
-<span class="c"># 0,30 18-23 * * * 表示在每天18 : 00至23 : 00之间每隔30分钟</span>
-<span class="c"># 0 23 * * 6 表示每星期六的11 : 00 pm</span>
-<span class="c"># * */1 * * * 每一小时</span>
-<span class="c"># * 23-7/1 * * * 晚上11点到早上7点之间，每隔一小时</span>
-<span class="c"># * 8,13 * * 1-5 从周一到周五的上午8点和下午1点</span>
-<span class="c"># 0 11 4 * mon-wed 每月的4号与每周一到周三的11点</span>
-<span class="c"># 0 4 1 jan * 一月一号的4点</span>
-</code></pre></div></div>
-<h3 id="sar-system-activityreporter系统活动情况报告">sar System ActivityReporter系统活动情况报告</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># CPU利用率</span>
-<span class="nv">$ </span>sar <span class="nt">-p</span> （查看全天）
-<span class="nv">$ </span>sar <span class="nt">-u</span> 1 10 （1：每隔一秒，10：写入10次）
-
-<span class="c"># 内存利用率</span>
-<span class="nv">$ </span>sar <span class="nt">-r</span> （查看全天）
-<span class="nv">$ </span>sar <span class="nt">-r</span> 1 10 （1：每隔一秒，10：写入10次）
-
-<span class="c"># 磁盘I/O</span>
-<span class="nv">$ </span>sar <span class="nt">-d</span> （查看全天）
-<span class="nv">$ </span>sar <span class="nt">-d</span> 1 2 （1：每隔一秒，2：写入2次）
-
-<span class="c"># 网络流量</span>
-<span class="nv">$ </span>sar <span class="nt">-n</span> DEV （查看全天）
-<span class="nv">$ </span>sar <span class="nt">-n</span> DEV 1 2 （1：每隔一秒，2：写入2次）
-<span class="nt">-n</span> DEV ： 网络接口统计信息。
-<span class="nt">-n</span> EDEV ： 网络接口错误。
-<span class="nt">-n</span> IP ： IP数据报统计信息。
-<span class="nt">-n</span> EIP ： IP错误统计信息。
-<span class="nt">-n</span> TCP ： TCP统计信息。
-<span class="nt">-n</span> ETCP ： TCP错误统计信息。
-<span class="nt">-n</span> SOCK ： 套接字使用。
-</code></pre></div></div>
-<p><a href="https://www.cnblogs.com/howhy/p/6396437.html">https://www.cnblogs.com/howhy/p/6396437.html</a></p>
-
-<p><a href="https://blog.csdn.net/volitationlong/article/details/81741754">https://blog.csdn.net/volitationlong/article/details/81741754</a></p>
-<h3 id="vmstat-mpstat-iostat-pidstat">vmstat mpstat iostat pidstat</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpstat是Multiprocessor Statistic
-vmstat 是Virtual Meomory Statistics（虚拟内存统计）
-</code></pre></div></div>
-<p>pidstat 命令详解
-<a href="https://www.jianshu.com/p/3991c0dba094">https://www.jianshu.com/p/3991c0dba094</a></p>
-
-<p>详解mpstat、iostat、sar、vmstat命令的使用
-<a href="https://blog.csdn.net/suchahaerkang/article/details/80545140">https://blog.csdn.net/suchahaerkang/article/details/80545140</a></p>
-<h3 id="wget">wget</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 使用wget -O下载并以不同的文件名保存</span>
-<span class="nv">$ </span>wget <span class="nt">-O</span> wordpress.zip http://www.minjieren.com/download.aspx?id<span class="o">=</span>1080
-<span class="c"># 使用wget -b后台下载</span>
-<span class="nv">$ </span>wget <span class="nt">-b</span> http://www.minjieren.com/wordpress-3.1-zh_CN.zip
-<span class="c"># 利用-spider: 模拟下载，不会下载，只是会检查是否网站是否好着</span>
-<span class="nv">$ </span>wget <span class="nt">--spider</span>  www.baidu.com
-<span class="c"># 模拟下载打印服务器响应</span>
-<span class="nv">$ </span>wget <span class="nt">-S</span>  www.baidu.com  
-<span class="c"># 指定尝试2次，2次后不再尝试</span>
-<span class="nv">$ </span>wget <span class="nt">-r</span> <span class="nt">--tries</span><span class="o">=</span>2  www.baidu.com 
-<span class="c"># 指定尝试，且不打印中间结果</span>
-<span class="nv">$ </span>wget <span class="nt">-r</span> <span class="nt">--tries</span><span class="o">=</span>2 <span class="nt">-q</span> www.baidu.com
-</code></pre></div></div>
-<h3 id="curl">curl</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-d</span><span class="s1">'login=emma＆password=123'</span><span class="nt">-X</span> POST https://google.com/login
-<span class="c"># 或者</span>
-<span class="nv">$ </span>curl <span class="nt">-d</span> <span class="s1">'login=emma'</span> <span class="nt">-d</span> <span class="s1">'password=123'</span> <span class="nt">-X</span> POST  https://google.com/login
-</code></pre></div></div>
-<p>阮一峰的网络日志已经总结了
-http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
-<h3 id="tcpdump">tcpdump</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -i eth0： 用eth0 接口进行抓包； -s 0：表示包有多大，抓取的数据多大； -w a.cap 表示存取到 a.cap 文件中</span>
-<span class="nv">$ </span>tcpdump <span class="nt">-i</span> eth0 <span class="nt">-s</span> 0 <span class="nt">-w</span> a.acp
-<span class="c"># 查看抓包的内容</span>
-<span class="nv">$ </span>tcpdump <span class="nt">-r</span> a.acp 
-</code></pre></div></div>
-<p>TCPDUMP——抓包、筛选、高级筛选
-<a href="https://blog.csdn.net/suiyideali/article/details/93935877">https://blog.csdn.net/suiyideali/article/details/93935877</a></p>
-<h3 id="cachestatcachetoppcstat-linux系统缓存命中率分析工具">cachestat、cachetop、pcstat-linux系统缓存命中率分析工具</h3>
-<p><a href="https://blog.51cto.com/liuzhengwei521/2360734?source=dra">https://blog.51cto.com/liuzhengwei521/2360734?source=dra</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/Linux-cmd.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -979,6 +996,10 @@ http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
       
       
       <a href="/page10" class="button page-button">10</a>
+      
+      
+      
+      <a href="/page11" class="button page-button">11</a>
       
       
 
@@ -1039,7 +1060,7 @@ http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
       
       
       <a  href="tag/分布式">
-      <span class="label label-default">分布式 ( 12 )</span>
+      <span class="label label-default">分布式 ( 13 )</span>
       </a><br />
 
       
@@ -1067,7 +1088,7 @@ http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
       
       
       <a  href="tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 5 )</span>
+      <span class="label label-default">数据结构与算法 ( 8 )</span>
       </a><br />
 
       
@@ -1123,14 +1144,14 @@ http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
       
       
       <a  href="tag/微服务">
-      <span class="label label-default">微服务 ( 2 )</span>
+      <span class="label label-default">微服务 ( 3 )</span>
       </a><br />
 
       
       
       
       <a  href="tag/bigdata">
-      <span class="label label-default">Bigdata ( 1 )</span>
+      <span class="label label-default">BigData ( 2 )</span>
       </a><br />
 
       

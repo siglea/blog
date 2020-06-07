@@ -54,6 +54,316 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Elasticsearch-Summary.html"> Elasticsearch  Summary </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Elasticsearch-Summary.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p><a href="https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw">https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw</a></p>
+
+<h4 id="基础入门">基础入门</h4>
+<ul>
+  <li><a href="http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html">http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html</a></li>
+  <li><a href="https://www.jianshu.com/p/d68197bc7def">https://www.jianshu.com/p/d68197bc7def</a></li>
+  <li><a href="https://www.elastic.co/cn/products/elasticsearch">ec官网</a></li>
+</ul>
+
+<h4 id="常用命令">常用命令</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#查看节点左右的Index</span>
+curl <span class="nt">-X</span> GET <span class="s1">'http://localhost:9200/_cat/indices?v'</span>
+
+<span class="c">#查看所有Type</span>
+curl <span class="s1">'localhost:9200/_mapping?pretty=true'</span>
+
+<span class="c">#新建Index</span>
+curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/weather'</span>
+
+<span class="c">#删除Index</span>
+curl <span class="nt">-X</span> DELETE <span class="s1">'localhost:9200/weather'</span>
+
+<span class="c">#新建Index附件结构 Index:accounts Type:person</span>
+curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/accounts'</span> <span class="nt">-d</span> <span class="s1">'
+{
+  "mappings": {
+    "person": {
+      "properties": {
+        "user": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        },
+        "title": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        },
+        "desc": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        }
+      }
+    }
+  }
+}'</span>
+
+<span class="c">#给指定Index指定的type增加Document</span>
+<span class="nv">$ </span>curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/accounts/person/1'</span> <span class="nt">-d</span> <span class="s1">'
+{
+  "user": "张三",
+  "title": "工程师",
+  "desc": "数据库管理"
+}'</span>
+
+<span class="c">#查看指定Index指定的type的指定Document</span>
+curl <span class="s1">'localhost:9200/accounts/person/1?pretty=true'</span>
+
+<span class="c">#查看指定Index指定的type的所有记录</span>
+<span class="nv">$ </span>curl <span class="s1">'localhost:9200/accounts/person/_search'</span>
+
+<span class="c">#搜索指定Index指定的type的复合搜索条件的记录 from:偏移量 size:数据量</span>
+<span class="c">#该分页方式是假分页，会读取整体数据只显示size，数据量超过1万性能急剧下降</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query" : { "match" : { "desc" : "管理" }},
+  "from": 1,
+  "size": 1
+}'</span>
+
+<span class="c">#逻辑搜索 OR 关系</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query" : { "match" : { "desc" : "软件 系统" }}
+}'</span>
+
+<span class="c">#逻辑搜索 AND 关系</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "desc": "软件" } },
+        { "match": { "desc": "系统" } }
+      ]
+    }
+  }
+}'</span>
+
+<span class="c">#scroll分页查询</span>
+<span class="c">#区别于from size的方式的本质是采用类似Oracle的游标</span>
+curl <span class="nt">-XGET</span> <span class="s1">'localhost:9200/twitter/tweet/_search?scroll=1m'</span> <span class="nt">-d</span> <span class="s1">'
+{
+    "query": {
+        "match" : {
+            "title" : "elasticsearch"
+        }
+    }
+}
+'</span>
+
+curl <span class="nt">-XGET</span>  <span class="s1">'localhost:9200/_search/scroll?scroll=1m&amp;scroll_id=c2Nhbjs2OzM0NDg1ODpzRlBLc0FXNlNyNm5JWUc1'</span>
+
+</code></pre></div></div>
+<h4 id="相关原理">相关原理</h4>
+<ul>
+  <li>倒排索引
+    <ol>
+      <li>key =&gt; value-index =&gt; value</li>
+      <li>分词、过滤助动叹词、相似词合并</li>
+      <li>索引建立</li>
+    </ol>
+  </li>
+  <li>分布式
+    <ol>
+      <li>Elasticsearch也是会对数据进行切分，同时每一个分片会保存多个副本</li>
+      <li>数据写入和索引建立，都是先在master完成再同步到slave</li>
+      <li>选举策略和zk/redis集成都很类似(拜占庭将军问题)
+        <ol>
+          <li>master节点宕机了，那么会重新选举一个节点为master节点。</li>
+          <li>如果是非master节点宕机了，那么会由master节点，让那个宕机节点上的primary shard的身份转移到其他机器上的replica shard。
+修复了那个宕机机器，重启了之后，master节点会控制将缺失的replica shard分配过去，同步后续修改的数据之类的，让集群恢复正常。</li>
+        </ol>
+      </li>
+      <li>分布式查询操作类似Map/Reduce</li>
+      <li>NRT(Near RealTime)
+        <ul>
+          <li>默认是每隔1秒refresh一次的，所以es是准实时的，因为写入的数据1秒之后才能被看到。</li>
+          <li>-&gt; buffer -&gt; segment file -&gt; os cache -&gt; 磁盘</li>
+          <li>-&gt; trans_log -&gt; os cache -&gt; 磁盘</li>
+          <li>refresh、flush、translog、merge</li>
+        </ul>
+      </li>
+      <li>默认primary shard=5，replica=1共计10shard</li>
+      <li>es写数据过程
+        <ol>
+          <li>客户端选择一个node发送请求过去，这个node就是coordinating node（协调节点）</li>
+          <li>coordinating node，对document进行路由，将请求转发给对应的node（有primary shard）</li>
+          <li>实际的node上的primary shard处理请求，然后将数据同步到replica node</li>
+          <li>coordinating node，如果发现primary node和所有replica node都搞定之后，就返回响应结果给客户端</li>
+        </ol>
+      </li>
+      <li>es读取数据过程
+        <ol>
+          <li>客户端发送请求到任意一个node，成为coordinate node</li>
+          <li>coordinate node对document进行路由，将请求转发到对应的node，此时会使用round-robin随机轮询算法，在primary shard以及其所有replica中随机选择一个，让读请求负载均衡</li>
+          <li>接收请求的node返回document给coordinate node</li>
+          <li>coordinate node返回document给客户端</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+</ul>
+
+<h5 id="参考资料">参考资料</h5>
+<ul>
+  <li><a href="http://developer.51cto.com/art/201904/594615.htm">http://developer.51cto.com/art/201904/594615.htm</a></li>
+  <li><a href="https://www.jianshu.com/p/b3f987b0fbf1">https://www.jianshu.com/p/b3f987b0fbf1</a></li>
+</ul>
+
+<h4 id="实战总结亿级性能">实战总结亿级性能</h4>
+<ul>
+  <li>用内存换速度
+ es的搜索引擎严重依赖于底层的filesystem cache，你如果给filesystem cache更多的内存，尽量让内存可以容纳所有的indx segment file索引数据文件，
+ 那么你搜索的时候就基本都是走内存的，性能会非常高。归根结底，你要让es性能要好，最佳的情况下，就是你的机器的内存，至少可以容纳你的总数据量的一半.</li>
+  <li>减少es中的无用字段的数据量(es+hbase)</li>
+  <li>数据预热，冷热分离，冗余数据</li>
+  <li>由应用服务器完成某些逻辑及运算操作</li>
+  <li>使用sroll api优化分页性能</li>
+</ul>
+
+<h5 id="实战案例">实战案例</h5>
+<ul>
+  <li>5台机器，每台机器是6核64G的，集群总内存是320G</li>
+  <li>es集群的日增量数据大概是2000万条，每天日增量数据大概是500MB，每月增量数据大概是6亿，15G。（数据总量大概是100G左右）</li>
+  <li>index数据量预估，shard个数预估（不支持后续增加shard需要重建),建议每个shard小于30G</li>
+</ul>
+
+<h5 id="参考资料-1">参考资料</h5>
+<p><a href="https://www.aboutyun.com/thread-14986-1-1.html">亿级规模的Elasticsearch优化实战</a></p>
+
+<h4 id="java实战教程">java实战教程</h4>
+<p><a href="https://www.jianshu.com/p/3fa27dda63ab">大数据技术之elasticsearch</a></p>
+
+<h4 id="lucene--nutch2002--solr2004--elasticsearch2010">lucene &amp; nutch（2002） &amp; Solr（2004）&amp;  Elasticsearch（2010）</h4>
+<ul>
+  <li>Lucene其实是一个提供全文文本搜索的函数库，它不是一个应用软件</li>
+  <li>Nutch = Lucene + 爬虫</li>
+  <li>Solr 是基于Lucene的一套完整的搜索服务属于Apache开源项目</li>
+  <li>Nutch是分布式爬虫系统，solr是搜索引擎</li>
+</ul>
+
+<h5 id="solr--elasticsearch">Solr &amp; Elasticsearch</h5>
+<ul>
+  <li>Solr 利用 Zookeeper 进行分布式管理，而 Elasticsearch 自身带有分布式协调管理功能;</li>
+  <li>Solr 支持更多格式的数据，而 Elasticsearch 仅支持json文件格式；</li>
+  <li>Solr 官方提供的功能更多，而 Elasticsearch 本身更注重于核心功能，高级功能多有第三方插件提供；</li>
+  <li>Solr 在传统的搜索应用中表现好于 Elasticsearch，但在处理实时搜索应用时效率明显低于 Elasticsearch。</li>
+</ul>
+
+<h5 id="关于nutch">关于Nutch</h5>
+<ul>
+  <li>Nutch诞生于2002年8月，是Apache旗下的一个用Java实现的开源搜索引擎项目，
+自Nutch1.2版本之后，Nutch已经从搜索引擎演化为网络爬虫，接着Nutch进一步演化为两大分支版本：1.X和2.X，
+这两大分支最大的区别在于2.X对底层的数据存储进行了抽象以支持各种底层存储技术。</li>
+  <li>1.x版本是基于Hadoop架构的，底层存储使用的是HDFS，而2.x通过使用Apache Gora，
+使得Nutch可以访问HBase、Accumulo、Cassandra、MySQL、DataFileAvroStore、AvroStore等NoSQL。</li>
+  <li>nutch主要用于采集网页，solr可以作为搜索服务器。nutch+solr可以搭建一个简单的搜索引擎。</li>
+  <li>简单地讲，nutch就是用于分布式采集数据源，solr用于建索引和搜索服务。</li>
+</ul>
+
+<h5 id="参考资料-2">参考资料</h5>
+<ul>
+  <li><a href="https://www.cnblogs.com/yinhaiming/articles/1542921.html">https://www.cnblogs.com/yinhaiming/articles/1542921.html</a></li>
+  <li><a href="https://www.cnblogs.com/fosilzhou/articles/4629220.html">https://www.cnblogs.com/fosilzhou/articles/4629220.html</a></li>
+  <li><a href="https://blog.csdn.net/xiaoyu714543065/article/details/10374191">https://blog.csdn.net/xiaoyu714543065/article/details/10374191</a></li>
+  <li><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-BigInsightsNutchSolr/">https://www.ibm.com/developerworks/cn/opensource/os-cn-BigInsightsNutchSolr/</a></li>
+  <li><a href="https://www.jianshu.com/p/366d9bd38d14">https://www.jianshu.com/p/366d9bd38d14</a></li>
+</ul>
+
+<h4 id="其他">其他</h4>
+<ul>
+  <li>ELK 系统，也就是日志分析系统。其中 E 就是 Elasticsearch，L 是 Logstash，是一个日志收集系统，K 是 Kibana，是一个数据可视化平台。</li>
+  <li>ElasticSearch + Hbase</li>
+  <li>Katta Hadoop contrib/index Lucandra HBasene</li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/Elasticsearch-Summary.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/05/29/youxiudemianyang.html">优秀的绵羊</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2019/05/29/youxiudemianyang.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>读书笔记</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="优秀的绵羊">优秀的绵羊</h3>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E9%9A%8F%E8%AE%B0/2019/05/29/youxiudemianyang.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html">商业</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html#disqus_thread"></a></span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="商业">商业</h3>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/gupiao-10-wen.html">股票十问</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/gupiao-10-wen.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>股票</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="股票">股票</h3>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/gupiao-10-wen.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/server-performance.html">服务器性能</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
@@ -76,601 +386,6 @@
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/server-performance.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/maven.html">maven使用</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/maven.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>构建</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="mvn-clean">mvn clean</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    mvn clean package <span class="nt">-Dmaven</span>.test.skip<span class="o">=</span><span class="nb">true</span>
-</code></pre></div></div>
-<h4 id="mvn-compile">mvn compile</h4>
-
-<h4 id="创建maven的普通java项目">创建Maven的普通java项目：</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate <span class="nt">-DgroupId</span><span class="o">=</span>com.siglea <span class="nt">-DartifactId</span><span class="o">=</span>demo
-</code></pre></div></div>
-<h4 id="创建maven的javaweb项目">创建Maven的javaWeb项目：</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate <span class="nt">-DgroupId</span><span class="o">=</span>com.siglea <span class="nt">-DartifactId</span><span class="o">=</span>demoweb <span class="nt">-DarchetypeArtifactId</span><span class="o">=</span>maven-archetype-webapp  
-</code></pre></div></div>
-<h4 id="mvn-jettyrun">mvn jetty:run</h4>
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c">&lt;!-- https://mvnrepository.com/artifact/org.mortbay.jetty/jetty --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.mortbay.jetty<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>jetty<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>6.1.26<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-</code></pre></div></div>
-<h4 id="mvn-spring-bootrun">mvn spring-boot:run</h4>
-<h4 id="mvn-依赖冲突">mvn 依赖冲突</h4>
-<ul>
-  <li>第一声明者优先原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
-  <span class="c">&lt;!--  第一声明者优先原则 spring-beans-4.2.4 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>4.2.4.RELEASE<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-   
-<span class="c">&lt;!--   spring-beans-3.0.5 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>struts2-spring-plugin<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>2.3.24<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;/dependencies&gt;</span>
-</code></pre></div></div>
-
-<ul>
-  <li>路径近者优先原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>   
-    <span class="c">&lt;!--   spring-beans-3.0.5 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>struts2-spring-plugin<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>2.3.24<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-    <span class="c">&lt;!--  路径近者优先原则 spring-beans-4.2.4 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-  		<span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-  		<span class="nt">&lt;artifactId&gt;</span>spring-beans<span class="nt">&lt;/artifactId&gt;</span>
-  		<span class="nt">&lt;version&gt;</span>4.2.4.RELEASE<span class="nt">&lt;/version&gt;</span>
-  	<span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;/dependencies&gt;</span>
-</code></pre></div></div>
-<ul>
-  <li>排除依赖原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
-  		<span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-  		<span class="nt">&lt;artifactId&gt;</span>struts2-spring-plugin<span class="nt">&lt;/artifactId&gt;</span>
-  		<span class="nt">&lt;version&gt;</span>2.3.24<span class="nt">&lt;/version&gt;</span>
-  		<span class="nt">&lt;exclusions&gt;</span>
-  		  <span class="nt">&lt;exclusion&gt;</span>
-  		    <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-  		    <span class="nt">&lt;artifactId&gt;</span>spring-beans<span class="nt">&lt;/artifactId&gt;</span>
-  		  <span class="nt">&lt;/exclusion&gt;</span>
-  		<span class="nt">&lt;/exclusions&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></div></div>
-<ul>
-  <li>版本锁定原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- 锁定版本，struts2-2.3.24、spring4.2.4、hibernate5.0.7 --&gt;</span>
-<span class="nt">&lt;properties&gt;</span>
-        <span class="nt">&lt;spring.version&gt;</span>4.2.4.RELEASE<span class="nt">&lt;/spring.version&gt;</span>
-        <span class="nt">&lt;hibernate.version&gt;</span>5.0.7.Final<span class="nt">&lt;/hibernate.version&gt;</span>
-        <span class="nt">&lt;struts.version&gt;</span>2.3.24<span class="nt">&lt;/struts.version&gt;</span>
-<span class="nt">&lt;/properties&gt;</span>
-<span class="nt">&lt;dependencyManagement&gt;</span>
-    <span class="nt">&lt;dependencies&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>struts2-core<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>${struts.version}<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.hibernate<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>hibernate-core<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>${hibernate.version}<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-    <span class="nt">&lt;/dependencies&gt;</span>
-<span class="nt">&lt;/dependencyManagement&gt;</span>
-</code></pre></div></div>
-<h4 id="mvn-scope">mvn scope</h4>
-<ul>
-  <li>compile： 编译(✔️) 测试(✔️) 打包(✔️) 运行时(✔️)</li>
-  <li>provided：编译(✔️) 测试(✔️) 打包(✘) 运行时(✔️ 使用容器提供的jar,比如servlet.jar)</li>
-  <li>runtime： 编译(✘ 比如Jdbc的实现jar，编译时只需要接口定义️) 测试(✔️) 打包(✔️) 运行时(✔️)</li>
-  <li>test：    测试编译(✔️) 测试运行时(✔️) 打包(✘) 运行时(✘)</li>
-  <li>system：  类似于provided，只是不从远程下载jar,配合systemPath在本地寻找jar</li>
-</ul>
-
-<h4 id="遇到的错误1mvn-archetypegenerate">遇到的错误（1）mvn archetype:generate</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    [INFO] --- maven-archetype-plugin:3.0.1:generate (default-cli) @ standalone-pom ---
-    [WARNING] Error injecting: org.apache.maven.archetype.common.DefaultPomManager
-    java.lang.NoClassDefFoundError: org/jdom/JDOMException
-            at java.lang.Class.getDeclaredConstructors0(Native Method)
-    解决办法：删除 .m2/repository 对应报错的文件
-</code></pre></div></div>
-<h4 id="遇到的错误2-mvn-archetypecreate">遇到的错误（2） mvn archetype:create</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn archetype:create 修改为 mvn archetype:generate
-</code></pre></div></div>
-
-<h4 id="遇到的错误3mvn-site">遇到的错误（3）mvn site</h4>
-<p>java.lang.NoClassDefFoundError: org/apache/maven/doxia/siterenderer/DocumentContent
-解决办法：在pom.xml添加如下配置</p>
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;build&gt;</span>
-<span class="nt">&lt;pluginManagement&gt;</span>
-    <span class="nt">&lt;plugins&gt;</span>
-        <span class="nt">&lt;plugin&gt;</span>
-          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-          <span class="nt">&lt;artifactId&gt;</span>maven-site-plugin<span class="nt">&lt;/artifactId&gt;</span>
-          <span class="nt">&lt;version&gt;</span>3.3<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/plugin&gt;</span>
-        <span class="nt">&lt;plugin&gt;</span>
-          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-          <span class="nt">&lt;artifactId&gt;</span>maven-project-info-reports-plugin<span class="nt">&lt;/artifactId&gt;</span>
-          <span class="nt">&lt;version&gt;</span>2.7<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/plugin&gt;</span>
-    <span class="nt">&lt;/plugins&gt;</span>
-    <span class="nt">&lt;/pluginManagement&gt;</span>
-<span class="nt">&lt;/build&gt;</span>
-</code></pre></div></div>
-
-<h3 id="好用的源地址pomxml-settingsxml中配置">好用的源地址(pom.xml settings.xml中配置)</h3>
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;mirrors&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>nexus-aliyun<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>Nexus aliyun<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://maven.aliyun.com/nexus/content/groups/public/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-   <span class="nt">&lt;id&gt;</span>maven2-repository.dev.java.net<span class="nt">&lt;/id&gt;</span>
-   <span class="nt">&lt;name&gt;</span>Java.net Repository for Maven<span class="nt">&lt;/name&gt;</span>
-   <span class="nt">&lt;url&gt;</span>http://download.java.net/maven/2/<span class="nt">&lt;/url&gt;</span>
-   <span class="nt">&lt;mirrorOf&gt;</span>central1<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r1<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://repo1.maven.org/maven2/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central2<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r3<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://repository.sonatype.org/content/groups/public/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central3<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r4<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://mirrors.ibiblio.org/pub/mirrors/maven2/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central4<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r2<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://repository.jboss.com/maven2/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central5<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://download.java.net/maven/2<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central6<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;/mirrors&gt;</span>
-</code></pre></div></div>
-<h4 id="参考链接">参考链接</h4>
-<p><a href="http://repo2.maven.org/maven2/">Maven库</a></p>
-
-<p><a href="http://mvnrepository.com/">Maven依赖查询</a></p>
-
-<p><a href="http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html">http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/maven.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html">markdown-github-jekyll</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>工具</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="jekyll安装">jekyll安装</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem <span class="nb">install </span>jekyll
-gem <span class="nb">install </span>jekyll-archives
-gem <span class="nb">install </span>jekyll-paginate
-gem <span class="nb">install </span>jekyll-sitemap
-gem <span class="nb">install </span>jekyll-seo
-</code></pre></div></div>
-<h4 id="jekyll常用命令">jekyll常用命令</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jekyll s <span class="c">#编译并运行本地服务</span>
-jekyll b <span class="c">#编译</span>
-</code></pre></div></div>
-<h4 id="jekyll环境常用命令">jekyll环境常用命令</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rbenv local #查看或设置rbenv版本号
-</code></pre></div></div>
-<h4 id="markdown语法">MarkDown语法</h4>
-<p><a href="https://www.runoob.com/markdown/md-lists.html">https://www.runoob.com/markdown/md-lists.html</a></p>
-
-<p><a href="https://www.jianshu.com/p/191d1e21f7ed">https://www.jianshu.com/p/191d1e21f7ed</a></p>
-
-<hr />
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html">Http&https抓包</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>工具</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="下载地址">下载地址</h4>
-<p><a href="https://www.charlesproxy.com/">https://www.charlesproxy.com/</a></p>
-
-<h4 id="破解charles">破解charles</h4>
-<p><a href="https://www.zzzmode.com/mytools/charles/">https://www.zzzmode.com/mytools/charles/</a></p>
-
-<h4 id="https抓取">Https抓取</h4>
-<p><a href="https://www.jianshu.com/p/ec0a38d9a8cf">https://www.jianshu.com/p/ec0a38d9a8cf</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html">TCP/IP十问</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p><a href="https://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ">https://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ</a></p>
-<h4 id="tcp建立连接的本质含义是">TCP建立连接的本质含义是？</h4>
-<ol>
-  <li>确定通信整个链路的是否接通</li>
-  <li>告知彼此的第一个发送字节的初始序列号，建立连接后对每一个发送的字节都需要以初始序列号为原点进行编号。</li>
-  <li>TCP是双工的，所以建立连接后，两端都是互为客户端服务端</li>
-  <li>连接成功建立表示双方维护了一个可用连接的映射关系</li>
-  <li>建连三次握手，断连四次握手（可能是3三次）</li>
-</ol>
-<div align="left">
-<img src="/img/tcp_open_close.jpg" width="400px" />
-<img src="/img/1.png" width="400px" />
-<img src="/img/2.png" width="400px" />
-<img src="/img/3.png" width="400px" />
-</div>
-
-<h4 id="在tcp有keepalive机制的情况下为什么还要有应用层保活">在TCP有keepalive机制的情况下，为什么还要有应用层保活？</h4>
-<ol>
-  <li>在诸如由防火墙过滤、路由器故障、运营商信令控制、网线断开等原因导致的TCP中断,keepalive失效</li>
-  <li>NAT及DHCP机制也会导致keepalive失效</li>
-  <li>keepalive默认参数设置7200秒才会触发重试并且在重试10之后就终止</li>
-  <li>经过Socks封装的TCP大部分操作系统把底层的断连等细节直接忽略掉并没有抛给上层应用</li>
-  <li>keepalive机制判断的仅仅是连接的存在（只是在映射表中存在ESTABLISHED)，并不能判断应用服务是否正常</li>
-  <li>keepalive并不是TCP规范的一部分，并不是所有操作系统都完整的实现</li>
-  <li>应用层的心跳除了保活还有其他应用意义比如应用层控制的重传（断连重连后，底层并不知道应用层数据状况）</li>
-</ol>
-
-<h4 id="sync-flooding-攻击">SYNC Flooding 攻击</h4>
-<ul>
-  <li><a href="https://blog.csdn.net/bigtree_3721/article/details/77619877">https://blog.csdn.net/bigtree_3721/article/details/77619877</a></li>
-</ul>
-
-<h4 id="应用层编程时socket写入成功的含义返回值有意义吗">应用层编程时socket写入成功的含义？返回值有意义吗？</h4>
-<ol>
-  <li>send/write只是表示把数据写入socket缓冲区，之后操作系统会遵循TCP协议规范进行发送，发送实际上没有失败状态而是收不到Ack，收不到Ack会触发重传。如果该连接有各种错误（诸如缓冲区满了、连接状态不对），在send/write时
-就会直接返回错误了，只要能写入成功，操作系统会按照缓冲区的先后顺序把数据发送出去。进入缓冲区的数据，如果重传多次仍然失败，会强制断连，之后重新建连之后会继续发送缓冲区的数据。</li>
-  <li>如果缓冲区已满（发送窗口为0）再次调用send发送数据时，若socket为阻塞的，send会一直阻塞到发送缓冲区中有空闲空间；若socket为非阻塞（切记不是异步），则会直接返回-1，并将errno设置为EAGAIN。</li>
-  <li>理论上连接建立之后，拿到合法seq，就可以一直传输数据直到有明确错误或者一直收不到Ack</li>
-  <li>I/O缓冲区在每个TCP套接字中单独存在；I/O缓冲区在创建套接字时自动生成；即使关闭套接字也会继续传送输出缓冲区中遗留的数据；关闭套接字将丢失输入缓冲区中的数据。</li>
-</ol>
-
-<h4 id="mfc-绑定窗口消息还是iocp">MFC 绑定窗口消息？还是IOCP????</h4>
-<ul>
-  <li>常见错误状态 <a href="https://blog.csdn.net/allens_zhou/article/details/47400833">https://blog.csdn.net/allens_zhou/article/details/47400833</a></li>
-</ul>
-
-<h4 id="seqack是序号要区别于控制位acksyn">Seq、Ack是序号要区别于控制位ACK、SYN</h4>
-<ol>
-  <li>两端分别产生Seq，Ack=Seq+1 ，Sequence Number（缩写为ISN：Inital Sequence Number）</li>
-  <li>解决乱序、重传、丢包等问题都依赖于Seq</li>
-  <li>ISN会和一个假的时钟绑在一起，这个时钟会在每4微秒对ISN做加一操作，直到超过2^32，又从0开始</li>
-  <li>在建立连接初始化Seq时，控制位SYN=1，否则都为0</li>
-  <li>控制位ACK=1，该数据包中的Ack才有用</li>
-  <li>重新建立连接之后seq都是要重新随机生成，因此收到上次残留的数据包会被忽略掉，重新建立连接之后缓存区中的数据应该也会清除</li>
-</ol>
-
-<h4 id="tcp状态详解">TCP状态详解</h4>
-<ul>
-  <li>LISTEN</li>
-  <li>SYN-SEND</li>
-  <li>SYN-REVEIVED</li>
-  <li>ESTABLISHED</li>
-  <li>FIN-WAIT-1</li>
-  <li>FIN-WAIT-2</li>
-  <li>CLOSING/CLOSE-WAIT</li>
-  <li>LAST-ACK</li>
-  <li>TIME_WAIT</li>
-  <li>CLOSED</li>
-</ul>
-
-<h4 id="大量time_wait解决办法">大量TIME_WAIT解决办法</h4>
-<ul>
-  <li><a href="http://coolnull.com/3605.html">http://coolnull.com/3605.html</a></li>
-  <li><a href="http://www.52im.net/thread-1007-1-1.html">http://www.52im.net/thread-1007-1-1.html</a></li>
-</ul>
-
-<h4 id="tcp重传机制超时重传错误重传">TCP重传机制（超时重传、错误重传）</h4>
-<ol>
-  <li><a href="https://coolshell.cn/articles/11564.html">https://coolshell.cn/articles/11564.html</a></li>
-  <li>经典重传
-根据超时时间重传(只传丢失的包或者丢失的包之后的全部重传)
-在定时器的Timeout内收不到ack，会按照1、2、4….64秒，逐渐延迟重传</li>
-  <li>快速重传Fast Retransmit
-连续收到3个相同的ack即可开始重传</li>
-  <li>Selective Acknowledgment (SACK) optional
-在快速重传的基础上，追加SACK（收到的不连续包的seq段）</li>
-  <li>Duplicate SACK又称D-SACK optional
-使用SACK来告诉发送方有哪些数据被重复接收了</li>
-</ol>
-
-<h4 id="tcp-rttround-trip-time超时时间判断机制">TCP-RTT（Round Trip Time）超时时间判断机制</h4>
-<ol>
-  <li>经典采样算法</li>
-  <li>Karn / Partridge 算法</li>
-  <li>Jacobson / Karels 算法</li>
-</ol>
-
-<h4 id="tcp限流控制流控拥塞处理慢热启动算法拥塞避免算法快速恢复算法">TCP限流控制、流控、拥塞处理、慢热启动算法、拥塞避免算法、快速恢复算法</h4>
-<ol>
-  <li>滑动窗口，根据双方发送和接受数据的快慢，计算出一个“窗口”，窗口为0就不传输数据</li>
-  <li>如果窗口为0了，发送最多3次Zero Window Probe缩写为ZWP包，
-查询接受方的window size，如果3次都为0，就RST连接</li>
-  <li>Silly Window Syndrome翻译成中文就是“糊涂窗口综合症”。正如你上面看到的一样，如果我们的接收方太忙了，来不及取走Receive Windows里的数据，那么，就会导致发送方越来越小。到最后，如果接收方腾出几个字节并告诉发送方现在有几个字节的window，而我们的发送方会义无反顾地发送这几个字节。
-为解决这种情况，如果是接受端的问题，窗口缩减为0，中断连接
-如果是发送端的问题，采用Nagle算法，累计够数据再发送（会产生粘包，需要应用层解包处理）</li>
-  <li>拥塞处理Congestion Handling
-慢启动，逐渐加速，预警拥堵主动减速，拥塞发生快速恢复</li>
-  <li>慢启动发送，根据回复ack的快慢调节时间窗口</li>
-</ol>
-<p><a href="http://www.52im.net/thread-515-1-1.html">http://www.52im.net/thread-515-1-1.html</a></p>
-
-<h4 id="数据包一览与tcp-udpip包的最大长度">数据包一览与TCP 、UDP、IP包的最大长度</h4>
-<ul>
-  <li>对于UDP协议来说，整个包的最大长度为65535，其中包头长度是65535-20=65515；</li>
-  <li>对于TCP协议来说，整个包的最大长度是由最大传输大小（MSS，Maxitum Segment Size）决定，MSS就是TCP数据包每次能够传
-输的最大数据分段。为了达到最佳的传输效能TCP协议在建立连接的时候通常要协商双方的MSS值，这个值TCP协议在实现的时候往往用MTU值代替（需
-要减去IP数据包包头的大小20Bytes和TCP数据段的包头20Bytes）所以往往MSS为1460。通讯双方会根据双方提供的MSS值得最小值
-确定为这次连接的最大MSS值。</li>
-  <li>IP层：对于IP协议来说，IP包的大小由MTU决定（IP数据包长度就是MTU-28（包头长度）。 MTU值越大，封包就越大，理论上可增加传送速率，但
-MTU值又不能设得太大，因为封包太大，传送时出现错误的机会大增。一般默认的设置，PPPoE连接的最高MTU值是1492, 而以太网
-（Ethernet）的最高MTU值则是1500,而在Internet上，默认的MTU大小是576字节</li>
-  <li><a href="https://www.cnblogs.com/jiangzhaowei/p/9273854.html">https://www.cnblogs.com/jiangzhaowei/p/9273854.html</a></li>
-  <li><a href="https://cloud.tencent.com/developer/article/1021196">https://cloud.tencent.com/developer/article/1021196</a></li>
-  <li><a href="http://www.ruanyifeng.com/blog/2017/06/tcp-protocol.html">http://www.ruanyifeng.com/blog/2017/06/tcp-protocol.html</a></li>
-  <li><a href="http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html">http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html</a></li>
-</ul>
-<div align="left">
-<img src="/img/4.jpg" width="400px" />
-<img src="/img/5.png" width="400px" />
-</div>
-
-<h4 id="控制位标志符详解">控制位标志符详解</h4>
-<div align="left">
-<img src="/img/6.png" width="400px" />
-</div>
-<ul>
-  <li>控制位：这六位有很重要的作用，TCP的连接、传输和断开都受这六个控制位的指挥。各位含义如下：
-    <ol>
-      <li>URG：紧急指针有效位。</li>
-      <li>ACK：只有当ACK=1时，确认序列号字段才有效（除了SYS=0时，ACK必须=1）；当ACK=0时，确认号字段无效。</li>
-      <li>PSH：标志位为1时，要求接受方尽快将数据段送达应用层。</li>
-      <li>RST：当RST值为1时，通知重新建立TCP连接。</li>
-      <li>SYN：同步序号位，TCP需要建立连接时将这个值设为1。</li>
-      <li>FIN：发送端完成发送任务，当TCP完成数据传输需要断开连接时，提出断开连接一方将这个值设为1。</li>
-    </ol>
-  </li>
-  <li><a href="https://blog.csdn.net/weixin_44907813/article/details/90444151">https://blog.csdn.net/weixin_44907813/article/details/90444151</a></li>
-  <li><a href="https://blog.csdn.net/summy_J/article/details/74849675">https://blog.csdn.net/summy_J/article/details/74849675</a></li>
-</ul>
-
-<h4 id="认证登录与安全">认证登录与安全</h4>
-<ul>
-  <li>TLS  Transport Layer Security</li>
-  <li>SSL  Secure Sockets Layer 安全套接层</li>
-  <li>图解SSL/TLS协议
-    <ol>
-      <li><a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html">http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html</a></li>
-      <li><a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html</a></li>
-    </ol>
-  </li>
-  <li>建立连接，通过自定义的鉴权协议，传输token或者公钥，实现身份登录认证
-<a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2106&amp;highlight=%C8%CF%D6%A4">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2106&amp;highlight=%C8%CF%D6%A4</a></li>
-</ul>
-
-<h4 id="单台服务器并发tcp连接数到底可以有多少-">单台服务器并发TCP连接数到底可以有多少 ？</h4>
-<ul>
-  <li>只要资源够用，理论可以支持无限。</li>
-  <li>操作系统65535个端口限制，以及进程能打开的1024个文件描述符的限制(可修改)，其实并没有标志唯一链接</li>
-  <li><a href="https://mp.weixin.qq.com/s/OJKWVHgbJGPwCklMRE38DA">https://mp.weixin.qq.com/s/OJKWVHgbJGPwCklMRE38DA</a></li>
-  <li>C10K到C10M <a href="http://www.52im.net/thread-561-1-1.html">http://www.52im.net/thread-561-1-1.html</a></li>
-  <li>C10K问题本质上是操作系统的问题。对于Web1.0/2.0时代的操作系统而言， 传统的同步阻塞I/O模型都是一样的，处理的方式都是requests per second，并发10K和100的区别关键在于CPU。创建的进程线程多了，数据拷贝频繁（缓存I/O、内核将数据拷贝到用户进程空间、阻塞）， 进程/线程上下文切换消耗大， 导致操作系统崩溃，这就是C10K问题的本质！
-可见，解决C10K问题的关键就是尽可能减少这些CPU等核心计算资源消耗，从而榨干单台服务器的性能，突破C10K问题所描述的瓶颈。</li>
-  <li>Epoll就成为C10K killer、高并发、高性能、异步非阻塞这些技术的代名词了。FreeBSD推出了kqueue，Linux推出了epoll，Windows推出了IOCP，Solaris推出了/dev/poll。这些操作系统提供的功能就是为了解决C10K问题。epoll技术的编程模型就是异步非阻塞回调，也可以叫做Reactor，事件驱动，事件轮循（EventLoop）。Nginx，libevent，node.js这些就是Epoll时代的产物。</li>
-  <li>为什么QQ用的是UDP协议而不是TCP协议？也是因为早期TCP维护连接成本高，服务器贵死，就采用了UDP+应用层保活心跳之类的综合方案。</li>
-</ul>
-
-<h4 id="natp2p打洞">NAT、P2P（打洞）</h4>
-<ul>
-  <li>NAT（Network Address Translator），主要是IP地址的绑定（内部与公网）</li>
-  <li>NAPT（Network Address/Port Translator），主要是IP与端口共同绑定（内部与公网）</li>
-  <li>实现P2P必须基于NAT，而NAT需要软硬件设备支持</li>
-  <li>打洞原理是通过中间服务器S”伪装”连接，获取到P1与P2的公网IP+端口组合，然后P1与P2分别伪装S与彼此建立连接</li>
-  <li>打洞原理及TCP/UDP打洞流程<a href="https://www.cnblogs.com/GO-NO-1/p/7241556.html">https://www.cnblogs.com/GO-NO-1/p/7241556.html</a></li>
-  <li><a href="https://www.cnblogs.com/mq0036/p/4644776.html">https://www.cnblogs.com/mq0036/p/4644776.html</a></li>
-</ul>
-
-<h4 id="tcp-服务器集群搭建">tcp 服务器集群搭建</h4>
-<ul>
-  <li>【阿里】基于阿里TableStore Timeline 实现的IM</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/muS68_vtXTrIGd1JNmS50A">https://mp.weixin.qq.com/s/muS68_vtXTrIGd1JNmS50A</a></p>
-<ul>
-  <li>如何造一个“钉钉”？谈谈消息系统架构的实现</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/5-7qCF4P15PfEv3d-PylCw">https://mp.weixin.qq.com/s/5-7qCF4P15PfEv3d-PylCw</a>
-<a href="https://github.com/aliyun/tablestore-examples/tree/master/demos/ImChart">https://github.com/aliyun/tablestore-examples/tree/master/demos/ImChart</a></p>
-<ul>
-  <li>高并发IM系统架构优化实践</li>
-</ul>
-<p><a href="https://yq.aliyun.com/articles/66461?spm=a2c4e.11153940.0.0.7b2d55b2ztsBXG">https://yq.aliyun.com/articles/66461?spm=a2c4e.11153940.0.0.7b2d55b2ztsBXG</a></p>
-<ul>
-  <li>如何打造千万级Feed流系统</li>
-</ul>
-<p><a href="https://yq.aliyun.com/articles/224132?spm=a2c4e.11153940.0.0.7b2d55b2bjKqT9">https://yq.aliyun.com/articles/224132?spm=a2c4e.11153940.0.0.7b2d55b2bjKqT9</a></p>
-<ul>
-  <li>TableStore Timeline：轻松构建千万级IM和Feed流系统</li>
-</ul>
-<p><a href="https://yq.aliyun.com/articles/319138">https://yq.aliyun.com/articles/319138</a></p>
-<ul>
-  <li>亿级消息系统的核心存储：Tablestore发布Timeline 2.0模型</li>
-</ul>
-<p><a href="https://www.jianshu.com/p/cc61a80286cb">https://www.jianshu.com/p/cc61a80286cb</a></p>
-<ul>
-  <li>表格存储Tablestore权威指南</li>
-</ul>
-<p><a href="https://blog.csdn.net/cpongo1/article/details/89533133">https://blog.csdn.net/cpongo1/article/details/89533133</a></p>
-
-<h4 id="常用协议">常用协议</h4>
-<ul>
-  <li>MQTT（Message Queuing Telemetry Transport，消息队列遥测传输）是IBM开发的一个即时通讯协议，有可能成为物联网的重要组成部分。</li>
-  <li>XMPP</li>
-  <li>JSON</li>
-  <li>Protobuf 序列化后所生成的二进制消息非常紧凑，这得益于 Protobuf 采用的非常巧妙的 Encoding 方法。
-考察消息结构之前，让我首先要介绍一个叫做 Varint 的术语。Varint 是一种紧凑的表示数字的方法。它用一个或多个字节来表示一个数字，值越小的数字使用越少的字节数。这能减少用来表示数字的字节数。</li>
-</ul>
-
-<h4 id="其他">其他</h4>
-<ul>
-  <li>MSL：Maximum Segment Lifetime</li>
-  <li>MSS：Maximum Segment Size</li>
-  <li>MTU:  Maximum Transmission Unit</li>
-  <li>TCB：Transmission Control Block</li>
-  <li>
-    <p>TTL：Time To Live</p>
-  </li>
-  <li>相关协议之TCP与UDP</li>
-  <li><a href="http://www.52im.net/thread-580-1-1.html">http://www.52im.net/thread-580-1-1.html</a></li>
-  <li><a href="http://www.52im.net/thread-1160-1-1.html">http://www.52im.net/thread-1160-1-1.html</a></li>
-  <li>
-    <p><a href="http://www.52im.net/thread-279-1-1.html">http://www.52im.net/thread-279-1-1.html</a></p>
-  </li>
-  <li>相关协议之ICMP
-ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP）
-完全理解icmp协议</li>
-</ul>
-<p><a href="https://www.cnblogs.com/iiiiher/p/8513748.html">https://www.cnblogs.com/iiiiher/p/8513748.html</a></p>
-
-<ul>
-  <li>相关协议之Ping/Traceroute</li>
-</ul>
-<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=157&amp;highlight=ping">http://www.52im.net/forum.php?mod=viewthread&amp;tid=157&amp;highlight=ping</a>
-<a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1973&amp;highlight=ping">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1973&amp;highlight=ping</a></p>
-
-<ul>
-  <li>相关协议之DHCP</li>
-</ul>
-<p><a href="http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html">http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html</a></p>
-
-<ul>
-  <li>查看TCP握手耗时 handshake: 0.022, SSL握手耗时 handshake: 0.064
-    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-w</span> <span class="s2">"TCP handshake: %{time_connect}, SSL handshake: %{time_appconnect}</span><span class="se">\n</span><span class="s2">"</span> <span class="nt">-so</span> /dev/null https://www.alipay.com
-</code></pre></div>    </div>
-  </li>
-  <li>HTTPS的七个误解</li>
-</ul>
-<p><a href="http://www.ruanyifeng.com/blog/2011/02/seven_myths_about_https.html">http://www.ruanyifeng.com/blog/2011/02/seven_myths_about_https.html</a></p>
-
-<ul>
-  <li>RSA算法原理</li>
-</ul>
-<p><a href="http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html">http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html</a></p>
-
-<ul>
-  <li>Http各个版本介绍</li>
-</ul>
-<p><a href="http://www.ruanyifeng.com/blog/2016/08/http.html">http://www.ruanyifeng.com/blog/2016/08/http.html</a></p>
-
-<h5 id="参考资料">参考资料</h5>
-
-<p><a href="http://www.52im.net/">即时通讯网</a></p>
-
-<p><a href="https://java-mzd.iteye.com/blog/1007577">TCP-IP的20问</a></p>
-
-<p><a href="https://www.jianshu.com/p/16c8c9e09feb">长连接及心跳保活原理简介</a></p>
-
-<p><a href="https://www.cnblogs.com/imstudy/p/5846363.html">为什么说基于TCP的移动端IM仍然需要心跳保活？</a></p>
-
-<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=195&amp;ctid=10">微信对网络影响的技术试验及分析（论文全文）</a></p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -722,6 +437,10 @@ ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP
       
       
       <a href="/page10" class="button page-button">10</a>
+      
+      
+      
+      <a href="/page11" class="button page-button">11</a>
       
       
 
@@ -782,7 +501,7 @@ ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP
       
       
       <a  href="tag/分布式">
-      <span class="label label-default">分布式 ( 12 )</span>
+      <span class="label label-default">分布式 ( 13 )</span>
       </a><br />
 
       
@@ -810,7 +529,7 @@ ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP
       
       
       <a  href="tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 5 )</span>
+      <span class="label label-default">数据结构与算法 ( 8 )</span>
       </a><br />
 
       
@@ -866,14 +585,14 @@ ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP
       
       
       <a  href="tag/微服务">
-      <span class="label label-default">微服务 ( 2 )</span>
+      <span class="label label-default">微服务 ( 3 )</span>
       </a><br />
 
       
       
       
       <a  href="tag/bigdata">
-      <span class="label label-default">Bigdata ( 1 )</span>
+      <span class="label label-default">BigData ( 2 )</span>
       </a><br />
 
       
