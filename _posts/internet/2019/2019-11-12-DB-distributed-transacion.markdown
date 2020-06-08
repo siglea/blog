@@ -9,6 +9,8 @@ tags:
 categories:
 - 技术
 ---
+从一笔金币充值去思考分布式事务，五种方案详解！
+<https://mp.weixin.qq.com/s/dbQsfBdJSs5Ol70hCYCZMw>
 
 ### 数据库本地事务简述
 - ACID原则
