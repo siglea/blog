@@ -22,7 +22,7 @@ categories:
         用B树可以一路一路的查找 
       - 红黑树常用于存储内存中的有序数据，增删很快，b+树常用于文件系统和数据库索引，因为b树的子节点大于红黑树，红黑树只能有2个子节点，b树子节点大于2，子节点树多这一特点保证了存储相同大小的数据，树的高度更小，数据局部更加紧凑，而硬盘读取有局部加载的优化（把要读取数据和周围的数据一起预先读取），b树相邻数据物理上更加紧凑这一特点符合硬盘进行io优化的特性。
     - 更加详细的应用范围<https://www.cnblogs.com/tiancai/p/9024351.html>
-
+    - 完美总结B+树<https://mp.weixin.qq.com/s/YMbRJwyjutGMD1KpI_fS0A>
 #### 各种优化
 - <https://www.jianshu.com/p/efaa9005a598>
 - <https://www.jb51.net/article/136701.htm>

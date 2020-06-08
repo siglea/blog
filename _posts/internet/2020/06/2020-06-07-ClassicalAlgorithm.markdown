@@ -8,6 +8,7 @@ tags:
 categories:
 - 技术
 ---
+数据结构算法，问题TOP10 <https://mp.weixin.qq.com/s/rqzCvFWira204eJ1HA22yg>
 
 #### 贪心算法
 - 贪心的意思在于在作出选择时，每次都要选择对自身最为有利的结果，保证自身利益的最大化。贪心算法就是利用这种贪心思想而得出一种算法。
@@ -23,6 +24,9 @@ categories:
 - <https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ>
 
 #### 动态规划算法
+- 斐波那契
+- 城市最优铺路方案
+- 上台阶
 
 #### 回溯法
 - 深度优先遍历
@@ -40,3 +44,9 @@ categories:
 - Knuth-Morris-Pratt算法（简称KMP）是最常用的之一
 <https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w>
 - 字符串匹配算法综述:BF、RK、KMP、BM、Sunday <https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA>
+
+#### 参考
+- 小灰算法2017 <https://mp.weixin.qq.com/s/4kTtn_gLYQrX7JFlEJdsZg>
+- 小灰算法2018 <https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw>
+- 小灰算法2019 <https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw>
+- 小灰算法2020 <https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA>
