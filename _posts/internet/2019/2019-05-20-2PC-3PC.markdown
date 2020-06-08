@@ -36,15 +36,17 @@ categories:
 - X/Open DTP(Distributed Transaction Process)模型与XA(eXtended Architecture)
     - DTP模型里面定义了XA接口，TM 和 RM 通过XA接口进行双向通信（这也是XA的主要作用， 除此之外，XA还对两阶段提交协议进行了部分优化），例如：TM通知RM提交事务或者回滚事务，RM把提交结果通知给TM。XA 的全称是eXtended Architecture，它是一个分布式事务协议，它通过二阶段提交协议保证强一致性。
     - 基于XA协议实现的分布式事务是强一致性的分布式事务，典型应用场景如JAVA中有关分布式事务的规范如JTA（Java Transaction API）和JTS（Java Transaction Service）中就涉及到了XA。
-- Seata（Simple Extensible Autonomous Transaction Architecture，一站式分布式事务解决方案）与AT模式
+- Seata（Simple Extensible Autonomous Transaction Architecture，一站式分布式事务解决方案）是2019年1月份蚂蚁金服和阿里巴巴共同开源的分布式事务解决方案。 Seata 会有 4 种分布式事务解决方案，分别是 AT 模式、TCC(Try、Commit、Cancel) 模式、Saga 模式和 XA 模式。
     - AT（Automatic Transaction）模式是基于XA事务演进而来，核心是对业务无侵入，是一种改进后的两阶段提交，需要数据库支持。
-    - 引入补偿机制（最终一致性）
-    - Seata 会有 4 种分布式事务解决方案，分别是 AT 模式、TCC(Try、Commit、Cancel) 模式、Saga 模式和 XA 模式。
-- TCC(Try、Commit、Cancel) 模式
-  - 锁定，提交/回滚
-  - XA两阶段提交是资源层面的，而TCC实际上把资源层面二阶段提交上提到了业务层面来实现，有效了的避免了XA两阶段提交占用资源锁时间过长导致的性能低下问题。TCC也没有AT模式中的全局行锁，所以性能也会比AT模式高很多。不过，TCC模式对业务代码有很大的侵入性，主业务服务和从业务服务都需要进行改造，从业务方改造成本更高。
-- Saga 算法（https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf）于 1987 年提出，是一种异步的分布式事务解决方案。其理论基础在于，其假设所有事件按照顺序推进，总能达到系统的最终一致性，因此 Saga需要服务分别定义提交接口以及补偿接口，当某个事务分支失败时，调用其它的分支的补偿接口来进行回滚。
-  在Saga模式下，分布式事务内有多个参与者，每一个参与者都是一个冲正补偿服务，需要用户根据业务场景实现其正向操作和逆向回滚操作。
+      解析SQL，提取元数据，保存before image，执行SQL，保存after image，生成行锁。需要回滚就比对数据版本号，一直就自动回滚，不一致人工处理。
+    - TCC(Try、Commit、Cancel) 模式
+      - 锁定，提交/回滚。业务实现回滚代码也就是cancel回调实现。
+      - XA两阶段提交是资源层面的，而TCC实际上把资源层面二阶段提交上提到了业务层面来实现，有效了的避免了XA两阶段提交占用资源锁时间过长导致的性能低下问题。TCC也没有AT模式中的全局行锁，所以性能也会比AT模式高很多。不过，TCC模式对业务代码有很大的侵入性，主业务服务和从业务服务都需要进行改造，从业务方改造成本更高。
+    - Saga 算法（https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf）于 1987 年提出，是一种异步的分布式事务解决方案。其理论基础在于，其假设所有事件按照顺序推进，总能达到系统的最终一致性，因此 Saga需要服务分别定义提交接口以及补偿接口，当某个事务分支失败时，调用其它的分支的补偿接口来进行回滚。
+      在Saga模式下，分布式事务内有多个参与者，每一个参与者都是一个冲正补偿服务，需要用户根据业务场景实现其正向操作和逆向回滚操作。
+    - XA 模式
+    - 参考 <https://mp.weixin.qq.com/s/67NvEVljnU-0-6rb7MWpGw> 
+    - Seata实战入门 <https://mp.weixin.qq.com/s/-iEAfrhuObMd9W5SpHXDtg>
 - 本地消息表
 - 消息事务 RocketMQ(阿里开源)
 - 最大努力通知型（Best-effort Delivery）
@@ -68,6 +70,17 @@ categories:
 #### FLP Impossibility（FLP不可能性 Fischer, Lynch and Patterson）
 在异步通信场景，即使只有一个进程失败，也没有任何算法能保证非失败进程达到一致性！
 <https://www.cnblogs.com/firstdream/p/6585923.html>
+
+#### 分布式系统的8个谬误
+<http://www.360doc.com/content/18/0715/15/11935121_770570455.shtml>
+- 网络可靠
+- 延迟为零。
+- 带宽是无限的。
+- 网络是安全的。
+- 拓扑不会改变。
+- “无所不能”的管理员。
+- 传输成本为零。
+- 网络是同构的。
 
 #### 参考 
 - <https://zhuanlan.zhihu.com/p/91263461>
