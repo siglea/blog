@@ -66,6 +66,40 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 - 二级索引，其实就是倒排索引的一种变种
 
 #### Redis 
+- 主要使用跳表这种数据结构
+- Redis持久化：RDB（快照）和AOF（写命令）
+    - RDB相当于全量数据的备份
+    - AOF相当于WAL类似的命令日志
+    - <https://www.jianshu.com/p/cbe1238f592a>
+- Redis淘汰策略
+```shell
+volatile-lru #从设置了过期时间的数据集中，选择最近最久未使用的数据释放；
+allkeys-lru #从数据集中(包括设置过期时间以及未设置过期时间的数据集中)，选择最近最久未使用的数据释放；
+volatile-random #从设置了过期时间的数据集中，随机选择一个数据进行释放；
+allkeys-random #从数据集中(包括了设置过期时间以及未设置过期时间)随机选择一个数据进行入释放；
+volatile-ttl #从设置了过期时间的数据集中，选择马上就要过期的数据进行释放操作；
+noeviction #默认值，不删除任意数据(但redis还会根据引用计数器进行释放),这时如果内存不够时，会直接返回错误。
+```
+- 常用Redis的client，Redisson、Jedis、lettuce
+- Redis事务
+```shell
+watch key1 key2 ... #监视一或多个key,如果在事务执行之前，被监视的key被其他命令改动，则事务被打断 （ 类似乐观锁 ）
+multi #标记一个事务块的开始（ queued ）
+exec #执行所有事务块的命令 （ 一旦执行exec后，之前加的监控锁都会被取消掉 ）　
+discard #取消事务，放弃事务块中的所有命令
+unwatch #取消watch对所有key的监控
+```
+- Redis Sentinel模式，传统的主从高可用模式 <https://www.cnblogs.com/duanxz/p/4701831.html>
+    - 多个Sentinel，监控集群
+    - Master故障后，Sentinel向其他Sentinel提议选举自己做主Sentinel
+    - 选举主Sentinel后，根据规则从Slave中选出一个Slave晋升为Master
+    - Sentinel通知客户端节点变更
+- Twemproxy/nutcraker ,Redis的"分库分表方案"
+    - 能自动分片，方便水平扩展
+    - 虽然可以动态移除节点，但该移除节点的数据就丢失了。
+      redis集群动态增加节点的时候,twemproxy不会对已有数据做重分布.maillist里面作者说这个需要自己写个脚本实现
+- Codis是由豌豆荚开源的产品，涉及组件众多，其中 ZooKeeper 存放路由表和代理节点元数据、分发 Codis-Config 的命令；Codis-Config 是集成管理工具，有 Web 界面供使用；Codis-Proxy 是一个兼容 Redis 协议的无状态代理；Codis-Redis 基于 Redis 2.8 版本二次开发，加入 slot 支持，方便迁移数据。
+- Redis Cluster，现代的分布式集群 
 
 #### MongoDB
 - 典型应用场景

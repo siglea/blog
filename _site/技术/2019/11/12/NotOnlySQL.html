@@ -145,6 +145,51 @@ NoSQL与RDMBS的区别主要在两点：第一，它提供了无模式的灵活�
 </ul>
 
 <h4 id="redis">Redis</h4>
+<ul>
+  <li>主要使用跳表这种数据结构</li>
+  <li>Redis持久化：RDB（快照）和AOF（写命令）
+    <ul>
+      <li>RDB相当于全量数据的备份</li>
+      <li>AOF相当于WAL类似的命令日志</li>
+      <li><a href="https://www.jianshu.com/p/cbe1238f592a">https://www.jianshu.com/p/cbe1238f592a</a></li>
+    </ul>
+  </li>
+  <li>Redis淘汰策略
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>volatile-lru <span class="c">#从设置了过期时间的数据集中，选择最近最久未使用的数据释放；</span>
+allkeys-lru <span class="c">#从数据集中(包括设置过期时间以及未设置过期时间的数据集中)，选择最近最久未使用的数据释放；</span>
+volatile-random <span class="c">#从设置了过期时间的数据集中，随机选择一个数据进行释放；</span>
+allkeys-random <span class="c">#从数据集中(包括了设置过期时间以及未设置过期时间)随机选择一个数据进行入释放；</span>
+volatile-ttl <span class="c">#从设置了过期时间的数据集中，选择马上就要过期的数据进行释放操作；</span>
+noeviction <span class="c">#默认值，不删除任意数据(但redis还会根据引用计数器进行释放),这时如果内存不够时，会直接返回错误。</span>
+</code></pre></div>    </div>
+  </li>
+  <li>常用Redis的client，Redisson、Jedis、lettuce</li>
+  <li>Redis事务
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>watch key1 key2 ... <span class="c">#监视一或多个key,如果在事务执行之前，被监视的key被其他命令改动，则事务被打断 （ 类似乐观锁 ）</span>
+multi <span class="c">#标记一个事务块的开始（ queued ）</span>
+<span class="nb">exec</span> <span class="c">#执行所有事务块的命令 （ 一旦执行exec后，之前加的监控锁都会被取消掉 ）　</span>
+discard <span class="c">#取消事务，放弃事务块中的所有命令</span>
+unwatch <span class="c">#取消watch对所有key的监控</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Redis Sentinel模式，传统的主从高可用模式 <a href="https://www.cnblogs.com/duanxz/p/4701831.html">https://www.cnblogs.com/duanxz/p/4701831.html</a>
+    <ul>
+      <li>多个Sentinel，监控集群</li>
+      <li>Master故障后，Sentinel向其他Sentinel提议选举自己做主Sentinel</li>
+      <li>选举主Sentinel后，根据规则从Slave中选出一个Slave晋升为Master</li>
+      <li>Sentinel通知客户端节点变更</li>
+    </ul>
+  </li>
+  <li>Twemproxy/nutcraker ,Redis的”分库分表方案”
+    <ul>
+      <li>能自动分片，方便水平扩展</li>
+      <li>虽然可以动态移除节点，但该移除节点的数据就丢失了。
+redis集群动态增加节点的时候,twemproxy不会对已有数据做重分布.maillist里面作者说这个需要自己写个脚本实现</li>
+    </ul>
+  </li>
+  <li>Codis是由豌豆荚开源的产品，涉及组件众多，其中 ZooKeeper 存放路由表和代理节点元数据、分发 Codis-Config 的命令；Codis-Config 是集成管理工具，有 Web 界面供使用；Codis-Proxy 是一个兼容 Redis 协议的无状态代理；Codis-Redis 基于 Redis 2.8 版本二次开发，加入 slot 支持，方便迁移数据。</li>
+  <li>Redis Cluster，现代的分布式集群</li>
+</ul>
 
 <h4 id="mongodb">MongoDB</h4>
 <ul>
