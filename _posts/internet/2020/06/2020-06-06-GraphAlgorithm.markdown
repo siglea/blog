@@ -23,12 +23,12 @@ categories:
 - 广度优先遍历，遍历完当前节点的所有子节点，然后切换到下级节点（类似二叉树的层级遍历），重点在重放
 
 #### 图的 “最短路径”（
-- 迪杰斯特拉算法 Dijkstra
-- 多源最短路径 弗洛伊德算法 Floyd-Warshall
-- 路径规划之 A* 算法
+- 迪杰斯特拉算法 Dijkstra，解决带权重的A->G最短路径 <https://mp.weixin.qq.com/s/ALQntqQJkdWf4RbPaGOOhg>
+- 多源最短路径，解决多个带权重节点间的最短路径，弗洛伊德算法 Floyd-Warshall <https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg>
+- 路径规划之 A* 算法 <https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA>
 
 #### Ford-Fulkerson 最大流算法
 
 #### 最小生成树
-- Kruskal算法
-- prim算法
+- Kruskal算法 <https://blog.csdn.net/qq_41754350/article/details/81460643>
+- prim算法 <https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA>

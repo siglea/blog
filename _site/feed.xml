@@ -5,9 +5,9 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 09 Jun 2020 14:53:47 +0800</pubDate>
-    <lastBuildDate>Tue, 09 Jun 2020 14:53:47 +0800</lastBuildDate>
-    <generator>Jekyll v3.8.5</generator>
+    <pubDate>Tue, 09 Jun 2020 23:16:48 +0800</pubDate>
+    <lastBuildDate>Tue, 09 Jun 2020 23:16:48 +0800</lastBuildDate>
+    <generator>Jekyll v4.0.0</generator>
     
       <item>
         <title>经典算法思想</title>
@@ -19,48 +19,50 @@
   &lt;li&gt;例：小明手中有 1，5，10，50，100 五种面额的纸币，每种纸币对应张数分别为 5，2，2，3，5 张。若小明需要支付 456 元，则需要多少张纸币？&lt;/li&gt;
   &lt;li&gt;最小生成树 Kruskal算法&lt;/li&gt;
   &lt;li&gt;最小生成树 prim算法&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw&quot;&gt;https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow&quot;&gt;https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;分发饼干、跳跃游戏、无重叠区间、摆动序列 &lt;a href=&quot;https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw&quot;&gt;https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;分糖果、无重叠区间 &lt;a href=&quot;https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow&quot;&gt;https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;分治算法&quot;&gt;分治算法&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;快速排序算法&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ&quot;&gt;https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ&quot;&gt;https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;快速排序算法、大整数乘法、残缺棋盘游戏 &lt;a href=&quot;https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ&quot;&gt;https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;汉诺塔、快速排序、归并排序 &lt;a href=&quot;https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ&quot;&gt;https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;动态规划算法&quot;&gt;动态规划算法&lt;/h4&gt;
+&lt;h4 id=&quot;动态规划算法-dynamic-programming&quot;&gt;动态规划算法 Dynamic Programming&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;2&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 2&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
+F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n-1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;+F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n-2&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;（n&amp;gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3）
+
+F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;10&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;9&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; + F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;8&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#最优子结构&lt;/span&gt;
+F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;2&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#边界&lt;/span&gt;
+F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n-1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; + F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n-2&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#状态转移方程&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;ul&gt;
-  &lt;li&gt;斐波那契&lt;/li&gt;
-  &lt;li&gt;城市最优铺路方案&lt;/li&gt;
-  &lt;li&gt;上台阶&lt;/li&gt;
+  &lt;li&gt;斐波那契 &lt;a href=&quot;https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ&quot;&gt;https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;上台阶与挖黄金 &lt;a href=&quot;https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg&quot;&gt;https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;高楼扔鸡蛋 &lt;a href=&quot;https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA&quot;&gt;https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;回溯法&quot;&gt;回溯法&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;深度优先遍历&lt;/li&gt;
-  &lt;li&gt;八皇后问题&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg&quot;&gt;https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;深度优先遍历 &lt;a href=&quot;https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA&quot;&gt;https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;八皇后问题 &lt;a href=&quot;https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA&quot;&gt;https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;八皇后问题与数独 &lt;a href=&quot;https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg&quot;&gt;https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;A*寻路算法 &lt;a href=&quot;https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA&quot;&gt;https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;多源最短路径，弗洛伊德算法 Floyd-Warshall &lt;a href=&quot;https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg&quot;&gt;https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;分支定界法&quot;&gt;分支定界法&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;广度优先遍历&lt;/li&gt;
+  &lt;li&gt;广度优先遍历 &lt;a href=&quot;https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ&quot;&gt;https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ&quot;&gt;https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ&lt;/a&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;字符串匹配算法&quot;&gt;字符串匹配算法&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;BF算法，是Brute Force（暴力算法，按位比较 O(m*n)）&lt;/li&gt;
-  &lt;li&gt;RK算法，是Rabin-Karp (计算hash值进行比较 O(n))&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g&quot;&gt;https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Knuth-Morris-Pratt算法（简称KMP）是最常用的之一&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w&quot;&gt;https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
+  &lt;li&gt;RK算法，是Rabin-Karp (计算hash值进行比较 O(n)) &lt;a href=&quot;https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g&quot;&gt;https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Knuth-Morris-Pratt算法（简称KMP）是最常用的之一 &lt;a href=&quot;https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w&quot;&gt;https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;字符串匹配算法综述:BF、RK、KMP、BM、Sunday &lt;a href=&quot;https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA&quot;&gt;https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -70,6 +72,7 @@
   &lt;li&gt;小灰算法2018 &lt;a href=&quot;https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw&quot;&gt;https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;小灰算法2019 &lt;a href=&quot;https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw&quot;&gt;https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;小灰算法2020 &lt;a href=&quot;https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA&quot;&gt;https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;二十世纪最伟大的10大算法 &lt;a href=&quot;https://blog.csdn.net/v_JULY_v/article/details/6127953&quot;&gt;https://blog.csdn.net/v_JULY_v/article/details/6127953&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         <pubDate>Sun, 07 Jun 2020 13:25:00 +0800</pubDate>
@@ -190,17 +193,17 @@ create &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; /node1-temp /node1-conte
 
 &lt;h4 id=&quot;图的-最短路径&quot;&gt;图的 “最短路径”（&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;迪杰斯特拉算法 Dijkstra&lt;/li&gt;
-  &lt;li&gt;多源最短路径 弗洛伊德算法 Floyd-Warshall&lt;/li&gt;
-  &lt;li&gt;路径规划之 A* 算法&lt;/li&gt;
+  &lt;li&gt;迪杰斯特拉算法 Dijkstra，解决带权重的A-&amp;gt;G最短路径 &lt;a href=&quot;https://mp.weixin.qq.com/s/ALQntqQJkdWf4RbPaGOOhg&quot;&gt;https://mp.weixin.qq.com/s/ALQntqQJkdWf4RbPaGOOhg&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;多源最短路径，解决多个带权重节点间的最短路径，弗洛伊德算法 Floyd-Warshall &lt;a href=&quot;https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg&quot;&gt;https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;路径规划之 A* 算法 &lt;a href=&quot;https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA&quot;&gt;https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;ford-fulkerson-最大流算法&quot;&gt;Ford-Fulkerson 最大流算法&lt;/h4&gt;
 
 &lt;h4 id=&quot;最小生成树&quot;&gt;最小生成树&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;Kruskal算法&lt;/li&gt;
-  &lt;li&gt;prim算法&lt;/li&gt;
+  &lt;li&gt;Kruskal算法 &lt;a href=&quot;https://blog.csdn.net/qq_41754350/article/details/81460643&quot;&gt;https://blog.csdn.net/qq_41754350/article/details/81460643&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;prim算法 &lt;a href=&quot;https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA&quot;&gt;https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         <pubDate>Sat, 06 Jun 2020 09:17:00 +0800</pubDate>

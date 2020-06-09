@@ -9,8 +9,8 @@ categories:
 - 技术
 ---
 #### 绝对线程安全和相对线程安全
-- https://www.cnblogs.com/duanxz/p/6099983.html
-- https://www.jianshu.com/p/98b0241bc8e2
+- <https://www.cnblogs.com/duanxz/p/6099983.html>
+- <https://www.jianshu.com/p/98b0241bc8e2>
 - 可见性、有序性、原子性
 
 #### AQS AbstractQueuedSynchronizer

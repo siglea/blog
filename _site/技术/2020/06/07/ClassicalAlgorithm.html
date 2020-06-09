@@ -68,48 +68,50 @@
   <li>例：小明手中有 1，5，10，50，100 五种面额的纸币，每种纸币对应张数分别为 5，2，2，3，5 张。若小明需要支付 456 元，则需要多少张纸币？</li>
   <li>最小生成树 Kruskal算法</li>
   <li>最小生成树 prim算法</li>
-  <li><a href="https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw">https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw</a></li>
-  <li><a href="https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow">https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow</a></li>
+  <li>分发饼干、跳跃游戏、无重叠区间、摆动序列 <a href="https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw">https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw</a></li>
+  <li>分糖果、无重叠区间 <a href="https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow">https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow</a></li>
 </ul>
 
 <h4 id="分治算法">分治算法</h4>
 <ul>
-  <li>快速排序算法</li>
-  <li><a href="https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ">https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ</a></li>
-  <li><a href="https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ">https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ</a></li>
+  <li>快速排序算法、大整数乘法、残缺棋盘游戏 <a href="https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ">https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ</a></li>
+  <li>汉诺塔、快速排序、归并排序 <a href="https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ">https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ</a></li>
 </ul>
 
-<h4 id="动态规划算法">动态规划算法</h4>
+<h4 id="动态规划算法-dynamic-programming">动态规划算法 Dynamic Programming</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F<span class="o">(</span>1<span class="o">)</span> <span class="o">=</span> 1<span class="p">;</span>
+F<span class="o">(</span>2<span class="o">)</span> <span class="o">=</span> 2<span class="p">;</span> 
+F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>n-1<span class="o">)</span>+F<span class="o">(</span>n-2<span class="o">)</span><span class="p">;</span>（n&gt;<span class="o">=</span>3）
+
+F<span class="o">(</span>10<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>9<span class="o">)</span> + F<span class="o">(</span>8<span class="o">)</span> <span class="c">#最优子结构</span>
+F<span class="o">(</span>1<span class="o">)</span> F<span class="o">(</span>2<span class="o">)</span> <span class="c">#边界</span>
+F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>n-1<span class="o">)</span> + F<span class="o">(</span>n-2<span class="o">)</span> <span class="c">#状态转移方程</span>
+</code></pre></div></div>
 <ul>
-  <li>斐波那契</li>
-  <li>城市最优铺路方案</li>
-  <li>上台阶</li>
+  <li>斐波那契 <a href="https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ">https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ</a></li>
+  <li>上台阶与挖黄金 <a href="https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg">https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg</a></li>
+  <li>高楼扔鸡蛋 <a href="https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA">https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA</a></li>
 </ul>
 
 <h4 id="回溯法">回溯法</h4>
 <ul>
-  <li>深度优先遍历</li>
-  <li>八皇后问题</li>
-  <li><a href="https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg">https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg</a></li>
+  <li>深度优先遍历 <a href="https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA">https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA</a></li>
+  <li>八皇后问题 <a href="https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA">https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA</a></li>
+  <li>八皇后问题与数独 <a href="https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg">https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg</a></li>
+  <li>A*寻路算法 <a href="https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA">https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA</a></li>
+  <li>多源最短路径，弗洛伊德算法 Floyd-Warshall <a href="https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg">https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg</a></li>
 </ul>
 
 <h4 id="分支定界法">分支定界法</h4>
 <ul>
-  <li>广度优先遍历</li>
+  <li>广度优先遍历 <a href="https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ">https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ</a></li>
 </ul>
-<p><a href="https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ">https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ</a></p>
 
 <h4 id="字符串匹配算法">字符串匹配算法</h4>
 <ul>
   <li>BF算法，是Brute Force（暴力算法，按位比较 O(m*n)）</li>
-  <li>RK算法，是Rabin-Karp (计算hash值进行比较 O(n))</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g">https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g</a></p>
-<ul>
-  <li>Knuth-Morris-Pratt算法（简称KMP）是最常用的之一</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w">https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w</a></p>
-<ul>
+  <li>RK算法，是Rabin-Karp (计算hash值进行比较 O(n)) <a href="https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g">https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g</a></li>
+  <li>Knuth-Morris-Pratt算法（简称KMP）是最常用的之一 <a href="https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w">https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w</a></li>
   <li>字符串匹配算法综述:BF、RK、KMP、BM、Sunday <a href="https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA">https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA</a></li>
 </ul>
 
@@ -119,6 +121,7 @@
   <li>小灰算法2018 <a href="https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw">https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw</a></li>
   <li>小灰算法2019 <a href="https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw">https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw</a></li>
   <li>小灰算法2020 <a href="https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA">https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA</a></li>
+  <li>二十世纪最伟大的10大算法 <a href="https://blog.csdn.net/v_JULY_v/article/details/6127953">https://blog.csdn.net/v_JULY_v/article/details/6127953</a></li>
 </ul>
 
   </div>
