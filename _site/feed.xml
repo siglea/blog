@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 10 Jun 2020 11:30:50 +0800</pubDate>
-    <lastBuildDate>Wed, 10 Jun 2020 11:30:50 +0800</lastBuildDate>
+    <pubDate>Wed, 10 Jun 2020 12:08:56 +0800</pubDate>
+    <lastBuildDate>Wed, 10 Jun 2020 12:08:56 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -60,7 +60,7 @@ F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n&lt;span class=&quot;o&quot;&gt;
 
 &lt;h4 id=&quot;字符串匹配算法&quot;&gt;字符串匹配算法&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;BF算法，是Brute Force（暴力算法，按位比较 O(m*n)）&lt;/li&gt;
+  &lt;li&gt;BF算法，是Brute Force（暴力算法，按位比较 O(m*n)）&lt;a href=&quot;https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg&quot;&gt;https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;RK算法，是Rabin-Karp (计算hash值进行比较 O(n)) &lt;a href=&quot;https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g&quot;&gt;https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Knuth-Morris-Pratt算法（简称KMP）是最常用的之一 &lt;a href=&quot;https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w&quot;&gt;https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;字符串匹配算法综述:BF、RK、KMP、BM、Sunday &lt;a href=&quot;https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA&quot;&gt;https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA&lt;/a&gt;&lt;/li&gt;
@@ -191,20 +191,29 @@ create &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; /node1-temp /node1-conte
   &lt;li&gt;广度优先遍历，遍历完当前节点的所有子节点，然后切换到下级节点（类似二叉树的层级遍历），重点在重放&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;图的-最短路径&quot;&gt;图的 “最短路径”（&lt;/h4&gt;
+&lt;h4 id=&quot;图的-最短路径&quot;&gt;图的 “最短路径”&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;迪杰斯特拉算法 Dijkstra，解决带权重的A-&amp;gt;G最短路径 &lt;a href=&quot;https://mp.weixin.qq.com/s/ALQntqQJkdWf4RbPaGOOhg&quot;&gt;https://mp.weixin.qq.com/s/ALQntqQJkdWf4RbPaGOOhg&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;多源最短路径，解决多个带权重节点间的最短路径，弗洛伊德算法 Floyd-Warshall &lt;a href=&quot;https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg&quot;&gt;https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;路径规划之 A* 算法 &lt;a href=&quot;https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA&quot;&gt;https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;ford-fulkerson-最大流算法&quot;&gt;Ford-Fulkerson 最大流算法&lt;/h4&gt;
-
-&lt;h4 id=&quot;最小生成树&quot;&gt;最小生成树&lt;/h4&gt;
+&lt;h5 id=&quot;最小生成树&quot;&gt;最小生成树&lt;/h5&gt;
 &lt;ul&gt;
-  &lt;li&gt;Kruskal算法 &lt;a href=&quot;https://blog.csdn.net/qq_41754350/article/details/81460643&quot;&gt;https://blog.csdn.net/qq_41754350/article/details/81460643&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;prim算法 &lt;a href=&quot;https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA&quot;&gt;https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;把所有点在没有回路的情况下，连接起来，并且权重相加最小（权重可以理解为城市见的距离）&lt;/li&gt;
+  &lt;li&gt;Kruskal算法，克鲁斯卡尔算法的基本思想是以边为主导地位，始终选择当前可用的最小边权的边（可以直接快排或者algorithm的sort）。每次选择边权最小的边链接两个端点是kruskal的规则，并实时判断两个点之间有没有间接联通。
+（也算是贪心算法思想）&lt;a href=&quot;https://blog.csdn.net/qq_41754350/article/details/81460643&quot;&gt;https://blog.csdn.net/qq_41754350/article/details/81460643&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;prim算法，这个算法是以图的顶点为基础，从一个初始顶点开始，寻找触达其他顶点权值最小的边，并把该顶点加入到已触达顶点的集合中。当全部顶点都加入到集合时，算法的工作就完成了。Prim算法的本质，是基于贪心算法。
+&lt;a href=&quot;https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA&quot;&gt;https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h4 id=&quot;ford-fulkerson-最大流算法&quot;&gt;Ford-Fulkerson 最大流算法&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;解决的问题：在一个流里，有着每条边的运载能力限制，我最多能从源头运输多少数量到目的地。&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/DarrenChan/p/9563511.html&quot;&gt;https://www.cnblogs.com/DarrenChan/p/9563511.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/sinat_41613352/article/details/84481115&quot;&gt;https://blog.csdn.net/sinat_41613352/article/details/84481115&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
 </description>
         <pubDate>Sat, 06 Jun 2020 09:17:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html</link>

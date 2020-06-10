@@ -47,7 +47,7 @@ F(n) = F(n-1) + F(n-2) #状态转移方程
 - 广度优先遍历 <https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ>
 
 #### 字符串匹配算法
-- BF算法，是Brute Force（暴力算法，按位比较 O(m*n)）
+- BF算法，是Brute Force（暴力算法，按位比较 O(m*n)）<https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg>
 - RK算法，是Rabin-Karp (计算hash值进行比较 O(n)) <https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g>
 - Knuth-Morris-Pratt算法（简称KMP）是最常用的之一 <https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w>
 - 字符串匹配算法综述:BF、RK、KMP、BM、Sunday <https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA>
