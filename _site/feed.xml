@@ -5,9 +5,9 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 09 Jun 2020 23:16:48 +0800</pubDate>
-    <lastBuildDate>Tue, 09 Jun 2020 23:16:48 +0800</lastBuildDate>
-    <generator>Jekyll v4.0.0</generator>
+    <pubDate>Wed, 10 Jun 2020 11:30:50 +0800</pubDate>
+    <lastBuildDate>Wed, 10 Jun 2020 11:30:50 +0800</lastBuildDate>
+    <generator>Jekyll v3.8.5</generator>
     
       <item>
         <title>经典算法思想</title>
@@ -413,8 +413,8 @@ create &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; /node1-temp /node1-conte
 
 &lt;h4 id=&quot;如何保证可用性&quot;&gt;如何保证可用性&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;主从架构（ActiveMQ、RabbitMQ）&lt;/li&gt;
-  &lt;li&gt;分布式架构（RocketMQ、kafka）&lt;/li&gt;
+  &lt;li&gt;主从架构（ActiveMQ、RabbitMQ、RocketMQ）&lt;/li&gt;
+  &lt;li&gt;分布式架构（kafka）&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;如何保证消息不被重复消费&quot;&gt;如何保证消息不被重复消费？&lt;/h4&gt;
@@ -517,9 +517,12 @@ broker机器的内网ip  hostname.com
 ./mqadmin topicList &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; localhost:9876
 
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;推拉模式&quot;&gt;推拉模式&lt;/h4&gt;
-&lt;p&gt;消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;rocketmq为什么使用nameserver而不使用ZooKeeper？&lt;a href=&quot;https://blog.csdn.net/earthhour/article/details/78718064&quot;&gt;https://blog.csdn.net/earthhour/article/details/78718064&lt;/a&gt;
+    &lt;h4 id=&quot;推拉模式&quot;&gt;推拉模式&lt;/h4&gt;
+    &lt;p&gt;消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h4 id=&quot;关于kafka&quot;&gt;关于kafka&lt;/h4&gt;
 &lt;ul&gt;

@@ -18,8 +18,8 @@ categories:
   例如，在用户登录后，各个其他模板更加登录进行不同的处理
 
 #### 如何保证可用性
-- 主从架构（ActiveMQ、RabbitMQ）
-- 分布式架构（RocketMQ、kafka）  
+- 主从架构（ActiveMQ、RabbitMQ、RocketMQ）
+- 分布式架构（kafka）  
      
 #### 如何保证消息不被重复消费？
 - 分析:这个问题其实换一种问法就是，如何保证消息队列的幂等性?这个问题可以认为是消息队列领域的基本问题。换句话来说，是在考察你的设计能力，这个问题的回答可以根据具体的业务场景来答，没有固定的答案。
@@ -103,7 +103,7 @@ brokerIP1=hostname.com
 ./mqadmin topicList -n localhost:9876
 
 ```
-
+- rocketmq为什么使用nameserver而不使用ZooKeeper？<https://blog.csdn.net/earthhour/article/details/78718064>
 #### 推拉模式
 消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。
 

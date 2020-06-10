@@ -100,6 +100,12 @@ unwatch #取消watch对所有key的监控
       redis集群动态增加节点的时候,twemproxy不会对已有数据做重分布.maillist里面作者说这个需要自己写个脚本实现
 - Codis是由豌豆荚开源的产品，涉及组件众多，其中 ZooKeeper 存放路由表和代理节点元数据、分发 Codis-Config 的命令；Codis-Config 是集成管理工具，有 Web 界面供使用；Codis-Proxy 是一个兼容 Redis 协议的无状态代理；Codis-Redis 基于 Redis 2.8 版本二次开发，加入 slot 支持，方便迁移数据。
 - Redis Cluster，现代的分布式集群 
+- 为什么 Redis 单线程能达到百万+QPS？<https://mp.weixin.qq.com/s/QrvUl6Ul9DxYoRZwSsMQZw>
+- Redis 到底是单线程还是多线程？
+  - Redis基于Reactor模式开发了网络事件处理器，这个处理器被称为文件事件处理器。它的组成结构为4部分：多个套接字、IO多路复用程序、文件事件分派器、事件处理器。因为文件事件分派器队列的消费是单线程的，所以Redis才叫单线程模型。
+  - 其实，Redis 4.0 开始就有多线程的概念了，比如 Redis 通过多线程方式在后台删除对象、以及通过 Redis 模块实现的阻塞命令等。
+  - Redis 6.0 加入了 Theaded IO 指的是在网络 IO 处理方面上了多线程，如网络数据的读写和协议解析等，需要注意的是，执行命令的核心模块还是单线程的。估计是乐观锁+悲观锁组合
+  <https://mp.weixin.qq.com/s/X3e68ci6O9YPXbCAVaQc_w>
 
 #### MongoDB
 - 典型应用场景
@@ -111,6 +117,8 @@ unwatch #取消watch对所有key的监控
 - 支持的引擎，mmapv1、wiredtiger、mongorocks（rocksdb）、in-memory
 - 强大的索引，地理位置索引可用于构建 各种 O2O 应用、文本索引解决搜索的需求、TTL索引解决历史数据自动过期的需求
 - MongoDB与Mysql/Hadoop/Redis的优缺点比较 <https://blog.csdn.net/tanqian351/article/details/81744970>
+- 高可用模式：主从架构（Master-Slave）、副本集架构（Replica Set）、数据分片架构（Sharding）
+    <https://www.jianshu.com/p/2825a66d6aed>
 
 #### Cassandra
 - Cassandra数据建模 <https://www.cnblogs.com/cjsblog/p/12878330.html>
@@ -171,10 +179,11 @@ unwatch #取消watch对所有key的监控
 - 滴滴放弃TiDB <https://mp.weixin.qq.com/s/_h4UE1LMrO-UjE-TaGH20g>
 - 分库分表 or NewSQL数据库 ? <https://mp.weixin.qq.com/s/ymVxSe8nueuG7knKwcIAMw>
 
-#### 常见 TSDB 时间序列数据库 Time Series Database ：influxdb、opentsdb、timeScaladb、Druid 、tablestore等
-一种集时序数据高效读写，压缩存储，实时计算能力为一体的数据库服务，可广泛应用于物联网和互联网领域，实现对设备及业务服务的实时监控，实时预测告警。
+#### 常见 TSDB 时间序列数据库 Time Series Database ：influxdb、opentsdb、timeScaladb、Druid 、tablestore、ClickHouse等
+- 持续高并发写入、无更新；数据压缩存储；低查询延时。
+- 一种集时序数据高效读写，压缩存储，实时计算能力为一体的数据库服务，可广泛应用于物联网和互联网领域，实现对设备及业务服务的实时监控，实时预测告警。
 <https://www.jianshu.com/p/31afb8492eff>
-
+- 阿里巴巴双11千万级实时监控系统技术揭秘  <https://www.sohu.com/a/300572910_465959>
 #### 其他
 - 分布式系统之Quorum机制 <https://blog.csdn.net/tb3039450/article/details/80249664>
 - NoSQL漫谈 <http://www.nosqlnotes.com/>
