@@ -81,11 +81,13 @@
         </ul>
       </li>
       <li>更加详细的应用范围<a href="https://www.cnblogs.com/tiancai/p/9024351.html">https://www.cnblogs.com/tiancai/p/9024351.html</a></li>
-      <li>完美总结B+树<a href="https://mp.weixin.qq.com/s/YMbRJwyjutGMD1KpI_fS0A">https://mp.weixin.qq.com/s/YMbRJwyjutGMD1KpI_fS0A</a>
-        <h4 id="各种优化">各种优化</h4>
-      </li>
+      <li>完美总结B+树<a href="https://mp.weixin.qq.com/s/YMbRJwyjutGMD1KpI_fS0A">https://mp.weixin.qq.com/s/YMbRJwyjutGMD1KpI_fS0A</a></li>
     </ul>
   </li>
+</ul>
+
+<h4 id="各种优化">各种优化</h4>
+<ul>
   <li><a href="https://www.jianshu.com/p/efaa9005a598">https://www.jianshu.com/p/efaa9005a598</a></li>
   <li><a href="https://www.jb51.net/article/136701.htm">https://www.jb51.net/article/136701.htm</a></li>
   <li><a href="https://www.cnblogs.com/houss/p/10598901.html">https://www.cnblogs.com/houss/p/10598901.html</a></li>
@@ -94,8 +96,11 @@
 <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化前</span>
 <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="n">a</span> <span class="k">inner</span> <span class="k">join</span> <span class="p">(</span><span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="n">b</span> <span class="k">on</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化后</span>
 </code></pre></div>    </div>
-    <h4 id="常用指标">常用指标</h4>
   </li>
+</ul>
+
+<h4 id="常用指标">常用指标</h4>
+<ul>
   <li>QPS   (2w/s与机器配置及数据量有关)</li>
   <li>TPS   (1w/s)</li>
   <li>并发数</li>
@@ -124,9 +129,8 @@ Seconds_Behind_Master
 <p>在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
    在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
    为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
-   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。</p>
-
-<p><a href="https://www.cnblogs.com/hzmark/p/wal.html">https://www.cnblogs.com/hzmark/p/wal.html</a></p>
+   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。 
+   什么是WAL？<a href="https://www.cnblogs.com/hzmark/p/wal.html">https://www.cnblogs.com/hzmark/p/wal.html</a></p>
 
 <h4 id="innodb与myisamindex-sequence-access-method">InnoDB与MyISAM(Index Sequence Access Method)</h4>
 <ul>
@@ -134,7 +138,7 @@ Seconds_Behind_Master
 MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
     <ul>
       <li>4个隔离级别透彻分析 <a href="https://www.jianshu.com/p/db334404d909">https://www.jianshu.com/p/db334404d909</a></li>
-      <li><a href="https://blog.csdn.net/w2064004678/article/details/83012387">https://blog.csdn.net/w2064004678/article/details/83012387</a></li>
+      <li>Mysql中MVCC的使用及原理详解 <a href="https://blog.csdn.net/w2064004678/article/details/83012387">https://blog.csdn.net/w2064004678/article/details/83012387</a></li>
     </ul>
   </li>
   <li>索引结构不同
@@ -181,14 +185,11 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
       <li>不存在对非主键列的依赖传递，比如userId,userName不要同时出现在order中，有时为了查询效率也冗余个别字段</li>
     </ul>
   </li>
-  <li>
-    <p>一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?</p>
-
-    <p>(1)如果表的类型是 MyISAM，那么是 18
+  <li>一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?
+  (1)如果表的类型是 MyISAM，那么是 18
       因为 MyISAM 表会把自增主键的最大 ID 记录到数据文件里，重启 MySQL 自增主键的最大 ID 也不会丢失
   (2)如果表的类型是 InnoDB，那么是 15
-      InnoDB 表只是把自增主键的最大 ID 记录到内存中，所以重启数据库或者是对表进行 OPTIMIZE 操作，都会导致最大 ID 丢失</p>
-  </li>
+      InnoDB 表只是把自增主键的最大 ID 记录到内存中，所以重启数据库或者是对表进行 OPTIMIZE 操作，都会导致最大 ID 丢失</li>
   <li>
     <p>如何区分 FLOAT 和 DOUBLE?</p>
 
@@ -210,8 +211,11 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
     <p>可以使用多少列创建索引?</p>
 
     <p>任何标准表最多可以创建 16 个索引列。</p>
-    <h4 id="其他">其他</h4>
   </li>
+</ul>
+
+<h4 id="其他">其他</h4>
+<ul>
   <li>Mysql主从同步 <a href="https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw">https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw</a></li>
   <li>Mysql+Keepalived实现双高可用 <a href="https://www.cnblogs.com/kevingrace/p/6710136.html">https://www.cnblogs.com/kevingrace/p/6710136.html</a></li>
   <li>PROCEDURE ANALYSE</li>

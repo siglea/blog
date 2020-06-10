@@ -23,6 +23,7 @@ categories:
       - 红黑树常用于存储内存中的有序数据，增删很快，b+树常用于文件系统和数据库索引，因为b树的子节点大于红黑树，红黑树只能有2个子节点，b树子节点大于2，子节点树多这一特点保证了存储相同大小的数据，树的高度更小，数据局部更加紧凑，而硬盘读取有局部加载的优化（把要读取数据和周围的数据一起预先读取），b树相邻数据物理上更加紧凑这一特点符合硬盘进行io优化的特性。
     - 更加详细的应用范围<https://www.cnblogs.com/tiancai/p/9024351.html>
     - 完美总结B+树<https://mp.weixin.qq.com/s/YMbRJwyjutGMD1KpI_fS0A>
+
 #### 各种优化
 - <https://www.jianshu.com/p/efaa9005a598>
 - <https://www.jb51.net/article/136701.htm>
@@ -33,6 +34,7 @@ categories:
 select * from t_third_device where third='kuaishou' limit 300000,5; # 优化前
 select * from t_third_device a inner join (select id from t_third_device where third='kuaishou' limit 300000,5) b on a.id=b.id; # 优化后
 ```
+
 #### 常用指标
 - QPS   (2w/s与机器配置及数据量有关)
 - TPS   (1w/s)
@@ -61,15 +63,14 @@ set global innodb_print_all_deadlocks=on;
    在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
    在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
    为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
-   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。
-    
-   <https://www.cnblogs.com/hzmark/p/wal.html>
+   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。 
+   什么是WAL？<https://www.cnblogs.com/hzmark/p/wal.html>
 
 #### InnoDB与MyISAM(Index Sequence Access Method)
 - 核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
   MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
     - 4个隔离级别透彻分析 <https://www.jianshu.com/p/db334404d909>
-    - <https://blog.csdn.net/w2064004678/article/details/83012387>
+    - Mysql中MVCC的使用及原理详解 <https://blog.csdn.net/w2064004678/article/details/83012387>
 - 索引结构不同
     - <https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew>    
 - 其他不同
@@ -97,7 +98,6 @@ set global innodb_print_all_deadlocks=on;
     - 表有且只有一个主键，也即是每个表只是描述一件事
     - 不存在对非主键列的依赖传递，比如userId,userName不要同时出现在order中，有时为了查询效率也冗余个别字段
 - 一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?
-    
     (1)如果表的类型是 MyISAM，那么是 18
         因为 MyISAM 表会把自增主键的最大 ID 记录到数据文件里，重启 MySQL 自增主键的最大 ID 也不会丢失
     (2)如果表的类型是 InnoDB，那么是 15
@@ -117,6 +117,7 @@ set global innodb_print_all_deadlocks=on;
 - 可以使用多少列创建索引?
 
     任何标准表最多可以创建 16 个索引列。
+    
 #### 其他
 - Mysql主从同步 <https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw>
 - Mysql+Keepalived实现双高可用 <https://www.cnblogs.com/kevingrace/p/6710136.html>

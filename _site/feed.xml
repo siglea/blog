@@ -5,9 +5,9 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 10 Jun 2020 12:08:56 +0800</pubDate>
-    <lastBuildDate>Wed, 10 Jun 2020 12:08:56 +0800</lastBuildDate>
-    <generator>Jekyll v3.8.5</generator>
+    <pubDate>Wed, 10 Jun 2020 20:42:04 +0800</pubDate>
+    <lastBuildDate>Wed, 10 Jun 2020 20:42:04 +0800</lastBuildDate>
+    <generator>Jekyll v4.0.0</generator>
     
       <item>
         <title>经典算法思想</title>
@@ -88,7 +88,26 @@ F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n&lt;span class=&quot;o&quot;&gt;
     
       <item>
         <title>BitMap-BloomFilter</title>
-        <description>
+        <description>&lt;h4 id=&quot;bitmap&quot;&gt;BitMap&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;近似的理解为用一个大数组的索引来表示数字本身，用0或1表示该数字是否存在&lt;/li&gt;
+  &lt;li&gt;一个32位的int，只用一个标志位来表示是否存在&lt;/li&gt;
+  &lt;li&gt;但是数字如果重复只会保留一个，主要用于去重类似的场景&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;bloomfilter&quot;&gt;BloomFilter&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;判断短连接是否重复、垃圾邮件等场景&lt;/li&gt;
+  &lt;li&gt;把url，3次不同hash，得到3个不同的hashcode，存入bitmap&lt;/li&gt;
+  &lt;li&gt;多次hash是为了降低hash重复的概率&lt;/li&gt;
+  &lt;li&gt;由于以上特性，bloomFilter算法计算出不存在的一定就是不存在，如果计算出来存在有一定几率重复（因为hash的特性）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;参考链接&quot;&gt;参考链接&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Bitmap算法 整合版 &lt;a href=&quot;https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg&quot;&gt;https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;什么是布隆算法？&lt;a href=&quot;https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ&quot;&gt;https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         <pubDate>Sun, 07 Jun 2020 13:25:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html</link>
