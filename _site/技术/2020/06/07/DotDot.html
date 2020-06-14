@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>粉笔灰杂谈</title>
-  <meta name="description" content="关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。">
+  <title>DotDot</title>
+  <meta name="description" content="InnoDB引擎的4大特性https://www.cnblogs.com/zhs0/p/10528520.html  插入缓冲（insert buffer)，只对于非聚集索引（非唯一）的插入和更新有效，对于每一次的插入不是写到索引页中，而是先判断插入的非聚集索引页是否在缓冲池中，如果在则直接插入；若不在，则先放到...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/07/DotDot.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -49,144 +49,18 @@
 
     <div class="page-content">
       <div class="container" style="padding-left:0;padding-right:0;">
-        <div class="row" style="margin-bottom:30px">
-  <div class="home col-md-8">
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html">经典算法思想</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
-      
+        <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>数据结构算法，问题TOP10 <a href="https://mp.weixin.qq.com/s/rqzCvFWira204eJ1HA22yg">https://mp.weixin.qq.com/s/rqzCvFWira204eJ1HA22yg</a></p>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">DotDot</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-06-07T12:25:00+08:00" itemprop="datePublished">Jun 7, 2020</time></p>
+  </header>
 
-<h4 id="贪心算法">贪心算法</h4>
-<ul>
-  <li>贪心的意思在于在作出选择时，每次都要选择对自身最为有利的结果，保证自身利益的最大化。贪心算法就是利用这种贪心思想而得出一种算法。</li>
-  <li>例：小明手中有 1，5，10，50，100 五种面额的纸币，每种纸币对应张数分别为 5，2，2，3，5 张。若小明需要支付 456 元，则需要多少张纸币？</li>
-  <li>最小生成树 Kruskal算法</li>
-  <li>最小生成树 prim算法</li>
-  <li>分发饼干、跳跃游戏、无重叠区间、摆动序列 <a href="https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw">https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw</a></li>
-  <li>分糖果、无重叠区间 <a href="https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow">https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow</a></li>
-</ul>
-
-<h4 id="分治算法">分治算法</h4>
-<ul>
-  <li>快速排序算法、大整数乘法、残缺棋盘游戏 <a href="https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ">https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ</a></li>
-  <li>汉诺塔、快速排序、归并排序 <a href="https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ">https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ</a></li>
-</ul>
-
-<h4 id="动态规划算法-dynamic-programming">动态规划算法 Dynamic Programming</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F<span class="o">(</span>1<span class="o">)</span> <span class="o">=</span> 1<span class="p">;</span>
-F<span class="o">(</span>2<span class="o">)</span> <span class="o">=</span> 2<span class="p">;</span> 
-F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>n-1<span class="o">)</span>+F<span class="o">(</span>n-2<span class="o">)</span><span class="p">;</span>（n&gt;<span class="o">=</span>3）
-
-F<span class="o">(</span>10<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>9<span class="o">)</span> + F<span class="o">(</span>8<span class="o">)</span> <span class="c">#最优子结构</span>
-F<span class="o">(</span>1<span class="o">)</span> F<span class="o">(</span>2<span class="o">)</span> <span class="c">#边界</span>
-F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>n-1<span class="o">)</span> + F<span class="o">(</span>n-2<span class="o">)</span> <span class="c">#状态转移方程</span>
-</code></pre></div></div>
-<ul>
-  <li>斐波那契 <a href="https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ">https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ</a></li>
-  <li>上台阶与挖黄金 <a href="https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg">https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg</a></li>
-  <li>高楼扔鸡蛋 <a href="https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA">https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA</a></li>
-</ul>
-
-<h4 id="回溯法">回溯法</h4>
-<ul>
-  <li>深度优先遍历 <a href="https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA">https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA</a></li>
-  <li>八皇后问题 <a href="https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA">https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA</a></li>
-  <li>八皇后问题与数独 <a href="https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg">https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg</a></li>
-  <li>A*寻路算法 <a href="https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA">https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA</a></li>
-  <li>多源最短路径，弗洛伊德算法 Floyd-Warshall <a href="https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg">https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg</a></li>
-</ul>
-
-<h4 id="分支定界法">分支定界法</h4>
-<ul>
-  <li>广度优先遍历 <a href="https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ">https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ</a></li>
-</ul>
-
-<h4 id="字符串匹配算法">字符串匹配算法</h4>
-<ul>
-  <li>BF算法，是Brute Force（暴力算法，按位比较 O(m*n)）<a href="https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg">https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg</a></li>
-  <li>RK算法，是Rabin-Karp (计算hash值进行比较 O(n)) <a href="https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g">https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g</a></li>
-  <li>Knuth-Morris-Pratt算法（简称KMP）是最常用的之一 <a href="https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w">https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w</a></li>
-  <li>字符串匹配算法综述:BF、RK、KMP、BM、Sunday <a href="https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA">https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA</a></li>
-</ul>
-
-<h4 id="参考">参考</h4>
-<ul>
-  <li>小灰算法2017 <a href="https://mp.weixin.qq.com/s/4kTtn_gLYQrX7JFlEJdsZg">https://mp.weixin.qq.com/s/4kTtn_gLYQrX7JFlEJdsZg</a></li>
-  <li>小灰算法2018 <a href="https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw">https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw</a></li>
-  <li>小灰算法2019 <a href="https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw">https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw</a></li>
-  <li>小灰算法2020 <a href="https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA">https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA</a></li>
-  <li>二十世纪最伟大的10大算法 <a href="https://blog.csdn.net/v_JULY_v/article/details/6127953">https://blog.csdn.net/v_JULY_v/article/details/6127953</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html">BitMap-BloomFilter</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="bitmap">BitMap</h4>
-<ul>
-  <li>近似的理解为用一个大数组的索引来表示数字本身，用0或1表示该数字是否存在</li>
-  <li>一个32位的int，只用一个标志位来表示是否存在</li>
-  <li>但是数字如果重复只会保留一个，主要用于去重类似的场景</li>
-</ul>
-
-<h4 id="bloomfilter">BloomFilter</h4>
-<ul>
-  <li>判断短连接是否重复、垃圾邮件等场景</li>
-  <li>把url，3次不同hash，得到3个不同的hashcode，存入bitmap</li>
-  <li>多次hash是为了降低hash重复的概率</li>
-  <li>由于以上特性，bloomFilter算法计算出不存在的一定就是不存在，如果计算出来存在有一定几率重复（因为hash的特性）</li>
-</ul>
-
-<h4 id="参考链接">参考链接</h4>
-<ul>
-  <li>Bitmap算法 整合版 <a href="https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg">https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg</a></li>
-  <li>什么是布隆算法？<a href="https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ">https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/DotDot.html">DotDot</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/DotDot.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>BigData</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="innodb引擎的4大特性">InnoDB引擎的4大特性</h4>
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h4 id="innodb引擎的4大特性">InnoDB引擎的4大特性</h4>
 <p>https://www.cnblogs.com/zhs0/p/10528520.html</p>
 <ul>
   <li>插入缓冲（insert buffer)，只对于非聚集索引（非唯一）的插入和更新有效，对于每一次的插入不是写到索引页中，而是先判断插入的非聚集索引页是否在缓冲池中，如果在则直接插入；若不在，则先放到Insert Buffer 中，再按照一定的频率进行合并操作，再写回disk。这样通常能将多个插入合并到一个操作中，目的还是为了减少随机IO带来性能损耗。</li>
@@ -313,312 +187,16 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
 使用：（1）添加pom依赖（2）配置文件添加相关配置（3）启动类添加注解@EnableConfigServer</li>
 </ul>
 
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/DotDot.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html">大数据常用算法概述</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>BigData</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="决策树算法">决策树算法</h4>
-<h4 id="回归算法">回归算法</h4>
-<h4 id="朴素贝叶斯算法">朴素贝叶斯算法</h4>
-<h4 id="聚类-knn算法">聚类-KNN算法</h4>
-<h4 id="svm支持向量机">SVM支持向量机</h4>
-<h4 id="推荐算法">推荐算法</h4>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html">ZooKeeper</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 6, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="使用场景">使用场景</h4>
-<ul>
-  <li>注册中心</li>
-  <li>配置中心</li>
-  <li>HBase之MetaData存储</li>
-  <li>分布式锁</li>
-</ul>
-
-<h4 id="常用命令">常用命令</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./zkServer.sh start | stop 
-./zkServer.sh status
-./zkCli.sh 
-
-<span class="nb">ls</span> /
-<span class="nb">stat</span> /
-ls2 /
-
-create /node1 /node1-content
-create <span class="nt">-e</span> /node1-temp /node1-content-temp
-</code></pre></div></div>
-<p><a href="https://blog.csdn.net/dandandeshangni/article/details/80558383">https://blog.csdn.net/dandandeshangni/article/details/80558383</a></p>
-
-<h4 id="阿里为什么不用-zookeeper-做服务发现">阿里为什么不用 ZooKeeper 做服务发现？</h4>
-<ul>
-  <li>基于CP而非AP</li>
-  <li>自身仅仅是主从的集群，而非分布式集群</li>
-  <li>The King Of Coordination for Big Data</li>
-</ul>
-
-<p><a href="https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg">https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-
-    <div style="text-align:center">
-    
-    <div class="pagination">
-      
-
-      
-      
-      <a href="" class="button current-page-button">1</a>
-      
-      
-      
-      <a href="/page2" class="button page-button">2</a>
-      
-      
-      
-      <a href="/page3" class="button page-button">3</a>
-      
-      
-      
-      <a href="/page4" class="button page-button">4</a>
-      
-      
-      
-      <a href="/page5" class="button page-button">5</a>
-      
-      
-      
-      <a href="/page6" class="button page-button">6</a>
-      
-      
-      
-      <a href="/page7" class="button page-button">7</a>
-      
-      
-      
-      <a href="/page8" class="button page-button">8</a>
-      
-      
-      
-      <a href="/page9" class="button page-button">9</a>
-      
-      
-      
-      <a href="/page10" class="button page-button">10</a>
-      
-      
-      
-      <a href="/page11" class="button page-button">11</a>
-      
-      
-
-      
-      <a href="/page2" class="button page-button">&raquo;</a>
-      
-    </div>
-    
-    </div>
   </div>
+</article>
 
-    <div class="col-md-4">
-    <div class="post-contents">
-      <i class="fa fa-tags">&nbsp;&nbsp; Tags</i><br />
-      
-      
-      
-      <a  href="/tag/programming">
-      <span class="label label-default">programming ( 4 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/python">
-      <span class="label label-default">python ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/云服务">
-      <span class="label label-default">云服务 ( 2 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/工具">
-      <span class="label label-default">工具 ( 3 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/网络">
-      <span class="label label-default">网络 ( 5 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/构建">
-      <span class="label label-default">构建 ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 13 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/股票">
-      <span class="label label-default">股票 ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/读书笔记">
-      <span class="label label-default">读书笔记 ( 4 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/数据库">
-      <span class="label label-default">数据库 ( 6 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 10 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/linux">
-      <span class="label label-default">Linux ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/java">
-      <span class="label label-default">Java ( 8 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/nosql">
-      <span class="label label-default">NoSQL ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/极致思考">
-      <span class="label label-default">极致思考 ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/架构">
-      <span class="label label-default">架构 ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/容器">
-      <span class="label label-default">容器 ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/spring">
-      <span class="label label-default">Spring ( 2 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/微服务">
-      <span class="label label-default">微服务 ( 3 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/bigdata">
-      <span class="label label-default">BigData ( 3 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/mq">
-      <span class="label label-default">MQ ( 1 )</span>
-      </a><br />
-
-      
-    </div>
-    <br />
-    <div class="post-contents">
-      <h3>About Me</h3>
-      <img src="/img/me.jpg" style="margin:20px auto 0 auto;">
-      <p style="font-size:18px;margin-top:10px">I'm Siglea,That's All.</p>
-      <br />
-    </div>
-    </div>
 </div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
       </div>
       <div class="clearfix">
     </div>

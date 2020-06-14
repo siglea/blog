@@ -54,6 +54,48 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html">Use `raise_error` matcher in Rspec</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 25, 2018</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>Yesterday I came accross a tricky useage of <code class="highlighter-rouge">raise_error</code> matcher in rspec, first I try to use the one line syntax <code class="highlighter-rouge">is_expected.to</code></p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>but I got an eror which stops the test before the test is finished.</p>
+
+<p>It is confusing in the first time, because <code class="highlighter-rouge">is_expected.to</code> is shortcut for <code class="highlighter-rouge">expect(subject)</code>.</p>
+
+<p>Then I found this <a href="https://github.com/rspec/rspec-expectations/issues/805#issuecomment-112239820">excellent explanation</a> in Github isses.</p>
+
+<p>So <code class="highlighter-rouge">expect(subject)</code> is not a block, subject is executed instantly, so rspec will stop before evaluating <code class="highlighter-rouge">raise_error</code> matcher.</p>
+
+<p>In order to make it work, we can make subject itself a block</p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span> <span class="p">}</span>
+
+<span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>But this syntax is creepy, instead it’s better to use</p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span>
+
+<span class="n">expect</span> <span class="p">{</span> <span class="n">subject</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span>
+</code></pre></div></div>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2018/10/25/serialize-non-activerecord-model-in-rails.html">Serialize Non-ActiveRecord Model Using ActiveModel::Serializer in Rails</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 25, 2018</span>
@@ -282,147 +324,147 @@
       
       
       
-      <a  href="tag/programming">
+      <a  href="/tag/programming">
       <span class="label label-default">programming ( 4 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/python">
+      <a  href="/tag/python">
       <span class="label label-default">python ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/云服务">
+      <a  href="/tag/云服务">
       <span class="label label-default">云服务 ( 2 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/工具">
+      <a  href="/tag/工具">
       <span class="label label-default">工具 ( 3 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/网络">
+      <a  href="/tag/网络">
       <span class="label label-default">网络 ( 5 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/构建">
+      <a  href="/tag/构建">
       <span class="label label-default">构建 ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/分布式">
+      <a  href="/tag/分布式">
       <span class="label label-default">分布式 ( 13 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/股票">
+      <a  href="/tag/股票">
       <span class="label label-default">股票 ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/读书笔记">
+      <a  href="/tag/读书笔记">
       <span class="label label-default">读书笔记 ( 4 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/数据库">
+      <a  href="/tag/数据库">
       <span class="label label-default">数据库 ( 6 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 9 )</span>
+      <a  href="/tag/数据结构与算法">
+      <span class="label label-default">数据结构与算法 ( 10 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/linux">
+      <a  href="/tag/linux">
       <span class="label label-default">Linux ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/java">
+      <a  href="/tag/java">
       <span class="label label-default">Java ( 8 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/nosql">
+      <a  href="/tag/nosql">
       <span class="label label-default">NoSQL ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/极致思考">
+      <a  href="/tag/极致思考">
       <span class="label label-default">极致思考 ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/架构">
+      <a  href="/tag/架构">
       <span class="label label-default">架构 ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/容器">
+      <a  href="/tag/容器">
       <span class="label label-default">容器 ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/spring">
+      <a  href="/tag/spring">
       <span class="label label-default">Spring ( 2 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/微服务">
+      <a  href="/tag/微服务">
       <span class="label label-default">微服务 ( 3 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/bigdata">
-      <span class="label label-default">BigData ( 2 )</span>
+      <a  href="/tag/bigdata">
+      <span class="label label-default">BigData ( 3 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/mq">
+      <a  href="/tag/mq">
       <span class="label label-default">MQ ( 1 )</span>
       </a><br />
 

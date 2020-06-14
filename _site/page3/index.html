@@ -54,6 +54,154 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html"> BigData </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>BigData</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="hdfshive-与-hbasephoenix的区别">HDFS+Hive 与 HBase+Phoenix的区别</h4>
+<ul>
+  <li>Hive中的表是纯逻辑表，就只是表的定义等，即表的元数据。Hive本身不存储数据，它完全依赖HDFS和MapReduce。这样就可以将结构化的数据文件映射为为一张数据库表，并提供完整的SQL查询功能，并将SQL语句最终转换为MapReduce任务进行运行。 而HBase表是物理表，适合存放非结构化的数据。
+    <ol>
+      <li>两者分别是什么？
+        <ul>
+          <li>Apache Hive是数据仓库。通过Hive可以使用HQL语言查询存放在HDFS上的数据。HQL是一种类SQL语言，这种语言最终被转化为Map/Reduce. 虽然Hive提供了SQL查询功能，但是Hive不能够进行交互查询–因为它是基于MapReduce算法。</li>
+          <li>Apache Hbase Key/Value，基础单元是cell，它运行在HDFS之上。和Hive不一样，Hbase的能够在它的数据库上实时运行，而不是运行MapReduce任务。</li>
+        </ul>
+      </li>
+      <li>两者的特点
+        <ul>
+          <li>Hive帮助熟悉SQL的人运行MapReduce任务。因为它是JDBC兼容的。运行Hive查询会花费很长时间，因为它会默认遍历表中所有的数据。但可以通过Hive的分区来控制。因为这样一来文件大小是固定的，就这么大一块存储空间，从固定空间里查数据是很快的。</li>
+          <li>HBase通过存储key/value来工作。注意版本的功能。你可以用Hadoop作为静态数据仓库，HBase作为数据存储，放那些进行一些操作会改变的数据。</li>
+        </ul>
+      </li>
+      <li>限制
+        <ul>
+          <li>Hive目前不支持更新操作。另外，由于hive在hadoop上运行批量操作，它需要花费很长的时间，通常是几分钟到几个小时才可以获取到查询的结果。Hive必须提供预先定义好的schema将文件和目录映射到列，并且Hive与ACID不兼容。</li>
+          <li>HBase查询是通过特定的语言来编写的，这种语言需要重新学习。类SQL的功能可以通过Apache Phonenix实现，但这是以必须提供schema为代价的。另外，Hbase也并不是兼容所有的ACID特性，虽然它支持某些特性。最后但不是最重要的–为了运行Hbase，Zookeeper是必须的，zookeeper是一个用来进行分布式协调的服务，这些服务包括配置服务，维护元信息和命名空间服务。</li>
+        </ul>
+      </li>
+      <li>应用场景
+        <ul>
+          <li>Hive适合用来对一段时间内的数据进行分析查询，例如，用来计算趋势或者网站的日志。Hive不应该用来进行实时的查询。因为它需要很长时间才可以返回结果。</li>
+          <li>Hbase非常适合用来进行大数据的实时查询。Facebook用Hbase进行消息和实时的分析。它也可以用来统计Facebook的连接数。</li>
+        </ul>
+      </li>
+      <li>两者关系
+        <ul>
+          <li>Hive和Pig都可以与HBase组合使用，Hive和Pig还为HBase提供了高层语言支持，使得在HBase上进行数据统计处理变的非常简单</li>
+          <li>Hive与HBase，都是在Hadoop体系使用</li>
+        </ul>
+      </li>
+      <li>总结
+        <ul>
+          <li>Hive和Hbase是两种基于Hadoop的不同技术–Hive是一种类SQL的引擎，并且运行MapReduce任务，Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库。当然，这两种工具是可以同时使用的。就像用Google来搜索，用FaceBook进行社交一样，Hive可以用来进行统计查询，HBase可以用来进行实时查询，数据也可以从Hive写到Hbase，设置再从Hbase写回Hive。</li>
+        </ul>
+      </li>
+      <li>其他
+        <ul>
+          <li>Pig是接近脚本方式去描述MapReduce，Hive则用的是SQL。近似理解为SQL ON Hadoop</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="hadoop--spark--storm">Hadoop &amp; Spark &amp; Storm</h4>
+<ul>
+  <li>Hadoop，是实现了MapReduce的思想，将数据切片计算来处理大量的离线数据。Hadoop处理的数据必须是已经存放在HDFS上或者类似HBase的数据库中，所以Hadoop实现的时候是通过移动计算到这些存放数据的机器上来提高效率。
+适合于离线的批量数据处理适用于对实时性要求极低的场景。</li>
+  <li>Storm，可以用来处理源源不断流进来的消息，处理之后将结果写入到某个存储中去。实时性方面做得极好。(可以脱离Hadoop体系单独使用)</li>
+  <li>Spark，是一个基于内存计算的开源集群计算系统，目的是更快速的进行数据分析。Spark由加州伯克利大学AMP实验室Matei为主的小团队使用Scala开发，类似于Hadoop MapReduce的通用并行计算框架，Spark基于Map Reduce算法实现的分布式计算，拥有Hadoop MapReduce所具有的优点，但不同于MapReduce的是Job中间输出和结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的Map Reduce的算法。
+(可以简单理解为”另一种形式的MapReduce”或者是第二代”引擎”，需要在Hadoop体系使用)</li>
+</ul>
+
+<h4 id="flume--kafka--storm">flume &amp; kafka &amp; storm</h4>
+<ul>
+  <li>flume收集日志，推到kafka缓冲一下，storm消费计算，最终结果存储</li>
+  <li>基于Flume的美团日志收集系统 <a href="https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html">https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html</a></li>
+  <li>流式数据采集和计算 <a href="https://blog.csdn.net/yezonggang/article/details/85034069">https://blog.csdn.net/yezonggang/article/details/85034069</a></li>
+  <li>Flume+Kafka+Storm+Redis构建大数据实时处理系统：实时统计网站PV、UV+展示 <a href="https://blog.51cto.com/xpleaf/2104160">https://blog.51cto.com/xpleaf/2104160</a></li>
+</ul>
+
+<h4 id="搭建单机hadoop">搭建单机Hadoop</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 配置环境变量</span>
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/home/java/jdk1.8
+<span class="nb">export </span><span class="nv">JRE_HOME</span><span class="o">=</span>/home/java/jdk1.8/jre
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="nv">$JAVA_HOME</span>/lib/dt.jar:<span class="nv">$JAVA_HOME</span>/lib/tools.jar:<span class="nv">$JRE_HOME</span>/lib
+
+<span class="nb">export </span><span class="nv">HADOOP_HOME</span><span class="o">=</span>/home/hadoop/hadoop2.8
+<span class="nb">export </span><span class="nv">HADOOP_COMMON_LIB_NATIVE_DIR</span><span class="o">=</span><span class="nv">$HADOOP_HOME</span>/lib/native
+<span class="nb">export </span><span class="nv">HADOOP_OPTS</span><span class="o">=</span><span class="s2">"-Djava.library.path=</span><span class="nv">$HADOOP_HOME</span><span class="s2">/lib"</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>.:<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin:<span class="k">${</span><span class="nv">HADOOP_HOME</span><span class="k">}</span>/bin:<span class="nv">$PATH</span>
+
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hadoop  
+<span class="nb">mkdir</span>  /root/hadoop/tmp  
+<span class="nb">mkdir</span>  /root/hadoop/var  
+<span class="nb">mkdir</span>  /root/hadoop/dfs  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/name  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/data
+
+<span class="c"># 3. 修改配置文件</span>
+vim core-site.xml
+vim hadoop-env.sh
+vim hdfs-site.xml
+vim mapred-site.xml
+
+<span class="c"># 4. 启动</span>
+bin/hadoop  namenode  <span class="nt">-format</span>
+start-dfs.sh
+start-yarn.sh
+</code></pre></div></div>
+
+<h4 id="搭建单机hbase">搭建单机HBase</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 搭建好Hadoop</span>
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hbase  
+<span class="nb">mkdir</span>  /root/hbase/tmp  
+<span class="nb">mkdir</span>  /root/hbase/pids
+<span class="c"># 3. 启动</span>
+./start-hbase.sh
+<span class="c"># 4. 常用命令</span>
+<span class="c"># 进入shell</span>
+hbase shell
+create <span class="s1">'t_user'</span>,<span class="s1">'st1'</span>,<span class="s1">'st2'</span>
+put <span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st1:age'</span>,<span class="s1">'18'</span>
+put <span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st2:name'</span>,<span class="s1">'zhangsan'</span>
+scan <span class="s1">'t_user'</span> <span class="c"># 查询该表数据</span>
+describe <span class="s1">'t_user'</span>
+delete<span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st1:age'</span>
+disable <span class="s1">'t_user'</span>
+drop <span class="s1">'t_user'</span>
+</code></pre></div></div>
+<ul>
+  <li>用HBase实现亿级Feed <a href="https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ">https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ</a></li>
+  <li>HBase案例 <a href="https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw">https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw</a></li>
+  <li>HBase面试题 <a href="https://www.jianshu.com/p/9ecd4367e6d0">https://www.jianshu.com/p/9ecd4367e6d0</a></li>
+  <li>es结合Hbase <a href="https://zhuanlan.zhihu.com/p/87563468">https://zhuanlan.zhihu.com/p/87563468</a></li>
+  <li>Hbase和Cassandra比较 <a href="https://blog.csdn.net/aa5305123/article/details/83142514">https://blog.csdn.net/aa5305123/article/details/83142514</a></li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>白话大数据 <a href="https://www.zhihu.com/question/27974418/answer/156227565">https://www.zhihu.com/question/27974418/answer/156227565</a></li>
+  <li>一步步搭建Hadoop体系 <a href="https://blog.csdn.net/qazwsxpcm/article/list/2?t=1">https://blog.csdn.net/qazwsxpcm/article/list/2?t=1</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"> Java SPI </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
@@ -493,54 +641,6 @@ location @custom <span class="o">{</span>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html"> Java ClassLoader </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="类加载器步骤">类加载器步骤</h4>
-<ol>
-  <li>在特定目录找到.class文件，并读取</li>
-  <li>Java是模板系语言，读取.class文件之后，被实例化为对应的Class的对象</li>
-  <li>Class对象=类模板实例化，只有有类模板，新对象才能根据类模板进行实例化</li>
-</ol>
-
-<h4 id="3大内置类加载器">3大内置类加载器</h4>
-<ul>
-  <li>启动（Bootstrap）类加载器
-启动类加载器主要加载的是JVM自身需要的类，这个类加载使用C++语言实现的，是虚拟机自身的一部分，它负责将 <JAVA_HOME>/lib路径下的核心类库或-Xbootclasspath参数指定的路径下的jar包加载到内存中，注意必由于虚拟机是按照文件名识别加载jar包的，如rt.jar，如果文件名不被虚拟机识别，即使把jar包丢到lib目录下也是没有作用的(出于安全考虑，Bootstrap启动类加载器只加载包名为java、javax、sun等开头的类)。</JAVA_HOME></li>
-  <li>扩展（Extension）类加载器
-扩展类加载器是指Sun公司(已被Oracle收购)实现的sun.misc.Launcher$ExtClassLoader类，由Java语言实现的，是Launcher的静态内部类，它负责加载<JAVA_HOME>/lib/ext目录下或者由系统变量-Djava.ext.dir指定位路径中的类库，开发者可以直接使用标准扩展类加载器。</JAVA_HOME></li>
-  <li>系统（System）类加载器
-也称应用程序加载器是指 Sun公司实现的sun.misc.Launcher$AppClassLoader。它负责加载系统类路径java -classpath或-D java.class.path 指定路径下的类库，也就是我们经常用到的classpath路径，开发者可以直接使用系统类加载器，一般情况下该类加载是程序中默认的类加载器，通过ClassLoader#getSystemClassLoader()方法可以获取到该类加载器。</li>
-</ul>
-
-<h4 id="双亲委派模式">双亲委派模式</h4>
-<p>工作原理的是，如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器，如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式</p>
-
-<h4 id="双亲委派模式优势">双亲委派模式优势</h4>
-<p>采用双亲委派模式的是好处是Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层级关可以避免类的重复加载，当父亲已经加载了该类时，就没有必要子ClassLoader再加载一次。其次是考虑到安全因素，java核心api中定义类型不会被随意替换，假设通过网络传递一个名为java.lang.Integer的类，通过双亲委托模式传递到启动类加载器，而启动类加载器在核心Java API发现这个名字的类，发现该类已被加载，并不会重新加载网络传递的过来的java.lang.Integer，而直接返回已加载过的Integer.class，这样便可以防止核心API库被随意篡改。可能你会想，如果我们在classpath路径下自定义一个名为java.lang.SingleInterge类(该类是胡编的)呢？该类并不存在java.lang中，经过双亲委托模式，传递到启动类加载器中，由于父类加载器路径下并没有该类，所以不会加载，将反向委托给子类加载器加载，最终会通过系统类加载器加载该类。但是这样做是不允许，因为java.lang是核心API包，需要访问权限，强制加载将会报出如下异常</p>
-
-<h4 id="其他">其他</h4>
-<ul>
-  <li>不同的加载器加载了同个类，在Jvm中相当于两个不同的Class对象</li>
-  <li>双亲委派模型的破坏者-线程上下文类加载器，在Java应用中存在着很多服务提供者接口（Service Provider Interface，SPI），这些接口允许第三方为它们提供实现，如常见的 SPI 有 JDBC、JNDI等，这些 SPI 的接口属于 Java 核心库，一般存在rt.jar包中，由Bootstrap类加载器加载，而 SPI 的第三方实现代码则是作为Java应用所依赖的 jar 包被存放在classpath路径下，由于SPI接口中的代码经常需要加载具体的第三方实现类并调用其相关方法，但SPI的核心接口类是由引导类加载器来加载的，而Bootstrap类加载器无法直接加载SPI的实现类，同时由于双亲委派模式的存在，Bootstrap类加载器也无法反向委托AppClassLoader加载器SPI的实现类。在这种情况下，我们就需要一种特殊的类加载器来加载第三方的类库，而线程上下文类加载器就是很好的选择。</li>
-  <li>参考<a href="https://blog.csdn.net/javazejian/article/details/73413292">https://blog.csdn.net/javazejian/article/details/73413292</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -609,147 +709,147 @@ location @custom <span class="o">{</span>
       
       
       
-      <a  href="tag/programming">
+      <a  href="/tag/programming">
       <span class="label label-default">programming ( 4 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/python">
+      <a  href="/tag/python">
       <span class="label label-default">python ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/云服务">
+      <a  href="/tag/云服务">
       <span class="label label-default">云服务 ( 2 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/工具">
+      <a  href="/tag/工具">
       <span class="label label-default">工具 ( 3 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/网络">
+      <a  href="/tag/网络">
       <span class="label label-default">网络 ( 5 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/构建">
+      <a  href="/tag/构建">
       <span class="label label-default">构建 ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/分布式">
+      <a  href="/tag/分布式">
       <span class="label label-default">分布式 ( 13 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/股票">
+      <a  href="/tag/股票">
       <span class="label label-default">股票 ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/读书笔记">
+      <a  href="/tag/读书笔记">
       <span class="label label-default">读书笔记 ( 4 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/数据库">
+      <a  href="/tag/数据库">
       <span class="label label-default">数据库 ( 6 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 9 )</span>
+      <a  href="/tag/数据结构与算法">
+      <span class="label label-default">数据结构与算法 ( 10 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/linux">
+      <a  href="/tag/linux">
       <span class="label label-default">Linux ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/java">
+      <a  href="/tag/java">
       <span class="label label-default">Java ( 8 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/nosql">
+      <a  href="/tag/nosql">
       <span class="label label-default">NoSQL ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/极致思考">
+      <a  href="/tag/极致思考">
       <span class="label label-default">极致思考 ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/架构">
+      <a  href="/tag/架构">
       <span class="label label-default">架构 ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/容器">
+      <a  href="/tag/容器">
       <span class="label label-default">容器 ( 1 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/spring">
+      <a  href="/tag/spring">
       <span class="label label-default">Spring ( 2 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/微服务">
+      <a  href="/tag/微服务">
       <span class="label label-default">微服务 ( 3 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/bigdata">
-      <span class="label label-default">BigData ( 2 )</span>
+      <a  href="/tag/bigdata">
+      <span class="label label-default">BigData ( 3 )</span>
       </a><br />
 
       
       
       
-      <a  href="tag/mq">
+      <a  href="/tag/mq">
       <span class="label label-default">MQ ( 1 )</span>
       </a><br />
 

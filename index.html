@@ -55,7 +55,7 @@ layout: default
       {% for tag in site.tags %}
       {% assign t = tag | first %}
       {% assign posts = tag | last %}
-      <a  href="tag/{{ t | downcase | prepend: site.baseurl }}">
+      <a  href="/tag/{{ t | downcase | prepend: site.baseurl }}">
       <span class="label label-default">{{t | replace:" ","-" }} ( {{ posts | size }} )</span>
       </a><br />
 

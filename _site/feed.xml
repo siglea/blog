@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 10 Jun 2020 20:42:04 +0800</pubDate>
-    <lastBuildDate>Wed, 10 Jun 2020 20:42:04 +0800</lastBuildDate>
+    <pubDate>Sun, 14 Jun 2020 17:02:44 +0800</pubDate>
+    <lastBuildDate>Sun, 14 Jun 2020 17:02:44 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -114,6 +114,148 @@ F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n&lt;span class=&quot;o&quot;&gt;
         <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html</guid>
         
         <category>数据结构与算法</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
+    
+      <item>
+        <title>DotDot</title>
+        <description>&lt;h4 id=&quot;innodb引擎的4大特性&quot;&gt;InnoDB引擎的4大特性&lt;/h4&gt;
+&lt;p&gt;https://www.cnblogs.com/zhs0/p/10528520.html&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;插入缓冲（insert buffer)，只对于非聚集索引（非唯一）的插入和更新有效，对于每一次的插入不是写到索引页中，而是先判断插入的非聚集索引页是否在缓冲池中，如果在则直接插入；若不在，则先放到Insert Buffer 中，再按照一定的频率进行合并操作，再写回disk。这样通常能将多个插入合并到一个操作中，目的还是为了减少随机IO带来性能损耗。&lt;/li&gt;
+  &lt;li&gt;二次写(double write)
+    &lt;ul&gt;
+      &lt;li&gt;InnoDB默认DB page为 16KB，而文件系统、磁盘、扇区对应的page小于该数字，因此，一次DB page可能被多次写入才能真正写入成功&lt;/li&gt;
+      &lt;li&gt;在写数据时，会在共享表空间写一份数据，之后再同步到磁盘&lt;/li&gt;
+      &lt;li&gt;在应用（apply）重做日志前，用户需要一个页的副本，当写入失效发生时，先通过页的副本来还原该页，再进行重做，这就是double write&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/chenpingzhao/p/4876282.html&quot;&gt;https://www.cnblogs.com/chenpingzhao/p/4876282.html&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;自适应哈希索引(ahi)，innodb会监控表上多个索引页的查询。如果观察到建立哈希索引可以带来速度提升，则自动建立哈希索引，称之为自适应哈希索引（Adaptive Hash Index，AHI）。
+  主要是精确等值查找，对范围查找搜索不生效&lt;/li&gt;
+  &lt;li&gt;预读(read ahead)，数据预加载&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5 id=&quot;共享表空间-独立表空间&quot;&gt;共享表空间 、独立表空间&lt;/h5&gt;
+&lt;ul&gt;
+  &lt;li&gt;共享表空间： Innodb的所有数据保存在一个单独的表空间里面，而这个表空间可以由很多个文件组成，一个表可以跨多个文件存在，所以其大小限制不再是文件大小的限制，而是其自身的限制。从Innodb的官方文档中可以看到，其表空间的最大限制为64TB，也就是说，Innodb的单表限制基本上也在64TB左右了，当然这个大小是包括这个表的所有索引等其他相关数据。&lt;/li&gt;
+  &lt;li&gt;独占表空间:  每一个表都将会生成以独立的文件方式来进行存储，每一个表都有一个.frm表描述文件，还有一个.ibd文件。 其中这个文件包括了单独一个表的数据内容以及索引内容，默认情况下它的存储位置也是在表的位置之中。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5 id=&quot;聚集索引-与-非聚集索引&quot;&gt;聚集索引 与 非聚集索引&lt;/h5&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/riemann_/article/details/90324846&quot;&gt;https://blog.csdn.net/riemann_/article/details/90324846&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;为什么网络分层&quot;&gt;为什么网络分层&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;粘包拆包&lt;/li&gt;
+  &lt;li&gt;netty&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;zookeeper的observer&quot;&gt;ZooKeeper的observer&lt;/h4&gt;
+&lt;p&gt;当ZooKeeper集群中follower的数量很多时，投票过程会成为一个性能瓶颈，为了解决投票造成的压力，于是出现了observer角色。
+observer角色不参与投票，它只是投票结果的”听众”，除此之外，它和follower完全一样，例如能接受读、写请求。就这一个特点，让整个ZooKeeper集群性能大大改善。
+和follower一样，当observer收到客户端的读请求时，会直接从内存数据库中取出数据返回给客户端。
+对于写请求，当写请求发送到某server上后，无论这个节点是follower还是observer，都会将它发送给leader。然后leader组织投票过程，所有server都收到这个proposal(包括observer，因为proposal是广播出去的)，但是leader和follower以及observer通过配置文件，都知道自己是不是observer以及谁是observer。自己是observer的server不参与投票。当leader收集完投票后，将那些observer的server去掉，在剩下的server中计算大多数，如果投票结果达到了大多数，这次写事务就成功，于是leader通知所有的节点(包括observer)，让它们将事务写入事务日志，并提交。&lt;/p&gt;
+
+&lt;p&gt;Pojo(plian ordinary普通的; 平常的; java object)&lt;/p&gt;
+
+&lt;h4 id=&quot;jvm&quot;&gt;JVM&lt;/h4&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;-Xms2g&lt;/span&gt;：初始化推大小为 2g；
+&lt;span class=&quot;nt&quot;&gt;-Xmx2g&lt;/span&gt;：堆最大内存为 2g；
+&lt;span class=&quot;nt&quot;&gt;-XX&lt;/span&gt;:NewRatio&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;4：设置年轻的和老年代的内存比例为 1:4；
+&lt;span class=&quot;nt&quot;&gt;-XX&lt;/span&gt;:SurvivorRatio&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;8：设置新生代 Eden 和 Survivor 比例为 8:2；
+–XX:+UseParNewGC：指定使用 ParNew + Serial Old 垃圾回收器组合；
+&lt;span class=&quot;nt&quot;&gt;-XX&lt;/span&gt;:+UseParallelOldGC：指定使用 ParNew + ParNew Old 垃圾回收器组合；
+&lt;span class=&quot;nt&quot;&gt;-XX&lt;/span&gt;:+UseConcMarkSweepGC：指定使用 CMS + Serial Old 垃圾回收器组合；
+&lt;span class=&quot;nt&quot;&gt;-XX&lt;/span&gt;:+PrintGC：开启打印 gc 信息；
+&lt;span class=&quot;nt&quot;&gt;-XX&lt;/span&gt;:+PrintGCDetails：打印 gc 详细信息。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;分代垃圾回收器是怎么工作的&quot;&gt;分代垃圾回收器是怎么工作的？&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;分代回收器有两个分区：老生代和新生代，新生代默认的空间占比总空间的 1/3，老生代的默认占比是 2/3。&lt;/li&gt;
+  &lt;li&gt;新生代使用的是复制算法，新生代里有 3 个分区：Eden、To Survivor、From Survivor，它们的默认占比是  8:1:1，它的执行流程如下：&lt;/li&gt;
+  &lt;li&gt;把 Eden + From Survivor 存活的对象放入 To Survivor 区；
+清空 Eden 和 From Survivor 分区；
+From Survivor 和 To Survivor 分区交换，From Survivor 变 To Survivor，To Survivor 变 From Survivor。
+每次在 From Survivor 到 To Survivor 移动时都存活的对象，年龄就 +1，当年龄到达 15（默认配置是 15）时，升级为老生代。大对象也会直接进入老生代。&lt;/li&gt;
+  &lt;li&gt;老生代当空间占用到达某个值之后就会触发全局垃圾收回，一般使用标记整理的执行算法。以上这些循环往复就构成了整个分代垃圾回收的整体执行流程。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;垃圾回收器&quot;&gt;垃圾回收器&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Serial收集器（复制算法): 新生代单线程收集器，标记和清理都是单线程，优点是简单高效；&lt;/li&gt;
+  &lt;li&gt;ParNew收集器 (复制算法): 新生代收并行集器，实际上是Serial收集器的多线程版本，在多核CPU环境下有着比Serial更好的表现；&lt;/li&gt;
+  &lt;li&gt;Parallel Scavenge收集器 (复制算法): 新生代并行收集器，追求高吞吐量，高效利用 CPU。吞吐量 = 用户线程时间/(用户线程时间+GC线程时间)，高吞吐量可以高效率的利用CPU时间，尽快完成程序的运算任务，适合后台应用等对交互相应要求不高的场景；&lt;/li&gt;
+  &lt;li&gt;Serial Old收集器 (标记-整理算法): 老年代单线程收集器，Serial收集器的老年代版本；&lt;/li&gt;
+  &lt;li&gt;Parallel Old收集器 (标记-整理算法)： 老年代并行收集器，吞吐量优先，Parallel Scavenge收集器的老年代版本；&lt;/li&gt;
+  &lt;li&gt;CMS(Concurrent Mark Sweep)收集器（标记-清除算法）： 老年代并行收集器，以获取最短回收停顿时间为目标的收集器，具有高并发、低停顿的特点，追求最短GC回收停顿时间。&lt;/li&gt;
+  &lt;li&gt;G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;bionioaio-有什么区别&quot;&gt;BIO,NIO,AIO 有什么区别?&lt;/h4&gt;
+&lt;p&gt;BIO：Block IO 同步阻塞式 IO，就是我们平常使用的传统 IO，它的特点是模式简单使用方便，并发处理能力低。
+NIO：Non IO 同步非阻塞 IO，是传统 IO 的升级，客户端和服务器端通过 Channel（通道）通讯，实现了多路复用。
+AIO：Asynchronous IO 是 NIO 的升级，也叫 NIO2，实现了异步非堵塞 IO ，异步 IO 的操作基于事件和回调机制。
+详细回答&lt;/p&gt;
+
+&lt;p&gt;BIO (Blocking I/O): 同步阻塞I/O模式，数据的读取写入必须阻塞在一个线程内等待其完成。在活动连接数不是特别高（小于单机1000）的情况下，这种模型是比较不错的，可以让每一个连接专注于自己的 I/O 并且编程模型简单，也不用过多考虑系统的过载、限流等问题。线程池本身就是一个天然的漏斗，可以缓冲一些系统处理不了的连接或请求。但是，当面对十万甚至百万级连接的时候，传统的 BIO 模型是无能为力的。因此，我们需要一种更高效的 I/O 处理模型来应对更高的并发量。
+NIO (New I/O): NIO是一种同步非阻塞的I/O模型，在Java 1.4 中引入了NIO框架，对应 java.nio 包，提供了 Channel , Selector，Buffer等抽象。NIO中的N可以理解为Non-blocking，不单纯是New。它支持面向缓冲的，基于通道的I/O操作方法。 NIO提供了与传统BIO模型中的 Socket 和 ServerSocket 相对应的 SocketChannel 和 ServerSocketChannel 两种不同的套接字通道实现,两种通道都支持阻塞和非阻塞两种模式。阻塞模式使用就像传统中的支持一样，比较简单，但是性能和可靠性都不好；非阻塞模式正好与之相反。对于低负载、低并发的应用程序，可以使用同步阻塞I/O来提升开发速率和更好的维护性；对于高负载、高并发的（网络）应用，应使用 NIO 的非阻塞模式来开发
+AIO (Asynchronous I/O): AIO 也就是 NIO 2。在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的IO模型。异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。AIO 是异步IO的缩写，虽然 NIO 在网络操作中，提供了非阻塞的方法，但是 NIO 的 IO 行为还是同步的。对于 NIO 来说，我们的业务线程是在 IO 操作准备好时，得到通知，接着就由这个线程自行进行 IO 操作，IO操作本身是同步的。查阅网上相关资料，我发现就目前来说 AIO 的应用还不是很广泛，Netty 之前也尝试使用过 AIO，不过又放弃了。&lt;/p&gt;
+
+&lt;h4 id=&quot;kafka数据存储&quot;&gt;kafka数据存储&lt;/h4&gt;
+
+&lt;h4 id=&quot;hashmap-为啥size是2的倍数18比17做了哪些优化&quot;&gt;HashMap 为啥size是2的倍数，1.8比1.7做了哪些优化？&lt;/h4&gt;
+&lt;p&gt;JDK1.7 VS JDK1.8 比较
+JDK1.8主要解决或优化了一下问题：
+resize 扩容优化
+引入了红黑树，目的是避免单条链表过长而影响查询效率，红黑树算法请参考
+解决了多线程死循环问题，但仍是非线程安全的，多线程时可能会造成数据丢失问题。&lt;/p&gt;
+
+&lt;h4 id=&quot;spring&quot;&gt;Spring&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Eureka：服务治理组件，包括服务端的注册中心和客户端的服务发现机制；&lt;/li&gt;
+  &lt;li&gt;Ribbon：负载均衡的服务调用组件，具有多种负载均衡调用策略；&lt;/li&gt;
+  &lt;li&gt;Hystrix：服务容错组件，实现了断路器模式，为依赖服务的出错和延迟提供了容错能力；&lt;/li&gt;
+  &lt;li&gt;Feign：基于Ribbon和Hystrix的声明式服务调用组件；&lt;/li&gt;
+  &lt;li&gt;Zuul：API网关组件，对请求提供路由及过滤功能。&lt;/li&gt;
+  &lt;li&gt;Spring Cloud Bus
+用于传播集群状态变化的消息总线，使用轻量级消息代理链接分布式系统中的节点，可以用来动态刷新集群中的服务配置。
+Spring Cloud Bus 提供了跨多个实例刷新配置的功能。因此，在上面的示例中，如果我们刷新 Employee Producer1，则会自动刷新所有其他必需的模块。如果我们有多个微服务启动并运行，这特别有用。这是通过将所有微服务连接到单个消息代理来实现的。无论何时刷新实例，此事件都会订阅到侦听此代理的所有微服务，并且它们也会刷新。可以通过使用端点/总线/刷新来实现对任何单个实例的刷新。&lt;/li&gt;
+  &lt;li&gt;Spring Cloud Consul
+基于Hashicorp Consul的服务治理组件。&lt;/li&gt;
+  &lt;li&gt;Spring Cloud Security
+安全工具包，对Zuul代理中的负载均衡OAuth2客户端及登录认证进行支持。&lt;/li&gt;
+  &lt;li&gt;Spring Cloud Sleuth
+Spring Cloud应用程序的分布式请求链路跟踪，支持使用Zipkin、HTrace和基于日志（例如ELK）的跟踪。&lt;/li&gt;
+  &lt;li&gt;Spring Cloud Stream
+轻量级事件驱动微服务框架，可以使用简单的声明式模型来发送及接收消息，主要实现为Apache Kafka及RabbitMQ。&lt;/li&gt;
+  &lt;li&gt;Spring Cloud Task
+用于快速构建短暂、有限数据处理任务的微服务框架，用于向应用中添加功能性和非功能性的特性。&lt;/li&gt;
+  &lt;li&gt;Spring Cloud Zookeeper
+基于Apache Zookeeper的服务治理组件。&lt;/li&gt;
+  &lt;li&gt;Spring Cloud Gateway
+API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是Spring Cloud官方推出的第二代网关框架，取代Zuul网关。网关作为流量的，在微服务系统中有着非常作用，网关常见的功能有路由转发、权限校验、限流控制等作用。
+使用了一个RouteLocatorBuilder的bean去创建路由，除了创建路由RouteLocatorBuilder可以让你添加各种predicates和filters，predicates断言的意思，顾名思义就是根据具体的请求的规则，由具体的route去处理，filters是各种过滤器，用来对请求做各种判断和修改。&lt;/li&gt;
+  &lt;li&gt;Spring Cloud OpenFeign
+基于Ribbon和Hystrix的声明式服务调用组件，可以动态创建基于Spring MVC注解的接口实现用于服务调用，在Spring Cloud 2.0中已经取代Feign成为了一等公民。&lt;/li&gt;
+  &lt;li&gt;什么是Spring Cloud Config?
+在分布式系统中，由于服务数量巨多，为了方便服务配置文件统一管理，实时更新，所以需要分布式配置中心组件。在Spring Cloud中，有分布式配置中心组件spring cloud config ，它支持配置服务放在配置服务的内存中（即本地），也支持放在远程Git仓库中。在spring cloud config 组件中，分两个角色，一是config server，二是config client。
+使用：（1）添加pom依赖（2）配置文件添加相关配置（3）启动类添加注解@EnableConfigServer&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sun, 07 Jun 2020 12:25:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/07/DotDot.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/07/DotDot.html</guid>
+        
+        <category>数据结构与算法</category>
+        
+        <category>BigData</category>
         
         
         <category>技术</category>
@@ -686,149 +828,6 @@ broker机器的外网ip  hostname.com
         <category>网络</category>
         
         <category>Java</category>
-        
-        
-        <category>技术</category>
-        
-      </item>
-    
-      <item>
-        <title> BigData </title>
-        <description>&lt;h4 id=&quot;hdfshive-与-hbasephoenix的区别&quot;&gt;HDFS+Hive 与 HBase+Phoenix的区别&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;Hive中的表是纯逻辑表，就只是表的定义等，即表的元数据。Hive本身不存储数据，它完全依赖HDFS和MapReduce。这样就可以将结构化的数据文件映射为为一张数据库表，并提供完整的SQL查询功能，并将SQL语句最终转换为MapReduce任务进行运行。 而HBase表是物理表，适合存放非结构化的数据。
-    &lt;ol&gt;
-      &lt;li&gt;两者分别是什么？
-        &lt;ul&gt;
-          &lt;li&gt;Apache Hive是数据仓库。通过Hive可以使用HQL语言查询存放在HDFS上的数据。HQL是一种类SQL语言，这种语言最终被转化为Map/Reduce. 虽然Hive提供了SQL查询功能，但是Hive不能够进行交互查询–因为它是基于MapReduce算法。&lt;/li&gt;
-          &lt;li&gt;Apache Hbase Key/Value，基础单元是cell，它运行在HDFS之上。和Hive不一样，Hbase的能够在它的数据库上实时运行，而不是运行MapReduce任务。&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-      &lt;li&gt;两者的特点
-        &lt;ul&gt;
-          &lt;li&gt;Hive帮助熟悉SQL的人运行MapReduce任务。因为它是JDBC兼容的。运行Hive查询会花费很长时间，因为它会默认遍历表中所有的数据。但可以通过Hive的分区来控制。因为这样一来文件大小是固定的，就这么大一块存储空间，从固定空间里查数据是很快的。&lt;/li&gt;
-          &lt;li&gt;HBase通过存储key/value来工作。注意版本的功能。你可以用Hadoop作为静态数据仓库，HBase作为数据存储，放那些进行一些操作会改变的数据。&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-      &lt;li&gt;限制
-        &lt;ul&gt;
-          &lt;li&gt;Hive目前不支持更新操作。另外，由于hive在hadoop上运行批量操作，它需要花费很长的时间，通常是几分钟到几个小时才可以获取到查询的结果。Hive必须提供预先定义好的schema将文件和目录映射到列，并且Hive与ACID不兼容。&lt;/li&gt;
-          &lt;li&gt;HBase查询是通过特定的语言来编写的，这种语言需要重新学习。类SQL的功能可以通过Apache Phonenix实现，但这是以必须提供schema为代价的。另外，Hbase也并不是兼容所有的ACID特性，虽然它支持某些特性。最后但不是最重要的–为了运行Hbase，Zookeeper是必须的，zookeeper是一个用来进行分布式协调的服务，这些服务包括配置服务，维护元信息和命名空间服务。&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-      &lt;li&gt;应用场景
-        &lt;ul&gt;
-          &lt;li&gt;Hive适合用来对一段时间内的数据进行分析查询，例如，用来计算趋势或者网站的日志。Hive不应该用来进行实时的查询。因为它需要很长时间才可以返回结果。&lt;/li&gt;
-          &lt;li&gt;Hbase非常适合用来进行大数据的实时查询。Facebook用Hbase进行消息和实时的分析。它也可以用来统计Facebook的连接数。&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-      &lt;li&gt;两者关系
-        &lt;ul&gt;
-          &lt;li&gt;Hive和Pig都可以与HBase组合使用，Hive和Pig还为HBase提供了高层语言支持，使得在HBase上进行数据统计处理变的非常简单&lt;/li&gt;
-          &lt;li&gt;Hive与HBase，都是在Hadoop体系使用&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-      &lt;li&gt;总结
-        &lt;ul&gt;
-          &lt;li&gt;Hive和Hbase是两种基于Hadoop的不同技术–Hive是一种类SQL的引擎，并且运行MapReduce任务，Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库。当然，这两种工具是可以同时使用的。就像用Google来搜索，用FaceBook进行社交一样，Hive可以用来进行统计查询，HBase可以用来进行实时查询，数据也可以从Hive写到Hbase，设置再从Hbase写回Hive。&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-      &lt;li&gt;其他
-        &lt;ul&gt;
-          &lt;li&gt;Pig是接近脚本方式去描述MapReduce，Hive则用的是SQL。近似理解为SQL ON Hadoop&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-    &lt;/ol&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;hadoop--spark--storm&quot;&gt;Hadoop &amp;amp; Spark &amp;amp; Storm&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;Hadoop，是实现了MapReduce的思想，将数据切片计算来处理大量的离线数据。Hadoop处理的数据必须是已经存放在HDFS上或者类似HBase的数据库中，所以Hadoop实现的时候是通过移动计算到这些存放数据的机器上来提高效率。
-适合于离线的批量数据处理适用于对实时性要求极低的场景。&lt;/li&gt;
-  &lt;li&gt;Storm，可以用来处理源源不断流进来的消息，处理之后将结果写入到某个存储中去。实时性方面做得极好。(可以脱离Hadoop体系单独使用)&lt;/li&gt;
-  &lt;li&gt;Spark，是一个基于内存计算的开源集群计算系统，目的是更快速的进行数据分析。Spark由加州伯克利大学AMP实验室Matei为主的小团队使用Scala开发，类似于Hadoop MapReduce的通用并行计算框架，Spark基于Map Reduce算法实现的分布式计算，拥有Hadoop MapReduce所具有的优点，但不同于MapReduce的是Job中间输出和结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的Map Reduce的算法。
-(可以简单理解为”另一种形式的MapReduce”或者是第二代”引擎”，需要在Hadoop体系使用)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;flume--kafka--storm&quot;&gt;flume &amp;amp; kafka &amp;amp; storm&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;flume收集日志，推到kafka缓冲一下，storm消费计算，最终结果存储&lt;/li&gt;
-  &lt;li&gt;基于Flume的美团日志收集系统 &lt;a href=&quot;https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html&quot;&gt;https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;流式数据采集和计算 &lt;a href=&quot;https://blog.csdn.net/yezonggang/article/details/85034069&quot;&gt;https://blog.csdn.net/yezonggang/article/details/85034069&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Flume+Kafka+Storm+Redis构建大数据实时处理系统：实时统计网站PV、UV+展示 &lt;a href=&quot;https://blog.51cto.com/xpleaf/2104160&quot;&gt;https://blog.51cto.com/xpleaf/2104160&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;搭建单机hadoop&quot;&gt;搭建单机Hadoop&lt;/h4&gt;
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 1. 配置环境变量&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/java/jdk1.8
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JRE_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/java/jdk1.8/jre
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;CLASSPATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.:&lt;span class=&quot;nv&quot;&gt;$JAVA_HOME&lt;/span&gt;/lib/dt.jar:&lt;span class=&quot;nv&quot;&gt;$JAVA_HOME&lt;/span&gt;/lib/tools.jar:&lt;span class=&quot;nv&quot;&gt;$JRE_HOME&lt;/span&gt;/lib
-
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/hadoop/hadoop2.8
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_COMMON_LIB_NATIVE_DIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;/lib/native
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_OPTS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;-Djava.library.path=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib&quot;&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.:&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;JAVA_HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/bin:&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/bin:&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# 2. 创建目录&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop  
-&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/tmp  
-&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/var  
-&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/dfs  
-&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/dfs/name  
-&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hadoop/dfs/data
-
-&lt;span class=&quot;c&quot;&gt;# 3. 修改配置文件&lt;/span&gt;
-vim core-site.xml
-vim hadoop-env.sh
-vim hdfs-site.xml
-vim mapred-site.xml
-
-&lt;span class=&quot;c&quot;&gt;# 4. 启动&lt;/span&gt;
-bin/hadoop  namenode  &lt;span class=&quot;nt&quot;&gt;-format&lt;/span&gt;
-start-dfs.sh
-start-yarn.sh
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;搭建单机hbase&quot;&gt;搭建单机HBase&lt;/h4&gt;
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 1. 搭建好Hadoop&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# 2. 创建目录&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hbase  
-&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hbase/tmp  
-&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt;  /root/hbase/pids
-&lt;span class=&quot;c&quot;&gt;# 3. 启动&lt;/span&gt;
-./start-hbase.sh
-&lt;span class=&quot;c&quot;&gt;# 4. 常用命令&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# 进入shell&lt;/span&gt;
-hbase shell
-create &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st1'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st2'&lt;/span&gt;
-put &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'1001'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st1:age'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'18'&lt;/span&gt;
-put &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'1001'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st2:name'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'zhangsan'&lt;/span&gt;
-scan &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# 查询该表数据&lt;/span&gt;
-describe &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;
-delete&lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'1001'&lt;/span&gt;,&lt;span class=&quot;s1&quot;&gt;'st1:age'&lt;/span&gt;
-disable &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;
-drop &lt;span class=&quot;s1&quot;&gt;'t_user'&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;ul&gt;
-  &lt;li&gt;用HBase实现亿级Feed &lt;a href=&quot;https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ&quot;&gt;https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;HBase案例 &lt;a href=&quot;https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw&quot;&gt;https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;HBase面试题 &lt;a href=&quot;https://www.jianshu.com/p/9ecd4367e6d0&quot;&gt;https://www.jianshu.com/p/9ecd4367e6d0&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;es结合Hbase &lt;a href=&quot;https://zhuanlan.zhihu.com/p/87563468&quot;&gt;https://zhuanlan.zhihu.com/p/87563468&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Hbase和Cassandra比较 &lt;a href=&quot;https://blog.csdn.net/aa5305123/article/details/83142514&quot;&gt;https://blog.csdn.net/aa5305123/article/details/83142514&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;参考&quot;&gt;参考&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;白话大数据 &lt;a href=&quot;https://www.zhihu.com/question/27974418/answer/156227565&quot;&gt;https://www.zhihu.com/question/27974418/answer/156227565&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;一步步搭建Hadoop体系 &lt;a href=&quot;https://blog.csdn.net/qazwsxpcm/article/list/2?t=1&quot;&gt;https://blog.csdn.net/qazwsxpcm/article/list/2?t=1&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Fri, 01 May 2020 19:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html</guid>
-        
-        <category>BigData</category>
         
         
         <category>技术</category>
