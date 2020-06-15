@@ -9,7 +9,69 @@ tags:
 categories:
 - 技术
 ---
-#### 简单总结三者区别
+### 再次总结
+#### 历史
+ - select出现是1984年在BSD里面实现的(为了减少数据拷贝带来的性能损坏，内核对被监控的fd_set集合大小做了限制，并且这个是通过宏控制的，大小不可改变(限制为1024))
+ - 14年之后也就是1997年才实现了poll，其实拖那么久也不是效率问题， 而是那个时代的硬件实在太弱，一台服务器处理1千多个链接简直就是神一样的存在了，select很长段时间已经满足需求
+ - 2002, 大神 Davide Libenzi 实现了epoll
+ 
+#### 区别
+- 操作方式：select/poll依靠遍历，而epll靠回调
+- IO效率：由于操作方式，select/poll时间复杂度是O(n)，epoll是O(1)
+- 数据结构：select(数组)、poll(链表)、epoll(哈希表)
+- 最大连接数：由于数据结构的原因，poll/epoll突破了数量的限制，而select只支持1024(2048)
+- fd拷贝：select/poll都需要把fd集合从用户态拷贝到内核态，epoll没有描述符个数限制，使用一个文件描述符管理多个描述符，将用户关心的文件描述符的事件存放到内核的一个事件表中，这样在用户空间和内核空间的copy只需一次。
+- epoll是通过内核于用户空间mmap同一块内存实现了节省拷贝的动作。
+
+#### 源代码
+```java
+// select
+int select(int maxfdp1,fd_set *readset,fd_set *writeset,fd_set *exceptset,const struct timeval *timeout);
+// 主要问题在于在用户态创建fd_set然后拷贝到内核态，再由内核态装配数据后，在用户态中进行遍历
+// 并且每次都需要重新初始化fd_set
+
+// poll
+int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+typedef struct pollfd {        
+int fd;                         // 需要被检测或选择的文件描述符        
+short events;                   // 对文件描述符fd上感兴趣的事件        
+short revents;                  // 文件描述符fd上当前实际发生的事件
+} 
+
+
+// epoll
+int epoll_create(int size); //  函数创建一个epoll句柄，参数size表明内核要监听的描述符数量。调用成功时返回一个epoll句柄描述符，失败时返回-1。
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+    // epfd 表示epoll句柄
+    // op 表示fd操作类型，有如下3种
+        // EPOLL_CTL_ADD   注册新的fd到epfd中
+        // EPOLL_CTL_MOD 修改已注册的fd的监听事件
+        // EPOLL_CTL_DEL 从epfd中删除一个fd
+    // fd 是要监听的描述符
+    // event 表示要监听的事件
+struct epoll_event {
+    __uint32_t events;  /* Epoll events */    
+   epoll_data_t data;  /* User data variable */
+};
+typedef union epoll_data {
+    void *ptr;    int fd;
+    __uint32_t u32;
+    __uint64_t u64;
+} epoll_data_t;
+int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
+    // epfd 是epoll句柄
+    // events 表示从内核得到的就绪事件集合
+    // maxevents 告诉内核events的大小
+    // timeout 表示等待的超时事件
+```
+
+#### 参考
+- IO多路复用的三种机制Select，Poll，Epoll <https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA>
+- IO模型及select、poll、epoll和kqueue的区别 <https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A>
+- Select，Poll，Epoll详解 <https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg>
+- 大量代码 深入分析select&poll&epoll原理 <https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g>
+
+### 简单总结三者区别
 - 一切都与历史有关，都是历史发展造成差异
 - select最早出现（1983年在BSD里实现），由以下几个特点
   1. 无论效率如何确实实现了多路复用
@@ -34,3 +96,4 @@ categories:
 - <https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA>
 - <https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA>
 - <https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A>
+- C10K到C10M <http://www.52im.net/thread-561-1-1.html>

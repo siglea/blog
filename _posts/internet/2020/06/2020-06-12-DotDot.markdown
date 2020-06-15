@@ -100,8 +100,6 @@ https://www.cnblogs.com/zhs0/p/10528520.html
     - tcp_keepalive_probes=9：表示检测 9 次无响应，认为对方是不可达的，从而中断本次的连接。
     - 高效保活长连接：手把手教你实现 自适应的心跳保活机制 <https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA>
     - 聊聊 TCP 长连接和心跳那些事 <https://mp.weixin.qq.com/s/cwqAMPku-LwXAGM3Cqztig>
-- 再谈select/poll/epoll
-    <https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA>
 - listen 时候参数 backlog 的意义？
 ```shell
 int listen (int socketfd, int backlog)
@@ -110,7 +108,6 @@ int listen (int socketfd, int backlog)
 在早期 Linux 内核 backlog 是 SYN 队列大小，也就是未完成的队列大小。
 在 Linux 内核 2.2 之后，backlog 变成 accept 队列，也就是已完成连接建立的队列长度，所以现在通常认为 backlog 是 accept 队列。
 ```
-
 - 粘包拆包，应用层拆包？
     - 如果客户端连续不断的向服务端发送数据包时，服务端接收的数据会出现两个数据包粘在一起的情况，这就是TCP协议中经常会遇到的粘包以及拆包的问题。
       我们都知道TCP属于传输层的协议，传输层除了有TCP协议外还有UDP协议。那么UDP是否会发生粘包或拆包的现象呢？答案是不会。UDP是基于报文发送的，从UDP的帧结构可以看出，在UDP首部采用了16bit来指示UDP数据报文的长度，因此在应用层能很好的将不同的数据报文区分开，从而避免粘包和拆包的问题。而TCP是基于字节流的，虽然应用层和TCP传输层之间的数据交互是大小不等的数据块，但是TCP把这些数据块仅仅看成一连串无结构的字节流，没有边界；另外从TCP的帧结构也可以看出，在TCP的首部没有表示数据长度的字段，基于上面两点，在使用TCP传输数据时，才有粘包或者拆包现象发生的可能 
@@ -120,6 +117,7 @@ int listen (int socketfd, int backlog)
         - 客户端在每个包的末尾使用固定的分隔符，例如\r\n，如果一个包被拆分了，则等待下一个包发送过来之后找到其中的\r\n，然后对其拆分后的头部部分与前一个包的剩余部分进行合并，这样就得到了一个完整的包；
         - 将消息分为头部和消息体，在头部中保存有当前整个消息的长度，只有在读取到足够长度的消息之后才算是读到了一个完整的消息；
         - 通过自定义协议进行粘包和拆包的处理。
+- 使用了哪些算法？
 - netty
     - 无锁设计、线程绑定，类似偏向锁读写操作会判断是否是之前绑定的线程
 - reactor和proactor模型
@@ -240,3 +238,5 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
 #### Protocol Buffer 的数据压缩效果好(即序列化后的数据量体积小)的原因是:
 1. a. 采用了独特的编码方式，如 Varint、Zigzag 编码方式等等
 2. b. 采用 T - L - V 的数据存储方式:减少了分隔符的使用 & 数据存储得紧凑
+
+#### es hbase cassandra数据结构
