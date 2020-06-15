@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 15 Jun 2020 16:50:03 +0800</pubDate>
-    <lastBuildDate>Mon, 15 Jun 2020 16:50:03 +0800</lastBuildDate>
+    <pubDate>Mon, 15 Jun 2020 18:27:48 +0800</pubDate>
+    <lastBuildDate>Mon, 15 Jun 2020 18:27:48 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -150,11 +150,73 @@ F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n&lt;span class=&quot;o&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/riemann_/article/details/90324846&quot;&gt;https://blog.csdn.net/riemann_/article/details/90324846&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;为什么网络分层&quot;&gt;为什么网络分层&lt;/h4&gt;
+&lt;h4 id=&quot;tcp&quot;&gt;TCP&lt;/h4&gt;
 &lt;ul&gt;
+  &lt;li&gt;TCP三要素：ip+端口、序列号（解决乱序）、窗口大小（流量控制）&lt;/li&gt;
+  &lt;li&gt;TCP与UDP
+    &lt;ul&gt;
+      &lt;li&gt;TCP 首部长度较长，会有一定的开销，首部在没有使用「选项」字段时是 20 个字节，如果使用了「选项」字段则会变长的。
+    UDP 首部只有 8 个字节，并且是固定不变的，开销较小。&lt;/li&gt;
+      &lt;li&gt;为什么 UDP 头部没有「首部长度」字段，而 TCP 头部有「首部长度」字段呢？
+  原因是 TCP 有可变长的「选项」字段，而 UDP 头部长度则是不会变化的，无需多一个字段去记录 UDP 的首部长度。&lt;/li&gt;
+      &lt;li&gt;为什么 UDP 头部有「包长度」字段，而 TCP 头部则没有「包长度」字段呢？
+  TCP数据的长度 = IP总长度-IP首位长度-TCP首部长度。实际上，UDP的长度也可以用这个方式计算，因此UDP包长度有点多余&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;TCP建立连接3次握手+4种状态：LISTEN、SYS_SEND、SYN_RCVD、ESTABLISHED。（第三次握手可以携带数据，是因为客户端已经明确知道连接建立了）
+    &lt;ul&gt;
+      &lt;li&gt;为什么是三次握手？不是两次、四次？
+        &lt;ul&gt;
+          &lt;li&gt;三次握手才可以阻止历史重复连接的初始化（主要原因）
+            &lt;ul&gt;
+              &lt;li&gt;如果是两次握手连接，就不能判断当前连接是否是历史连接，三次握手则可以在客户端（发送方）准备发送第三次报文时，客户端因有足够的上下文来判断当前连接是否是历史连接：&lt;/li&gt;
+              &lt;li&gt;如果是历史连接（序列号过期或超时），则第三次握手发送的报文是 RST 报文，以此中止历史连接；&lt;/li&gt;
+              &lt;li&gt;如果不是历史连接，则第三次发送的报文是 ACK 报文，通信双方就会成功建立连接；&lt;/li&gt;
+            &lt;/ul&gt;
+          &lt;/li&gt;
+          &lt;li&gt;三次握手才可以同步双方的初始序列号&lt;/li&gt;
+          &lt;li&gt;三次握手才可以避免资源浪费
+            &lt;ul&gt;
+              &lt;li&gt;如果只有「两次握手」，当客户端的 SYN 请求连接在网络中阻塞，客户端没有接收到 ACK 报文，就会重新发送 SYN ，由于没有第三次握手，服务器不清楚客户端是否收到了自己发送的建立连接的 ACK 确认信号，所以每收到一个 SYN 就只能先主动建立一个连接，这会造成什么情况呢？&lt;/li&gt;
+              &lt;li&gt;如果客户端的 SYN 阻塞了，重复发送多次 SYN 报文，那么服务器在收到请求后就会建立多个冗余的无效链接，造成不必要的资源浪费。&lt;/li&gt;
+            &lt;/ul&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;为什么客户端和服务端的初始序列号 ISN 是不相同的？
+    &lt;ul&gt;
+      &lt;li&gt;因为网络中的报文会延迟、会复制重发、也有可能丢失，这样会造成的不同连接之间产生互相影响，所以为了避免互相影响，客户端和服务端的初始序列号是随机且不同的。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;初始序列号 ISN 是如何随机产生的？
+    &lt;ul&gt;
+      &lt;li&gt;起始 ISN 是基于时钟的，每 4 毫秒 + 1，转一圈要 4.55 个小时。&lt;/li&gt;
+      &lt;li&gt;RFC1948 中提出了一个较好的初始化序列号 ISN 随机生成算法。&lt;/li&gt;
+      &lt;li&gt;ISN = M + F (localhost, localport, remotehost, remoteport)
+        &lt;ul&gt;
+          &lt;li&gt;M 是一个计时器，这个计时器每隔 4 毫秒加 1。&lt;/li&gt;
+          &lt;li&gt;F 是一个 Hash 算法，根据源 IP、目的 IP、源端口、目的端口生成一个随机数值。要保证 Hash 算法不能被外部轻易推算得出，用 MD5 算法是一个比较好的选择。&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;既然 IP 层会分片，为什么 TCP 层还需要 MSS 呢？&lt;/li&gt;
+  &lt;li&gt;TCP断开连接&lt;/li&gt;
   &lt;li&gt;粘包拆包，应用层拆包？
     &lt;ul&gt;
+      &lt;li&gt;如果客户端连续不断的向服务端发送数据包时，服务端接收的数据会出现两个数据包粘在一起的情况，这就是TCP协议中经常会遇到的粘包以及拆包的问题。
+我们都知道TCP属于传输层的协议，传输层除了有TCP协议外还有UDP协议。那么UDP是否会发生粘包或拆包的现象呢？答案是不会。UDP是基于报文发送的，从UDP的帧结构可以看出，在UDP首部采用了16bit来指示UDP数据报文的长度，因此在应用层能很好的将不同的数据报文区分开，从而避免粘包和拆包的问题。而TCP是基于字节流的，虽然应用层和TCP传输层之间的数据交互是大小不等的数据块，但是TCP把这些数据块仅仅看成一连串无结构的字节流，没有边界；另外从TCP的帧结构也可以看出，在TCP的首部没有表示数据长度的字段，基于上面两点，在使用TCP传输数据时，才有粘包或者拆包现象发生的可能&lt;/li&gt;
       &lt;li&gt;SO_TCPNODELAY:NAGLE 算法通过将缓冲区内的小封包自动相连，组成较大的封包，阻止大量 小封包的发送阻塞网络，从而提高网络应用效率。但是对于时延敏感的应用场景需要关闭该优化算法。&lt;/li&gt;
+      &lt;li&gt;拆包方案
+        &lt;ul&gt;
+          &lt;li&gt;客户端在发送数据包的时候，每个包都固定长度，比如1024个字节大小，如果客户端发送的数据长度不足1024个字节，则通过补充空格的方式补全到指定长度；&lt;/li&gt;
+          &lt;li&gt;客户端在每个包的末尾使用固定的分隔符，例如\r\n，如果一个包被拆分了，则等待下一个包发送过来之后找到其中的\r\n，然后对其拆分后的头部部分与前一个包的剩余部分进行合并，这样就得到了一个完整的包；&lt;/li&gt;
+          &lt;li&gt;将消息分为头部和消息体，在头部中保存有当前整个消息的长度，只有在读取到足够长度的消息之后才算是读到了一个完整的消息；&lt;/li&gt;
+          &lt;li&gt;通过自定义协议进行粘包和拆包的处理。&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
   &lt;li&gt;netty
