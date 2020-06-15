@@ -216,8 +216,23 @@ F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<sp
 
 <h4 id="为什么网络分层">为什么网络分层</h4>
 <ul>
-  <li>粘包拆包</li>
-  <li>netty</li>
+  <li>粘包拆包，应用层拆包？
+    <ul>
+      <li>SO_TCPNODELAY:NAGLE 算法通过将缓冲区内的小封包自动相连，组成较大的封包，阻止大量 小封包的发送阻塞网络，从而提高网络应用效率。但是对于时延敏感的应用场景需要关闭该优化算法。</li>
+    </ul>
+  </li>
+  <li>netty
+    <ul>
+      <li>无锁设计、线程绑定，类似偏向锁读写操作会判断是否是之前绑定的线程</li>
+    </ul>
+  </li>
+  <li>reactor和proactor模型
+    <ul>
+      <li>reactor：基于NIO技术，可读可写时通知应用；await阻塞等待</li>
+      <li>proactor：基于AIO技术，读完成时通知应用，写操作应用通知内核。真正的异步。</li>
+    </ul>
+  </li>
+  <li>Java nio 空轮询bug到底是什么，异常情况导致的fd集合为空时，selector仍然会轮训 <a href="https://mp.weixin.qq.com/s/-SoUVFB5DhaUZg_novolkg">https://mp.weixin.qq.com/s/-SoUVFB5DhaUZg_novolkg</a></li>
 </ul>
 
 <h4 id="zookeeper的observer">ZooKeeper的observer</h4>
@@ -273,6 +288,7 @@ NIO (New I/O): NIO是一种同步非阻塞的I/O模型，在Java 1.4 中引入�
 AIO (Asynchronous I/O): AIO 也就是 NIO 2。在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的IO模型。异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。AIO 是异步IO的缩写，虽然 NIO 在网络操作中，提供了非阻塞的方法，但是 NIO 的 IO 行为还是同步的。对于 NIO 来说，我们的业务线程是在 IO 操作准备好时，得到通知，接着就由这个线程自行进行 IO 操作，IO操作本身是同步的。查阅网上相关资料，我发现就目前来说 AIO 的应用还不是很广泛，Netty 之前也尝试使用过 AIO，不过又放弃了。</p>
 
 <h4 id="kafka数据存储">kafka数据存储</h4>
+<p>Kafka和RocketMQ存储区别 <a href="https://mp.weixin.qq.com/s/_hJcEqTMASpeDkavcdtDsw">https://mp.weixin.qq.com/s/_hJcEqTMASpeDkavcdtDsw</a></p>
 
 <h4 id="hashmap-为啥size是2的倍数18比17做了哪些优化">HashMap 为啥size是2的倍数，1.8比1.7做了哪些优化？</h4>
 <p>JDK1.7 VS JDK1.8 比较
@@ -311,7 +327,21 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
   <li>什么是Spring Cloud Config?
 在分布式系统中，由于服务数量巨多，为了方便服务配置文件统一管理，实时更新，所以需要分布式配置中心组件。在Spring Cloud中，有分布式配置中心组件spring cloud config ，它支持配置服务放在配置服务的内存中（即本地），也支持放在远程Git仓库中。在spring cloud config 组件中，分两个角色，一是config server，二是config client。
 使用：（1）添加pom依赖（2）配置文件添加相关配置（3）启动类添加注解@EnableConfigServer</li>
+  <li>Spring中使用@Autowired注解静态实例对象 <a href="https://blog.csdn.net/RogueFist/article/details/79575665">https://blog.csdn.net/RogueFist/article/details/79575665</a></li>
+  <li>多个ApplicationRunner，可以用@Order指定优先级串行执行的，如果优先级高的block了，后面的需要等着</li>
 </ul>
+
+<h4 id="protocol-buffer-的序列化--反序列化简单--速度快的原因是">Protocol Buffer 的序列化 &amp; 反序列化简单 &amp; 速度快的原因是:</h4>
+<ol>
+  <li>编码 / 解码 方式简单(只需要简单的数学运算 = 位移等等)</li>
+  <li>采用 Protocol Buffer 自身的框架代码 和 编译器 共同完成</li>
+</ol>
+
+<h4 id="protocol-buffer-的数据压缩效果好即序列化后的数据量体积小的原因是">Protocol Buffer 的数据压缩效果好(即序列化后的数据量体积小)的原因是:</h4>
+<ol>
+  <li>a. 采用了独特的编码方式，如 Varint、Zigzag 编码方式等等</li>
+  <li>b. 采用 T - L - V 的数据存储方式:减少了分隔符的使用 &amp; 数据存储得紧凑</li>
+</ol>
 
       </div>
       <div style="height:50px;">

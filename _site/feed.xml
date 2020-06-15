@@ -5,9 +5,9 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 14 Jun 2020 17:02:44 +0800</pubDate>
-    <lastBuildDate>Sun, 14 Jun 2020 17:02:44 +0800</lastBuildDate>
-    <generator>Jekyll v4.0.0</generator>
+    <pubDate>Mon, 15 Jun 2020 16:50:03 +0800</pubDate>
+    <lastBuildDate>Mon, 15 Jun 2020 16:50:03 +0800</lastBuildDate>
+    <generator>Jekyll v3.8.5</generator>
     
       <item>
         <title>经典算法思想</title>
@@ -152,8 +152,23 @@ F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n&lt;span class=&quot;o&quot;&gt;
 
 &lt;h4 id=&quot;为什么网络分层&quot;&gt;为什么网络分层&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;粘包拆包&lt;/li&gt;
-  &lt;li&gt;netty&lt;/li&gt;
+  &lt;li&gt;粘包拆包，应用层拆包？
+    &lt;ul&gt;
+      &lt;li&gt;SO_TCPNODELAY:NAGLE 算法通过将缓冲区内的小封包自动相连，组成较大的封包，阻止大量 小封包的发送阻塞网络，从而提高网络应用效率。但是对于时延敏感的应用场景需要关闭该优化算法。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;netty
+    &lt;ul&gt;
+      &lt;li&gt;无锁设计、线程绑定，类似偏向锁读写操作会判断是否是之前绑定的线程&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;reactor和proactor模型
+    &lt;ul&gt;
+      &lt;li&gt;reactor：基于NIO技术，可读可写时通知应用；await阻塞等待&lt;/li&gt;
+      &lt;li&gt;proactor：基于AIO技术，读完成时通知应用，写操作应用通知内核。真正的异步。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Java nio 空轮询bug到底是什么，异常情况导致的fd集合为空时，selector仍然会轮训 &lt;a href=&quot;https://mp.weixin.qq.com/s/-SoUVFB5DhaUZg_novolkg&quot;&gt;https://mp.weixin.qq.com/s/-SoUVFB5DhaUZg_novolkg&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;zookeeper的observer&quot;&gt;ZooKeeper的observer&lt;/h4&gt;
@@ -209,6 +224,7 @@ NIO (New I/O): NIO是一种同步非阻塞的I/O模型，在Java 1.4 中引入�
 AIO (Asynchronous I/O): AIO 也就是 NIO 2。在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的IO模型。异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。AIO 是异步IO的缩写，虽然 NIO 在网络操作中，提供了非阻塞的方法，但是 NIO 的 IO 行为还是同步的。对于 NIO 来说，我们的业务线程是在 IO 操作准备好时，得到通知，接着就由这个线程自行进行 IO 操作，IO操作本身是同步的。查阅网上相关资料，我发现就目前来说 AIO 的应用还不是很广泛，Netty 之前也尝试使用过 AIO，不过又放弃了。&lt;/p&gt;
 
 &lt;h4 id=&quot;kafka数据存储&quot;&gt;kafka数据存储&lt;/h4&gt;
+&lt;p&gt;Kafka和RocketMQ存储区别 &lt;a href=&quot;https://mp.weixin.qq.com/s/_hJcEqTMASpeDkavcdtDsw&quot;&gt;https://mp.weixin.qq.com/s/_hJcEqTMASpeDkavcdtDsw&lt;/a&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;hashmap-为啥size是2的倍数18比17做了哪些优化&quot;&gt;HashMap 为啥size是2的倍数，1.8比1.7做了哪些优化？&lt;/h4&gt;
 &lt;p&gt;JDK1.7 VS JDK1.8 比较
@@ -247,7 +263,21 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
   &lt;li&gt;什么是Spring Cloud Config?
 在分布式系统中，由于服务数量巨多，为了方便服务配置文件统一管理，实时更新，所以需要分布式配置中心组件。在Spring Cloud中，有分布式配置中心组件spring cloud config ，它支持配置服务放在配置服务的内存中（即本地），也支持放在远程Git仓库中。在spring cloud config 组件中，分两个角色，一是config server，二是config client。
 使用：（1）添加pom依赖（2）配置文件添加相关配置（3）启动类添加注解@EnableConfigServer&lt;/li&gt;
+  &lt;li&gt;Spring中使用@Autowired注解静态实例对象 &lt;a href=&quot;https://blog.csdn.net/RogueFist/article/details/79575665&quot;&gt;https://blog.csdn.net/RogueFist/article/details/79575665&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;多个ApplicationRunner，可以用@Order指定优先级串行执行的，如果优先级高的block了，后面的需要等着&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h4 id=&quot;protocol-buffer-的序列化--反序列化简单--速度快的原因是&quot;&gt;Protocol Buffer 的序列化 &amp;amp; 反序列化简单 &amp;amp; 速度快的原因是:&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;编码 / 解码 方式简单(只需要简单的数学运算 = 位移等等)&lt;/li&gt;
+  &lt;li&gt;采用 Protocol Buffer 自身的框架代码 和 编译器 共同完成&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;protocol-buffer-的数据压缩效果好即序列化后的数据量体积小的原因是&quot;&gt;Protocol Buffer 的数据压缩效果好(即序列化后的数据量体积小)的原因是:&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;a. 采用了独特的编码方式，如 Varint、Zigzag 编码方式等等&lt;/li&gt;
+  &lt;li&gt;b. 采用 T - L - V 的数据存储方式:减少了分隔符的使用 &amp;amp; 数据存储得紧凑&lt;/li&gt;
+&lt;/ol&gt;
 </description>
         <pubDate>Sun, 07 Jun 2020 12:25:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/07/DotDot.html</link>
