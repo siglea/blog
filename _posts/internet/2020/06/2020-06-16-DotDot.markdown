@@ -242,7 +242,11 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
 1. a. 采用了独特的编码方式，如 Varint、Zigzag 编码方式等等
 2. b. 采用 T - L - V 的数据存储方式:减少了分隔符的使用 & 数据存储得紧凑
 
-#### es hbase cassandra数据结构
-#### mongoDB等的操作命令
+### es hbase cassandra mongoDB数据结构及操作命令
+#### 各种区别总结
+- hbase强一致性，其他的都是最终一致性
+- 都不支持事务
+- 
 #### seata 的 Demo
 #### Hive & Mysql数据互导
+#### tweproxy
