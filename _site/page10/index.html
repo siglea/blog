@@ -81,18 +81,13 @@
 
 <h4 id="在tcp有keepalive机制的情况下为什么还要有应用层保活">在TCP有keepalive机制的情况下，为什么还要有应用层保活？</h4>
 <ol>
-  <li>KeepAlive 本身是面向网络的，并不是面向于应用的，当连接不可用时，可能是由于应用本身 GC 问题，系统 load 高等情况，但网络仍然是通的，此时，应用已经失去了活性或者被kill了，所以连接自然应该认为是不可用的。</li>
-  <li>
-    <p>KeepAlive 的保活机制只在链路空闲的情况下才会起到作用，假如此时有数据发送，且物理链路已经不通，操作系统这边的链路状态还是 ESTABLISHED，这时会发生什么？自然会走 TCP 重传机制，要知道默认的 TCP 超时重传，指数退避算法也是一个相当长的过程。</p>
-  </li>
-  <li>在诸如由防火墙过滤、路由器故障、运营商信令控制、网线断开等原因导致的TCP中断,keepalive失效</li>
-  <li>NAT及DHCP机制也会导致keepalive失效</li>
-  <li>keepalive默认参数设置7200秒才会触发重试并且在重试10之后就终止</li>
-  <li>经过Socks封装的TCP大部分操作系统把底层的断连等细节直接忽略掉并没有抛给上层应用</li>
-  <li>keepalive机制判断的仅仅是连接的存在（只是在映射表中存在ESTABLISHED)，并不能判断应用服务是否正常</li>
-  <li>keepalive并不是TCP规范的一部分，并不是所有操作系统都完整的实现</li>
-  <li>应用层的心跳除了保活还有其他应用意义比如应用层控制的重传（断连重连后，底层并不知道应用层数据状况）</li>
+  <li>TCP KeepAlive机制 的作用 是检测连接的有无（死活），但无法检测连接是否有效。“连接有效”的定义 = 双方具备发送 &amp; 接收消息的能力</li>
+  <li>比如服务器负载过高，从而无法响应任何业务，即连接无效，但是仍然是ESTABLISHED，KeepAlive机制检测不出</li>
+  <li>其他一些复杂的情况比如路由器挂了，网线被拔除，keepalive也是失效的</li>
+  <li>KeepAlive默认的参数设置的时间太长，如果频次过快放到服务端检测，服务端压力太大</li>
+  <li>KeepAlive 机制只是操作系统底层的一个被动机制，不应该被上层应用层使用，当系统关闭一个由KeepAlive 机制检查出来的死连接时，是不会主动通知上层应用的，只能通过调用相应IO操作的返回值中发现</li>
 </ol>
+<p><a href="https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA">https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA</a></p>
 
 <h4 id="sync-flooding-攻击">SYNC Flooding 攻击</h4>
 <ul>

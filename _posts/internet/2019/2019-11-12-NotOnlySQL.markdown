@@ -119,6 +119,46 @@ unwatch #取消watch对所有key的监控
 - MongoDB与Mysql/Hadoop/Redis的优缺点比较 <https://blog.csdn.net/tanqian351/article/details/81744970>
 - 高可用模式：主从架构（Master-Slave）、副本集架构（Replica Set）、数据分片架构（Sharding）
     <https://www.jianshu.com/p/2825a66d6aed>
+```sql
+show collections -- 类似mysql的table
+db.dropDatabase() -- 删除当前数据库
+db.create Collection("user") -- 创建user表
+use user 
+db.user.drop()
+db.user.insert({'name':'Mikie Hara','gender':'female','age':26,'salary':7000})  
+db.user.save({'name':'Wentworth Earl Miller','gender':'male','age':41,'salary':33000}) 
+db.user.find() -- 查看所有
+db.user.find({"age":26}) -- 查看 age = 26
+db.user.find({salary:{$gt:7000}}) -- 查看 salary > 7000
+db.user.find({$or:[{salary:{$gt:10000}},{age:{$lt:25}}]}) -- 查看 OR
+db.user.find({age:{$lt:30},salary:{$gt:6000}}) -- 查看 AND
+db.user.find({name:/a/}) -- 正则匹配
+db.user.find({name:/^W/})
+db.user.findOne({$or:[{salary:{$gt:10000}},{age:{$lt:25}}]}) -- 查询一条
+db.user.find({},{name:1,age:1,salary:1,sex_orientation:true}) -- 查询指定列
+db.user.distinct('gender') -- 去重
+db.user.find().pretty() -- 精简显示
+db.user.find().limit(2) -- 显示前两条
+db.user.find().skip(1) -- 调过第一条
+db.user.find().sort({salary:1}) -- 升序
+db.user.find().sort({salary:-1}) -- 降序
+db.user.find().count() -- 查数
+db.user.update({name:'Gal Gadot'},{$set:{age:23}},false,true)  -- 更新 （条件，更新值，不存在是否插入，是否全部更新）
+db.user.update({name:'Mikie Hara'},{$set:{interest:"CBA"}},false,true) -- 新加字段
+db.user.update({gender:'female'},{$inc:{salary:50}},false,true) -- 自增
+db.test.remove() -- 删除
+db.users.find({}, {"username": 1}).skip(2).limit(2) -- 分页
+db.col.createIndex({"title":1}) -- 升序
+db.col.getIndexes()
+db.col.totalIndexSize() -- 查看集合索引大小
+db.mycol.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}]) 
+--  select by_user, count(*) from mycol group by by_user
+db.users.find({gender:"M"},{user_name:1,_id:0}).explain()
+db.user.find({"geo": {$near: [118.10388605,24.48923061], $maxDistance:0.1}},{id:1, name:1, state:1, geo:1}).limit(1).pretty()
+
+```
+<https://www.jianshu.com/p/fffb581bb1a9>
+<https://www.jianshu.com/p/4ecde929b17d>
 
 #### Cassandra
 - Cassandra数据建模 <https://www.cnblogs.com/cjsblog/p/12878330.html>
@@ -161,7 +201,35 @@ unwatch #取消watch对所有key的监控
 - Discord 公司如何使用 Cassandra 存储上亿条线上数据(消息系统) <https://segmentfault.com/a/1190000019111842>
 - Spotify如何使用Cassandra实现个性化推荐 <https://segmentfault.com/a/1190000020976455>
 - CQL语法 <https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html>
+```sql
+cqlsh
+describe cluster; -- 集群
+describe keyspaces; -- 数控DataBase
+describe tables;
 
+CREATE KEYSPACE tutorialspoint
+WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 3};
+
+ALTER KEYSPACE KeySpaceName
+WITH replication = {'class': 'Strategy name', 'replication_factor' : 'No.Of  replicas'};
+
+DROP KEYSPACE tutorialspoint;
+
+SELECT * FROM system.schema_keyspaces;
+INSERT INTO emp (emp_id, emp_name, emp_city,
+   emp_phone, emp_sal) VALUES(2,'robin', 'Hyderabad', 9848022339, 40000);
+DELETE FROM emp WHERE emp_id=3;
+
+USE tutorialspoint;
+
+CREATE TABLE emp(
+   emp_id int PRIMARY KEY,
+   emp_name text,
+   emp_city text,
+   emp_sal varint,
+   emp_phone varint
+   );
+```
 #### "图"数据库 Graph Database Neo4J
 <https://www.cnblogs.com/loveis715/p/5277051.html>
 

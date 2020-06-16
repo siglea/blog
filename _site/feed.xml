@@ -5,9 +5,9 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 16 Jun 2020 13:02:59 +0800</pubDate>
-    <lastBuildDate>Tue, 16 Jun 2020 13:02:59 +0800</lastBuildDate>
-    <generator>Jekyll v3.8.5</generator>
+    <pubDate>Tue, 16 Jun 2020 23:00:31 +0800</pubDate>
+    <lastBuildDate>Tue, 16 Jun 2020 23:00:31 +0800</lastBuildDate>
+    <generator>Jekyll v4.0.0</generator>
     
       <item>
         <title>DotDot</title>
@@ -338,10 +338,89 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
   &lt;li&gt;b. 采用 T - L - V 的数据存储方式:减少了分隔符的使用 &amp;amp; 数据存储得紧凑&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h4 id=&quot;es-hbase-cassandra数据结构&quot;&gt;es hbase cassandra数据结构&lt;/h4&gt;
-&lt;h4 id=&quot;mongodb等的操作命令&quot;&gt;mongoDB等的操作命令&lt;/h4&gt;
+&lt;h3 id=&quot;hbase-cassandra-mongodb&quot;&gt;HBase Cassandra MongoDB&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;存储结构
+    &lt;ul&gt;
+      &lt;li&gt;MongoDB：GridFS、JSON/BSON&lt;/li&gt;
+      &lt;li&gt;HBase：HRegionServer：【HLog、HRegion：【Store MemStore、StoreFile、HFile】】、HDFS&lt;/li&gt;
+      &lt;li&gt;Cassandra：LSM、HashNode、CommitLog、memtable、SSTable&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;存储形式
+    &lt;ul&gt;
+      &lt;li&gt;MongoDB：Collection JSON&lt;/li&gt;
+      &lt;li&gt;Cassandra：Column family ，Row，Name/Value/Timestamp&lt;/li&gt;
+      &lt;li&gt;HBase：put ‘t_user’,’1001’,’st1:age’,’18’&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;数据类型
+    &lt;ul&gt;
+      &lt;li&gt;MongoDB丰富，类似SQL&lt;/li&gt;
+      &lt;li&gt;HBase只支持字符串&lt;/li&gt;
+      &lt;li&gt;Cassandra多种&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;索引、二级索引、辅助索引
+    &lt;ul&gt;
+      &lt;li&gt;MongoDB：支持全索引，实现高性能。单一索引、复合、哈希、地址位置、文本等索引。BTree&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;事务
+    &lt;ul&gt;
+      &lt;li&gt;HBase的事务是行级事务，可以保证行级数据的原子性、一致性、隔离性以及持久性&lt;/li&gt;
+      &lt;li&gt;MongoDB不支持事务&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;一致性和CAP
+    &lt;ul&gt;
+      &lt;li&gt;MongoDB、HBase强一致性，CP&lt;/li&gt;
+      &lt;li&gt;Cassandra最终一致性（可调一致性），AP&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Join支持
+    &lt;ul&gt;
+      &lt;li&gt;MongoDB不支持多表连接
+  = Cassandra不支持多表连接，用数据冗余解决问题hotels_by_poi&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;范围查询
+    &lt;ul&gt;
+      &lt;li&gt;MongoDB：利用skip().limit()实现&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;读写
+    &lt;ul&gt;
+      &lt;li&gt;HBase快速读取和写入，具有可扩展性&lt;/li&gt;
+      &lt;li&gt;Cassandra快速随机性读取/写入，写多读少&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;https://blog.csdn.net/aa5305123/article/details/83142514
+https://www.cnblogs.com/yanduanduan/p/10563678.html  &lt;br /&gt;
+1.强一致性的读写：HBase不是一个最终一致性的存储。
+2.自动sharding：HBase的table在集群种被分布在各个region，region可以做自动切分。
+3.regionserver的failover；
+4.Hadoop/HDFS的集成；
+5.MapReduce：支持大数据的并行处理；
+6.JAVA Client 以及Thrift/RESR API 访问；
+7.Block Cache 以及Bloom filter；
+8.操作管理。&lt;/p&gt;
+
+&lt;p&gt;1.C&lt;em&gt;借鉴Dynamo的架构思想，把自己叫做一个最终一致性的系统，如果使用至少是QUORUM 读写，还算是一个强一致的系统。
+2.C&lt;/em&gt;的sharding方式：一致性hash，有2种：
+（1）人为配置好initial_token；
+2.使用vnode，集群初始化以及节点bootstrap的时候会计算token，基于这些token做数据sharding。
+3.可以容忍：replicator_number - (read/write level sufficient nodes)个节点挂了，比如3个副本，读写级别QUORUM（sufficient nodes是2），能容忍1节点挂；
+4.支持MapReduce;
+5.Thrift、CQL访问;
+6.大数据处理的bloom filter 必备；
+7.自己有jmx等常见管理，且datastax 公司有提供ops center；&lt;/p&gt;
+
 &lt;h4 id=&quot;seata-的-demo&quot;&gt;seata 的 Demo&lt;/h4&gt;
 &lt;h4 id=&quot;hive--mysql数据互导&quot;&gt;Hive &amp;amp; Mysql数据互导&lt;/h4&gt;
+&lt;h4 id=&quot;tweproxy&quot;&gt;tweproxy&lt;/h4&gt;
 </description>
         <pubDate>Tue, 16 Jun 2020 12:25:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/16/DotDot.html</link>

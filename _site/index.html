@@ -392,10 +392,89 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
   <li>b. 采用 T - L - V 的数据存储方式:减少了分隔符的使用 &amp; 数据存储得紧凑</li>
 </ol>
 
-<h4 id="es-hbase-cassandra数据结构">es hbase cassandra数据结构</h4>
-<h4 id="mongodb等的操作命令">mongoDB等的操作命令</h4>
+<h3 id="hbase-cassandra-mongodb">HBase Cassandra MongoDB</h3>
+<ul>
+  <li>存储结构
+    <ul>
+      <li>MongoDB：GridFS、JSON/BSON</li>
+      <li>HBase：HRegionServer：【HLog、HRegion：【Store MemStore、StoreFile、HFile】】、HDFS</li>
+      <li>Cassandra：LSM、HashNode、CommitLog、memtable、SSTable</li>
+    </ul>
+  </li>
+  <li>存储形式
+    <ul>
+      <li>MongoDB：Collection JSON</li>
+      <li>Cassandra：Column family ，Row，Name/Value/Timestamp</li>
+      <li>HBase：put ‘t_user’,’1001’,’st1:age’,’18’</li>
+    </ul>
+  </li>
+  <li>数据类型
+    <ul>
+      <li>MongoDB丰富，类似SQL</li>
+      <li>HBase只支持字符串</li>
+      <li>Cassandra多种</li>
+    </ul>
+  </li>
+  <li>索引、二级索引、辅助索引
+    <ul>
+      <li>MongoDB：支持全索引，实现高性能。单一索引、复合、哈希、地址位置、文本等索引。BTree</li>
+    </ul>
+  </li>
+  <li>事务
+    <ul>
+      <li>HBase的事务是行级事务，可以保证行级数据的原子性、一致性、隔离性以及持久性</li>
+      <li>MongoDB不支持事务</li>
+    </ul>
+  </li>
+  <li>一致性和CAP
+    <ul>
+      <li>MongoDB、HBase强一致性，CP</li>
+      <li>Cassandra最终一致性（可调一致性），AP</li>
+    </ul>
+  </li>
+  <li>Join支持
+    <ul>
+      <li>MongoDB不支持多表连接
+  = Cassandra不支持多表连接，用数据冗余解决问题hotels_by_poi</li>
+    </ul>
+  </li>
+  <li>范围查询
+    <ul>
+      <li>MongoDB：利用skip().limit()实现</li>
+    </ul>
+  </li>
+  <li>读写
+    <ul>
+      <li>HBase快速读取和写入，具有可扩展性</li>
+      <li>Cassandra快速随机性读取/写入，写多读少</li>
+    </ul>
+  </li>
+</ul>
+
+<p>https://blog.csdn.net/aa5305123/article/details/83142514
+https://www.cnblogs.com/yanduanduan/p/10563678.html  <br />
+1.强一致性的读写：HBase不是一个最终一致性的存储。
+2.自动sharding：HBase的table在集群种被分布在各个region，region可以做自动切分。
+3.regionserver的failover；
+4.Hadoop/HDFS的集成；
+5.MapReduce：支持大数据的并行处理；
+6.JAVA Client 以及Thrift/RESR API 访问；
+7.Block Cache 以及Bloom filter；
+8.操作管理。</p>
+
+<p>1.C<em>借鉴Dynamo的架构思想，把自己叫做一个最终一致性的系统，如果使用至少是QUORUM 读写，还算是一个强一致的系统。
+2.C</em>的sharding方式：一致性hash，有2种：
+（1）人为配置好initial_token；
+2.使用vnode，集群初始化以及节点bootstrap的时候会计算token，基于这些token做数据sharding。
+3.可以容忍：replicator_number - (read/write level sufficient nodes)个节点挂了，比如3个副本，读写级别QUORUM（sufficient nodes是2），能容忍1节点挂；
+4.支持MapReduce;
+5.Thrift、CQL访问;
+6.大数据处理的bloom filter 必备；
+7.自己有jmx等常见管理，且datastax 公司有提供ops center；</p>
+
 <h4 id="seata-的-demo">seata 的 Demo</h4>
 <h4 id="hive--mysql数据互导">Hive &amp; Mysql数据互导</h4>
+<h4 id="tweproxy">tweproxy</h4>
 
       </div>
       <div style="height:50px;">
