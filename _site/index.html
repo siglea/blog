@@ -54,131 +54,10 @@
     
     <div class="post-contents">
       <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html">经典算法思想</a>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/16/DotDot.html">DotDot</a>
       </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>数据结构算法，问题TOP10 <a href="https://mp.weixin.qq.com/s/rqzCvFWira204eJ1HA22yg">https://mp.weixin.qq.com/s/rqzCvFWira204eJ1HA22yg</a></p>
-
-<h4 id="贪心算法">贪心算法</h4>
-<ul>
-  <li>贪心的意思在于在作出选择时，每次都要选择对自身最为有利的结果，保证自身利益的最大化。贪心算法就是利用这种贪心思想而得出一种算法。</li>
-  <li>例：小明手中有 1，5，10，50，100 五种面额的纸币，每种纸币对应张数分别为 5，2，2，3，5 张。若小明需要支付 456 元，则需要多少张纸币？</li>
-  <li>最小生成树 Kruskal算法</li>
-  <li>最小生成树 prim算法</li>
-  <li>分发饼干、跳跃游戏、无重叠区间、摆动序列 <a href="https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw">https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw</a></li>
-  <li>分糖果、无重叠区间 <a href="https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow">https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow</a></li>
-</ul>
-
-<h4 id="分治算法">分治算法</h4>
-<ul>
-  <li>快速排序算法、大整数乘法、残缺棋盘游戏 <a href="https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ">https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ</a></li>
-  <li>汉诺塔、快速排序、归并排序 <a href="https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ">https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ</a></li>
-</ul>
-
-<h4 id="动态规划算法-dynamic-programming">动态规划算法 Dynamic Programming</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F<span class="o">(</span>1<span class="o">)</span> <span class="o">=</span> 1<span class="p">;</span>
-F<span class="o">(</span>2<span class="o">)</span> <span class="o">=</span> 2<span class="p">;</span> 
-F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>n-1<span class="o">)</span>+F<span class="o">(</span>n-2<span class="o">)</span><span class="p">;</span>（n&gt;<span class="o">=</span>3）
-
-F<span class="o">(</span>10<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>9<span class="o">)</span> + F<span class="o">(</span>8<span class="o">)</span> <span class="c">#最优子结构</span>
-F<span class="o">(</span>1<span class="o">)</span> F<span class="o">(</span>2<span class="o">)</span> <span class="c">#边界</span>
-F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>n-1<span class="o">)</span> + F<span class="o">(</span>n-2<span class="o">)</span> <span class="c">#状态转移方程</span>
-</code></pre></div></div>
-<ul>
-  <li>斐波那契 <a href="https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ">https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ</a></li>
-  <li>上台阶与挖黄金 <a href="https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg">https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg</a></li>
-  <li>高楼扔鸡蛋 <a href="https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA">https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA</a></li>
-</ul>
-
-<h4 id="回溯法">回溯法</h4>
-<ul>
-  <li>深度优先遍历 <a href="https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA">https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA</a></li>
-  <li>八皇后问题 <a href="https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA">https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA</a></li>
-  <li>八皇后问题与数独 <a href="https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg">https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg</a></li>
-  <li>A*寻路算法 <a href="https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA">https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA</a></li>
-  <li>多源最短路径，弗洛伊德算法 Floyd-Warshall <a href="https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg">https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg</a></li>
-</ul>
-
-<h4 id="分支定界法">分支定界法</h4>
-<ul>
-  <li>广度优先遍历 <a href="https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ">https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ</a></li>
-</ul>
-
-<h4 id="字符串匹配算法">字符串匹配算法</h4>
-<ul>
-  <li>BF算法，是Brute Force（暴力算法，按位比较 O(m*n)）<a href="https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg">https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg</a></li>
-  <li>RK算法，是Rabin-Karp (计算hash值进行比较 O(n)) <a href="https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g">https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g</a></li>
-  <li>Knuth-Morris-Pratt算法（简称KMP）是最常用的之一 <a href="https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w">https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w</a></li>
-  <li>字符串匹配算法综述:BF、RK、KMP、BM、Sunday <a href="https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA">https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA</a></li>
-</ul>
-
-<h4 id="参考">参考</h4>
-<ul>
-  <li>小灰算法2017 <a href="https://mp.weixin.qq.com/s/4kTtn_gLYQrX7JFlEJdsZg">https://mp.weixin.qq.com/s/4kTtn_gLYQrX7JFlEJdsZg</a></li>
-  <li>小灰算法2018 <a href="https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw">https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw</a></li>
-  <li>小灰算法2019 <a href="https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw">https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw</a></li>
-  <li>小灰算法2020 <a href="https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA">https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA</a></li>
-  <li>二十世纪最伟大的10大算法 <a href="https://blog.csdn.net/v_JULY_v/article/details/6127953">https://blog.csdn.net/v_JULY_v/article/details/6127953</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html">BitMap-BloomFilter</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="bitmap">BitMap</h4>
-<ul>
-  <li>近似的理解为用一个大数组的索引来表示数字本身，用0或1表示该数字是否存在</li>
-  <li>一个32位的int，只用一个标志位来表示是否存在</li>
-  <li>但是数字如果重复只会保留一个，主要用于去重类似的场景</li>
-</ul>
-
-<h4 id="bloomfilter">BloomFilter</h4>
-<ul>
-  <li>判断短连接是否重复、垃圾邮件等场景</li>
-  <li>把url，3次不同hash，得到3个不同的hashcode，存入bitmap</li>
-  <li>多次hash是为了降低hash重复的概率</li>
-  <li>由于以上特性，bloomFilter算法计算出不存在的一定就是不存在，如果计算出来存在有一定几率重复（因为hash的特性）</li>
-</ul>
-
-<h4 id="参考链接">参考链接</h4>
-<ul>
-  <li>Bitmap算法 整合版 <a href="https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg">https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg</a></li>
-  <li>什么是布隆算法？<a href="https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ">https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/DotDot.html">DotDot</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/DotDot.html#disqus_thread"></a></span>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 16, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/16/DotDot.html#disqus_thread"></a></span>
       
       <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
       
@@ -516,10 +395,132 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
 <h4 id="es-hbase-cassandra数据结构">es hbase cassandra数据结构</h4>
 <h4 id="mongodb等的操作命令">mongoDB等的操作命令</h4>
 <h4 id="seata-的-demo">seata 的 Demo</h4>
+<h4 id="hive--mysql数据互导">Hive &amp; Mysql数据互导</h4>
 
       </div>
       <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/DotDot.html" class="button readmore-button">Read More</a>
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/16/DotDot.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html">经典算法思想</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>数据结构算法，问题TOP10 <a href="https://mp.weixin.qq.com/s/rqzCvFWira204eJ1HA22yg">https://mp.weixin.qq.com/s/rqzCvFWira204eJ1HA22yg</a></p>
+
+<h4 id="贪心算法">贪心算法</h4>
+<ul>
+  <li>贪心的意思在于在作出选择时，每次都要选择对自身最为有利的结果，保证自身利益的最大化。贪心算法就是利用这种贪心思想而得出一种算法。</li>
+  <li>例：小明手中有 1，5，10，50，100 五种面额的纸币，每种纸币对应张数分别为 5，2，2，3，5 张。若小明需要支付 456 元，则需要多少张纸币？</li>
+  <li>最小生成树 Kruskal算法</li>
+  <li>最小生成树 prim算法</li>
+  <li>分发饼干、跳跃游戏、无重叠区间、摆动序列 <a href="https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw">https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw</a></li>
+  <li>分糖果、无重叠区间 <a href="https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow">https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow</a></li>
+</ul>
+
+<h4 id="分治算法">分治算法</h4>
+<ul>
+  <li>快速排序算法、大整数乘法、残缺棋盘游戏 <a href="https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ">https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ</a></li>
+  <li>汉诺塔、快速排序、归并排序 <a href="https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ">https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ</a></li>
+</ul>
+
+<h4 id="动态规划算法-dynamic-programming">动态规划算法 Dynamic Programming</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F<span class="o">(</span>1<span class="o">)</span> <span class="o">=</span> 1<span class="p">;</span>
+F<span class="o">(</span>2<span class="o">)</span> <span class="o">=</span> 2<span class="p">;</span> 
+F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>n-1<span class="o">)</span>+F<span class="o">(</span>n-2<span class="o">)</span><span class="p">;</span>（n&gt;<span class="o">=</span>3）
+
+F<span class="o">(</span>10<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>9<span class="o">)</span> + F<span class="o">(</span>8<span class="o">)</span> <span class="c">#最优子结构</span>
+F<span class="o">(</span>1<span class="o">)</span> F<span class="o">(</span>2<span class="o">)</span> <span class="c">#边界</span>
+F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>n-1<span class="o">)</span> + F<span class="o">(</span>n-2<span class="o">)</span> <span class="c">#状态转移方程</span>
+</code></pre></div></div>
+<ul>
+  <li>斐波那契 <a href="https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ">https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ</a></li>
+  <li>上台阶与挖黄金 <a href="https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg">https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg</a></li>
+  <li>高楼扔鸡蛋 <a href="https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA">https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA</a></li>
+</ul>
+
+<h4 id="回溯法">回溯法</h4>
+<ul>
+  <li>深度优先遍历 <a href="https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA">https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA</a></li>
+  <li>八皇后问题 <a href="https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA">https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA</a></li>
+  <li>八皇后问题与数独 <a href="https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg">https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg</a></li>
+  <li>A*寻路算法 <a href="https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA">https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA</a></li>
+  <li>多源最短路径，弗洛伊德算法 Floyd-Warshall <a href="https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg">https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg</a></li>
+</ul>
+
+<h4 id="分支定界法">分支定界法</h4>
+<ul>
+  <li>广度优先遍历 <a href="https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ">https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ</a></li>
+</ul>
+
+<h4 id="字符串匹配算法">字符串匹配算法</h4>
+<ul>
+  <li>BF算法，是Brute Force（暴力算法，按位比较 O(m*n)）<a href="https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg">https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg</a></li>
+  <li>RK算法，是Rabin-Karp (计算hash值进行比较 O(n)) <a href="https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g">https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g</a></li>
+  <li>Knuth-Morris-Pratt算法（简称KMP）是最常用的之一 <a href="https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w">https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w</a></li>
+  <li>字符串匹配算法综述:BF、RK、KMP、BM、Sunday <a href="https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA">https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA</a></li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>小灰算法2017 <a href="https://mp.weixin.qq.com/s/4kTtn_gLYQrX7JFlEJdsZg">https://mp.weixin.qq.com/s/4kTtn_gLYQrX7JFlEJdsZg</a></li>
+  <li>小灰算法2018 <a href="https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw">https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw</a></li>
+  <li>小灰算法2019 <a href="https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw">https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw</a></li>
+  <li>小灰算法2020 <a href="https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA">https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA</a></li>
+  <li>二十世纪最伟大的10大算法 <a href="https://blog.csdn.net/v_JULY_v/article/details/6127953">https://blog.csdn.net/v_JULY_v/article/details/6127953</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html">BitMap-BloomFilter</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="bitmap">BitMap</h4>
+<ul>
+  <li>近似的理解为用一个大数组的索引来表示数字本身，用0或1表示该数字是否存在</li>
+  <li>一个32位的int，只用一个标志位来表示是否存在</li>
+  <li>但是数字如果重复只会保留一个，主要用于去重类似的场景</li>
+</ul>
+
+<h4 id="bloomfilter">BloomFilter</h4>
+<ul>
+  <li>判断短连接是否重复、垃圾邮件等场景</li>
+  <li>把url，3次不同hash，得到3个不同的hashcode，存入bitmap</li>
+  <li>多次hash是为了降低hash重复的概率</li>
+  <li>由于以上特性，bloomFilter算法计算出不存在的一定就是不存在，如果计算出来存在有一定几率重复（因为hash的特性）</li>
+</ul>
+
+<h4 id="参考链接">参考链接</h4>
+<ul>
+  <li>Bitmap算法 整合版 <a href="https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg">https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg</a></li>
+  <li>什么是布隆算法？<a href="https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ">https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
