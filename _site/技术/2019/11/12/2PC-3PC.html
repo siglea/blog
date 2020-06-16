@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>2PC 3PC</title>
-  <meta name="description" content="MySQL实现事务ACID特性的方式总结如下：  原子性：使用 undo log来实现，如果事务执行过程中出错或者用户执行了rollback，系统通过undo log日志返回事务开始的状态。  持久性：使用 redo log来实现，只要redo log日志持久化了，当系统崩溃，即可通过redo log把数据恢复。...">
+  <meta name="description" content="分布式事务精华  X/Open DTP模型体系 Distribution Transaction Process          XA模式 eXtend Architecture        Seata体系 Simple Extensible Autonomous Transaction Architectu...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,7 +60,39 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="mysql实现事务acid特性的方式总结如下">MySQL实现事务ACID特性的方式总结如下：</h4>
+    <h4 id="分布式事务精华">分布式事务精华</h4>
+<ol>
+  <li>X/Open DTP模型体系 Distribution Transaction Process
+    <ul>
+      <li>XA模式 eXtend Architecture</li>
+    </ul>
+  </li>
+  <li>Seata体系 Simple Extensible Autonomous Transaction Architecture
+    <ul>
+      <li>AT模式，AT模式基于本地事务的特性，通过拦截并解析 SQL 的方式，记录自定义的回滚日志，从而打破 XA 协议阻塞性的制约，在一致性、性能、易用性三个方面取得一定的平衡：在达到确定一致性（非最终一致）的前提下，即保障一定的性能，又能完全不侵入业务。在很多应用场景下，Seata的AT模式都能很好地发挥作用，把应用的分布式事务支持成本降到极低的水平。</li>
+      <li>TCC模式，先扣下资源，又业务方编写commit或cancel代码，对业务侵入性强，要求幂等。由于是预扣机制，因此需要有补偿方案。长事务解决方案。</li>
+      <li>Saga模式，长事务解决方案，有补偿机制，其理论基础在于，其假设所有事件按照顺序推进，总能达到系统的最终一致性，因此 Saga需要服务分别定义提交接口以及补偿接口，当某个事务分支失败时，调用其它的分支的补偿接口来进行回滚。</li>
+    </ul>
+  </li>
+  <li>本地消息表，eBay方案，事务发起方，以消息表的方式记录后续业务方处理方的处理状态，然后发送消息出去，消费者执行完毕回传结果，如果长时间没有结果发起方就轮训本地消息表。超时转人工。</li>
+  <li>消息事务，采用本地消息表方案和采用RocketMQ事务消息方案的对比，其实，我们不难发现RocketMQ的这种事务方案就是对本地消息表的封装，其MQ内部实现了本地消息表的功能，其他方面的协议基本与本地消息表一致。</li>
+  <li>最大努力通知型（Best-effort Delivery），支付宝、微信方案，用于跨系统的调用。多次推送+查询接口。</li>
+  <li>各种区别
+    <ul>
+      <li>TCC模型中的主业务服务相当于DTP模型中AP，从业务服务相当于DTP模型中的RM，两者也都有一个事务管理器；TCC模型中从业务服务器所提供的Try/Commit/Cancel接口相当于DTP模型中RM提供的Prepare/Commit/Rollback接口。</li>
+      <li>XA 方案的 RM 是放在数据库层的，它依赖了数据库的 XA 驱动程序。而上图（右），Seata 的 RM 实际上是已中间件的形式放在应用层，不用依赖数据库对协议的支持，完全剥离了分布式事务方案对数据库在协议支持上的要求。</li>
+      <li>TCC分布式事务模型相对于 XA 等传统模型，其特征在于它不依赖资源管理器（RM）对分布式事务的支持，而是通过对业务逻辑的分解来实现分布式事务。</li>
+      <li>XA两阶段提交是资源层面的，而TCC实际上把资源层面二阶段提交上提到了业务层面来实现，有效了的避免了XA两阶段提交占用资源锁时间过长导致的性能低下问题。TCC也没有AT模式中的全局行锁，所以性能也会比AT模式高很多。不过，TCC模式对业务代码有很大的侵入性，主业务服务和从业务服务都需要进行改造，从业务方改造成本更高。</li>
+      <li>Saga模式所具备的优势有：一阶段提交本地数据库事务，无锁，高性能；参与者可以采用事务驱动异步执行，高吞吐；补偿服务即正向服务的“反向”，易于理解、易于实现；不过，Saga 模式由于一阶段已经提交本地数据库事务，且没有进行“预留”动作，所以不能保证隔离性。</li>
+      <li>Saga（易用、高性能）；AT（易用、隔离性）；TCC（性能、隔离性）</li>
+      <li>基于本地消息表的分布式事务方案就介绍到这里了，本地消息表的方案的优点是建设成本比较低，其虽然实现了可靠消息的传递确保了分布式事务的最终一致性，其实它也有一些缺陷：
+本地消息表与业务耦合在一起，难以做成通用性，不可独立伸缩。本地消息表是基于数据库来做的，而数据库是要读写磁盘IO的，因此在高并发下是有性能瓶颈的。</li>
+      <li>MQ在本地消息表或者消息事务方案中起到了协调者的作用，Transaction Coordinator（TC）：事务协调器</li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="mysql实现事务acid特性的方式总结如下">MySQL实现事务ACID特性的方式总结如下：</h4>
 <ul>
   <li>原子性：使用 undo log来实现，如果事务执行过程中出错或者用户执行了rollback，系统通过undo log日志返回事务开始的状态。</li>
   <li>持久性：使用 redo log来实现，只要redo log日志持久化了，当系统崩溃，即可通过redo log把数据恢复。</li>
