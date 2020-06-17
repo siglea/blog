@@ -86,15 +86,49 @@ mkdir  /root/hbase/pids
 # 4. 常用命令
 # 进入shell
 hbase shell
-create 't_user','st1','st2'
-put 't_user','1001','st1:age','18'
-put 't_user','1001','st2:name','zhangsan'
-scan 't_user' # 查询该表数据
+status
+version
+list # 列出HBase的所有的表
+exists 'test' # 是否存在test表
+disable 'test'
+drop 'test'
 describe 't_user'
-delete't_user','1001','st1:age'
-disable 't_user'
-drop 't_user'
+
+create '<table name>','<column family>'   # 其中column family 就是列族的意思
+create 'Student','Num','Name','Sex','Age' # 列族可以指定 Version 及 TTL
+
+put <table>,<rowkey>,<family:column>,<value>,<timestamp>
+put 'Student','1001','ZhangSan',male','23'
+put 't1','rowkey001','f1:col1','value01' #可以指定列族及列
+delete 'Student','1001','Age' # 删除1001的年龄列
+delete 'Student','1001' # 删除1001所有列
+
+scan 'Student' # 查询该表所有数据
+scan 't1',{LIMIT=>5} # 扫描表t1的前5条数据
+scan  'stu2',{COLUMNS => 'cf1:age', LIMMIT 10, STARTROW => 'xx'} # 分页查询
+
+count 't1', {INTERVAL => 100, CACHE => 500} # 查询表t1中的行数，每100条显示一次，缓存区为500
+
+get 'Student','1001' # 查看1001的数据
+get 't1','rowkey001', 'f1:col1' # 查询表t1，rowkey001中的f1下的col1的值
+
+create 'Student',{NAME=>'username',VERSIONS=>5} # 创建表的时候指定版本数
+get 'Student','1001',{COLUMN=>'username',VERSIONS=>5} # 查询指定版本的数据
+
+alter 'test1',{NAME=>'body',TTL=>'15552000'},{NAME=>'meta', TTL=>'15552000'} #指定TTL
+
 ```
+#### 本地存储结构
+```shell
+# /hbase/data/default/stu/8ca25fe0d49972b2efb4c36537daf1a2/cf1/d89f620da4754e1092402b577f589f8a
+data：目录即是Hbase自动生成的用来存储所有表数据的一个目录
+default：默认的一个namespace
+stu：就是一张表，其实就是一个文件夹
+8ca25fe0d49972b2efb4c36537daf1a2：就是stu这张表中的一个region
+cf1：就是这个region中第一个列簇所对应的一个store
+d89f620da4754e1092402b577f589f8a：这就是用来存储真实数据的hfile
+```
+
 - 用HBase实现亿级Feed <https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ>
 - HBase案例 <https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw>
 - HBase面试题 <https://www.jianshu.com/p/9ecd4367e6d0>

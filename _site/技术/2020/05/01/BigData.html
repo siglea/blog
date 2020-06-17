@@ -167,15 +167,48 @@ start-yarn.sh
 <span class="c"># 4. 常用命令</span>
 <span class="c"># 进入shell</span>
 hbase shell
-create <span class="s1">'t_user'</span>,<span class="s1">'st1'</span>,<span class="s1">'st2'</span>
-put <span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st1:age'</span>,<span class="s1">'18'</span>
-put <span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st2:name'</span>,<span class="s1">'zhangsan'</span>
-scan <span class="s1">'t_user'</span> <span class="c"># 查询该表数据</span>
+status
+version
+list <span class="c"># 列出HBase的所有的表</span>
+exists <span class="s1">'test'</span> <span class="c"># 是否存在test表</span>
+disable <span class="s1">'test'</span>
+drop <span class="s1">'test'</span>
 describe <span class="s1">'t_user'</span>
-delete<span class="s1">'t_user'</span>,<span class="s1">'1001'</span>,<span class="s1">'st1:age'</span>
-disable <span class="s1">'t_user'</span>
-drop <span class="s1">'t_user'</span>
+
+create <span class="s1">'&lt;table name&gt;'</span>,<span class="s1">'&lt;column family&gt;'</span>   <span class="c"># 其中column family 就是列族的意思</span>
+create <span class="s1">'Student'</span>,<span class="s1">'Num'</span>,<span class="s1">'Name'</span>,<span class="s1">'Sex'</span>,<span class="s1">'Age'</span> <span class="c"># 列族可以指定 Version 及 TTL</span>
+
+put &lt;table&gt;,&lt;rowkey&gt;,&lt;family:column&gt;,&lt;value&gt;,&lt;timestamp&gt;
+put <span class="s1">'Student'</span>,<span class="s1">'1001'</span>,<span class="s1">'ZhangSan'</span>,male<span class="s1">','</span>23<span class="s1">'
+put '</span>t1<span class="s1">','</span>rowkey001<span class="s1">','</span>f1:col1<span class="s1">','</span>value01<span class="s1">' #可以指定列族及列
+delete '</span>Student<span class="s1">','</span>1001<span class="s1">','</span>Age<span class="s1">' # 删除1001的年龄列
+delete '</span>Student<span class="s1">','</span>1001<span class="s1">' # 删除1001所有列
+
+scan '</span>Student<span class="s1">' # 查询该表所有数据
+scan '</span>t1<span class="s1">',{LIMIT=&gt;5} # 扫描表t1的前5条数据
+scan  '</span>stu2<span class="s1">',{COLUMNS =&gt; '</span>cf1:age<span class="s1">', LIMMIT 10, STARTROW =&gt; '</span>xx<span class="s1">'} # 分页查询
+
+count '</span>t1<span class="s1">', {INTERVAL =&gt; 100, CACHE =&gt; 500} # 查询表t1中的行数，每100条显示一次，缓存区为500
+
+get '</span>Student<span class="s1">','</span>1001<span class="s1">' # 查看1001的数据
+get '</span>t1<span class="s1">','</span>rowkey001<span class="s1">', '</span>f1:col1<span class="s1">' # 查询表t1，rowkey001中的f1下的col1的值
+
+create '</span>Student<span class="s1">',{NAME=&gt;'</span>username<span class="s1">',VERSIONS=&gt;5} # 创建表的时候指定版本数
+get '</span>Student<span class="s1">','</span>1001<span class="s1">',{COLUMN=&gt;'</span>username<span class="s1">',VERSIONS=&gt;5} # 查询指定版本的数据
+
+alter '</span>test1<span class="s1">',{NAME=&gt;'</span>body<span class="s1">',TTL=&gt;'</span>15552000<span class="s1">'},{NAME=&gt;'</span>meta<span class="s1">', TTL=&gt;'</span>15552000<span class="s1">'} #指定TTL
+
+</span></code></pre></div></div>
+<h4 id="本地存储结构">本地存储结构</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># /hbase/data/default/stu/8ca25fe0d49972b2efb4c36537daf1a2/cf1/d89f620da4754e1092402b577f589f8a</span>
+data：目录即是Hbase自动生成的用来存储所有表数据的一个目录
+default：默认的一个namespace
+stu：就是一张表，其实就是一个文件夹
+8ca25fe0d49972b2efb4c36537daf1a2：就是stu这张表中的一个region
+cf1：就是这个region中第一个列簇所对应的一个store
+d89f620da4754e1092402b577f589f8a：这就是用来存储真实数据的hfile
 </code></pre></div></div>
+
 <ul>
   <li>用HBase实现亿级Feed <a href="https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ">https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ</a></li>
   <li>HBase案例 <a href="https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw">https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw</a></li>

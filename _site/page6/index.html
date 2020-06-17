@@ -229,13 +229,13 @@
   <li>capacity：容量</li>
   <li>flip() &amp; clear()，不论读写position都要从0开始
     <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Buffer</span><span class="o">{</span>
-<span class="kd">public</span> <span class="kd">final</span> <span class="nc">Buffer</span> <span class="nf">flip</span><span class="o">()</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="n">Buffer</span> <span class="nf">flip</span><span class="o">()</span> <span class="o">{</span>
       <span class="n">limit</span> <span class="o">=</span> <span class="n">position</span><span class="o">;</span>
       <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
       <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
       <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
 <span class="o">}</span>
-<span class="kd">public</span> <span class="kd">final</span> <span class="nc">Buffer</span> <span class="nf">clear</span><span class="o">()</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="n">Buffer</span> <span class="nf">clear</span><span class="o">()</span> <span class="o">{</span>
       <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
       <span class="n">limit</span> <span class="o">=</span> <span class="n">capacity</span><span class="o">;</span>
       <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
@@ -272,40 +272,40 @@
 <span class="kn">import</span> <span class="nn">java.util.concurrent.Future</span><span class="o">;</span>
  
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Server</span> <span class="o">{</span>
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">try</span> <span class="o">{</span>
-			<span class="nc">Server</span> <span class="n">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Server</span><span class="o">();</span>
-		<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">Server</span> <span class="n">server</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Server</span><span class="o">();</span>
+		<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
 			<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
 		<span class="o">}</span>
 	<span class="o">}</span>
  
-	<span class="kd">public</span> <span class="nf">Server</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-		<span class="nc">AsynchronousServerSocketChannel</span> <span class="n">serverSocketChannel</span> <span class="o">=</span> <span class="nc">AsynchronousServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
-		<span class="nc">InetSocketAddress</span> <span class="n">inetSocketAddress</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="s">"localhost"</span><span class="o">,</span> <span class="mi">80</span><span class="o">);</span>
+	<span class="kd">public</span> <span class="nf">Server</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+		<span class="n">AsynchronousServerSocketChannel</span> <span class="n">serverSocketChannel</span> <span class="o">=</span> <span class="n">AsynchronousServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+		<span class="n">InetSocketAddress</span> <span class="n">inetSocketAddress</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="s">"localhost"</span><span class="o">,</span> <span class="mi">80</span><span class="o">);</span>
 		<span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">inetSocketAddress</span><span class="o">);</span>
  
-		<span class="nc">Future</span><span class="o">&lt;</span><span class="nc">AsynchronousSocketChannel</span><span class="o">&gt;</span> <span class="n">accept</span><span class="o">;</span>
+		<span class="n">Future</span><span class="o">&lt;</span><span class="n">AsynchronousSocketChannel</span><span class="o">&gt;</span> <span class="n">accept</span><span class="o">;</span>
  
 		<span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
 			<span class="c1">// accept()不会阻塞。</span>
 			<span class="n">accept</span> <span class="o">=</span> <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
  
-			<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"================="</span><span class="o">);</span>
-			<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器等待连接..."</span><span class="o">);</span>
-			<span class="nc">AsynchronousSocketChannel</span> <span class="n">socketChannel</span> <span class="o">=</span> <span class="n">accept</span><span class="o">.</span><span class="na">get</span><span class="o">();</span><span class="c1">// get()方法将阻塞。</span>
+			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"================="</span><span class="o">);</span>
+			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器等待连接..."</span><span class="o">);</span>
+			<span class="n">AsynchronousSocketChannel</span> <span class="n">socketChannel</span> <span class="o">=</span> <span class="n">accept</span><span class="o">.</span><span class="na">get</span><span class="o">();</span><span class="c1">// get()方法将阻塞。</span>
  
-			<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器接受连接"</span><span class="o">);</span>
-			<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器与"</span> <span class="o">+</span> <span class="n">socketChannel</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">()</span> <span class="o">+</span> <span class="s">"建立连接"</span><span class="o">);</span>
+			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器接受连接"</span><span class="o">);</span>
+			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器与"</span> <span class="o">+</span> <span class="n">socketChannel</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">()</span> <span class="o">+</span> <span class="s">"建立连接"</span><span class="o">);</span>
  
-			<span class="nc">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span><span class="s">"demo"</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
-			<span class="nc">Future</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">write</span><span class="o">=</span><span class="n">socketChannel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+			<span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span><span class="s">"demo"</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+			<span class="n">Future</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">write</span><span class="o">=</span><span class="n">socketChannel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
 			
 			<span class="k">while</span><span class="o">(!</span><span class="n">write</span><span class="o">.</span><span class="na">isDone</span><span class="o">())</span> <span class="o">{</span>
-				<span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+				<span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
 			<span class="o">}</span>
 			
-			<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器发送数据完毕."</span><span class="o">);</span>
+			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器发送数据完毕."</span><span class="o">);</span>
 			<span class="n">socketChannel</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
 		<span class="o">}</span>
 	<span class="o">}</span>
@@ -323,8 +323,8 @@
 <span class="kn">import</span> <span class="nn">java.util.Set</span><span class="o">;</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SelectorServer</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="no">LISTEN_PORT</span> <span class="o">=</span> <span class="mi">5300</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">LISTEN_PORT</span> <span class="o">=</span> <span class="mi">5300</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
          <span class="cm">/*
         ServerSocketChannel
         ServerSocket
@@ -333,88 +333,88 @@
         SelectionKey
          */</span>
         <span class="k">try</span> <span class="o">{</span>
-            <span class="nc">ServerSocketChannel</span> <span class="n">ssc</span> <span class="o">=</span> <span class="n">buildServerSocketChannel</span><span class="o">();</span>
+            <span class="n">ServerSocketChannel</span> <span class="n">ssc</span> <span class="o">=</span> <span class="n">buildServerSocketChannel</span><span class="o">();</span>
  
-            <span class="nc">Selector</span> <span class="n">selector</span> <span class="o">=</span> <span class="nc">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
-            <span class="nc">SelectionKey</span> <span class="n">skey</span> <span class="o">=</span> <span class="n">ssc</span><span class="o">.</span><span class="na">register</span><span class="o">(</span> <span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span> <span class="o">);</span>
+            <span class="n">Selector</span> <span class="n">selector</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+            <span class="n">SelectionKey</span> <span class="n">skey</span> <span class="o">=</span> <span class="n">ssc</span><span class="o">.</span><span class="na">register</span><span class="o">(</span> <span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span> <span class="o">);</span>
  
-            <span class="nc">ByteBuffer</span> <span class="n">echoBuffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">128</span><span class="o">);</span>
+            <span class="n">ByteBuffer</span> <span class="n">echoBuffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">128</span><span class="o">);</span>
             <span class="n">printSelectorKeys</span><span class="o">(</span><span class="n">selector</span><span class="o">);</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channel 准备就绪！"</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channel 准备就绪！"</span><span class="o">);</span>
             <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
                 <span class="kt">int</span> <span class="n">num</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">select</span><span class="o">();</span><span class="c1">//获取通道内是否有选择器的关心事件</span>
                 <span class="k">if</span> <span class="o">(</span><span class="n">num</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
                     <span class="k">continue</span><span class="o">;</span>
                 <span class="o">}</span>
-                <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectedKeys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span><span class="c1">//获取通道内关心事件的集合</span>
-                <span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">selectedKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+                <span class="n">Set</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectedKeys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span><span class="c1">//获取通道内关心事件的集合</span>
+                <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">selectedKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
                 <span class="k">while</span> <span class="o">(</span><span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
                     <span class="c1">//遍历每个key</span>
-                    <span class="nc">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                    <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
                     <span class="n">it</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
-                    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"key hashCode="</span> <span class="o">+</span> <span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">());</span>
+                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"key hashCode="</span> <span class="o">+</span> <span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">());</span>
                     <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isAcceptable</span><span class="o">())</span> <span class="o">{</span>
                         <span class="c1">// 有新的socket链接进来</span>
-                        <span class="nc">ServerSocketChannel</span> <span class="n">serverChanel</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ServerSocketChannel</span><span class="o">)</span><span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
-                        <span class="nc">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="n">serverChanel</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
+                        <span class="n">ServerSocketChannel</span> <span class="n">serverChanel</span> <span class="o">=</span> <span class="o">(</span><span class="n">ServerSocketChannel</span><span class="o">)</span><span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                        <span class="n">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="n">serverChanel</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
                         <span class="n">sc</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span> <span class="kc">false</span> <span class="o">);</span>
-                        <span class="nc">SelectionKey</span> <span class="n">newKey</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">register</span><span class="o">(</span> <span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span> <span class="o">);</span>
-                        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="s">"Got connection from "</span><span class="o">+</span><span class="n">sc</span> <span class="o">);</span>
+                        <span class="n">SelectionKey</span> <span class="n">newKey</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">register</span><span class="o">(</span> <span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span> <span class="o">);</span>
+                        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="s">"Got connection from "</span><span class="o">+</span><span class="n">sc</span> <span class="o">);</span>
                         <span class="n">printSelectorKeys</span><span class="o">(</span><span class="n">selector</span><span class="o">);</span>
                     <span class="o">}</span>
                     <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">())</span> <span class="o">{</span>
                         <span class="c1">// 有请求进来</span>
-                        <span class="nc">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="nc">SocketChannel</span><span class="o">)</span><span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
-                        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"address:"</span> <span class="o">+</span> <span class="n">sc</span><span class="o">.</span><span class="na">socket</span><span class="o">().</span><span class="na">getPort</span><span class="o">());</span>
+                        <span class="n">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="n">SocketChannel</span><span class="o">)</span><span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"address:"</span> <span class="o">+</span> <span class="n">sc</span><span class="o">.</span><span class="na">socket</span><span class="o">().</span><span class="na">getPort</span><span class="o">());</span>
                         <span class="kt">int</span> <span class="n">bytesEchoed</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
                         <span class="k">while</span><span class="o">((</span><span class="n">bytesEchoed</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">echoBuffer</span><span class="o">))&gt;</span> <span class="mi">0</span><span class="o">){</span>
-                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"bytesEchoed:"</span><span class="o">+</span><span class="n">bytesEchoed</span><span class="o">);</span>
+                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"bytesEchoed:"</span><span class="o">+</span><span class="n">bytesEchoed</span><span class="o">);</span>
                         <span class="o">}</span>
                         <span class="n">echoBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
                         <span class="k">if</span> <span class="o">(</span><span class="n">bytesEchoed</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"connect finish!over!"</span><span class="o">);</span>
+                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"connect finish!over!"</span><span class="o">);</span>
                             <span class="n">sc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
                             <span class="n">printSelectorKeys</span><span class="o">(</span><span class="n">selector</span><span class="o">);</span>
                             <span class="k">break</span><span class="o">;</span>
                         <span class="o">}</span>
                         <span class="kt">byte</span> <span class="o">[]</span> <span class="n">content</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">echoBuffer</span><span class="o">.</span><span class="na">limit</span><span class="o">()];</span>
                         <span class="n">echoBuffer</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">content</span><span class="o">);</span>
-                        <span class="nc">String</span> <span class="n">result</span><span class="o">=</span><span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">content</span><span class="o">,</span> <span class="s">"utf-8"</span><span class="o">);</span>
+                        <span class="n">String</span> <span class="n">result</span><span class="o">=</span><span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">content</span><span class="o">,</span> <span class="s">"utf-8"</span><span class="o">);</span>
                         <span class="n">doPost</span><span class="o">(</span><span class="n">result</span><span class="o">,</span><span class="n">sc</span><span class="o">);</span>
                         <span class="n">echoBuffer</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
                     <span class="o">}</span>
                 <span class="o">}</span>
             <span class="o">}</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span>
  
     <span class="o">}</span>
  
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">printSelectorKeys</span><span class="o">(</span><span class="nc">Selector</span> <span class="n">selector</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">keys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">keys</span><span class="o">();</span>
-        <span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">iterator</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">printSelectorKeys</span><span class="o">(</span><span class="n">Selector</span> <span class="n">selector</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Set</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">keys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">keys</span><span class="o">();</span>
+        <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">iterator</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
         <span class="k">while</span> <span class="o">(</span><span class="n">iterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
-            <span class="nc">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"all:selectKey hashCode="</span> <span class="o">+</span> <span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">());</span>
+            <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"all:selectKey hashCode="</span> <span class="o">+</span> <span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">());</span>
         <span class="o">}</span>
     <span class="o">}</span>
  
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">doPost</span><span class="o">(</span><span class="nc">String</span> <span class="n">result</span><span class="o">,</span> <span class="nc">SocketChannel</span> <span class="n">sc</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">doPost</span><span class="o">(</span><span class="n">String</span> <span class="n">result</span><span class="o">,</span> <span class="n">SocketChannel</span> <span class="n">sc</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
     <span class="o">}</span>
  
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">ServerSocketChannel</span> <span class="nf">buildServerSocketChannel</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
-        <span class="nc">ServerSocketChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="nc">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">ServerSocketChannel</span> <span class="nf">buildServerSocketChannel</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="n">ServerSocketChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
         <span class="n">channel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span> <span class="kc">false</span> <span class="o">);</span><span class="c1">//使通道为非阻塞</span>
-        <span class="nc">ServerSocket</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">socket</span><span class="o">();</span><span class="c1">//创建基于NIO通道的socket连接</span>
-        <span class="n">ss</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="no">LISTEN_PORT</span><span class="o">));</span><span class="c1">//新建socket通道的端口</span>
+        <span class="n">ServerSocket</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">socket</span><span class="o">();</span><span class="c1">//创建基于NIO通道的socket连接</span>
+        <span class="n">ss</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">LISTEN_PORT</span><span class="o">));</span><span class="c1">//新建socket通道的端口</span>
         <span class="c1">//将NIO通道选绑定到择器,当然绑定后分配的主键为skey</span>
         <span class="k">return</span> <span class="n">channel</span><span class="o">;</span>
     <span class="o">}</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">register</span><span class="o">(</span><span class="nc">ServerSocketChannel</span> <span class="n">ssc</span><span class="o">,</span> <span class="nc">Selector</span> <span class="n">selector</span><span class="o">,</span> <span class="kt">int</span> <span class="n">ops</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">ClosedChannelException</span> <span class="o">{</span>
-        <span class="nc">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">ssc</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">ops</span><span class="o">);</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"selectKey hashCode="</span> <span class="o">+</span> <span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">());</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">register</span><span class="o">(</span><span class="n">ServerSocketChannel</span> <span class="n">ssc</span><span class="o">,</span> <span class="n">Selector</span> <span class="n">selector</span><span class="o">,</span> <span class="kt">int</span> <span class="n">ops</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ClosedChannelException</span> <span class="o">{</span>
+        <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">ssc</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">ops</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"selectKey hashCode="</span> <span class="o">+</span> <span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
@@ -663,18 +663,18 @@ java 中的悲观锁就是 Synchronized,AQS 框架下的锁则是先尝试 cas �
 </ul>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KillThread</span><span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[]){</span>
-        <span class="nc">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyThread</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[]){</span>
+        <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyThread</span><span class="o">();</span>
         <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
         <span class="c1">//此处仅仅是修改状态,通常需要再run方法内部判断来决定是否终止线程</span>
         <span class="n">t</span><span class="o">.</span><span class="na">interrupt</span><span class="o">();</span>
     <span class="o">}</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="nc">Thread</span><span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="n">Thread</span><span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(){</span>
             <span class="k">while</span> <span class="o">(!</span><span class="n">isInterrupted</span><span class="o">())</span> <span class="o">{</span>  <span class="c1">//非阻塞过程中通过判断中断标志来退出</span>
                 <span class="k">try</span> <span class="o">{</span>
-                    <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
-                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                     <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
                     <span class="k">break</span><span class="o">;</span>  <span class="c1">// 捕获到异常之后，执行 break 跳出循环</span>
                 <span class="o">}</span>
@@ -1074,118 +1074,136 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
   <li>强大的索引，地理位置索引可用于构建 各种 O2O 应用、文本索引解决搜索的需求、TTL索引解决历史数据自动过期的需求</li>
   <li>MongoDB与Mysql/Hadoop/Redis的优缺点比较 <a href="https://blog.csdn.net/tanqian351/article/details/81744970">https://blog.csdn.net/tanqian351/article/details/81744970</a></li>
   <li>高可用模式：主从架构（Master-Slave）、副本集架构（Replica Set）、数据分片架构（Sharding）
-  <a href="https://www.jianshu.com/p/2825a66d6aed">https://www.jianshu.com/p/2825a66d6aed</a>
-```sql
-show collections – 类似mysql的table
-db.dropDatabase() – 删除当前数据库
-db.create Collection(“user”) – 创建user表
-use user 
-db.user.drop()
-db.user.insert({‘name’:’Mikie Hara’,’gender’:’female’,’age’:26,’salary’:7000})<br />
-db.user.save({‘name’:’Wentworth Earl Miller’,’gender’:’male’,’age’:41,’salary’:33000}) 
-db.user.find() – 查看所有
-db.user.find({“age”:26}) – 查看 age = 26
-db.user.find({salary:{$gt:7000}}) – 查看 salary &gt; 7000
-db.user.find({$or:[{salary:{$gt:10000}},{age:{$lt:25}}]}) – 查看 OR
-db.user.find({age:{$lt:30},salary:{$gt:6000}}) – 查看 AND
-db.user.find({name:/a/}) – 正则匹配
-db.user.find({name:/^W/})
-db.user.findOne({$or:[{salary:{$gt:10000}},{age:{$lt:25}}]}) – 查询一条
-db.user.find({},{name:1,age:1,salary:1,sex_orientation:true}) – 查询指定列
-db.user.distinct(‘gender’) – 去重
-db.user.find().pretty() – 精简显示
-db.user.find().limit(2) – 显示前两条
-db.user.find().skip(1) – 调过第一条
-db.user.find().sort({salary:1}) – 升序
-db.user.find().sort({salary:-1}) – 降序
-db.user.find().count() – 查数
-db.user.update({name:’Gal Gadot’},{$set:{age:23}},false,true)  – 更新 （条件，更新值，不存在是否插入，是否全部更新）
-db.user.update({name:’Mikie Hara’},{$set:{interest:”CBA”}},false,true) – 新加字段
-db.user.update({gender:’female’},{$inc:{salary:50}},false,true) – 自增
-db.test.remove() – 删除
-db.users.find({}, {“username”: 1}).skip(2).limit(2) – 分页
-db.col.createIndex({“title”:1}) – 升序
-db.col.getIndexes()
-db.col.totalIndexSize() – 查看集合索引大小
-db.mycol.aggregate([{$group : {_id : “$by_user”, num_tutorial : {$sum : 1}}}]) 
-–  select by_user, count(*) from mycol group by by_user
-db.users.find({gender:”M”},{user_name:1,_id:0}).explain()
-db.user.find({“geo”: {$near: [118.10388605,24.48923061], $maxDistance:0.1}},{id:1, name:1, state:1, geo:1}).limit(1).pretty()</li>
+  <a href="https://www.jianshu.com/p/2825a66d6aed">https://www.jianshu.com/p/2825a66d6aed</a></li>
 </ul>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;https://www.jianshu.com/p/fffb581bb1a9&gt;
-&lt;https://www.jianshu.com/p/4ecde929b17d&gt;
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">show</span> <span class="n">collections</span> <span class="c1">-- 类似mysql的table</span>
+<span class="n">db</span><span class="p">.</span><span class="n">dropDatabase</span><span class="p">()</span> <span class="c1">-- 删除当前数据库</span>
+<span class="n">db</span><span class="p">.</span><span class="k">create</span> <span class="n">Collection</span><span class="p">(</span><span class="nv">"user"</span><span class="p">)</span> <span class="c1">-- 创建user表</span>
+<span class="n">use</span> <span class="k">user</span> 
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="k">drop</span><span class="p">()</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="k">insert</span><span class="p">(</span><span class="err">{</span><span class="s1">'name'</span><span class="p">:</span><span class="s1">'Mikie Hara'</span><span class="p">,</span><span class="s1">'gender'</span><span class="p">:</span><span class="s1">'female'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">:</span><span class="mi">26</span><span class="p">,</span><span class="s1">'salary'</span><span class="p">:</span><span class="mi">7000</span><span class="err">}</span><span class="p">)</span>  
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="err">{</span><span class="s1">'name'</span><span class="p">:</span><span class="s1">'Wentworth Earl Miller'</span><span class="p">,</span><span class="s1">'gender'</span><span class="p">:</span><span class="s1">'male'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">:</span><span class="mi">41</span><span class="p">,</span><span class="s1">'salary'</span><span class="p">:</span><span class="mi">33000</span><span class="err">}</span><span class="p">)</span> 
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">()</span> <span class="c1">-- 查看所有</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="err">{</span><span class="nv">"age"</span><span class="p">:</span><span class="mi">26</span><span class="err">}</span><span class="p">)</span> <span class="c1">-- 查看 age = 26</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="err">{</span><span class="n">salary</span><span class="p">:</span><span class="err">{$</span><span class="n">gt</span><span class="p">:</span><span class="mi">7000</span><span class="err">}}</span><span class="p">)</span> <span class="c1">-- 查看 salary &gt; 7000</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="err">{$</span><span class="k">or</span><span class="p">:[</span><span class="err">{</span><span class="n">salary</span><span class="p">:</span><span class="err">{$</span><span class="n">gt</span><span class="p">:</span><span class="mi">10000</span><span class="err">}}</span><span class="p">,</span><span class="err">{</span><span class="n">age</span><span class="p">:</span><span class="err">{$</span><span class="n">lt</span><span class="p">:</span><span class="mi">25</span><span class="err">}}</span><span class="p">]</span><span class="err">}</span><span class="p">)</span> <span class="c1">-- 查看 OR</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="err">{</span><span class="n">age</span><span class="p">:</span><span class="err">{$</span><span class="n">lt</span><span class="p">:</span><span class="mi">30</span><span class="err">}</span><span class="p">,</span><span class="n">salary</span><span class="p">:</span><span class="err">{$</span><span class="n">gt</span><span class="p">:</span><span class="mi">6000</span><span class="err">}}</span><span class="p">)</span> <span class="c1">-- 查看 AND</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="err">{</span><span class="n">name</span><span class="p">:</span><span class="o">/</span><span class="n">a</span><span class="o">/</span><span class="err">}</span><span class="p">)</span> <span class="c1">-- 正则匹配</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="err">{</span><span class="n">name</span><span class="p">:</span><span class="o">/^</span><span class="n">W</span><span class="o">/</span><span class="err">}</span><span class="p">)</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">findOne</span><span class="p">(</span><span class="err">{$</span><span class="k">or</span><span class="p">:[</span><span class="err">{</span><span class="n">salary</span><span class="p">:</span><span class="err">{$</span><span class="n">gt</span><span class="p">:</span><span class="mi">10000</span><span class="err">}}</span><span class="p">,</span><span class="err">{</span><span class="n">age</span><span class="p">:</span><span class="err">{$</span><span class="n">lt</span><span class="p">:</span><span class="mi">25</span><span class="err">}}</span><span class="p">]</span><span class="err">}</span><span class="p">)</span> <span class="c1">-- 查询一条</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="err">{}</span><span class="p">,</span><span class="err">{</span><span class="n">name</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="n">age</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="n">salary</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="n">sex_orientation</span><span class="p">:</span><span class="k">true</span><span class="err">}</span><span class="p">)</span> <span class="c1">-- 查询指定列</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="k">distinct</span><span class="p">(</span><span class="s1">'gender'</span><span class="p">)</span> <span class="c1">-- 去重</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">().</span><span class="n">pretty</span><span class="p">()</span> <span class="c1">-- 精简显示</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">().</span><span class="k">limit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="c1">-- 显示前两条</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">().</span><span class="n">skip</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1">-- 调过第一条</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">().</span><span class="n">sort</span><span class="p">(</span><span class="err">{</span><span class="n">salary</span><span class="p">:</span><span class="mi">1</span><span class="err">}</span><span class="p">)</span> <span class="c1">-- 升序</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">().</span><span class="n">sort</span><span class="p">(</span><span class="err">{</span><span class="n">salary</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="err">}</span><span class="p">)</span> <span class="c1">-- 降序</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">().</span><span class="k">count</span><span class="p">()</span> <span class="c1">-- 查数</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="k">update</span><span class="p">(</span><span class="err">{</span><span class="n">name</span><span class="p">:</span><span class="s1">'Gal Gadot'</span><span class="err">}</span><span class="p">,</span><span class="err">{$</span><span class="k">set</span><span class="p">:</span><span class="err">{</span><span class="n">age</span><span class="p">:</span><span class="mi">23</span><span class="err">}}</span><span class="p">,</span><span class="k">false</span><span class="p">,</span><span class="k">true</span><span class="p">)</span>  <span class="c1">-- 更新 （条件，更新值，不存在是否插入，是否全部更新）</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="k">update</span><span class="p">(</span><span class="err">{</span><span class="n">name</span><span class="p">:</span><span class="s1">'Mikie Hara'</span><span class="err">}</span><span class="p">,</span><span class="err">{$</span><span class="k">set</span><span class="p">:</span><span class="err">{</span><span class="n">interest</span><span class="p">:</span><span class="nv">"CBA"</span><span class="err">}}</span><span class="p">,</span><span class="k">false</span><span class="p">,</span><span class="k">true</span><span class="p">)</span> <span class="c1">-- 新加字段</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="k">update</span><span class="p">(</span><span class="err">{</span><span class="n">gender</span><span class="p">:</span><span class="s1">'female'</span><span class="err">}</span><span class="p">,</span><span class="err">{$</span><span class="n">inc</span><span class="p">:</span><span class="err">{</span><span class="n">salary</span><span class="p">:</span><span class="mi">50</span><span class="err">}}</span><span class="p">,</span><span class="k">false</span><span class="p">,</span><span class="k">true</span><span class="p">)</span> <span class="c1">-- 自增</span>
+<span class="n">db</span><span class="p">.</span><span class="n">test</span><span class="p">.</span><span class="n">remove</span><span class="p">()</span> <span class="c1">-- 删除</span>
+<span class="n">db</span><span class="p">.</span><span class="n">users</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="err">{}</span><span class="p">,</span> <span class="err">{</span><span class="nv">"username"</span><span class="p">:</span> <span class="mi">1</span><span class="err">}</span><span class="p">).</span><span class="n">skip</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="k">limit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="c1">-- 分页</span>
+<span class="n">db</span><span class="p">.</span><span class="n">col</span><span class="p">.</span><span class="n">createIndex</span><span class="p">(</span><span class="err">{</span><span class="nv">"title"</span><span class="p">:</span><span class="mi">1</span><span class="err">}</span><span class="p">)</span> <span class="c1">-- 升序</span>
+<span class="n">db</span><span class="p">.</span><span class="n">col</span><span class="p">.</span><span class="n">getIndexes</span><span class="p">()</span>
+<span class="n">db</span><span class="p">.</span><span class="n">col</span><span class="p">.</span><span class="n">totalIndexSize</span><span class="p">()</span> <span class="c1">-- 查看集合索引大小</span>
+<span class="n">db</span><span class="p">.</span><span class="n">mycol</span><span class="p">.</span><span class="k">aggregate</span><span class="p">([</span><span class="err">{$</span><span class="k">group</span> <span class="p">:</span> <span class="err">{</span><span class="n">_id</span> <span class="p">:</span> <span class="nv">"$by_user"</span><span class="p">,</span> <span class="n">num_tutorial</span> <span class="p">:</span> <span class="err">{$</span><span class="k">sum</span> <span class="p">:</span> <span class="mi">1</span><span class="err">}}}</span><span class="p">])</span> 
+<span class="c1">--  select by_user, count(*) from mycol group by by_user</span>
+<span class="n">db</span><span class="p">.</span><span class="n">users</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="err">{</span><span class="n">gender</span><span class="p">:</span><span class="nv">"M"</span><span class="err">}</span><span class="p">,</span><span class="err">{</span><span class="n">user_name</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="n">_id</span><span class="p">:</span><span class="mi">0</span><span class="err">}</span><span class="p">).</span><span class="k">explain</span><span class="p">()</span>
+<span class="n">db</span><span class="p">.</span><span class="k">user</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="err">{</span><span class="nv">"geo"</span><span class="p">:</span> <span class="err">{$</span><span class="n">near</span><span class="p">:</span> <span class="p">[</span><span class="mi">118</span><span class="p">.</span><span class="mi">10388605</span><span class="p">,</span><span class="mi">24</span><span class="p">.</span><span class="mi">48923061</span><span class="p">],</span> <span class="err">$</span><span class="n">maxDistance</span><span class="p">:</span><span class="mi">0</span><span class="p">.</span><span class="mi">1</span><span class="err">}}</span><span class="p">,</span><span class="err">{</span><span class="n">id</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="k">state</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="n">geo</span><span class="p">:</span><span class="mi">1</span><span class="err">}</span><span class="p">).</span><span class="k">limit</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">pretty</span><span class="p">()</span>
+</code></pre></div></div>
 
-#### Cassandra
-- Cassandra数据建模 &lt;https://www.cnblogs.com/cjsblog/p/12878330.html&gt;
-- 详解Cassandra数据模型中的primary key &lt;https://blog.csdn.net/Yaokai_AssultMaster/article/details/77439897&gt;
-    - 一致性哈希算法的特点是可以接受任何输入，但总会输出位于固定范围内的（当前集群的结点有对应的）值。简而言之，某一特定的partition key总会对应集群中的某一特定的结点，而这个partition key对应的数据也总是应当在这个结点上被找到。
-      对于分布式系统而言，这一点极其重要。其原因是如果对某一特定数据，我们无法确定其所对应的结点位置的话，我们就总是需要遍历集群中的每一个结点才能找到需要的数据。对于小规模的集群，这样的操作可能还可以接受。但对于大规模的分布式数据库而言，这将会严重影响整个系统的效率。
-    - Room表是"静态表"，RoomMember就是"动态表"；User表是"静态表"，UserArticle就是"动态表"
-    - Partition Key (col1, col2)为了确定数据的位置，Clustering Key (col3, col4)，主要是为了排序。例如：PRIMARY KEY((col1, col2), col3, col4))
-- 一切设计都是为了查询
-- Cassandra更加AP,可调一致性（HBase是CP)
-- 属于宽表的一种（HBase、Alibaba TableStore、Google BigTable)
-- 应该把 Cassandra 看做是一个有索引的、面向列的存储系统。
-    - Cassandra 经常被看做是一种面向列（Column-Oriented）的数据库，这也并不算错。它的数据结构不是关系型的，而是一个多维稀疏哈希表。稀疏（Sparse）意味着任何一行都可能会有一列或者几列，但每行都不一定（像关系模型那样）和其他行有一样的列。每行都有一个唯一的键值，用于进行数据访问。所以，更确切地说，应该把 Cassandra 看做是一个有索引的、面向行的存储系统。
-    - Cassandra 的数据存储结构基本可以看做是一个多维哈希表。这意味着你不必事先精确地决定你的具体数据结构或是你的记录应该包含哪些具体字段。这特别适合处于草创阶段，还在不断增加或修改服务特性的应用。而且也特别适合应用在敏捷开发项目中，不必进行长达数月的预先分析。对于使用 Cassandra 的应用，如果业务发生变化了，只需要在运行中增加或删除某些字段就行了，不会造成服务中断。
-    - 当然， 这不是说你不需要考虑数据。相反，Cassandra 需要你换个角度看数据。在 RDBMS 里， 你得首先设计一个完整的数据模型， 然后考虑查询方式， 而在 Cassandra 里，你可以首先思考如何查询数据，然后提供这些数据就可以了。
-- cassandra的难点在于建模，不同于RDB的一种建模思路（KeySpaces&lt;-&gt;DataBase,ColumnFamily&lt;-&gt;Table)仅仅是概念的类似，实际上设计思想完全不同
-    - Keyspaces：键空间是 Cassandra 的数据容器，可以理解为关系型数据库中的数据库（Database）。对于一个 Keyspace 来说，包括定义每行数据的复制节点数目、定义在一致性哈希环中某个节点的替换策略、列族（Column Families）等多个概念。
-    - 列族：列的容器，它的结构像是一个四维哈希表，[Keyspace][ColumnFamily][Key][Column]。
-    - 列：一组键值对。
-- cassandra以列为核心，相当于把RDB中的宽表，细化为随时可以扩展的动态列
-- 就Cassandra而言，最关键的地方在于Key的设计。Cassandra之中一共包含下面5种Key:
-    - Primary Key
-    - Partition Key
-    - Composite Key
-    - Compound Key
-    - Clustering Key
-- Cassandra 是为优异的写吞吐量而特别优化的。
-- 应用场景
-    - 根据项目的 wiki，Cassandra 已经被用于开发了多种不同的应用，包括窗口化的时间序列数据库，用于文档搜索的反向索引，以及分布式任务优先级队列。
-    - 产品目录和零售应用程序Cassandra被许多零售商用于购物车数据保持和快速的产品目录输入和输出。
-    - 社交媒体分析和推荐引擎Cassandra是许多在线公司和社交媒体提供商的良好数据库，用于分析和推荐给客户。
-    - Yelp的广告分析系统，Spotify的所有用户信息存储
-    - Feeds场景、滴滴或物联网订单轨迹场景 &lt;https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ&gt;
-    - cassandra在饿了么的应用 &lt;https://zhuanlan.zhihu.com/p/42175864&gt;
-    &lt;div align="left"&gt;
-    &lt;img src="/img/cassandra.jpg" width="500px"&gt;
-    &lt;/div&gt;
-- cassandra与mysql使用对比 &lt;https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/&gt;
-- cassandra使用场景判断：何时使用及何时不用 &lt;https://developer.aliyun.com/article/713847&gt;
-- Discord 公司如何使用 Cassandra 存储上亿条线上数据(消息系统) &lt;https://segmentfault.com/a/1190000019111842&gt;
-- Spotify如何使用Cassandra实现个性化推荐 &lt;https://segmentfault.com/a/1190000020976455&gt;
-- CQL语法 &lt;https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html&gt;
+<p><a href="https://www.jianshu.com/p/fffb581bb1a9">https://www.jianshu.com/p/fffb581bb1a9</a>
+<a href="https://www.jianshu.com/p/4ecde929b17d">https://www.jianshu.com/p/4ecde929b17d</a></p>
+
+<h4 id="cassandra">Cassandra</h4>
+<ul>
+  <li>Cassandra数据建模 <a href="https://www.cnblogs.com/cjsblog/p/12878330.html">https://www.cnblogs.com/cjsblog/p/12878330.html</a></li>
+  <li>详解Cassandra数据模型中的primary key <a href="https://blog.csdn.net/Yaokai_AssultMaster/article/details/77439897">https://blog.csdn.net/Yaokai_AssultMaster/article/details/77439897</a>
+    <ul>
+      <li>一致性哈希算法的特点是可以接受任何输入，但总会输出位于固定范围内的（当前集群的结点有对应的）值。简而言之，某一特定的partition key总会对应集群中的某一特定的结点，而这个partition key对应的数据也总是应当在这个结点上被找到。
+对于分布式系统而言，这一点极其重要。其原因是如果对某一特定数据，我们无法确定其所对应的结点位置的话，我们就总是需要遍历集群中的每一个结点才能找到需要的数据。对于小规模的集群，这样的操作可能还可以接受。但对于大规模的分布式数据库而言，这将会严重影响整个系统的效率。</li>
+      <li>Room表是”静态表”，RoomMember就是”动态表”；User表是”静态表”，UserArticle就是”动态表”</li>
+      <li>Partition Key (col1, col2)为了确定数据的位置，Clustering Key (col3, col4)，主要是为了排序。例如：PRIMARY KEY((col1, col2), col3, col4))</li>
+    </ul>
+  </li>
+  <li>一切设计都是为了查询</li>
+  <li>Cassandra更加AP,可调一致性（HBase是CP)</li>
+  <li>属于宽表的一种（HBase、Alibaba TableStore、Google BigTable)</li>
+  <li>应该把 Cassandra 看做是一个有索引的、面向列的存储系统。
+    <ul>
+      <li>Cassandra 经常被看做是一种面向列（Column-Oriented）的数据库，这也并不算错。它的数据结构不是关系型的，而是一个多维稀疏哈希表。稀疏（Sparse）意味着任何一行都可能会有一列或者几列，但每行都不一定（像关系模型那样）和其他行有一样的列。每行都有一个唯一的键值，用于进行数据访问。所以，更确切地说，应该把 Cassandra 看做是一个有索引的、面向行的存储系统。</li>
+      <li>Cassandra 的数据存储结构基本可以看做是一个多维哈希表。这意味着你不必事先精确地决定你的具体数据结构或是你的记录应该包含哪些具体字段。这特别适合处于草创阶段，还在不断增加或修改服务特性的应用。而且也特别适合应用在敏捷开发项目中，不必进行长达数月的预先分析。对于使用 Cassandra 的应用，如果业务发生变化了，只需要在运行中增加或删除某些字段就行了，不会造成服务中断。</li>
+      <li>当然， 这不是说你不需要考虑数据。相反，Cassandra 需要你换个角度看数据。在 RDBMS 里， 你得首先设计一个完整的数据模型， 然后考虑查询方式， 而在 Cassandra 里，你可以首先思考如何查询数据，然后提供这些数据就可以了。</li>
+    </ul>
+  </li>
+  <li>cassandra的难点在于建模，不同于RDB的一种建模思路（KeySpaces&lt;-&gt;DataBase,ColumnFamily&lt;-&gt;Table)仅仅是概念的类似，实际上设计思想完全不同
+    <ul>
+      <li>Keyspaces：键空间是 Cassandra 的数据容器，可以理解为关系型数据库中的数据库（Database）。对于一个 Keyspace 来说，包括定义每行数据的复制节点数目、定义在一致性哈希环中某个节点的替换策略、列族（Column Families）等多个概念。</li>
+      <li>列族：列的容器，它的结构像是一个四维哈希表，[Keyspace][ColumnFamily][Key][Column]。</li>
+      <li>列：一组键值对。</li>
+    </ul>
+  </li>
+  <li>cassandra以列为核心，相当于把RDB中的宽表，细化为随时可以扩展的动态列</li>
+  <li>就Cassandra而言，最关键的地方在于Key的设计。Cassandra之中一共包含下面5种Key:
+    <ul>
+      <li>Primary Key</li>
+      <li>Partition Key</li>
+      <li>Composite Key</li>
+      <li>Compound Key</li>
+      <li>Clustering Key</li>
+    </ul>
+  </li>
+  <li>Cassandra 是为优异的写吞吐量而特别优化的。</li>
+  <li>应用场景
+    <ul>
+      <li>根据项目的 wiki，Cassandra 已经被用于开发了多种不同的应用，包括窗口化的时间序列数据库，用于文档搜索的反向索引，以及分布式任务优先级队列。</li>
+      <li>产品目录和零售应用程序Cassandra被许多零售商用于购物车数据保持和快速的产品目录输入和输出。</li>
+      <li>社交媒体分析和推荐引擎Cassandra是许多在线公司和社交媒体提供商的良好数据库，用于分析和推荐给客户。</li>
+      <li>Yelp的广告分析系统，Spotify的所有用户信息存储</li>
+      <li>Feeds场景、滴滴或物联网订单轨迹场景 <a href="https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ">https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ</a></li>
+      <li>cassandra在饿了么的应用 <a href="https://zhuanlan.zhihu.com/p/42175864">https://zhuanlan.zhihu.com/p/42175864</a></li>
+    </ul>
+    <div align="left">
+  <img src="/img/cassandra.jpg" width="500px" />
+  </div>
+  </li>
+  <li>cassandra与mysql使用对比 <a href="https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/">https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/</a></li>
+  <li>cassandra使用场景判断：何时使用及何时不用 <a href="https://developer.aliyun.com/article/713847">https://developer.aliyun.com/article/713847</a></li>
+  <li>Discord 公司如何使用 Cassandra 存储上亿条线上数据(消息系统) <a href="https://segmentfault.com/a/1190000019111842">https://segmentfault.com/a/1190000019111842</a></li>
+  <li>Spotify如何使用Cassandra实现个性化推荐 <a href="https://segmentfault.com/a/1190000020976455">https://segmentfault.com/a/1190000020976455</a></li>
+  <li>CQL语法 <a href="https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html">https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html</a>
 ```sql
 cqlsh
-describe cluster; -- 集群
-describe keyspaces; -- 数控DataBase
-describe tables;
+describe cluster; – 集群
+describe keyspaces; – 数控DataBase
+describe tables;</li>
+</ul>
 
-CREATE KEYSPACE tutorialspoint
-WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 3};
+<p>CREATE KEYSPACE tutorialspoint
+WITH replication = {‘class’:’SimpleStrategy’, ‘replication_factor’ : 3};</p>
 
-ALTER KEYSPACE KeySpaceName
-WITH replication = {'class': 'Strategy name', 'replication_factor' : 'No.Of  replicas'};
+<p>ALTER KEYSPACE KeySpaceName
+WITH replication = {‘class’: ‘Strategy name’, ‘replication_factor’ : ‘No.Of  replicas’};</p>
 
-DROP KEYSPACE tutorialspoint;
+<p>DROP KEYSPACE tutorialspoint;</p>
 
-SELECT * FROM system.schema_keyspaces;
+<p>SELECT * FROM system.schema_keyspaces;
 INSERT INTO emp (emp_id, emp_name, emp_city,
-   emp_phone, emp_sal) VALUES(2,'robin', 'Hyderabad', 9848022339, 40000);
-DELETE FROM emp WHERE emp_id=3;
+   emp_phone, emp_sal) VALUES(2,’robin’, ‘Hyderabad’, 9848022339, 40000);
+DELETE FROM emp WHERE emp_id=3;</p>
 
-USE tutorialspoint;
+<p>USE tutorialspoint;</p>
 
-CREATE TABLE emp(
+<p>CREATE TABLE emp(
    emp_id int PRIMARY KEY,
    emp_name text,
    emp_city text,
    emp_sal varint,
    emp_phone varint
    );
-</code></pre></div></div>
+```</p>
 <h4 id="图数据库-graph-database-neo4j">“图”数据库 Graph Database Neo4J</h4>
 <p><a href="https://www.cnblogs.com/loveis715/p/5277051.html">https://www.cnblogs.com/loveis715/p/5277051.html</a></p>
 
@@ -1341,7 +1359,7 @@ CREATE TABLE emp(
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 13 )</span>
+      <span class="label label-default">分布式 ( 14 )</span>
       </a><br />
 
       

@@ -119,6 +119,7 @@ unwatch #取消watch对所有key的监控
 - MongoDB与Mysql/Hadoop/Redis的优缺点比较 <https://blog.csdn.net/tanqian351/article/details/81744970>
 - 高可用模式：主从架构（Master-Slave）、副本集架构（Replica Set）、数据分片架构（Sharding）
     <https://www.jianshu.com/p/2825a66d6aed>
+    
 ```sql
 show collections -- 类似mysql的table
 db.dropDatabase() -- 删除当前数据库
@@ -155,8 +156,8 @@ db.mycol.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
 --  select by_user, count(*) from mycol group by by_user
 db.users.find({gender:"M"},{user_name:1,_id:0}).explain()
 db.user.find({"geo": {$near: [118.10388605,24.48923061], $maxDistance:0.1}},{id:1, name:1, state:1, geo:1}).limit(1).pretty()
-
 ```
+
 <https://www.jianshu.com/p/fffb581bb1a9>
 <https://www.jianshu.com/p/4ecde929b17d>
 
