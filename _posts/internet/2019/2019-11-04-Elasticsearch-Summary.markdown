@@ -16,9 +16,25 @@ categories:
 - <https://www.jianshu.com/p/d68197bc7def>
 - [ec官网](https://www.elastic.co/cn/products/elasticsearch)
 
+#### es的核心概念
+- Index（索引-数据库）
+索引包含一堆有相似结构的文档数据，，比如可以有一个客户索引，商品分类索引，订单索引，索引有一个名称。一个index包含很多document，一个index就代表了一类类似的或者相同的document。比如说建立一个product index，商品索引，里面可能就存放了所有的商品数据，所有的商品document。
+
+- Type（类型-表）
+每个索引里都可以有一个或多个type，type是index中的一个逻辑数据分类，一个type下的document，都有相同的field。
+
+- Document（文档-行）
+文档是es中的最小数据单元，一个document可以是一条客户数据，一条商品分类数据，一条订单数据，通常用JSON数据结构表示，每个index下的type中，都可以去存储多个document。
+
+- Field（字段-列）
+Field是Elasticsearch的最小单位。一个document里面有多个field，每个field就是一个数据字段。
+
+- mapping（映射-约束）
+数据如何存放到索引对象上，需要有一个映射配置，包括：数据类型、是否存储、是否分词等。这样就创建了一个名为blog的Index。Type不用单独创建，在创建Mapping 时指定就可以。Mapping用来定义Document中每个字段的类型，即所使用的 analyzer、是否索引等属性，非常关键等。
+
 #### 常用命令
 ```shell
-#查看节点左右的Index
+#查看节点所有的Index
 curl -X GET 'http://localhost:9200/_cat/indices?v'
 
 #查看所有Type
