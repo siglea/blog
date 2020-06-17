@@ -63,7 +63,111 @@
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="hdfshive-与-hbasephoenix的区别">HDFS+Hive 与 HBase+Phoenix的区别</h4>
+	<p>Hadoop官方教程 <a href="http://hadoop.apache.org/docs/r1.0.4/cn/quickstart.html">http://hadoop.apache.org/docs/r1.0.4/cn/quickstart.html</a></p>
+
+<h4 id="hadoop基础知识">Hadoop基础知识</h4>
+<ul>
+  <li>HDFS
+    <ul>
+      <li>NameNode：FsImage、Editlog（HDFS日志文件）</li>
+      <li>Secondary NameNode</li>
+      <li>DataNode</li>
+    </ul>
+  </li>
+  <li>MapReduce
+    <ul>
+      <li>JobTracker</li>
+      <li>TaskTracker
+        <ul>
+          <li>MapTask</li>
+          <li>ReduceTask</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>NameNodeHA方案
+    <ul>
+      <li>Secondary NN会定期的从NN中读取editlog，与自己存储的Image进行合并形成新的metadata image</li>
+      <li>backup NN实时得到editlog，当NN宕掉后，手动切换到Backup NN；</li>
+      <li>Avatar NameNode，这是Facebook提供的一种HA方案，将client访问hadoop的editlog放在NFS中，Standby NN能够实时拿到editlog；DataNode需要同时与Active NN和Standby NN report block信息；</li>
+      <li>Hadoop HA 是 Hadoop 2.x 中新添加的特性，包括 NameNode HA 和 ResourceManager HA。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="storm基础知识">Storm基础知识</h4>
+<ul>
+  <li>Nimbus：负责在集群里面发送代码，分配工作给机器，并且监控状态。全局只有一个。相当于master的角色。</li>
+  <li>Supervisor：监听分配给它那台机器的工作，根据需要启动/关闭工作进程Worker。每一个要运行Storm的机器上都要部署一个，并且，按照机器的配置设定上面分配的槽位数。</li>
+  <li>zookeeper：Storm重点依赖的外部资源。Nimbus和Supervisor甚至实际运行的Worker都是把心跳保存在Zookeeper上的。Nimbus也是根据Zookeerper上的心跳和任务运行状况，进行调度和任务分配的。两者之间的调度器。</li>
+  <li>Spout：在一个topology中产生源数据流的组件。通常情况下spout会从外部数据源中读取数据，然后转换为topology内部的源数据。Spout是一个主动的角色，其接口中有个nextTuple()函数，storm框架会不停地调用此函数，用户只要在其中生成源数据即可。</li>
+  <li>Bolt：在一个topology中接受数据然后执行处理的组件。Bolt可以执行过滤、函数操作、合并、写数据库等任何操作。Bolt是一个被动的角色，其接口中有个execute(Tuple input)函数,在接受到消息后会调用此函数，用户可以在其中执行自己想要的操作。</li>
+  <li>Topology：storm中运行的一个实时应用程序，因为各个组件间的消息流动形成逻辑上的一个拓扑结构。</li>
+  <li>Worker：具体处理组建逻辑的进程，</li>
+  <li>Task：不再与物理进程对应，是处理任务的线程，</li>
+  <li>Stream：源源不断传递的tuple就组成了stream。</li>
+  <li>Tuple:一次消息传递的基本单元。本来应该是一个key-value的map，但是由于各个组件间传递的tuple的字段名称已经事先定义好，所以tuple中只要按序填入各个value就行了，所以就是一个value list.</li>
+  <li>一个 spout 向拓扑提供数据，多个 bolt 完成统计任务</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">storm</span><span class="o">.</span><span class="na">analytics</span><span class="o">;</span>
+<span class="o">...</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TopologyStarter</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Logger</span><span class="o">.</span><span class="na">getRootLogger</span><span class="o">().</span><span class="na">removeAllAppenders</span><span class="o">();</span>
+        <span class="nc">TopologyBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TopologyBuilder</span><span class="o">();</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setSpout</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">UsersNavigationSpout</span><span class="o">(),</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">GetCategoryBolt</span><span class="o">(),</span><span class="mi">3</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">shuffleGrouping</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">);</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">UserHistoryBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Fields</span><span class="o">(</span><span class="s">"user"</span><span class="o">));</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">ProductCategoriesCounterBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Fields</span><span class="o">(</span><span class="s">"product"</span><span class="o">));</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"news-notifier"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">NewsNotifierBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">shuffleGrouping</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">);</span>
+
+        <span class="nc">Config</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Config</span><span class="o">();</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">setDebug</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-host"</span><span class="o">,</span><span class="no">REDIS_HOST</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-port"</span><span class="o">,</span><span class="no">REDIS_PORT</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"webserver"</span><span class="o">,</span> <span class="no">WEBSERVER</span><span class="o">);</span>
+
+        <span class="nc">LocalCluster</span> <span class="n">cluster</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LocalCluster</span><span class="o">();</span>
+        <span class="n">cluster</span><span class="o">.</span><span class="na">submitTopology</span><span class="o">(</span><span class="s">"analytics"</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span> <span class="n">builder</span><span class="o">.</span><span class="na">createTopology</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>  
+</code></pre></div></div>
+<ul>
+  <li>Storm教程 <a href="https://www.w3cschool.cn/storm/qk761jzb.html">https://www.w3cschool.cn/storm/qk761jzb.html</a></li>
+</ul>
+
+<h4 id="storm命名方式">Storm命名方式</h4>
+<ul>
+  <li>Storm暴风雨：其组件大多也以气象名词命名</li>
+  <li>spout龙卷：形象的理解是把原始数据卷进Storm流式计算中</li>
+  <li>bolt雷电：从spout或者其他bolt中接收数据进行处理或者输出</li>
+  <li>nimbus雨云：主控节点，存在单点问题，不过可以用watchdog来保证其可用性，fast-fail后马上就启动</li>
+  <li>topology拓扑：Storm的任务单元，形象的理解拓扑的点是spout或者bolt，之间的数据流是线，整个构成一个拓扑</li>
+</ul>
+
+<h4 id="storm为什么接kafka">storm为什么接Kafka</h4>
+<ul>
+  <li>系统解耦</li>
+  <li>storm没有自己的存储只负责计算</li>
+  <li>可以通过kafka控制流量</li>
+</ul>
+
+<h4 id="storm应用场景">Storm应用场景</h4>
+<ul>
+  <li>日志分析，例如应用系统产生大量的业务日志，这些例如网关系统的API调用情况日志，这些日志，不太适合马上存入数据库，需要进行加工，日志文件的量又非常大，所以没法直接统计，这时候可以通过Storm来进行分析。</li>
+  <li>大数据实时统计，互联网的数据量是海量的时候，没有办法在数据库层面直接SQL来进行统计，需要对于产生的数据，进行二次加工，然后产出结果，正好把实时变化的数据流到storm中处理一遍。</li>
+  <li>一淘-实时分析系统pora：实时分析用户的属性，并反馈给搜索引擎。最初，用户属性分析是通过每天在云梯上定时运行的MR job来完成的。为了满足实时性的要求，希望能够实时分析用户的行为日志，将最新的用户属性反馈给搜索引擎，能够为用户展现最贴近其当前需求的结果。</li>
+  <li>携程-网站性能监控：实时分析系统监控携程网的网站性能。利用HTML5提供的performance标准获得可用的指标，并记录日志。Storm集群实时分析日志和入库。使用DRPC聚合成报表，通过历史数据对比等判断规则，触发预警事件。</li>
+  <li>收集游戏中的数据，运营或者开发者可以在上线后几秒钟得到持续不断更新的游戏监控报告和分析结果，然后马上针对游戏的参数和平衡性进行调整。这样就能够大大缩短游戏迭代周期，加强游戏的生命力（实际上，zynga就是这么干的！虽然使用的不是Storm……Zynga研发之道探秘：用数据说话）</li>
+  <li>推荐系统：有时候在实时处理时会从mysql及hadoop中获取数据库中的信息，例如在电影推荐系统中，传入数据为：用户当前点播电影信息，从数据库中获取的是该用户之前的一些点播电影信息统计，例如点播最多的电影类型、最近点播的电影类型，及其社交关系中点播信息，结合本次点击及从数据库中获取的信息，生成推荐数据，推荐给该用户。并且该次点击记录将会更新其数据库中的参考信息，这样就是实现了简单的智能推荐。</li>
+</ul>
+
+<h4 id="hdfshive-与-hbasephoenix的区别">HDFS+Hive 与 HBase+Phoenix的区别</h4>
 <ul>
   <li>Hive中的表是纯逻辑表，就只是表的定义等，即表的元数据。Hive本身不存储数据，它完全依赖HDFS和MapReduce。这样就可以将结构化的数据文件映射为为一张数据库表，并提供完整的SQL查询功能，并将SQL语句最终转换为MapReduce任务进行运行。 而HBase表是物理表，适合存放非结构化的数据。
     <ol>

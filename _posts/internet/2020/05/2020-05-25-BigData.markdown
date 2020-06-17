@@ -7,6 +7,87 @@ tags:
 categories:
 - 技术
 ---
+Hadoop官方教程 <http://hadoop.apache.org/docs/r1.0.4/cn/quickstart.html>
+
+#### Hadoop基础知识
+- HDFS
+    - NameNode：FsImage、Editlog（HDFS日志文件）
+    - Secondary NameNode
+    - DataNode
+- MapReduce
+    - JobTracker
+    - TaskTracker
+        - MapTask
+        - ReduceTask
+- NameNodeHA方案
+    - Secondary NN会定期的从NN中读取editlog，与自己存储的Image进行合并形成新的metadata image
+    - backup NN实时得到editlog，当NN宕掉后，手动切换到Backup NN；
+    - Avatar NameNode，这是Facebook提供的一种HA方案，将client访问hadoop的editlog放在NFS中，Standby NN能够实时拿到editlog；DataNode需要同时与Active NN和Standby NN report block信息；
+    - Hadoop HA 是 Hadoop 2.x 中新添加的特性，包括 NameNode HA 和 ResourceManager HA。
+
+#### Storm基础知识
+- Nimbus：负责在集群里面发送代码，分配工作给机器，并且监控状态。全局只有一个。相当于master的角色。
+- Supervisor：监听分配给它那台机器的工作，根据需要启动/关闭工作进程Worker。每一个要运行Storm的机器上都要部署一个，并且，按照机器的配置设定上面分配的槽位数。
+- zookeeper：Storm重点依赖的外部资源。Nimbus和Supervisor甚至实际运行的Worker都是把心跳保存在Zookeeper上的。Nimbus也是根据Zookeerper上的心跳和任务运行状况，进行调度和任务分配的。两者之间的调度器。
+- Spout：在一个topology中产生源数据流的组件。通常情况下spout会从外部数据源中读取数据，然后转换为topology内部的源数据。Spout是一个主动的角色，其接口中有个nextTuple()函数，storm框架会不停地调用此函数，用户只要在其中生成源数据即可。
+- Bolt：在一个topology中接受数据然后执行处理的组件。Bolt可以执行过滤、函数操作、合并、写数据库等任何操作。Bolt是一个被动的角色，其接口中有个execute(Tuple input)函数,在接受到消息后会调用此函数，用户可以在其中执行自己想要的操作。   
+- Topology：storm中运行的一个实时应用程序，因为各个组件间的消息流动形成逻辑上的一个拓扑结构。
+- Worker：具体处理组建逻辑的进程，
+- Task：不再与物理进程对应，是处理任务的线程，
+- Stream：源源不断传递的tuple就组成了stream。
+- Tuple:一次消息传递的基本单元。本来应该是一个key-value的map，但是由于各个组件间传递的tuple的字段名称已经事先定义好，所以tuple中只要按序填入各个value就行了，所以就是一个value list.
+- 一个 spout 向拓扑提供数据，多个 bolt 完成统计任务
+
+```java
+package storm.analytics;
+...
+public class TopologyStarter {
+    public static void main(String[] args) {
+        Logger.getRootLogger().removeAllAppenders();
+        TopologyBuilder builder = new TopologyBuilder();
+        builder.setSpout("read-feed", new UsersNavigationSpout(),3);
+        builder.setBolt("get-categ", new GetCategoryBolt(),3)
+               .shuffleGrouping("read-feed");
+        builder.setBolt("user-history", new UserHistoryBolt(),5)
+               .fieldsGrouping("get-categ", new Fields("user"));
+        builder.setBolt("product-categ-counter", new ProductCategoriesCounterBolt(),5)
+               .fieldsGrouping("user-history", new Fields("product"));
+        builder.setBolt("news-notifier", new NewsNotifierBolt(),5)
+               .shuffleGrouping("product-categ-counter");
+
+        Config conf = new Config();
+        conf.setDebug(true);
+        conf.put("redis-host",REDIS_HOST);
+        conf.put("redis-port",REDIS_PORT);
+        conf.put("webserver", WEBSERVER);
+
+        LocalCluster cluster = new LocalCluster();
+        cluster.submitTopology("analytics", conf, builder.createTopology());
+    }
+}  
+```
+- Storm教程 <https://www.w3cschool.cn/storm/qk761jzb.html>
+
+#### Storm命名方式
+- Storm暴风雨：其组件大多也以气象名词命名
+- spout龙卷：形象的理解是把原始数据卷进Storm流式计算中
+- bolt雷电：从spout或者其他bolt中接收数据进行处理或者输出
+- nimbus雨云：主控节点，存在单点问题，不过可以用watchdog来保证其可用性，fast-fail后马上就启动
+- topology拓扑：Storm的任务单元，形象的理解拓扑的点是spout或者bolt，之间的数据流是线，整个构成一个拓扑
+
+#### storm为什么接Kafka
+- 系统解耦
+- storm没有自己的存储只负责计算
+- 可以通过kafka控制流量
+
+#### Storm应用场景
+- 日志分析，例如应用系统产生大量的业务日志，这些例如网关系统的API调用情况日志，这些日志，不太适合马上存入数据库，需要进行加工，日志文件的量又非常大，所以没法直接统计，这时候可以通过Storm来进行分析。
+- 大数据实时统计，互联网的数据量是海量的时候，没有办法在数据库层面直接SQL来进行统计，需要对于产生的数据，进行二次加工，然后产出结果，正好把实时变化的数据流到storm中处理一遍。
+- 一淘-实时分析系统pora：实时分析用户的属性，并反馈给搜索引擎。最初，用户属性分析是通过每天在云梯上定时运行的MR job来完成的。为了满足实时性的要求，希望能够实时分析用户的行为日志，将最新的用户属性反馈给搜索引擎，能够为用户展现最贴近其当前需求的结果。
+- 携程-网站性能监控：实时分析系统监控携程网的网站性能。利用HTML5提供的performance标准获得可用的指标，并记录日志。Storm集群实时分析日志和入库。使用DRPC聚合成报表，通过历史数据对比等判断规则，触发预警事件。
+- 收集游戏中的数据，运营或者开发者可以在上线后几秒钟得到持续不断更新的游戏监控报告和分析结果，然后马上针对游戏的参数和平衡性进行调整。这样就能够大大缩短游戏迭代周期，加强游戏的生命力（实际上，zynga就是这么干的！虽然使用的不是Storm……Zynga研发之道探秘：用数据说话）
+- 推荐系统：有时候在实时处理时会从mysql及hadoop中获取数据库中的信息，例如在电影推荐系统中，传入数据为：用户当前点播电影信息，从数据库中获取的是该用户之前的一些点播电影信息统计，例如点播最多的电影类型、最近点播的电影类型，及其社交关系中点播信息，结合本次点击及从数据库中获取的信息，生成推荐数据，推荐给该用户。并且该次点击记录将会更新其数据库中的参考信息，这样就是实现了简单的智能推荐。
+
 #### HDFS+Hive 与 HBase+Phoenix的区别
 - Hive中的表是纯逻辑表，就只是表的定义等，即表的元数据。Hive本身不存储数据，它完全依赖HDFS和MapReduce。这样就可以将结构化的数据文件映射为为一张数据库表，并提供完整的SQL查询功能，并将SQL语句最终转换为MapReduce任务进行运行。 而HBase表是物理表，适合存放非结构化的数据。                            
     1. 两者分别是什么？
