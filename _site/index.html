@@ -440,7 +440,11 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
           <li>HLog限制，hase.regionserver.max.logs</li>
         </ul>
       </li>
-      <li>Cassandra：LSM、HashNode、CommitLog、memtable、SSTable</li>
+      <li>Cassandra：LSM、HashNode（一致性Hash的虚拟节点）、CommitLog、memtable、SSTable
+        <ul>
+          <li>Durable_writes，默认情况下，表的durable_writes属性设置为true，但可以将其设置为false。durable_writes参数用于设置写数据时是否写入commit log,如果设置为false,则写请求不会写commit log，会有丢失数据的风险。此参数默认为true,即要写commit log,生产系统应该将该参数设置为true。</li>
+        </ul>
+      </li>
       <li>HBase、Cassandra都是基于类似的LSM机制</li>
     </ul>
   </li>
@@ -449,6 +453,12 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
       <li>MongoDB：Collection JSON</li>
       <li>Cassandra：Column family ，Row，Name/Value/Timestamp</li>
       <li>HBase：put ‘t_user’,’1001’,’st1:age’,’18’</li>
+    </ul>
+  </li>
+  <li>范围分页查询
+    <ul>
+      <li>MongoDB：利用skip().limit()实现</li>
+      <li>HBase：scan  ‘stu2’,{COLUMNS =&gt; ‘cf1:age’, LIMMIT 10, STARTROW =&gt; ‘xx’}</li>
     </ul>
   </li>
   <li>数据类型
@@ -474,18 +484,34 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
           <li>HBase RowKey与索引设计 <a href="https://www.cnblogs.com/swordfall/p/10597802.html">https://www.cnblogs.com/swordfall/p/10597802.html</a></li>
         </ol>
       </li>
+      <li>Cassandra
+        <ul>
+          <li>第一主键 只能用=号查询</li>
+          <li>第二主键 支持= &gt; &lt; &gt;= &lt;= 但是必须后面加 ALLOW FILTERING</li>
+          <li>索引列 只支持=号</li>
+          <li>索引列 支持 like，只有主键支持 group by</li>
+          <li>PRIMARY KEY (user_id, uploaded_date, article_id)，第一列仍然是数据的partition key。其后所跟的所有的列都称为clustering column</li>
+          <li>CQL查询语句的特殊规则 <a href="https://blog.csdn.net/ZZQHELLO2018/article/details/106302161">https://blog.csdn.net/ZZQHELLO2018/article/details/106302161</a></li>
+        </ul>
+      </li>
     </ul>
   </li>
   <li>事务
     <ul>
       <li>HBase的事务是行级事务，可以保证行级数据的原子性、一致性、隔离性以及持久性</li>
       <li>MongoDB不支持事务</li>
+      <li>Cassandra支持行一级的原子性和隔离性，但与之交换的是高度的可用性和快速的读写性能。Cassandra写入具有持久性。</li>
     </ul>
   </li>
   <li>一致性和CAP
     <ul>
       <li>MongoDB、HBase强一致性，CP，0 数据丢失</li>
-      <li>Cassandra最终一致性（可调一致性），数据可能丢失，AP</li>
+      <li>Cassandra最终一致性（可调一致性），数据可能丢失，AP
+        <ul>
+          <li>Consistency，此命令显示当前的一致性级别，或设置新的一致性级别。Consistency可以理解读和写操作的Consistency Level。
+写操作的consistency level指定了写操作在通知客户端请求成功之前，必须确保已经成功完成写操作的replica的数量。</li>
+        </ul>
+      </li>
     </ul>
   </li>
   <li>Join支持
@@ -495,22 +521,17 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
       <li>HBase不支持Join，需要借助其他工具或者算法实现</li>
     </ul>
   </li>
-  <li>范围查询
-    <ul>
-      <li>MongoDB：利用skip().limit()实现</li>
-      <li>HBase：scan  ‘stu2’,{COLUMNS =&gt; ‘cf1:age’, LIMMIT 10, STARTROW =&gt; ‘xx’}</li>
-    </ul>
-  </li>
   <li>读写
     <ul>
       <li>HBase快速读取和写入，具有可扩展性。读写性能数据读写定位可能要通过最多 6 次的网络RPC，性能较低。</li>
       <li>Cassandra快速随机性读取/写入，写多读少。数据读写定位非常快。</li>
     </ul>
   </li>
+  <li>MongoDB、HBase、Cassandra比较<a href="https://www.cnblogs.com/yanduanduan/p/10563678.html">https://www.cnblogs.com/yanduanduan/p/10563678.html</a></li>
+  <li>Hbase和Cassandra <a href="https://blog.csdn.net/aa5305123/article/details/83142514">https://blog.csdn.net/aa5305123/article/details/83142514</a></li>
 </ul>
 
-<p>Hbase和Cassandra <a href="https://blog.csdn.net/aa5305123/article/details/83142514">https://blog.csdn.net/aa5305123/article/details/83142514</a>
-MongoDB、HBase、Cassandra比较<a href="https://www.cnblogs.com/yanduanduan/p/10563678.html">https://www.cnblogs.com/yanduanduan/p/10563678.html</a>  <br />
+<pre>
 1.强一致性的读写：HBase不是一个最终一致性的存储。
 2.自动sharding：HBase的table在集群种被分布在各个region，region可以做自动切分。
 3.regionserver的failover；
@@ -518,21 +539,23 @@ MongoDB、HBase、Cassandra比较<a href="https://www.cnblogs.com/yanduanduan/p/
 5.MapReduce：支持大数据的并行处理；
 6.JAVA Client 以及Thrift/RESR API 访问；
 7.Block Cache 以及Bloom filter；
-8.操作管理。</p>
+8.操作管理。
 
-<p>1.C<em>借鉴Dynamo的架构思想，把自己叫做一个最终一致性的系统，如果使用至少是QUORUM 读写，还算是一个强一致的系统。
-2.C</em>的sharding方式：一致性hash，有2种：
+1.C*借鉴Dynamo的架构思想，把自己叫做一个最终一致性的系统，如果使用至少是QUORUM 读写，还算是一个强一致的系统。
+2.C*的sharding方式：一致性hash，有2种：
 （1）人为配置好initial_token；
 2.使用vnode，集群初始化以及节点bootstrap的时候会计算token，基于这些token做数据sharding。
 3.可以容忍：replicator_number - (read/write level sufficient nodes)个节点挂了，比如3个副本，读写级别QUORUM（sufficient nodes是2），能容忍1节点挂；
 4.支持MapReduce;
 5.Thrift、CQL访问;
 6.大数据处理的bloom filter 必备；
-7.自己有jmx等常见管理，且datastax 公司有提供ops center；</p>
+7.自己有jmx等常见管理，且datastax 公司有提供ops center；
+</pre>
 
 <h4 id="seata-的-demo">seata 的 Demo</h4>
 <h4 id="hive--mysql数据互导">Hive &amp; Mysql数据互导</h4>
 <h4 id="tweproxy">tweproxy</h4>
+<h4 id="垃圾回收器组合">垃圾回收器组合</h4>
 
       </div>
       <div style="height:50px;">

@@ -202,12 +202,12 @@ db.user.find({"geo": {$near: [118.10388605,24.48923061], $maxDistance:0.1}},{id:
 - Discord 公司如何使用 Cassandra 存储上亿条线上数据(消息系统) <https://segmentfault.com/a/1190000019111842>
 - Spotify如何使用Cassandra实现个性化推荐 <https://segmentfault.com/a/1190000020976455>
 - CQL语法 <https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html>
+
 ```sql
 cqlsh
 describe cluster; -- 集群
-describe keyspaces; -- 数控DataBase
-describe tables;
 
+describe keyspaces; -- 查看已有DataBase
 CREATE KEYSPACE tutorialspoint
 WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 3};
 
@@ -216,21 +216,52 @@ WITH replication = {'class': 'Strategy name', 'replication_factor' : 'No.Of  rep
 
 DROP KEYSPACE tutorialspoint;
 
-SELECT * FROM system.schema_keyspaces;
-INSERT INTO emp (emp_id, emp_name, emp_city,
-   emp_phone, emp_sal) VALUES(2,'robin', 'Hyderabad', 9848022339, 40000);
-DELETE FROM emp WHERE emp_id=3;
+describe tables; -- 查看已有表
+describe table table_name -- 查看表结构
+CREATE TABLE users (
+  user_id text PRIMARY KEY,
+  first_name text,
+  last_name text,
+  emails set<text> -- 集合 Cassandra特有处理方式
+);
+INSERT INTO users (user_id, first_name, last_name, emails) VALUES('frodo', 'Frodo', 'Baggins', {'f@baggins.com', 'baggins@gmail.com'});
+UPDATE users SET emails = emails + {'fb@friendsofmordor.org'} WHERE user_id = 'frodo';
+SELECT user_id, emails FROM users WHERE user_id = 'frodo';
+UPDATE users SET emails = emails - {'fb@friendsofmordor.org'} WHERE user_id = 'frodo';
 
-USE tutorialspoint;
+-- 删除所有元素
+UPDATE users SET emails = {} WHERE user_id = 'frodo';
+DELETE emails FROM users WHERE user_id = 'frodo';
 
-CREATE TABLE emp(
-   emp_id int PRIMARY KEY,
-   emp_name text,
-   emp_city text,
-   emp_sal varint,
-   emp_phone varint
-   );
+ALTER TABLE users ADD top_places list<text>; -- 向users表添加一个list列
+UPDATE users SET top_places = [ 'rivendell', 'rohan' ] WHERE user_id = 'frodo'; -- 使用UPDATA命令向list插入值
+UPDATE users SET top_places = [ 'the shire' ] + top_places WHERE user_id = 'frodo'; -- 在list前面插入值 
+UPDATE users SET top_places = top_places + [ 'mordor' ] WHERE user_id = 'frodo'; -- 在list后面插入值 
+
+ALTER TABLE users ADD todo map<timestamp, text>;
+UPDATE users SET todo = { '2012-9-24' : 'enter mordor', '2014-10-2 12:00' : 'throw ring into mount doom' } WHERE user_id = 'frodo';
+
+-- 使用TTL
+UPDATE users USING TTL 86400 SET todo['2012-10-1'] = 'find water' WHERE user_id = 'frodo';
+INSERT INTO users (user_name, password) VALUES ('cbrown', 'ch@ngem4a') USING TTL 86400;
+
+-- 给集合添加索引
+CREATE INDEX ON users(emails);
+SELECT user_id FROM users WHERE emails CONTAINS 'baggins@gmail.com'
+
+-- 分页查询
+select * from test where token(a)>token(a10) limit 4;
+
+COPY users (user_id, first_name, last_name, emails) TO 'kevinfile'; -- 将名为emp的表复制到文件myfile
 ```
+
+- 使用集合类型要注意：
+    1. 集合的每一项最大是64K。
+    2. 保持集合内的数据不要太大，免得Cassandra 查询延时过长，只因Cassandra 查询时会读出整个集合内的数据，集合在内部不会进行分页，集合的目的是存储小量数据。
+    3. 不要向集合插入大于64K的数据，否则只有查询到前64K数据，其它部分会丢失。
+
+
+
 #### "图"数据库 Graph Database Neo4J
 <https://www.cnblogs.com/loveis715/p/5277051.html>
 

@@ -271,12 +271,16 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
         - 浅谈HBase的数据分布 <https://zhuanlan.zhihu.com/p/47074785>
         - hbase.regionserver.global.memstore.upperLimit、hbase.regionserver.global.memstore.lowerLimit、hbase.hregion.memstore.flush.size
         - HLog限制，hase.regionserver.max.logs
-    - Cassandra：LSM、HashNode、CommitLog、memtable、SSTable
+    - Cassandra：LSM、HashNode（一致性Hash的虚拟节点）、CommitLog、memtable、SSTable
+        - Durable_writes，默认情况下，表的durable_writes属性设置为true，但可以将其设置为false。durable_writes参数用于设置写数据时是否写入commit log,如果设置为false,则写请求不会写commit log，会有丢失数据的风险。此参数默认为true,即要写commit log,生产系统应该将该参数设置为true。
     - HBase、Cassandra都是基于类似的LSM机制
 - 存储形式
     - MongoDB：Collection JSON
     - Cassandra：Column family ，Row，Name/Value/Timestamp
     - HBase：put 't_user','1001','st1:age','18'
+- 范围分页查询
+    - MongoDB：利用skip().limit()实现
+    - HBase：scan  'stu2',{COLUMNS => 'cf1:age', LIMMIT 10, STARTROW => 'xx'}
 - 数据类型
     - MongoDB丰富，类似SQL
     - HBase只支持字符串
@@ -293,28 +297,34 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
         1. CCIndex（complemental clustering index）方案
         1. Phoenix
         1. HBase RowKey与索引设计 <https://www.cnblogs.com/swordfall/p/10597802.html>
+    - Cassandra
+        - 第一主键 只能用=号查询
+        - 第二主键 支持= > < >= <= 但是必须后面加 ALLOW FILTERING
+        - 索引列 只支持=号    
+        - 索引列 支持 like，只有主键支持 group by
+        - PRIMARY KEY (user_id, uploaded_date, article_id)，第一列仍然是数据的partition key。其后所跟的所有的列都称为clustering column
+        - CQL查询语句的特殊规则 <https://blog.csdn.net/ZZQHELLO2018/article/details/106302161>
 - 事务
     - HBase的事务是行级事务，可以保证行级数据的原子性、一致性、隔离性以及持久性
     - MongoDB不支持事务
+    - Cassandra支持行一级的原子性和隔离性，但与之交换的是高度的可用性和快速的读写性能。Cassandra写入具有持久性。
 - 一致性和CAP
     - MongoDB、HBase强一致性，CP，0 数据丢失
     - Cassandra最终一致性（可调一致性），数据可能丢失，AP
+        - Consistency，此命令显示当前的一致性级别，或设置新的一致性级别。Consistency可以理解读和写操作的Consistency Level。
+          写操作的consistency level指定了写操作在通知客户端请求成功之前，必须确保已经成功完成写操作的replica的数量。
 - Join支持
     - MongoDB不支持多表连接
     - Cassandra不支持多表连接，用数据冗余解决问题hotels_by_poi
-    - HBase不支持Join，需要借助其他工具或者算法实现
-- 范围查询
-    - MongoDB：利用skip().limit()实现
-    - HBase：scan  'stu2',{COLUMNS => 'cf1:age', LIMMIT 10, STARTROW => 'xx'} 
+    - HBase不支持Join，需要借助其他工具或者算法实现 
 - 读写
     - HBase快速读取和写入，具有可扩展性。读写性能数据读写定位可能要通过最多 6 次的网络RPC，性能较低。
     - Cassandra快速随机性读取/写入，写多读少。数据读写定位非常快。
     
-    
-    
+- MongoDB、HBase、Cassandra比较<https://www.cnblogs.com/yanduanduan/p/10563678.html>    
+- Hbase和Cassandra <https://blog.csdn.net/aa5305123/article/details/83142514>    
 
-Hbase和Cassandra <https://blog.csdn.net/aa5305123/article/details/83142514>
-MongoDB、HBase、Cassandra比较<https://www.cnblogs.com/yanduanduan/p/10563678.html>    
+<pre>
 1.强一致性的读写：HBase不是一个最终一致性的存储。
 2.自动sharding：HBase的table在集群种被分布在各个region，region可以做自动切分。
 3.regionserver的failover；
@@ -333,11 +343,9 @@ MongoDB、HBase、Cassandra比较<https://www.cnblogs.com/yanduanduan/p/10563678
 5.Thrift、CQL访问;
 6.大数据处理的bloom filter 必备；
 7.自己有jmx等常见管理，且datastax 公司有提供ops center；
-
-
-
-
+</pre>
 
 #### seata 的 Demo
 #### Hive & Mysql数据互导
 #### tweproxy
+#### 垃圾回收器组合

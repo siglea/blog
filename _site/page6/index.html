@@ -1173,37 +1173,70 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
   <li>cassandra使用场景判断：何时使用及何时不用 <a href="https://developer.aliyun.com/article/713847">https://developer.aliyun.com/article/713847</a></li>
   <li>Discord 公司如何使用 Cassandra 存储上亿条线上数据(消息系统) <a href="https://segmentfault.com/a/1190000019111842">https://segmentfault.com/a/1190000019111842</a></li>
   <li>Spotify如何使用Cassandra实现个性化推荐 <a href="https://segmentfault.com/a/1190000020976455">https://segmentfault.com/a/1190000020976455</a></li>
-  <li>CQL语法 <a href="https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html">https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html</a>
-```sql
-cqlsh
-describe cluster; – 集群
-describe keyspaces; – 数控DataBase
-describe tables;</li>
+  <li>CQL语法 <a href="https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html">https://www.w3cschool.cn/cassandra/cassandra_alter_keyspace.html</a></li>
 </ul>
 
-<p>CREATE KEYSPACE tutorialspoint
-WITH replication = {‘class’:’SimpleStrategy’, ‘replication_factor’ : 3};</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cqlsh</span>
+<span class="k">describe</span> <span class="k">cluster</span><span class="p">;</span> <span class="c1">-- 集群</span>
 
-<p>ALTER KEYSPACE KeySpaceName
-WITH replication = {‘class’: ‘Strategy name’, ‘replication_factor’ : ‘No.Of  replicas’};</p>
+<span class="k">describe</span> <span class="n">keyspaces</span><span class="p">;</span> <span class="c1">-- 查看已有DataBase</span>
+<span class="k">CREATE</span> <span class="n">KEYSPACE</span> <span class="n">tutorialspoint</span>
+<span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="err">{</span><span class="s1">'class'</span><span class="p">:</span><span class="s1">'SimpleStrategy'</span><span class="p">,</span> <span class="s1">'replication_factor'</span> <span class="p">:</span> <span class="mi">3</span><span class="err">}</span><span class="p">;</span>
 
-<p>DROP KEYSPACE tutorialspoint;</p>
+<span class="k">ALTER</span> <span class="n">KEYSPACE</span> <span class="n">KeySpaceName</span>
+<span class="k">WITH</span> <span class="n">replication</span> <span class="o">=</span> <span class="err">{</span><span class="s1">'class'</span><span class="p">:</span> <span class="s1">'Strategy name'</span><span class="p">,</span> <span class="s1">'replication_factor'</span> <span class="p">:</span> <span class="s1">'No.Of  replicas'</span><span class="err">}</span><span class="p">;</span>
 
-<p>SELECT * FROM system.schema_keyspaces;
-INSERT INTO emp (emp_id, emp_name, emp_city,
-   emp_phone, emp_sal) VALUES(2,’robin’, ‘Hyderabad’, 9848022339, 40000);
-DELETE FROM emp WHERE emp_id=3;</p>
+<span class="k">DROP</span> <span class="n">KEYSPACE</span> <span class="n">tutorialspoint</span><span class="p">;</span>
 
-<p>USE tutorialspoint;</p>
+<span class="k">describe</span> <span class="n">tables</span><span class="p">;</span> <span class="c1">-- 查看已有表</span>
+<span class="k">describe</span> <span class="k">table</span> <span class="k">table_name</span> <span class="c1">-- 查看表结构</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="p">(</span>
+  <span class="n">user_id</span> <span class="n">text</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">first_name</span> <span class="n">text</span><span class="p">,</span>
+  <span class="n">last_name</span> <span class="n">text</span><span class="p">,</span>
+  <span class="n">emails</span> <span class="k">set</span><span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span> <span class="c1">-- 集合 Cassandra特有处理方式</span>
+<span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">users</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">emails</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">'frodo'</span><span class="p">,</span> <span class="s1">'Frodo'</span><span class="p">,</span> <span class="s1">'Baggins'</span><span class="p">,</span> <span class="err">{</span><span class="s1">'f@baggins.com'</span><span class="p">,</span> <span class="s1">'baggins@gmail.com'</span><span class="err">}</span><span class="p">);</span>
+<span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">emails</span> <span class="o">=</span> <span class="n">emails</span> <span class="o">+</span> <span class="err">{</span><span class="s1">'fb@friendsofmordor.org'</span><span class="err">}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">emails</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">emails</span> <span class="o">=</span> <span class="n">emails</span> <span class="o">-</span> <span class="err">{</span><span class="s1">'fb@friendsofmordor.org'</span><span class="err">}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
 
-<p>CREATE TABLE emp(
-   emp_id int PRIMARY KEY,
-   emp_name text,
-   emp_city text,
-   emp_sal varint,
-   emp_phone varint
-   );
-```</p>
+<span class="c1">-- 删除所有元素</span>
+<span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">emails</span> <span class="o">=</span> <span class="err">{}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
+<span class="k">DELETE</span> <span class="n">emails</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">top_places</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">-- 向users表添加一个list列</span>
+<span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">'rivendell'</span><span class="p">,</span> <span class="s1">'rohan'</span> <span class="p">]</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 使用UPDATA命令向list插入值</span>
+<span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">'the shire'</span> <span class="p">]</span> <span class="o">+</span> <span class="n">top_places</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 在list前面插入值 </span>
+<span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="n">top_places</span> <span class="o">+</span> <span class="p">[</span> <span class="s1">'mordor'</span> <span class="p">]</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 在list后面插入值 </span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">todo</span> <span class="k">map</span><span class="o">&lt;</span><span class="k">timestamp</span><span class="p">,</span> <span class="n">text</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">todo</span> <span class="o">=</span> <span class="err">{</span> <span class="s1">'2012-9-24'</span> <span class="p">:</span> <span class="s1">'enter mordor'</span><span class="p">,</span> <span class="s1">'2014-10-2 12:00'</span> <span class="p">:</span> <span class="s1">'throw ring into mount doom'</span> <span class="err">}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
+
+<span class="c1">-- 使用TTL</span>
+<span class="k">UPDATE</span> <span class="n">users</span> <span class="k">USING</span> <span class="n">TTL</span> <span class="mi">86400</span> <span class="k">SET</span> <span class="n">todo</span><span class="p">[</span><span class="s1">'2012-10-1'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'find water'</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">users</span> <span class="p">(</span><span class="n">user_name</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">'cbrown'</span><span class="p">,</span> <span class="s1">'ch@ngem4a'</span><span class="p">)</span> <span class="k">USING</span> <span class="n">TTL</span> <span class="mi">86400</span><span class="p">;</span>
+
+<span class="c1">-- 给集合添加索引</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">users</span><span class="p">(</span><span class="n">emails</span><span class="p">);</span>
+<span class="k">SELECT</span> <span class="n">user_id</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">emails</span> <span class="k">CONTAINS</span> <span class="s1">'baggins@gmail.com'</span>
+
+<span class="c1">-- 分页查询</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test</span> <span class="k">where</span> <span class="n">token</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">&gt;</span><span class="n">token</span><span class="p">(</span><span class="n">a10</span><span class="p">)</span> <span class="k">limit</span> <span class="mi">4</span><span class="p">;</span>
+
+<span class="k">COPY</span> <span class="n">users</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">emails</span><span class="p">)</span> <span class="k">TO</span> <span class="s1">'kevinfile'</span><span class="p">;</span> <span class="c1">-- 将名为emp的表复制到文件myfile</span>
+</code></pre></div></div>
+
+<ul>
+  <li>使用集合类型要注意：
+    <ol>
+      <li>集合的每一项最大是64K。</li>
+      <li>保持集合内的数据不要太大，免得Cassandra 查询延时过长，只因Cassandra 查询时会读出整个集合内的数据，集合在内部不会进行分页，集合的目的是存储小量数据。</li>
+      <li>不要向集合插入大于64K的数据，否则只有查询到前64K数据，其它部分会丢失。</li>
+    </ol>
+  </li>
+</ul>
+
 <h4 id="图数据库-graph-database-neo4j">“图”数据库 Graph Database Neo4J</h4>
 <p><a href="https://www.cnblogs.com/loveis715/p/5277051.html">https://www.cnblogs.com/loveis715/p/5277051.html</a></p>
 
