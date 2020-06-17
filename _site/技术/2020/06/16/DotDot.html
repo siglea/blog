@@ -545,10 +545,32 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
 7.自己有jmx等常见管理，且datastax 公司有提供ops center；
 </pre>
 
-<h4 id="seata-的-demo">seata 的 Demo</h4>
-<h4 id="hive--mysql数据互导">Hive &amp; Mysql数据互导</h4>
+<h4 id="seata-的-demo">Seata 的 Demo</h4>
 
 <h4 id="垃圾回收器组合">垃圾回收器组合</h4>
+<ul>
+  <li>Parallel Old &amp; Parallel Scavenge New 高吞吐量 （1种）</li>
+  <li>G1 （1种）</li>
+  <li>Serial Old （5种）
+    <ul>
+      <li>
+        <table>
+          <tbody>
+            <tr>
+              <td>&amp; CMS Old &amp; (Serial</td>
+              <td> </td>
+              <td>ParNew 2种)</td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+      <li>&amp; Serial</li>
+      <li>&amp; ParNew</li>
+      <li>&amp; Parallel Scavenge New</li>
+    </ul>
+  </li>
+  <li>CMS短停顿 与 Scavenge 高吞吐不可一组</li>
+</ul>
 
   </div>
 </article>

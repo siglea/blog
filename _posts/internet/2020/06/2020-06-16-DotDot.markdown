@@ -345,7 +345,14 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
 7.自己有jmx等常见管理，且datastax 公司有提供ops center；
 </pre>
 
-#### seata 的 Demo
-#### Hive & Mysql数据互导
+#### Seata 的 Demo
 
 #### 垃圾回收器组合
+- Parallel Old & Parallel Scavenge New 高吞吐量 （1种）
+- G1 （1种）
+- Serial Old （5种）
+    - & CMS Old & (Serial || ParNew 2种)
+    - & Serial
+    - & ParNew
+    - & Parallel Scavenge New
+- CMS短停顿 与 Scavenge 高吞吐不可一组

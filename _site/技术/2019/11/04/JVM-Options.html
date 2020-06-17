@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title> Jvm内存模型、垃圾回收机制与调优 </title>
-  <meta name="description" content="GC的收集算法（实战中是集中算法组合使用）  标记-复制  Serial New、Parallel New、Parallel Scavenge New、G1  标记-清除  CMS  标记-整理  Serial Old、Parallel Old、G1">
+  <meta name="description" content="GC的收集算法（实战中是集中算法组合使用）  标记-复制：复制到新区域，回收老区域  Serial New、Parallel New、Parallel Scavenge New、G1  标记-清除  CMS (产生碎片，默认选择Serial配合最后整理)  标记-整理：移动到一侧，找边界然后清理边界外的所有空间 ...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -62,11 +62,11 @@
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
     <h4 id="gc的收集算法实战中是集中算法组合使用">GC的收集算法（实战中是集中算法组合使用）</h4>
 <ul>
-  <li>标记-复制
+  <li>标记-复制：复制到新区域，回收老区域
   Serial New、Parallel New、Parallel Scavenge New、G1</li>
   <li>标记-清除
-  CMS</li>
-  <li>标记-整理
+  CMS (产生碎片，默认选择Serial配合最后整理)</li>
+  <li>标记-整理：移动到一侧，找边界然后清理边界外的所有空间
   Serial Old、Parallel Old、G1</li>
 </ul>
 

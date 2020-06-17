@@ -28,7 +28,8 @@ categories:
         - Hive和Hbase是两种基于Hadoop的不同技术–Hive是一种类SQL的引擎，并且运行MapReduce任务，Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库。当然，这两种工具是可以同时使用的。就像用Google来搜索，用FaceBook进行社交一样，Hive可以用来进行统计查询，HBase可以用来进行实时查询，数据也可以从Hive写到Hbase，设置再从Hbase写回Hive。
     1. 其他
         - Pig是接近脚本方式去描述MapReduce，Hive则用的是SQL。近似理解为SQL ON Hadoop
-
+    1. Hive & Mysql数据互导 sqoop
+    
 #### Hadoop & Spark & Storm
 - Hadoop，是实现了MapReduce的思想，将数据切片计算来处理大量的离线数据。Hadoop处理的数据必须是已经存放在HDFS上或者类似HBase的数据库中，所以Hadoop实现的时候是通过移动计算到这些存放数据的机器上来提高效率。
   适合于离线的批量数据处理适用于对实时性要求极低的场景。

@@ -9,11 +9,11 @@ categories:
 ---
 
 #### GC的收集算法（实战中是集中算法组合使用）
-- 标记-复制
+- 标记-复制：复制到新区域，回收老区域
     Serial New、Parallel New、Parallel Scavenge New、G1
 - 标记-清除
-    CMS
-- 标记-整理
+    CMS (产生碎片，默认选择Serial配合最后整理)
+- 标记-整理：移动到一侧，找边界然后清理边界外的所有空间
     Serial Old、Parallel Old、G1
 
 #### 分代（为了更高效的区别回收，G1的分区region也是为了发挥多核并发优势）
