@@ -1,0 +1,333 @@
+---
+layout: post
+title:  "Netty"
+date:   2020-05-18 23:25:00 +0900
+comments: true
+tags:
+- 网络
+- Java
+ 
+categories:
+- 技术
+---
+#### 从零开发一个IM服务端  
+- 通俗易懂 <http://www.52im.net/forum.php?mod=viewthread&tid=2768&highlight=netty>
+- 基于Netty实现海量接入的推送服务技术要点 <http://www.52im.net/forum.php?mod=viewthread&tid=166&highlight=netty>
+
+#### 必读有关“为何选择Netty”的11个疑问及解答
+- <http://www.52im.net/forum.php?mod=viewthread&tid=163&highlight=netty>
+
+#### TCP网关
+HAProxy nginx LVS
+- 生产环境大部分还是采用通过rest方式获取IpList，然后有客户端直接发起长连接的方式
+- 京东京麦的生产级TCP网关技术实践总结 <http://www.52im.net/forum.php?mod=viewthread&tid=1243&highlight=netty>
+- 一套海量在线用户的移动端IM架构设计实践 <http://www.52im.net/thread-812-1-1.html>
+
+#### Reactor 线程模型
+- Reactor 是反应堆的意思，Reactor 模型是指通过一个或多个输入同时传递给服务处理器的服务请求的事件驱动处理模式。
+服务端程序处理传入多路请求，并将它们同步分派给请求对应的处理线程，Reactor 模式也叫 Dispatcher 模式，即 I/O 多了复用统一监听事件，收到事件后分发(Dispatch 给某进程)，是编写高性能网络服务器的必备技术之一。
+<http://www.52im.net/forum.php?mod=viewthread&tid=2043&highlight=netty>
+
+#### Why Netty?JDK 原生 NIO 程序的问题
+- JDK 原生也有一套网络应用程序 API，但是存在一系列问题，主要如下：
+    1. NIO 的类库和 API 繁杂，使用麻烦：你需要熟练掌握 Selector、ServerSocketChannel、SocketChannel、ByteBuffer 等。
+    1. 需要具备其他的额外技能做铺垫：例如熟悉 Java 多线程编程，因为 NIO 编程涉及到 Reactor 模式，你必须对多线程和网路编程非常熟悉，才能编写出高质量的 NIO 程序。
+    1. 可靠性能力补齐，开发工作量和难度都非常大：例如客户端面临断连重连、网络闪断、半包读写、失败缓存、网络拥塞和异常码流的处理等等。NIO 编程的特点是功能开发相对容易，但是可靠性能力补齐工作量和难度都非常大。
+    1. JDK NIO 的 Bug：例如臭名昭著的 Epoll Bug，它会导致 Selector 空轮询，最终导致 CPU 100%。官方声称在 JDK 1.6 版本的 update 18 修复了该问题，但是直到 JDK 1.7 版本该问题仍旧存在，只不过该 Bug 发生概率降低了一些而已，它并没有被根本解决。
+    
+#### Java NIO epoll bug 以及 Netty 的解决之道
+- epoll 空轮询导致 CPU 利用率 100% <http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/>
+ 
+#### netty中的epoll实现
+- 在java中，IO多路复用的功能通过nio中的Selector提供，在不同的操作系统下jdk会通过spi的方式加载不同的实现，
+比如在macos下是KQueueSelectorProvider，KQueueSelectorProvider底层使用了kqueue来进行IO多路复用；
+在linux 2.6以后的版本则是EPollSelectorProvider，EPollSelectorProvider底层使用的是epoll。
+虽然jdk自身提供了selector的epoll实现，netty仍实现了自己的epoll版本，根据netty开发者在StackOverflow的回答，主要原因有两个：
+    - 支持更多socket option，比如TCP_CORK和SO_REUSEPORT
+    - 使用了边缘触发（ET）模式
+- <https://juejin.im/post/5d46ce64f265da03e05af722>
+- ET和LT的区别在于触发事件的条件不同，LT比较符合编程思维（有满足条件的就触发），ET触发的条件更苛刻一些（仅在发生变化时才触发），对使用者的要求也更高，理论效率更高
+- 边缘触发和水平触发<https://juejin.im/post/5cdaa67f518825691b4a5cc0>
+
+#### Netty Coding
+
+- EchoServer
+
+```java
+package com.siglea.bobo.imserver.service;
+
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.net.InetSocketAddress;
+
+@Service("EchoServer")
+public class EchoServer
+{
+    // 服务器端口
+    @Value("${server.port}")
+    private int port;
+    // 通过nio方式来接收连接和处理连接
+    private static EventLoopGroup boss = new NioEventLoopGroup();
+    private static EventLoopGroup work = new NioEventLoopGroup();
+
+    // 启动引导器
+    private static ServerBootstrap b = new ServerBootstrap();
+    @Autowired
+    private EchoServerHandler echoServerHandler;
+
+    public void run()
+    {
+        try
+        {
+            b.group(boss, work);
+            // 设置nio类型的channel
+            b.channel(NioServerSocketChannel.class);
+            // 设置监听端口
+            b.localAddress(new InetSocketAddress(port));
+            // 设置通道初始化
+            b.childHandler(new ChannelInitializer<SocketChannel>()
+            {
+                //有连接到达时会创建一个channel
+                protected void initChannel(SocketChannel ch) throws Exception
+                {
+                    // pipeline管理channel中的Handler
+                    // 在channel队列中添加一个handler来处理业务
+                    ch.pipeline().addLast("echoServerHandler",echoServerHandler);
+                }
+            });
+            // 配置完成，开始绑定server
+            // 通过调用sync同步方法阻塞直到绑定成功
+
+            ChannelFuture f = b.bind().sync();
+            System.out.println(EchoServer.class.getName() +
+                    " started and listen on " + f.channel().localAddress());
+
+            // 监听服务器关闭事件
+            // 应用程序会一直等待，直到channel关闭
+            f.channel().closeFuture().sync();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally
+        {
+            // 关闭EventLoopGroup，释放掉所有资源包括创建的线程
+            work.shutdownGracefully();
+            boss.shutdownGracefully();
+        }
+
+    }
+}
+```
+
+- EchoServerHandler
+
+```java
+package com.siglea.bobo.imserver.service;
+
+
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.CharsetUtil;
+import io.netty.util.ReferenceCountUtil;
+import org.springframework.stereotype.Service;
+
+@Service("echoServerHandler")
+public class EchoServerHandler extends ChannelInboundHandlerAdapter
+{
+
+    /**
+     * 建立连接时，发送一条消息
+     */
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception
+    {
+        System.out.println("连接的客户端地址:" + ctx.channel().remoteAddress());
+        super.channelActive(ctx);
+    }
+
+    public void channelRead(ChannelHandlerContext ctx, Object msg)
+    {
+        try
+        {
+            System.out.println("server received data :" + msg);
+//            ctx.write(msg);//写回数据，
+            ctx.write(Unpooled.copiedBuffer("I am Server", CharsetUtil.UTF_8));
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            ReferenceCountUtil.release(msg);
+        }
+    }
+
+    public void channelReadComplete(ChannelHandlerContext ctx)
+    {
+        //flush掉所有写回的数据
+        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER)
+                .addListener(ChannelFutureListener.CLOSE); //当flush完成后关闭channel
+    }
+
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+    {
+        //捕捉异常信息
+        cause.printStackTrace();
+        //出现异常时关闭channel
+        ctx.close();
+    }
+}
+```
+
+- EchoClient
+
+```java
+package com.siglea.bobo.imserver.service;
+
+
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.CharsetUtil;
+import io.netty.util.ReferenceCountUtil;
+import org.springframework.stereotype.Service;
+
+@Service("echoServerHandler")
+public class EchoServerHandler extends ChannelInboundHandlerAdapter
+{
+
+    /**
+     * 建立连接时，发送一条消息
+     */
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception
+    {
+        System.out.println("连接的客户端地址:" + ctx.channel().remoteAddress());
+        super.channelActive(ctx);
+    }
+
+    public void channelRead(ChannelHandlerContext ctx, Object msg)
+    {
+        try
+        {
+            System.out.println("server received data :" + msg);
+//            ctx.write(msg);//写回数据，
+            ctx.write(Unpooled.copiedBuffer("I am Server", CharsetUtil.UTF_8));
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            ReferenceCountUtil.release(msg);
+        }
+    }
+
+    public void channelReadComplete(ChannelHandlerContext ctx)
+    {
+        //flush掉所有写回的数据
+        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER)
+                .addListener(ChannelFutureListener.CLOSE); //当flush完成后关闭channel
+    }
+
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+    {
+        //捕捉异常信息
+        cause.printStackTrace();
+        //出现异常时关闭channel
+        ctx.close();
+    }
+}
+```
+
+- EchoClientHandler
+
+```java
+package com.siglea.bobo.imclient.service;
+
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.CharsetUtil;
+import io.netty.util.ReferenceCountUtil;
+import org.springframework.stereotype.Service;
+
+@Service("echoClientHandler")
+public class EchoClientHandler extends ChannelInboundHandlerAdapter
+{
+    /**
+     * 此方法会在连接到服务器后被调用
+     */
+    public void channelActive(ChannelHandlerContext ctx)
+    {
+
+        System.out.println("channelActive");
+        ctx.write(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+        ctx.flush();
+    }
+
+    /**
+     * 业务逻辑处理
+     */
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception
+    {
+        System.out.println("channelRead");
+        // 如果不是protobuf类型的数据
+        if (!(msg instanceof ByteBuf))
+        {
+            System.out.println("未知数据!" + msg);
+            return;
+        }
+        try
+        {
+            ByteBuf in = (ByteBuf) msg;
+            System.out.println("Client received: " +
+                    ByteBufUtil.hexDump(in.readBytes(in.readableBytes())));
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally
+        {
+            ReferenceCountUtil.release(msg);
+        }
+    }
+    /**
+     * 捕捉到异常
+     */
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+    {
+        System.out.println("exceptionCaught");
+        cause.printStackTrace();
+        ctx.close();
+    }
+}
+```
+
+#### Netty & Protobuf
+
+```java
+bootstrap.handler(
+        new ChannelInitializer<SocketChannel>()
+        {
+            public void initChannel(SocketChannel ch) throws Exception
+            {
+                ch.pipeline().addLast(new ProtobufDecoder());
+                ch.pipeline().addLast(new ProtobufEncoder());
+                ch.pipeline().addLast(chatClientHandler);
+​
+            }
+        }
+);
+```
+- 游戏服务 <https://www.jianshu.com/p/82212eb7d76c>
+- Netty整合SpringBoot并使用Protobuf进行数据传输 <https://juejin.im/post/5bb596196fb9a05d0f16f006>
