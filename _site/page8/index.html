@@ -54,6 +54,98 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html"> Jvm内存模型、垃圾回收机制与调优 </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="gc的收集算法实战中是集中算法组合使用">GC的收集算法（实战中是集中算法组合使用）</h4>
+<ul>
+  <li>标记-复制：复制到新区域，回收老区域
+  Serial New、Parallel New、Parallel Scavenge New、G1</li>
+  <li>标记-清除
+  CMS (产生碎片，默认选择Serial配合最后整理)</li>
+  <li>标记-整理：移动到一侧，找边界然后清理边界外的所有空间
+  Serial Old、Parallel Old、G1</li>
+</ul>
+
+<h4 id="分代为了更高效的区别回收g1的分区region也是为了发挥多核并发优势">分代（为了更高效的区别回收，G1的分区region也是为了发挥多核并发优势）</h4>
+<ul>
+  <li>Young Generation
+  Eden 伊甸园
+  Survivor 幸存者（from/to，S0/S1)</li>
+  <li>Tenured/Old Generation</li>
+  <li>Permanent Generation (Java8之前）</li>
+  <li>Metaspace (Java8之后）</li>
+</ul>
+
+<h5 id="参考">参考</h5>
+<p>JVM的4种垃圾回收算法、垃圾回收机制与总结 <a href="https://zhuanlan.zhihu.com/p/54851319">https://zhuanlan.zhihu.com/p/54851319</a></p>
+
+<h4 id="gc收集器">GC收集器</h4>
+<ul>
+  <li>Serial（串行）收集器
+  新生代、老生代</li>
+  <li>Parallel（并行）收集器
+  新生代、老生代</li>
+  <li>Parallel Scavenge New （GC自适应的调节策略GC Ergonomics）
+  新生代、通过调整相关参数，比如新生代的大小，达到以合适的时间和耗时，达到高吞吐量
+  吞吐量 = 运行用户代码时间 /（运行用户代码时间 + 垃圾收集时间）</li>
+  <li>CMS（Concurrent Mark Sweep 并发）收集器 （并发低停顿收集器 Concurrent Low Pause Collector）
+  老生代</li>
+  <li>G1（并发）收集器（优先回收价值最大的Region（这也就是Garbage-First名称的来由）
+  新生代、老生代</li>
+  <li>JDK11的ZGC <a href="https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw">https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw</a></li>
+</ul>
+
+<h5 id="参考-1">参考</h5>
+<ul>
+  <li>7种JVM垃圾收集器特点，优劣势、及使用场景 <a href="https://zhuanlan.zhihu.com/p/58896728">https://zhuanlan.zhihu.com/p/58896728</a></li>
+  <li>深入理解JVM，7种垃圾收集器 <a href="http://blog.itpub.net/69917606/viewspace-2656882">http://blog.itpub.net/69917606/viewspace-2656882</a></li>
+  <li>深入详解JVM内存模型与JVM参数详细配置 <a href="https://zhuanlan.zhihu.com/p/58896619">https://zhuanlan.zhihu.com/p/58896619</a>
+    <ul>
+      <li>堆内存（Heap）此内存区域的唯一目的就是存放对象实例（new的对象），几乎所有的对象实例都在这里分配内存。</li>
+      <li>方法区（Method Area）方法区也称”永久代“，它用于存储虚拟机加载的类信息、常量、静态变量、是各个线程共享的内存区域。</li>
+      <li>虚拟机栈(JVM Stack) Java虚拟机栈是线程私有，生命周期与线程相同。创建线程的时候就会创建一个java虚拟机栈。
+虚拟机执行java程序的时候，每个方法都会创建一个栈帧，栈帧存放在java虚拟机栈中，通过压栈出栈的方式进行方法调用。
+栈帧又分为一下几个区域：局部变量表、操作数栈、动态连接、方法出口等。</li>
+      <li>本地方法栈(Native Stack) 本地方法栈（Native Method Stacks）与虚拟机栈所发挥的作用是非常相似的，其区别不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的Native方法服务。</li>
+      <li>程序计数器（PC Register）
+程序计数器就是记录当前线程执行程序的位置，改变计数器的值来确定执行的下一条指令，比如循环、分支、方法跳转、异常处理，线程恢复都是依赖程序计数器来完成。
+Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间的方式实现的。为了线程切换能恢复到正确的位置，每条线程都需要一个独立的程序计数器，所以它是线程私有的。</li>
+      <li>直接内存
+直接内存并不是虚拟机内存的一部分，也不是Java虚拟机规范中定义的内存区域。jdk1.4中新加入的NIO，引入了通道与缓冲区的IO方式，它可以调用Native方法直接分配堆外内存，这个堆外内存就是本机内存，不会影响到堆内存的大小。</li>
+    </ul>
+  </li>
+  <li>JVM性能调优的6大步骤，及关键调优参数详解 <a href="https://zhuanlan.zhihu.com/p/58897189">https://zhuanlan.zhihu.com/p/58897189</a></li>
+  <li>深入剖析JVM：G1收集器+回收流程+推荐用例 <a href="https://zhuanlan.zhihu.com/p/59861022">https://zhuanlan.zhihu.com/p/59861022</a></li>
+</ul>
+
+<h4 id="java-参数">java 参数</h4>
+<ul>
+  <li>查看JVM使用的默认的垃圾收集器 <a href="https://www.cnblogs.com/grey-wolf/p/9217497.html">https://www.cnblogs.com/grey-wolf/p/9217497.html</a></li>
+  <li>JVM 参数 <a href="https://blog.csdn.net/liyongbing1122/article/details/88716400">https://blog.csdn.net/liyongbing1122/article/details/88716400</a></li>
+</ul>
+
+<p>逃逸分析</p>
+<ul>
+  <li><a href="https://blog.csdn.net/w372426096/article/details/80333657">https://blog.csdn.net/w372426096/article/details/80333657</a></li>
+  <li><a href="https://blog.csdn.net/hollis_chuang/article/details/80922794">https://blog.csdn.net/hollis_chuang/article/details/80922794</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Linux-cmd.html"> Linux  Cmd </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
@@ -506,6 +598,7 @@ T(n) = O(n)
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
 	<h4 id="前言">前言</h4>
 <ul>
+  <li>牛逼elasticsearch专栏 <a href="https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&amp;album_id=1340073242396114944&amp;__biz=MzI2NDY1MTA3OQ==&amp;scene=21#wechat_redirect">https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&amp;album_id=1340073242396114944&amp;__biz=MzI2NDY1MTA3OQ==&amp;scene=21#wechat_redirect</a></li>
   <li>腾讯Elasticsearch海量规模背后的内核优化剖析 <a href="https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw">https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw</a></li>
   <li>腾讯万亿级 Elasticsearch 内存效率提升技术解密 <a href="https://mp.weixin.qq.com/s/ipuIq_E5rOPPF7_XdS5PGQ">https://mp.weixin.qq.com/s/ipuIq_E5rOPPF7_XdS5PGQ</a></li>
   <li>Elasticsearch 在各大互联网公司大量真实的应用案例！ <a href="https://mp.weixin.qq.com/s/Sntf8JoHYFSqkqRtcvVReQ">https://mp.weixin.qq.com/s/Sntf8JoHYFSqkqRtcvVReQ</a></li>
@@ -888,25 +981,6 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html">商业</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html#disqus_thread"></a></span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="商业">商业</h3>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -1018,7 +1092,7 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 14 )</span>
+      <span class="label label-default">分布式 ( 15 )</span>
       </a><br />
 
       
@@ -1046,7 +1120,7 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       
       <a  href="/tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 10 )</span>
+      <span class="label label-default">数据结构与算法 ( 11 )</span>
       </a><br />
 
       
@@ -1109,7 +1183,7 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       
       <a  href="/tag/bigdata">
-      <span class="label label-default">BigData ( 3 )</span>
+      <span class="label label-default">BigData ( 4 )</span>
       </a><br />
 
       

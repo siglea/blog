@@ -54,6 +54,86 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty-Mina.html">Netty-Mina</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 18, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty-Mina.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="从零开发一个im服务端">从零开发一个IM服务端</h4>
+<ul>
+  <li>通俗易懂 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty</a></li>
+  <li>基于Netty实现海量接入的推送服务技术要点 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty</a></li>
+</ul>
+
+<h4 id="必读有关为何选择netty的11个疑问及解答">必读有关“为何选择Netty”的11个疑问及解答</h4>
+<ul>
+  <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=163&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=163&amp;highlight=netty</a></li>
+</ul>
+
+<h4 id="tcp网关">TCP网关</h4>
+<p>HAProxy nginx LVS</p>
+<ul>
+  <li>生产环境大部分还是采用通过rest方式获取IpList，然后有客户端直接发起长连接的方式</li>
+  <li>京东京麦的生产级TCP网关技术实践总结 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1243&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1243&amp;highlight=netty</a></li>
+  <li>一套海量在线用户的移动端IM架构设计实践 <a href="http://www.52im.net/thread-812-1-1.html">http://www.52im.net/thread-812-1-1.html</a></li>
+</ul>
+
+<h4 id="reactor-线程模型">Reactor 线程模型</h4>
+<ul>
+  <li>Reactor 是反应堆的意思，Reactor 模型是指通过一个或多个输入同时传递给服务处理器的服务请求的事件驱动处理模式。
+服务端程序处理传入多路请求，并将它们同步分派给请求对应的处理线程，Reactor 模式也叫 Dispatcher 模式，即 I/O 多了复用统一监听事件，收到事件后分发(Dispatch 给某进程)，是编写高性能网络服务器的必备技术之一。</li>
+</ul>
+<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2043&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2043&amp;highlight=netty</a></p>
+
+<h4 id="why-nettyjdk-原生-nio-程序的问题">Why Netty?JDK 原生 NIO 程序的问题</h4>
+<ul>
+  <li>JDK 原生也有一套网络应用程序 API，但是存在一系列问题，主要如下：
+    <ol>
+      <li>NIO 的类库和 API 繁杂，使用麻烦：你需要熟练掌握 Selector、ServerSocketChannel、SocketChannel、ByteBuffer 等。</li>
+      <li>需要具备其他的额外技能做铺垫：例如熟悉 Java 多线程编程，因为 NIO 编程涉及到 Reactor 模式，你必须对多线程和网路编程非常熟悉，才能编写出高质量的 NIO 程序。</li>
+      <li>可靠性能力补齐，开发工作量和难度都非常大：例如客户端面临断连重连、网络闪断、半包读写、失败缓存、网络拥塞和异常码流的处理等等。NIO 编程的特点是功能开发相对容易，但是可靠性能力补齐工作量和难度都非常大。</li>
+      <li>JDK NIO 的 Bug：例如臭名昭著的 Epoll Bug，它会导致 Selector 空轮询，最终导致 CPU 100%。官方声称在 JDK 1.6 版本的 update 18 修复了该问题，但是直到 JDK 1.7 版本该问题仍旧存在，只不过该 Bug 发生概率降低了一些而已，它并没有被根本解决。</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="java-nio-epoll-bug-以及-netty-的解决之道">Java NIO epoll bug 以及 Netty 的解决之道</h4>
+<ul>
+  <li>epoll 空轮询导致 CPU 利用率 100% <a href="http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/">http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/</a></li>
+</ul>
+
+<h4 id="netty中的epoll实现">netty中的epoll实现</h4>
+<ul>
+  <li>在java中，IO多路复用的功能通过nio中的Selector提供，在不同的操作系统下jdk会通过spi的方式加载不同的实现，
+比如在macos下是KQueueSelectorProvider，KQueueSelectorProvider底层使用了kqueue来进行IO多路复用；
+在linux 2.6以后的版本则是EPollSelectorProvider，EPollSelectorProvider底层使用的是epoll。
+虽然jdk自身提供了selector的epoll实现，netty仍实现了自己的epoll版本，根据netty开发者在StackOverflow的回答，主要原因有两个：
+    <ul>
+      <li>支持更多socket option，比如TCP_CORK和SO_REUSEPORT</li>
+      <li>使用了边缘触发（ET）模式</li>
+    </ul>
+  </li>
+  <li><a href="https://juejin.im/post/5d46ce64f265da03e05af722">https://juejin.im/post/5d46ce64f265da03e05af722</a></li>
+  <li>ET和LT的区别在于触发事件的条件不同，LT比较符合编程思维（有满足条件的就触发），ET触发的条件更苛刻一些（仅在发生变化时才触发），对使用者的要求也更高，理论效率更高</li>
+  <li>边缘触发和水平触发<a href="https://juejin.im/post/5cdaa67f518825691b4a5cc0">https://juejin.im/post/5cdaa67f518825691b4a5cc0</a></li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty-Mina.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html"> BigData </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
@@ -113,26 +193,26 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">storm</span><span class="o">.</span><span class="na">analytics</span><span class="o">;</span>
 <span class="o">...</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">TopologyStarter</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">Logger</span><span class="o">.</span><span class="na">getRootLogger</span><span class="o">().</span><span class="na">removeAllAppenders</span><span class="o">();</span>
-        <span class="nc">TopologyBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TopologyBuilder</span><span class="o">();</span>
-        <span class="n">builder</span><span class="o">.</span><span class="na">setSpout</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">UsersNavigationSpout</span><span class="o">(),</span><span class="mi">3</span><span class="o">);</span>
-        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">GetCategoryBolt</span><span class="o">(),</span><span class="mi">3</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="na">getRootLogger</span><span class="o">().</span><span class="na">removeAllAppenders</span><span class="o">();</span>
+        <span class="n">TopologyBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TopologyBuilder</span><span class="o">();</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setSpout</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">,</span> <span class="k">new</span> <span class="n">UsersNavigationSpout</span><span class="o">(),</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="n">GetCategoryBolt</span><span class="o">(),</span><span class="mi">3</span><span class="o">)</span>
                <span class="o">.</span><span class="na">shuffleGrouping</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">);</span>
-        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">UserHistoryBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
-               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Fields</span><span class="o">(</span><span class="s">"user"</span><span class="o">));</span>
-        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">ProductCategoriesCounterBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
-               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Fields</span><span class="o">(</span><span class="s">"product"</span><span class="o">));</span>
-        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"news-notifier"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">NewsNotifierBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="n">UserHistoryBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Fields</span><span class="o">(</span><span class="s">"user"</span><span class="o">));</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">,</span> <span class="k">new</span> <span class="n">ProductCategoriesCounterBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Fields</span><span class="o">(</span><span class="s">"product"</span><span class="o">));</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"news-notifier"</span><span class="o">,</span> <span class="k">new</span> <span class="n">NewsNotifierBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
                <span class="o">.</span><span class="na">shuffleGrouping</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">);</span>
 
-        <span class="nc">Config</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Config</span><span class="o">();</span>
+        <span class="n">Config</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Config</span><span class="o">();</span>
         <span class="n">conf</span><span class="o">.</span><span class="na">setDebug</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-host"</span><span class="o">,</span><span class="no">REDIS_HOST</span><span class="o">);</span>
-        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-port"</span><span class="o">,</span><span class="no">REDIS_PORT</span><span class="o">);</span>
-        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"webserver"</span><span class="o">,</span> <span class="no">WEBSERVER</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-host"</span><span class="o">,</span><span class="n">REDIS_HOST</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-port"</span><span class="o">,</span><span class="n">REDIS_PORT</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"webserver"</span><span class="o">,</span> <span class="n">WEBSERVER</span><span class="o">);</span>
 
-        <span class="nc">LocalCluster</span> <span class="n">cluster</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LocalCluster</span><span class="o">();</span>
+        <span class="n">LocalCluster</span> <span class="n">cluster</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LocalCluster</span><span class="o">();</span>
         <span class="n">cluster</span><span class="o">.</span><span class="na">submitTopology</span><span class="o">(</span><span class="s">"analytics"</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span> <span class="n">builder</span><span class="o">.</span><span class="na">createTopology</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span>  
@@ -316,17 +396,39 @@ stu：就是一张表，其实就是一个文件夹
 cf1：就是这个region中第一个列簇所对应的一个store
 d89f620da4754e1092402b577f589f8a：这就是用来存储真实数据的hfile
 </code></pre></div></div>
+<h4 id="hbase二级索引方案">HBase二级索引方案</h4>
+<ul>
+  <li>基于Coprocessor方案
+    <ul>
+      <li>华为的hindex</li>
+      <li>Apache Phoenix</li>
+      <li>Phoenix二级索引特点：
+        <ul>
+          <li>Covered Indexes(覆盖索引) ：把关注的数据字段也附在索引表上，只需要通过索引表就能返回所要查询的数据（列）， 所以索引的列必须包含所需查询的列(SELECT的列和WHERE的列)。</li>
+          <li>Functional indexes(函数索引)： 索引不局限于列，支持任意的表达式来创建索引。</li>
+          <li>Global indexes(全局索引)：适用于读多写少场景。通过维护全局索引表，所有的更新和写操作都会引起索引的更新，写入性能受到影响。 在读数据时，Phoenix SQL会基于索引字段，执行快速查询。</li>
+          <li>Local indexes(本地索引)：适用于写多读少场景。 在数据写入时，索引数据和表数据都会存储在本地。在数据读取时， 由于无法预先确定region的位置，所以在读取数据时需要检查每个region（以找到索引数据），会带来一定性能（网络）开销。</li>
+        </ul>
+      </li>
+      <li>Lily HBase Indexer</li>
+      <li>Solr/es</li>
+    </ul>
+  </li>
+</ul>
 
+<h4 id="只能基于rowkey查询关键看如何设计">只能基于rowkey查询，关键看如何设计</h4>
+<ul>
+  <li>不支持where条件查询只能按照rowkey来查询</li>
+  <li>RowFilter</li>
+</ul>
+
+<h4 id="参考">参考</h4>
 <ul>
   <li>用HBase实现亿级Feed <a href="https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ">https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ</a></li>
   <li>HBase案例 <a href="https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw">https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw</a></li>
   <li>HBase面试题 <a href="https://www.jianshu.com/p/9ecd4367e6d0">https://www.jianshu.com/p/9ecd4367e6d0</a></li>
   <li>es结合Hbase <a href="https://zhuanlan.zhihu.com/p/87563468">https://zhuanlan.zhihu.com/p/87563468</a></li>
   <li>Hbase和Cassandra比较 <a href="https://blog.csdn.net/aa5305123/article/details/83142514">https://blog.csdn.net/aa5305123/article/details/83142514</a></li>
-</ul>
-
-<h4 id="参考">参考</h4>
-<ul>
   <li>白话大数据 <a href="https://www.zhihu.com/question/27974418/answer/156227565">https://www.zhihu.com/question/27974418/answer/156227565</a></li>
   <li>一步步搭建Hadoop体系 <a href="https://blog.csdn.net/qazwsxpcm/article/list/2?t=1">https://blog.csdn.net/qazwsxpcm/article/list/2?t=1</a></li>
 </ul>
@@ -619,166 +721,6 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html"> Nginx </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="location-优先级从高到低">location 优先级从高到低</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. location <span class="o">=</span>    <span class="c"># 精准匹配</span>
-2. location ^~   <span class="c"># 带参前缀匹配</span>
-3. location ~    <span class="c"># 正则匹配（区分大小写）</span>
-4. location ~<span class="k">*</span>   <span class="c"># 正则匹配（不区分大小写）</span>
-5. location /a   <span class="c"># 普通前缀匹配，优先级低于带参数前缀匹配。</span>
-6. location /    <span class="c"># 任何没有匹配成功的，都会匹配这里处理</span>
-</code></pre></div></div>
-<h4 id="location-示例">location 示例</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-location  <span class="o">=</span> / <span class="o">{</span>
-    <span class="c"># 只精准匹配 / 的查询.</span>
-  <span class="o">[</span> configuration A <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 匹配成功： / </span>
-
-location / <span class="o">{</span>
-    <span class="c"># 匹配任何请求，因为所有请求都是以”/“开始</span>
-    <span class="c"># 但是更长字符匹配或者正则表达式匹配会优先匹配</span>
-  <span class="o">[</span> configuration B <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c">#匹配成功：/index.html</span>
-
-location /documents <span class="o">{</span>
-    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
-    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
-  <span class="o">[</span> configuration C <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 匹配成功：/documents/document.html</span>
-<span class="c"># 匹配成功：/documents/abc</span>
-
-location ~ /documents/ABC <span class="o">{</span>
-    <span class="c"># 区分大小写的正则匹配</span>
-    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
-    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
-  <span class="o">[</span> configuration CC <span class="o">]</span> 
-<span class="o">}</span>
-
-location ^~ /images/ <span class="o">{</span>
-    <span class="c"># 匹配任何以 /images/ 开头的地址，匹配符合以后，立即停止往下搜索正则，采用这一条。/</span>
-  <span class="o">[</span> configuration D <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 成功匹配：/images/a.gif</span>
-
-location ~<span class="k">*</span> <span class="se">\.</span><span class="o">(</span>gif|jpg|jpeg<span class="o">)</span><span class="nv">$ </span><span class="o">{</span>
-    <span class="c"># 匹配所有以 .gif、.jpg 或 .jpeg 结尾的请求，不区分大小写</span>
-    <span class="c"># 然而，所有请求 /images/ 下的图片会被 [ config D ]  处理，因为 ^~ 到达不了这一条正则/</span>
-    <span class="o">[</span> configuration E <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 成功匹配：/documents/a.jpg</span>
-
-location /images/ <span class="o">{</span>
-    <span class="c"># 字符匹配到 /images/，继续往下，会发现 ^~ 存在/</span>
-  <span class="o">[</span> configuration F <span class="o">]</span> 
-<span class="o">}</span>
-
-location /images/abc <span class="o">{</span>
-    <span class="c"># 最长字符匹配到 /images/abc，继续往下，会发现 ^~ 存在/</span>
-    <span class="c"># F与G的放置顺序是没有关系的/</span>
-  <span class="o">[</span> configuration G <span class="o">]</span> 
-<span class="o">}</span>
-
-location ~ /images/abc/ <span class="o">{</span>
-    <span class="c"># 只有去掉 [ config D ] 才有效：先最长匹配 [ config G ] 开头的地址，继续往下搜索，匹配到这一条正则，采用/</span>
-    <span class="o">[</span> configuration H <span class="o">]</span> 
-<span class="o">}</span>
-</code></pre></div></div>
-<h4 id="命名-location">命名 location</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>location / <span class="o">{</span>
-    try_files <span class="nv">$uri</span> <span class="nv">$uri</span>/ @custom
-<span class="o">}</span>
-location @custom <span class="o">{</span>
-    <span class="c"># ...do something</span>
-<span class="o">}</span>
-</code></pre></div></div>
-<h4 id="全局变量">全局变量</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$args</span> ： <span class="c">#这个变量等于请求行中的参数，同$query_string</span>
-<span class="nv">$content_length</span> ： 请求头中的Content-length字段。
-<span class="nv">$content_type</span> ： 请求头中的Content-Type字段。
-<span class="nv">$document_root</span> ： 当前请求在root指令中指定的值。
-<span class="nv">$host</span> ： 请求主机头字段，否则为服务器名称。
-<span class="nv">$http_user_agent</span> ： 客户端agent信息
-<span class="nv">$http_cookie</span> ： 客户端cookie信息
-<span class="nv">$limit_rate</span> ： 这个变量可以限制连接速率。
-<span class="nv">$request_method</span> ： 客户端请求的动作，通常为GET或POST。
-<span class="nv">$remote_addr</span> ： 客户端的IP地址。
-<span class="nv">$remote_port</span> ： 客户端的端口。
-<span class="nv">$remote_user</span> ： 已经经过Auth Basic Module验证的用户名。
-<span class="nv">$request_filename</span> ： 当前请求的文件路径，由root或alias指令与URI请求生成。
-<span class="nv">$scheme</span> ： HTTP方法（如http，https）。
-<span class="nv">$server_protocol</span> ： 请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
-<span class="nv">$server_addr</span> ： 服务器地址，在完成一次系统调用后可以确定这个值。
-<span class="nv">$server_name</span> ： 服务器名称。
-<span class="nv">$server_port</span> ： 请求到达服务器的端口号。
-<span class="nv">$request_uri</span> ： 包含请求参数的原始URI，不包含主机名，如：”/foo/bar.php?arg<span class="o">=</span>baz”。
-<span class="nv">$uri</span> ： 不带请求参数的当前URI，<span class="nv">$uri</span>不包含主机名，如”/foo/bar.html”。
-<span class="nv">$document_uri</span> ： 与<span class="nv">$uri</span>相同。
-</code></pre></div></div>
-<h4 id="rewrite规则">Rewrite规则</h4>
-<ul>
-  <li>rewrite功能就是，使用nginx提供的全局变量或自己设置的变量，结合正则表达式和标志位实现url重写以及重定向。rewrite只能放在server{},location{},if{}中，并且只能对域名后边的除去传递的参数外的字符串起作用，例如 http://seanlook.com/a/we/index.php?id=1&amp;u=str 只对/a/we/index.php重写。语法rewrite regex replacement [flag];</li>
-  <li>如果相对域名或参数字符串起作用，可以使用全局变量匹配，也可以使用proxy_pass反向代理。</li>
-  <li>表明看rewrite和location功能有点像，都能实现跳转，主要区别在于rewrite是在同一域名内更改获取资源的路径，而location是对一类路径做控制访问或反向代理，可以proxy_pass到其他机器。很多情况下rewrite也会写在location里，它们的执行顺序是：
-    <ul>
-      <li>执行server块的rewrite指令</li>
-      <li>执行location匹配</li>
-      <li>执行选定的location中的rewrite指令</li>
-    </ul>
-  </li>
-  <li>如果其中某步URI被重写，则重新循环执行1-3，直到找到真实存在的文件；循环超过10次，则返回500 Internal Server Error错误。</li>
-</ul>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>执行搜索
-这个规则的目的是为了执行搜索，搜索URL中包含的关键字。
-请求的URL //hqidi.com/search/some-search-keywords
-重写后URL //hqidi.com/search.php?p<span class="o">=</span>some-search-keywords
-重写规则         rewrite ^/search/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/search.php?p<span class="o">=</span><span class="nv">$1</span>?<span class="p">;</span>
-
-用户个人资料页面
-大多数运行访问者注册的动态网站都提供一个可以查看个人资料的页面，这个页面的URL包含用户的UID和用户名
-请求的URL //hqidi.com/user/47/dige
-重写后URL //hqidi.com/user.php?id<span class="o">=</span>47&amp;name<span class="o">=</span>dige
-重写规则         rewrite ^/user/<span class="o">([</span>0-9]+<span class="o">)</span>/<span class="o">(</span>.+<span class="o">)</span><span class="nv">$ </span>/user.php?id<span class="o">=</span><span class="nv">$1</span>&amp;name<span class="o">=</span><span class="nv">$2</span>?<span class="p">;</span>
-
-多个参数
-有些网站对字符串参数使用不同的语法，例如 通过斜线“/”来分隔非命名参数
-请求的URL //hqidi.com/index.php/param1/param2/param3
-重写后URL //hqidi.com/index.php?p1<span class="o">=</span>param1&amp;p2<span class="o">=</span>param2&amp;p3<span class="o">=</span>param3
-重写规则         rewrite ^/index.php/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/index.php?p1<span class="o">=</span><span class="nv">$1</span>&amp;p2<span class="o">=</span><span class="nv">$2</span>&amp;p3<span class="o">=</span><span class="nv">$3</span>?<span class="p">;</span>
-</code></pre></div></div>
-
-<h4 id="参考">参考</h4>
-<ul>
-  <li>location 配置一 <a href="https://segmentfault.com/a/1190000022315733">https://segmentfault.com/a/1190000022315733</a></li>
-  <li>location 配置二 <a href="https://segmentfault.com/a/1190000022407797">https://segmentfault.com/a/1190000022407797</a></li>
-  <li>Nginx 架构原理科普 <a href="https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ">https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ</a></li>
-  <li>OpenResty 概要及原理科普 <a href="https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw">https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw</a></li>
-  <li>微服务网关 Kong 科普 <a href="https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g">https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -890,7 +832,7 @@ location @custom <span class="o">{</span>
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 14 )</span>
+      <span class="label label-default">分布式 ( 15 )</span>
       </a><br />
 
       
@@ -918,7 +860,7 @@ location @custom <span class="o">{</span>
       
       
       <a  href="/tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 10 )</span>
+      <span class="label label-default">数据结构与算法 ( 11 )</span>
       </a><br />
 
       
@@ -981,7 +923,7 @@ location @custom <span class="o">{</span>
       
       
       <a  href="/tag/bigdata">
-      <span class="label label-default">BigData ( 3 )</span>
+      <span class="label label-default">BigData ( 4 )</span>
       </a><br />
 
       

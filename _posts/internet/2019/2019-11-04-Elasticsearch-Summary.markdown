@@ -10,6 +10,7 @@ categories:
 - 技术
 ---
 #### 前言
+- 牛逼elasticsearch专栏 <https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&album_id=1340073242396114944&__biz=MzI2NDY1MTA3OQ==&scene=21#wechat_redirect>
 - 腾讯Elasticsearch海量规模背后的内核优化剖析 <https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw>
 - 腾讯万亿级 Elasticsearch 内存效率提升技术解密 <https://mp.weixin.qq.com/s/ipuIq_E5rOPPF7_XdS5PGQ>
 - Elasticsearch 在各大互联网公司大量真实的应用案例！ <https://mp.weixin.qq.com/s/Sntf8JoHYFSqkqRtcvVReQ>

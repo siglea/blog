@@ -452,6 +452,7 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
     <ul>
       <li>MongoDB：利用skip().limit()实现</li>
       <li>HBase：scan  ‘stu2’,{COLUMNS =&gt; ‘cf1:age’, LIMMIT 10, STARTROW =&gt; ‘xx’}</li>
+      <li>Cassandra：select * from teacher where token(id)&gt;token(1) limit 1;</li>
     </ul>
   </li>
   <li>数据类型
@@ -547,7 +548,7 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
 
 <h4 id="seata-的-demo">Seata 的 Demo</h4>
 
-<h4 id="垃圾回收器组合">垃圾回收器组合</h4>
+<h4 id="垃圾回收器组合-7种">垃圾回收器组合 7种</h4>
 <ul>
   <li>Parallel Old &amp; Parallel Scavenge New 高吞吐量 （1种）</li>
   <li>G1 （1种）</li>

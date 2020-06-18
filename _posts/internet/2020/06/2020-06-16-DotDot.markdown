@@ -281,6 +281,7 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
 - 范围分页查询
     - MongoDB：利用skip().limit()实现
     - HBase：scan  'stu2',{COLUMNS => 'cf1:age', LIMMIT 10, STARTROW => 'xx'}
+    - Cassandra：select * from teacher where token(id)>token(1) limit 1;
 - 数据类型
     - MongoDB丰富，类似SQL
     - HBase只支持字符串

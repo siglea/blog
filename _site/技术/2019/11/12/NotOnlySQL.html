@@ -260,6 +260,7 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
 
 <h4 id="cassandra">Cassandra</h4>
 <ul>
+  <li>我们不能希望cassandra完全适用于我们的逻辑，而是应该将我们的逻辑设计的更适合于cassandra</li>
   <li>Cassandra数据建模 <a href="https://www.cnblogs.com/cjsblog/p/12878330.html">https://www.cnblogs.com/cjsblog/p/12878330.html</a></li>
   <li>详解Cassandra数据模型中的primary key <a href="https://blog.csdn.net/Yaokai_AssultMaster/article/details/77439897">https://blog.csdn.net/Yaokai_AssultMaster/article/details/77439897</a>
     <ul>
@@ -365,6 +366,10 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
 <span class="c1">-- 分页查询</span>
 <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test</span> <span class="k">where</span> <span class="n">token</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">&gt;</span><span class="n">token</span><span class="p">(</span><span class="n">a10</span><span class="p">)</span> <span class="k">limit</span> <span class="mi">4</span><span class="p">;</span>
 
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">teacher</span> <span class="k">limit</span> <span class="mi">2</span><span class="p">;</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">teacher</span> <span class="k">where</span> <span class="n">token</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="o">=</span><span class="n">token</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">and</span> <span class="p">(</span><span class="n">address</span><span class="p">,</span><span class="n">name</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">'guangxi'</span><span class="p">,</span><span class="s1">'lihao'</span><span class="p">)</span> <span class="k">limit</span> <span class="mi">2</span> <span class="n">ALLOW</span> <span class="n">FILTERING</span><span class="p">;</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">teacher</span> <span class="k">where</span> <span class="n">token</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="o">&gt;</span><span class="n">token</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">limit</span> <span class="mi">1</span><span class="p">;</span> 
+
 <span class="k">COPY</span> <span class="n">users</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">emails</span><span class="p">)</span> <span class="k">TO</span> <span class="s1">'kevinfile'</span><span class="p">;</span> <span class="c1">-- 将名为emp的表复制到文件myfile</span>
 </code></pre></div></div>
 
@@ -375,6 +380,26 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
       <li>保持集合内的数据不要太大，免得Cassandra 查询延时过长，只因Cassandra 查询时会读出整个集合内的数据，集合在内部不会进行分页，集合的目的是存储小量数据。</li>
       <li>不要向集合插入大于64K的数据，否则只有查询到前64K数据，其它部分会丢失。</li>
     </ol>
+  </li>
+  <li>cassandra高级操作之索引、排序以及分页 <a href="https://www.cnblogs.com/youzhibing/p/6617986.html">https://www.cnblogs.com/youzhibing/p/6617986.html</a>
+    <ul>
+      <li>Cassandra支持排序，但也是限制重重
+        <ul>
+          <li>必须有第一主键的=号查询；cassandra的第一主键是决定记录分布在哪台机器上，也就是说cassandra只支持单台机器上的记录排序。</li>
+          <li>只能根据第二、三、四…主键进行有序的，相同的排序。
+　　　　　有序：order by后面只能是先二、再三、再四…这样的顺序，有四，前面必须有三；有三，前面必须有二，以此类推。
+　　　　　相同的顺序：参与排序的主键要么与建表时指定的顺序一致，要么全部相反，具体会体现在下面的示例中</li>
+          <li>不能有索引查询</li>
+        </ul>
+      </li>
+      <li>cassandra的where查询约束
+        <ul>
+          <li>第一主键 只能用=号查询</li>
+          <li>第二主键 支持= &gt; &lt; &gt;= &lt;=</li>
+          <li>索引列 只支持=号</li>
+        </ul>
+      </li>
+    </ul>
   </li>
 </ul>
 

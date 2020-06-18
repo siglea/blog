@@ -54,6 +54,41 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/17/DotDot2.html">DotDot2</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 17, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/17/DotDot2.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>BigData</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<ol>
+  <li>Hotspot 的作者经过以往的研究发现大多数情况下锁不仅不存在多线程竞争，而且总是由同一线
+程多次获得。偏向锁的目的是在某个线程获得锁之后，消除这个线程锁重入(CAS)的开销，看起
+来让这个线程得到了偏护。引入偏向锁是为了在无多线程竞争的情况下尽量减少不必要的轻量级
+锁执行路径，因为轻量级锁的获取及释放依赖多次 CAS 原子指令，而偏向锁只需要在置换
+ThreadID 的时候依赖一次 CAS 原子指令(由于一旦出现多线程竞争的情况就必须撤销偏向锁，所
+以偏向锁的撤销操作的性能损耗必须小于节省下来的 CAS 原子指令的性能消耗)。上面说过，轻
+量级锁是为了在线程交替执行同步块时提高性能，而偏向锁则是在只有一个线程执行同步块时进
+一步提高性能。</li>
+  <li>很多情况下，主线程生成并启动了子线程，需要用到子线程返回的结果，也就是需要主线程需要
+在子线程结束后再结束，这时候就要用到 join() 方法。</li>
+</ol>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/17/DotDot2.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/16/DotDot.html">DotDot</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 16, 2020</span>
@@ -459,6 +494,7 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
     <ul>
       <li>MongoDB：利用skip().limit()实现</li>
       <li>HBase：scan  ‘stu2’,{COLUMNS =&gt; ‘cf1:age’, LIMMIT 10, STARTROW =&gt; ‘xx’}</li>
+      <li>Cassandra：select * from teacher where token(id)&gt;token(1) limit 1;</li>
     </ul>
   </li>
   <li>数据类型
@@ -554,7 +590,7 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
 
 <h4 id="seata-的-demo">Seata 的 Demo</h4>
 
-<h4 id="垃圾回收器组合">垃圾回收器组合</h4>
+<h4 id="垃圾回收器组合-7种">垃圾回收器组合 7种</h4>
 <ul>
   <li>Parallel Old &amp; Parallel Scavenge New 高吞吐量 （1种）</li>
   <li>G1 （1种）</li>
@@ -734,57 +770,6 @@ F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<sp
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html">ZooKeeper</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 6, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="使用场景">使用场景</h4>
-<ul>
-  <li>注册中心</li>
-  <li>配置中心</li>
-  <li>HBase之MetaData存储</li>
-  <li>分布式锁</li>
-</ul>
-
-<h4 id="常用命令">常用命令</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./zkServer.sh start | stop 
-./zkServer.sh status
-./zkCli.sh 
-
-<span class="nb">ls</span> /
-<span class="nb">stat</span> /
-ls2 /
-
-create /node1 /node1-content
-create <span class="nt">-e</span> /node1-temp /node1-content-temp
-</code></pre></div></div>
-<p><a href="https://blog.csdn.net/dandandeshangni/article/details/80558383">https://blog.csdn.net/dandandeshangni/article/details/80558383</a></p>
-
-<h4 id="阿里为什么不用-zookeeper-做服务发现">阿里为什么不用 ZooKeeper 做服务发现？</h4>
-<ul>
-  <li>基于CP而非AP</li>
-  <li>自身仅仅是主从的集群，而非分布式集群</li>
-  <li>The King Of Coordination for Big Data</li>
-</ul>
-
-<p><a href="https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg">https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -894,7 +879,7 @@ create <span class="nt">-e</span> /node1-temp /node1-content-temp
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 14 )</span>
+      <span class="label label-default">分布式 ( 15 )</span>
       </a><br />
 
       
@@ -922,7 +907,7 @@ create <span class="nt">-e</span> /node1-temp /node1-content-temp
       
       
       <a  href="/tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 10 )</span>
+      <span class="label label-default">数据结构与算法 ( 11 )</span>
       </a><br />
 
       
@@ -985,7 +970,7 @@ create <span class="nt">-e</span> /node1-temp /node1-content-temp
       
       
       <a  href="/tag/bigdata">
-      <span class="label label-default">BigData ( 3 )</span>
+      <span class="label label-default">BigData ( 4 )</span>
       </a><br />
 
       

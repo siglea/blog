@@ -162,6 +162,7 @@ db.user.find({"geo": {$near: [118.10388605,24.48923061], $maxDistance:0.1}},{id:
 <https://www.jianshu.com/p/4ecde929b17d>
 
 #### Cassandra
+- 我们不能希望cassandra完全适用于我们的逻辑，而是应该将我们的逻辑设计的更适合于cassandra
 - Cassandra数据建模 <https://www.cnblogs.com/cjsblog/p/12878330.html>
 - 详解Cassandra数据模型中的primary key <https://blog.csdn.net/Yaokai_AssultMaster/article/details/77439897>
     - 一致性哈希算法的特点是可以接受任何输入，但总会输出位于固定范围内的（当前集群的结点有对应的）值。简而言之，某一特定的partition key总会对应集群中的某一特定的结点，而这个partition key对应的数据也总是应当在这个结点上被找到。
@@ -252,6 +253,10 @@ SELECT user_id FROM users WHERE emails CONTAINS 'baggins@gmail.com'
 -- 分页查询
 select * from test where token(a)>token(a10) limit 4;
 
+select * from teacher limit 2;
+select * from teacher where token(id)=token(1) and (address,name)>('guangxi','lihao') limit 2 ALLOW FILTERING;
+select * from teacher where token(id)>token(1) limit 1; 
+
 COPY users (user_id, first_name, last_name, emails) TO 'kevinfile'; -- 将名为emp的表复制到文件myfile
 ```
 
@@ -259,9 +264,18 @@ COPY users (user_id, first_name, last_name, emails) TO 'kevinfile'; -- 将名为
     1. 集合的每一项最大是64K。
     2. 保持集合内的数据不要太大，免得Cassandra 查询延时过长，只因Cassandra 查询时会读出整个集合内的数据，集合在内部不会进行分页，集合的目的是存储小量数据。
     3. 不要向集合插入大于64K的数据，否则只有查询到前64K数据，其它部分会丢失。
-
-
-
+- cassandra高级操作之索引、排序以及分页 <https://www.cnblogs.com/youzhibing/p/6617986.html>
+    - Cassandra支持排序，但也是限制重重
+        - 必须有第一主键的=号查询；cassandra的第一主键是决定记录分布在哪台机器上，也就是说cassandra只支持单台机器上的记录排序。
+        - 只能根据第二、三、四…主键进行有序的，相同的排序。
+  　　　　　有序：order by后面只能是先二、再三、再四…这样的顺序，有四，前面必须有三；有三，前面必须有二，以此类推。
+  　　　　　相同的顺序：参与排序的主键要么与建表时指定的顺序一致，要么全部相反，具体会体现在下面的示例中
+        - 不能有索引查询
+    - cassandra的where查询约束
+        - 第一主键 只能用=号查询
+        - 第二主键 支持= > < >= <=
+        - 索引列 只支持=号
+        
 #### "图"数据库 Graph Database Neo4J
 <https://www.cnblogs.com/loveis715/p/5277051.html>
 

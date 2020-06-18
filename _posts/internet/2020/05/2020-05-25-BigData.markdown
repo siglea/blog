@@ -210,13 +210,27 @@ stu：就是一张表，其实就是一个文件夹
 cf1：就是这个region中第一个列簇所对应的一个store
 d89f620da4754e1092402b577f589f8a：这就是用来存储真实数据的hfile
 ```
+#### HBase二级索引方案
+- 基于Coprocessor方案
+    - 华为的hindex 
+    - Apache Phoenix
+    - Phoenix二级索引特点：
+        - Covered Indexes(覆盖索引) ：把关注的数据字段也附在索引表上，只需要通过索引表就能返回所要查询的数据（列）， 所以索引的列必须包含所需查询的列(SELECT的列和WHERE的列)。
+        - Functional indexes(函数索引)： 索引不局限于列，支持任意的表达式来创建索引。
+        - Global indexes(全局索引)：适用于读多写少场景。通过维护全局索引表，所有的更新和写操作都会引起索引的更新，写入性能受到影响。 在读数据时，Phoenix SQL会基于索引字段，执行快速查询。
+        - Local indexes(本地索引)：适用于写多读少场景。 在数据写入时，索引数据和表数据都会存储在本地。在数据读取时， 由于无法预先确定region的位置，所以在读取数据时需要检查每个region（以找到索引数据），会带来一定性能（网络）开销。
+    - Lily HBase Indexer
+    - Solr/es
 
+#### 只能基于rowkey查询，关键看如何设计
+- 不支持where条件查询只能按照rowkey来查询
+- RowFilter
+
+#### 参考
 - 用HBase实现亿级Feed <https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ>
 - HBase案例 <https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw>
 - HBase面试题 <https://www.jianshu.com/p/9ecd4367e6d0>
 - es结合Hbase <https://zhuanlan.zhihu.com/p/87563468>
 - Hbase和Cassandra比较 <https://blog.csdn.net/aa5305123/article/details/83142514>
-
-#### 参考
 - 白话大数据 <https://www.zhihu.com/question/27974418/answer/156227565>
 - 一步步搭建Hadoop体系 <https://blog.csdn.net/qazwsxpcm/article/list/2?t=1>
