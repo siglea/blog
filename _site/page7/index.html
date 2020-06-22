@@ -54,6 +54,369 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html">Java Concurrent</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="绝对线程安全和相对线程安全">绝对线程安全和相对线程安全</h4>
+<ul>
+  <li><a href="https://www.cnblogs.com/duanxz/p/6099983.html">https://www.cnblogs.com/duanxz/p/6099983.html</a></li>
+  <li><a href="https://www.jianshu.com/p/98b0241bc8e2">https://www.jianshu.com/p/98b0241bc8e2</a></li>
+  <li>可见性、有序性、原子性</li>
+</ul>
+
+<h4 id="aqs-abstractqueuedsynchronizer">AQS AbstractQueuedSynchronizer</h4>
+<ul>
+  <li>AbstractQueuedSynchronizer 类如其名，抽象的队列式的同步器，AQS 定义了一套多线程访问,共享资源的同步器框架，许多同步类实现都依赖于它，如常用的 ReentrantLock/Semaphore/CountDownLatch。</li>
+  <li>AQS 定义两种资源共享方式
+    <ul>
+      <li>Exclusive(独占资源，只有一个线程能执行，如 ReentrantLock)</li>
+      <li>Share(共享资源，多个线程可同时执行，如 Semaphore/CountDownLatch)</li>
+    </ul>
+  </li>
+  <li>CLH锁,CLH CLH(Craig, Landin, and Hagersten locks): 是一个自旋锁，能确保无饥饿性，提供先来先服务的公平性。
+CLH锁也是一种基于链表的可扩展、高性能、公平的自旋锁，申请线程只在本地变量上自旋，它不断轮询前驱的状态，如果发现前驱释放了锁就结束自旋。
+<a href="https://www.jianshu.com/p/4682a6b0802d">https://www.jianshu.com/p/4682a6b0802d</a>
+<a href="https://www.jianshu.com/p/d291a6a1879c">https://www.jianshu.com/p/d291a6a1879c</a></li>
+</ul>
+
+<h4 id="cas-compare-and-swap">CAS Compare And Swap</h4>
+<ul>
+  <li>CAS(Compare And Swap/Set)比较并交换，CAS 算法的过程是这样:它包含 3 个参数 CAS(V,E,N)。V 表示要更新的变量(内存值)，E 表示预期值(旧的)，N 表示新值。当且仅当 V 值等于 E 值时，才会将 V 的值设为 N，如果 V 值和 E 值不同，则说明已经有其他线程做了更新，则当 前线程什么都不做。最后，CAS 返回当前 V 的真实值。CAS 操作是抱着乐观的态度进行的(乐观锁)，它总是认为自己可以成功完成操作。当多个线程同时 使用 CAS 操作一个变量时，只有一个会胜出，并成功更新，其余均会失败。失败的线程不会被挂 起，仅是被告知失败，并且允许再次尝试，当然也允许失败的线程放弃操作。基于这样的原理， CAS 操作即使没有锁，也可以发现其他线程对当前线程的干扰，并进行恰当的处理。</li>
+</ul>
+
+<h4 id="volatile-关键字的作用变量可见性禁止重排序">volatile 关键字的作用(变量可见性、禁止重排序)</h4>
+<ul>
+  <li>Java 语言提供了一种稍弱的同步机制，即 volatile 变量，用来确保将变量的更新操作通知到其他 线程。volatile 变量具备两种特性，volatile 变量不会被缓存在寄存器或者对其他处理器不可见的 地方，因此在读取 volatile 类型的变量时总会返回最新写入的值。</li>
+  <li>变量可见性,其一是保证该变量对所有线程可见，这里的可见性指的是当一个线程修改了变量的值，那么新的 值对于其他线程是可以立即获取的。</li>
+  <li>在访问 volatile 变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此 volatile 变量是一 种比 sychronized 关键字更轻量级的同步机制。volatile 适合这种场景:一个变量被多个线程共 享，线程直接给这个变量赋值。</li>
+  <li>当对非 volatile 变量进行读写的时候，每个线程先从内存拷贝变量到 CPU 缓存中。如果计算机有 多个 CPU，每个线程可能在不同的 CPU 上被处理，这意味着每个线程可以拷贝到不同的 CPU cache 中。而声明变量是 volatile 的，JVM 保证了每次读变量都从内存中读，跳过 CPU cache 这一步。</li>
+  <li>适用场景,值得说明的是对 volatile 变量的单次读/写操作可以保证原子性的，如 long 和 double 类型变量， 但是并不能保证 i++这种操作的原子性，因为本质上 i++是读、写两次操作。在某些场景下可以 代替 Synchronized。但是,volatile 的不能完全取代 Synchronized 的位置，只有在一些特殊的场
+景下，才能适用 volatile。总的来说，必须同时满足下面两个条件才能保证在并发环境的线程安全:
+    <ol>
+      <li>对变量的写操作不依赖于当前值(比如 i++)，或者说是单纯的变量赋值(boolean flag = true)。</li>
+      <li>该变量没有包含在具有其他变量的不变式中，也就是说，不同的 volatile 变量之间，不 能互相依赖。只有在状态真正独立于程序内其他内容时才能使用 volatile。</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="锁状态-无锁状态偏向锁轻量级锁和重量级锁">锁状态 无锁状态、偏向锁、轻量级锁和重量级锁</h4>
+<ul>
+  <li>偏向锁，Hotspot 的作者经过以往的研究发现大多数情况下锁不仅不存在多线程竞争，而且总是由同一线
+    程多次获得。偏向锁的目的是在某个线程获得锁之后，消除这个线程锁重入(CAS)的开销，看起
+    来让这个线程得到了偏护。引入偏向锁是为了在无多线程竞争的情况下尽量减少不必要的轻量级
+    锁执行路径，因为轻量级锁的获取及释放依赖多次 CAS 原子指令，而偏向锁只需要在置换
+    ThreadID 的时候依赖一次 CAS 原子指令(由于一旦出现多线程竞争的情况就必须撤销偏向锁，所
+    以偏向锁的撤销操作的性能损耗必须小于节省下来的 CAS 原子指令的性能消耗)。上面说过，轻
+    量级锁是为了在线程交替执行同步块时提高性能，而偏向锁则是在只有一个线程执行同步块时进
+    一步提高性能。</li>
+  <li>锁升级， 随着锁的竞争，锁可以从偏向锁升级到轻量级锁，再升级的重量级锁(但是锁的升级是单向的，
+     也就是说只能从低到高升级，不会出现锁的降级)。
+    “轻量级”是相对于使用操作系统互斥量来实现的传统锁而言的。但是，首先需要强调一点的是，
+    轻量级锁并不是用来代替重量级锁的，它的本意是在没有多线程竞争的前提下，减少传统的重量
+    级锁使用产生的性能消耗。在解释轻量级锁的执行过程之前，先明白一点，轻量级锁所适应的场
+    景是线程交替执行同步块的情况，如果存在同一时间访问同一锁的情况，就会导致轻量级锁膨胀
+    为重量级锁。</li>
+  <li>重量级锁(Mutex Lock)，Synchronized 是通过对象内部的一个叫做监视器锁(monitor)来实现的。但是监视器锁本质又
+    是依赖于底层的操作系统的 Mutex Lock 来实现的。而操作系统实现线程之间的切换这就需要从用
+    户态转换到核心态，这个成本非常高，状态之间的转换需要相对比较长的时间，这就是为什么
+    Synchronized 效率低的原因。因此，这种依赖于操作系统 Mutex Lock 所实现的锁我们称之为
+    “重量级锁”。JDK 中对 Synchronized 做的种种优化，其核心都是为了减少这种重量级锁的使用。
+    JDK1.6 以后，为了减少获得锁和释放锁所带来的性能消耗，提高性能，引入了“轻量级锁”和
+    “偏向锁”。</li>
+</ul>
+
+<h4 id="锁使用">锁使用</h4>
+<ul>
+  <li>Synchronized 同步锁（Jvm monitor）</li>
+  <li>ReentrantLock 可重入锁（Lock接口、Condition)
+    <ul>
+      <li>核心类AbstractQueuedSynchronizer，通过构造一个基于阻塞的CLH队列容纳所有的阻塞线程，而对该队列的操作均通过Lock-Free（CAS）操作，但对已经获得锁的线程而言，ReentrantLock实现了偏向锁的功能。</li>
+    </ul>
+  </li>
+  <li>ReentrantReadWriteLock 可重入读写锁（ReadWriteLock接口、Condition)
+    <ul>
+      <li>ReadLock和WriteLock：都是Lock实现类，分别实现了读、写锁。ReadLock是共享的，而WriteLock是独占的。于是Sync类覆盖了AQS中独占和共享模式的抽象方法(tryAcquire/tryAcquireShared等)，用同一个等待队列来维护读/写排队线程，而用一个32位int state标示和记录读/写锁重入次数–Doug Lea把状态的高16位用作读锁，记录所有读锁重入次数之和，低16位用作写锁，记录写锁重入次数。所以无论是读锁还是写锁最多只能被持有65535次。</li>
+    </ul>
+  </li>
+  <li>StampedLock 戳锁,
+    <ul>
+      <li>有三种模式（排它写，悲观读，乐观读），一个StampedLock状态是由版本和模式两个部分组成，锁获取方法返回一个数字作为票据stamp，它用相应的锁状态表示并控制访问。</li>
+    </ul>
+  </li>
+</ul>
+
+<p><a href="https://www.cnblogs.com/dennyzhangdd/p/6925473.html">https://www.cnblogs.com/dennyzhangdd/p/6925473.html</a></p>
+
+<h5 id="condition">Condition</h5>
+<ol>
+  <li>Condition是在java 1.5中才出现的，它用来替代传统的Object的wait()、notify()实现线程间的协作，相比使用Object的wait()、notify()，使用Condition的await()、signal()这种方式实现线程间协作更加安全和高效。因此通常来说比较推荐使用Condition。
+ Condition类能实现synchronized和wait、notify搭配的功能，另外比后者更灵活，Condition可以实现多路通知功能，也就是在一个Lock对象里可以创建多个Condition（即对象监视器）实例，线程对象可以注册在指定的Condition中，从而可以有选择的进行线程通知，在调度线程上更加灵活。而synchronized就相当于整个Lock对象中只有一个单一的Condition对象，所有的线程都注册在这个对象上。线程开始notifyAll时，需要通知所有的WAITING线程，没有选择权，会有相当大的效率问题。</li>
+  <li>Condition是个接口，基本的方法就是await()和signal()方法。</li>
+  <li>Condition依赖于Lock接口，生成一个Condition的基本代码是lock.newCondition()，参考下图。</li>
+  <li>调用Condition的await()和signal()方法，都必须在lock保护之内，就是说必须在lock.lock()和lock.unlock之间才可以使用。</li>
+  <li>Conditon中的await()对应Object的wait()，Condition中的signal()对应Object的notify()，Condition中的signalAll()对应Object的notifyAll()。</li>
+</ol>
+
+<h5 id="locksupportpark和unpark与objectwait和notify的区别">LockSupport.park()和unpark()，与object.wait()和notify()的区别？</h5>
+<ul>
+  <li>主要的区别应该说是它们面向的对象不同。阻塞和唤醒是对于线程来说的，LockSupport的park/unpark更符合这个语义，以“线程”作为方法的参数， 语义更清晰，使用起来也更方便。而wait/notify的实现使得“阻塞/唤醒对线程本身来说是被动的，要准确的控制哪个线程、什么时候阻塞/唤醒很困难， 要不随机唤醒一个线程（notify）要不唤醒所有的（notifyAll）。</li>
+  <li><a href="https://www.jianshu.com/p/ceb8870ef2c5">https://www.jianshu.com/p/ceb8870ef2c5</a></li>
+  <li><a href="https://www.jianshu.com/p/e3afe8ab8364">https://www.jianshu.com/p/e3afe8ab8364</a></li>
+</ul>
+
+<h5 id="synchronized-和-reentrantlock-的区别">synchronized 和 ReentrantLock 的区别</h5>
+<ul>
+  <li>两者的共同点:
+    <ol>
+      <li>都是用来协调多线程对共享对象、变量的访问</li>
+      <li>都是可重入锁，同一线程可以多次获得同一个锁</li>
+      <li>都保证了可见性和互斥性</li>
+    </ol>
+  </li>
+  <li>两者的不同点:
+    <ol>
+      <li>ReentrantLock 显示的获得、释放锁，synchronized 隐式获得释放锁</li>
+      <li>ReentrantLock 可响应中断、可轮回，synchronized 是不可以响应中断的，为处理锁的不可用性提供了更高的灵活性</li>
+      <li>ReentrantLock 是 API 级别的，synchronized 是 JVM 级别的</li>
+      <li>ReentrantLock 可以实现公平锁</li>
+      <li>ReentrantLock 通过 Condition 可以绑定多个条件</li>
+      <li>底层实现不一样， synchronized 是同步阻塞，使用的是悲观并发策略，lock 是同步非阻塞，采用的是乐观并发策略</li>
+      <li>Lock 是一个接口，而 synchronized 是 Java 中的关键字，synchronized 是内置的语言实现。</li>
+      <li>synchronized 在发生异常时，会自动释放线程占有的锁，因此不会导致死锁现象发生;而Lock 在发生异常时，如果没有主动通过 unLock()去释放锁，则很可能造成死锁现象，因此使用 Lock 时需要在 finally 块中释放锁。</li>
+      <li>Lock 可以让等待锁的线程响应中断，而 synchronized 却不行，使用 synchronized 时，等待的线程会一直等待下去，不能够响应中断。</li>
+      <li>通过 Lock 可以知道有没有成功获取锁，而 synchronized 却无法办到。</li>
+      <li>Lock 可以提高多个线程进行读操作的效率，既就是实现读写锁等。</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="锁优化">锁优化</h4>
+<ul>
+  <li>减少锁持有时间，
+只用在有线程安全要求的程序上加锁</li>
+  <li>减小锁粒度，<br />
+  将大对象(这个对象可能会被很多线程访问)，拆成小对象，大大增加并行度，降低锁竞争。
+  降低了锁的竞争，偏向锁，轻量级锁成功率才会提高。最最典型的减小锁粒度的案例就是ConcurrentHashMap</li>
+  <li>锁分离，
+  最常见的锁分离就是读写锁 ReadWriteLock，根据功能进行分离成读锁和写锁，这样读读不互
+  斥，读写互斥，写写互斥，即保证了线程安全，又提高了性能。
+  JDK 并发包 1。读写分离思想可以延伸，只要操作互不影响，锁就可以分离。比如
+  LinkedBlockingQueue 从头部取出，从尾部放数据</li>
+  <li>锁粗化，通常情况下，为了保证多线程间的有效并发，会要求每个线程持有锁的时间尽量短，即在使用完
+    公共资源后，应该立即释放锁。但是，凡事都有一个度，如果对同一个锁不停的进行请求、同步
+    和释放，其本身也会消耗系统宝贵的资源，反而不利于性能的优化 。</li>
+  <li>锁消除， 锁消除是在编译器级别的事情。在即时编译器时，如果发现不可能被共享的对象，则可以消除这
+     些对象的锁操作，多数是因为程序员编码不规范引起。</li>
+</ul>
+
+<h4 id="自旋锁">自旋锁</h4>
+<ul>
+  <li>自旋锁原理非常简单，如果持有锁的线程能在很短时间内释放锁资源，那么那些等待竞争锁
+  的线程就不需要做内核态和用户态之间的切换进入阻塞挂起状态，它们只需要等一等(自旋)，
+  等持有锁的线程释放锁后即可立即获取锁，这样就避免用户线程和内核的切换的消耗。
+  线程自旋是需要消耗 cup 的，说白了就是让 cup 在做无用功，如果一直获取不到锁，那线程
+  也不能一直占用 cup 自旋做无用功，所以需要设定一个自旋等待的最大时间。
+  如果持有锁的线程执行的时间超过自旋等待的最大时间扔没有释放锁，就会导致其它争用锁
+  的线程在最大等待时间内还是获取不到锁，这时争用线程会停止自旋进入阻塞状态。</li>
+  <li>自旋锁的优缺点
+  自旋锁尽可能的减少线程的阻塞，这对于锁的竞争不激烈，且占用锁时间非常短的代码块来
+  说性能能大幅度的提升，因为自旋的消耗会小于线程阻塞挂起再唤醒的操作的消耗，这些操作会
+  导致线程发生两次上下文切换!
+  但是如果锁的竞争激烈，或者持有锁的线程需要长时间占用锁执行同步块，这时候就不适合
+  使用自旋锁了，因为自旋锁在获取锁前一直都是占用 cpu 做无用功，占着 XX 不 XX，同时有大量
+  线程在竞争一个锁，会导致获取锁的时间很长，线程自旋的消耗大于线程阻塞挂起操作的消耗，
+  其它需要 cup 的线程又不能获取到 cpu，造成 cpu 的浪费。所以这种情况下我们要关闭自旋锁;</li>
+  <li>自旋锁时间阈值(1.6 引入了适应性自旋锁)
+  自旋锁的目的是为了占着 CPU 的资源不释放，等到获取到锁立即进行处理。但是如何去选择
+  自旋的执行时间呢?如果自旋执行时间太长，会有大量的线程处于自旋状态占用 CPU 资源，进而
+  会影响整体系统的性能。因此自旋的周期选的额外重要!
+  JVM 对于自旋周期的选择，jdk1.5 这个限度是一定的写死的，在 1.6 引入了适应性自旋锁，适应
+  性自旋锁意味着自旋的时间不在是固定的了，而是由前一次在同一个锁上的自旋时间以及锁的拥
+  有者的状态来决定，基本认为一个线程上下文切换的时间是最佳的一个时间，同时 JVM 还针对当
+  前 CPU 的负荷情况做了较多的优化，如果平均负载小于 CPUs 则一直自旋，如果有超过(CPUs/2)
+  个线程正在自旋，则后来线程直接阻塞，如果正在自旋的线程发现 Owner 发生了变化则延迟自旋
+  时间(自旋计数)或进入阻塞，如果 CPU 处于节电模式则停止自旋，自旋时间的最坏情况是 CPU
+  的存储延迟(CPU A 存储了一个数据，到 CPU B 得知这个数据直接的时间差)，自旋时会适当放
+  弃线程优先级之间的差异。
+  自旋锁的开启</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-XX</span>:+UseSpinning 开启<span class="p">;</span> <span class="nt">-XX</span>:PreBlockSpin<span class="o">=</span>10 为自旋次数<span class="p">;</span> // JDK1.6<span class="o">(</span>JDK1.7 后，去掉此参数，由 jvm 控制<span class="o">)</span>
+</code></pre></div></div>
+
+<h4 id="重入锁">重入锁</h4>
+<p>广义上的可重入锁，而不是单指 JAVA 下的 ReentrantLock。可重入锁，也叫
+做递归锁，指的是同一线程 外层函数获得锁之后 ，内层递归函数仍然有获取该锁的代码，但不受
+影响。在 JAVA 环境下 ReentrantLock 和 synchronized 都是 可重入锁。</p>
+
+<h4 id="乐观锁悲观锁">乐观锁、悲观锁</h4>
+<ul>
+  <li>乐观锁是一种乐观思想，即认为读多写少，遇到并发写的可能性低，每次去拿数据的时候都认为
+别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数
+据，采取在写时先读出当前版本号，然后加锁操作(比较跟上一次的版本号，如果一样则更新)，
+如果失败则要重复读-比较-写的操作。
+ java 中的乐观锁基本都是通过 CAS 操作实现的，CAS 是一种更新的原子操作，比较当前值跟传入
+ 值是否一样，一样则更新，否则失败。</li>
+  <li>悲观锁是就是悲观思想，即认为写多，遇到并发写的可能性高，每次去拿数据的时候都认为别人
+会修改，所以每次在读写数据的时候都会上锁，这样别人想读写这个数据就会 block 直到拿到锁。
+java 中的悲观锁就是 Synchronized,AQS 框架下的锁则是先尝试 cas 乐观锁去获取锁，获取不到，
+才会转换为悲观锁，如 RetreenLock。</li>
+</ul>
+
+<h4 id="终止线程">终止线程</h4>
+<ul>
+  <li>通过interrupt标志的方式(注意区分以下三个Java方法)
+    <ul>
+      <li>t.interrupt(); // 修改标志，其他地方根据该标志或者捕获异常来决定处理方式</li>
+      <li>t.isInterrupted(); 内部调用了当前线程的currentThread().isInterrupted(false);
+        <ul>
+          <li>该方法仅仅是查询中断状态，不恢复中断状态</li>
+        </ul>
+      </li>
+      <li>Thread有个类方法Thread.interrupted(); 内部调用了当前线程的currentThread().isInterrupted(true);
+        <ul>
+          <li>该方法只有在中断状态为true时，才会恢复中断状态并返回true;否则，都是返回false</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KillThread</span><span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[]){</span>
+        <span class="nc">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyThread</span><span class="o">();</span>
+        <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+        <span class="c1">//此处仅仅是修改状态,通常需要再run方法内部判断来决定是否终止线程</span>
+        <span class="n">t</span><span class="o">.</span><span class="na">interrupt</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="nc">Thread</span><span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(){</span>
+            <span class="k">while</span> <span class="o">(!</span><span class="n">isInterrupted</span><span class="o">())</span> <span class="o">{</span>  <span class="c1">//非阻塞过程中通过判断中断标志来退出</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                    <span class="k">break</span><span class="o">;</span>  <span class="c1">// 捕获到异常之后，执行 break 跳出循环</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li>自定义一个共享状态变量，来修改该状态来实现类似方法一的效果(注意此方法的状态变量需要用volatile修饰)</li>
+  <li>stop 方法终止线程 (线程不安全)
+    <ul>
+      <li>程序中可以直接使用 stop 来强行终止线程，但是 stop 方法是很危险的，就象突然关闭计算机电源，而不是按正常程序关机一样，可能会产生不可预料的结果。
+不安全主要是：stop 调用之后，创建子线程的线程就会抛出 ThreadDeatherror 的错误，并且会释放子线程所持有的所有锁。
+一般任何进行加锁的代码块，都是为了保护数据的一致性，如果在调用 stop 后导致了该线程所持有的所有锁的突然释放 (不可控制)，那么被保护数据就有可能呈现不一致性，其他线程在使用这些被破坏的数据时，有可能导致一些很奇怪的应用程序错误。因此，并不推荐使用 stop 方法来终止线程。</li>
+    </ul>
+  </li>
+  <li>业务场景中的使用，目前暂时没有发现真正能立即安全停止线程的方法
+    <ul>
+      <li>用stop方法会带来数据不同步等线程安全问题</li>
+      <li>interrupt 主要需要及时判断状态，才能实时失效（业务中不可能循环或者多处判断中断状态）</li>
+      <li>本质上，运行中的线程需要立即停止一定会带来各种问题，如需要支持kill进程</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="cyclicbarrier-countdownlatch-semphore">CyclicBarrier CountDownLatch Semphore</h4>
+<ul>
+  <li>CountDownLatch和CyclicBarrier都能够实现线程之间的等待，只不过它们侧重点不同：
+  CountDownLatch一般用于某个线程A等待若干个其他线程执行完任务之后，它(发起await()的线程)才执行；
+  而CyclicBarrier一般用于一组线程互相等待至某个状态，然后这一组线程再同时执行；
+  另外，CountDownLatch是不能够重用的，而CyclicBarrier是可以重用的。</li>
+  <li>Semaphore其实和锁有点类似，它一般用于控制对某组资源的访问权限</li>
+</ul>
+<p><a href="https://www.cnblogs.com/dolphin0520/p/3920397.html">https://www.cnblogs.com/dolphin0520/p/3920397.html</a></p>
+
+<h4 id="concurrenthashmap-concurrentskiplistmap-concurrentlinkedqueue">ConcurrentHashMap ConcurrentSkipListMap ConcurrentLinkedQueue</h4>
+<ul>
+  <li>SynchronizedMap一次锁住整张表来保证线程安全，所以每次只能有一个线程来访为map。
+  ConcurrentHashMap使用分段锁来保证在多线程下的性能。ConcurrentHashMap中则是一次锁住一个桶。ConcurrentHashMap默认将hash表分为16个桶，诸如get,put,remove等常用操作只锁当前需要用到的桶。这样，原来只能一个线程进入，现在却能同时有16个写线程执行，并发性能的提升是显而易见的。
+  另外ConcurrentHashMap使用了一种不同的迭代方式。在这种迭代方式中，当iterator被创建后集合再发生改变就不再是抛出ConcurrentModificationException，取而代之的是在改变时new新的数据从而不影响原有的数据 ，iterator完成后再将头指针替换为新的数据 ，这样iterator线程可以使用原来老的数据，而写线程也可以并发的完成改变。</li>
+</ul>
+
+<h4 id="copyonwritearraylist">CopyOnWriteArrayList</h4>
+<ul>
+  <li>增删改都需要获得锁，并且锁只有一把，而读操作不需要获得锁，支持并发。为什么增删改中都需要创建一个新的数组，操作完成之后再赋给原来的引用？这是为了保证get的时候都能获取到元素，如果在增删改过程直接修改原来的数组，可能会造成执行读操作获取不到数据。</li>
+  <li>我知道Vector是增删改查方法都加了synchronized，保证同步，但是每个方法执行的时候都要去获得锁，性能就会大大下降，而CopyOnWriteArrayList 只是在增删改上加锁，但是读不加锁，在读方面的性能就好于Vector，CopyOnWriteArrayList支持读多写少的并发情况。</li>
+</ul>
+
+<h4 id="阻塞队列">阻塞队列</h4>
+<ul>
+  <li>这两个附加的操作是：在队列为空时，获取元素的线程会等待队列变为非空。当队列满时，存储元素的线程会等待队列可用。阻塞队列常用于生产者和消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。阻塞队列就是生产者存放元素的容器，而消费者也只从容器里拿元素。</li>
+  <li>JDK7提供了7个阻塞队列。分别是：
+    <ul>
+      <li>ArrayBlockingQueue ：一个由数组结构组成的有界阻塞队列。</li>
+      <li>LinkedBlockingQueue ：一个由链表结构组成的有界阻塞队列。</li>
+      <li>PriorityBlockingQueue ：一个支持优先级排序的无界阻塞队列。</li>
+      <li>DelayQueue：一个使用优先级队列实现的无界阻塞队列。</li>
+      <li>SynchronousQueue：一个不存储元素的阻塞队列。</li>
+      <li>LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。</li>
+      <li>LinkedBlockingDeque：一个由链表结构组成的双向阻塞队列。</li>
+    </ul>
+  </li>
+  <li>Java 5之前实现同步存取时，可以使用普通的一个集合，然后在使用线程的协作和线程同步可以实现生产者，消费者模式，主要的技术就是用好，wait ,notify,notifyAll,sychronized这些关键字。而在java 5之后，可以使用阻塞队列来实现，此方式大大简少了代码量，使得多线程编程更加容易，安全方面也有保障。
+BlockingQueue接口是Queue的子接口，它的主要用途并不是作为容器，而是作为线程同步的的工具，因此他具有一个很明显的特性，当生产者线程试图向BlockingQueue放入元素时，如果队列已满，则线程被阻塞，当消费者线程试图从中取出一个元素时，如果队列为空，则该线程会被阻塞，正是因为它所具有这个特性，所以在程序中多个线程交替向BlockingQueue中放入元素，取出元素，它可以很好的控制线程之间的通信。
+阻塞队列使用最经典的场景就是socket客户端数据的读取和解析，读取数据的线程不断将数据放入队列，然后解析线程不断从队列取数据解析。</li>
+</ul>
+
+<h4 id="threadsleep0的作用是什么">Thread.sleep(0)的作用是什么</h4>
+<p>由于Java采用抢占式的线程调度算法，因此可能会出现某条线程常常获取到CPU控制权的情况，为了让某些优先级比较低的线程也能获取到CPU控制权，可以使用Thread.sleep(0)手动触发一次操作系统分配时间片的操作，这也是平衡CPU控制权的一种操作。</p>
+
+<h4 id="什么是java内存模型">什么是Java内存模型</h4>
+<ul>
+  <li>Java内存模型定义了一种多线程访问Java内存的规范。Java内存模型要完整讲不是这里几句话能说清楚的，我简单总结一下Java内存模型的几部分内容：
+    <ol>
+      <li>Java内存模型将内存分为了主内存和工作内存。类的状态，也就是类之间共享的变量，是存储在主内存中的，每次Java线程用到这些主内存中的变量的时候，会读一次主内存中的变量，并让这些内存在自己的工作内存中有一份拷贝，运行自己线程代码的时候，用到这些变量，操作的都是自己工作内存中的那一份。在线程代码执行完毕之后，会将最新的值更新到主内存中去</li>
+      <li>定义了几个原子操作，用于操作主内存和工作内存中的变量</li>
+      <li>定义了volatile变量的使用规则</li>
+      <li>happens-before，即先行发生原则，定义了操作A必然先行发生于操作B的一些规则，比如在同一个线程内控制流前面的代码一定先行发生于控制流后面的代码、一个释放锁unlock的动作一定先行发生于后面对于同一个锁进行锁定lock的动作等等，只要符合这些规则，则不需要额外做同步措施，如果某段代码不符合所有的happens-before规则，则这段代码一定是线程非安全的</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="如果你提交任务时线程池队列已满这时会发生什么">如果你提交任务时，线程池队列已满，这时会发生什么</h4>
+<ol>
+  <li>如果使用的是无界队列LinkedBlockingQueue，也就是无界队列的话，没关系，继续添加任务到阻塞队列中等待执行，因为LinkedBlockingQueue可以近乎认为是一个无穷大的队列，可以无限存放任务</li>
+  <li>如果使用的是有界队列比如ArrayBlockingQueue，任务首先会被添加到ArrayBlockingQueue中，ArrayBlockingQueue满了，会根据maximumPoolSize的值增加线程数量，如果增加了线程数量还是处理不过来，ArrayBlockingQueue继续满，那么则会使用拒绝策略RejectedExecutionHandler处理满了的任务，默认是AbortPolicy</li>
+</ol>
+
+<h4 id="参考资料">参考资料</h4>
+<p>并发编程 <a href="https://segmentfault.com/a/1190000022039255">https://segmentfault.com/a/1190000022039255</a></p>
+
+<p>高并发中的线程通信 <a href="https://mp.weixin.qq.com/s/Gtz6aVPm-YnSh5pjs5JhkA">https://mp.weixin.qq.com/s/Gtz6aVPm-YnSh5pjs5JhkA</a></p>
+
+<p>高频多线程&amp;并发面试题 <a href="https://c.lanmit.com/bianchengkaifa/Java/53679.html">https://c.lanmit.com/bianchengkaifa/Java/53679.html</a></p>
+
+<p>Java编程艺术笔记 <a href="https://www.jianshu.com/p/8d90dc5b341e">https://www.jianshu.com/p/8d90dc5b341e</a></p>
+
+<p>面试题 <a href="https://blog.csdn.net/qq_34039315/article/details/78549311">https://blog.csdn.net/qq_34039315/article/details/78549311</a></p>
+
+<p><a href="https://mp.weixin.qq.com/s/oL2Vrsr2IcT_8oncdcwf-g">https://mp.weixin.qq.com/s/oL2Vrsr2IcT_8oncdcwf-g</a></p>
+
+<p><a href="https://mp.weixin.qq.com/s/rqzlISVShFqmo-96Hw2ZNA">https://mp.weixin.qq.com/s/rqzlISVShFqmo-96Hw2ZNA</a></p>
+
+<p><a href="https://mp.weixin.qq.com/s/Ya_aw4_4s8UdZ-y9YjMiFw">https://mp.weixin.qq.com/s/Ya_aw4_4s8UdZ-y9YjMiFw</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html">一致性（Consistency）与 共识（Consensus）</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -455,10 +818,10 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
 <span class="k">describe</span> <span class="n">tables</span><span class="p">;</span> <span class="c1">-- 查看已有表</span>
 <span class="k">describe</span> <span class="k">table</span> <span class="k">table_name</span> <span class="c1">-- 查看表结构</span>
 <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="p">(</span>
-  <span class="n">user_id</span> <span class="n">text</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-  <span class="n">first_name</span> <span class="n">text</span><span class="p">,</span>
-  <span class="n">last_name</span> <span class="n">text</span><span class="p">,</span>
-  <span class="n">emails</span> <span class="k">set</span><span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span> <span class="c1">-- 集合 Cassandra特有处理方式</span>
+  <span class="n">user_id</span> <span class="nb">text</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">first_name</span> <span class="nb">text</span><span class="p">,</span>
+  <span class="n">last_name</span> <span class="nb">text</span><span class="p">,</span>
+  <span class="n">emails</span> <span class="k">set</span><span class="o">&lt;</span><span class="nb">text</span><span class="o">&gt;</span> <span class="c1">-- 集合 Cassandra特有处理方式</span>
 <span class="p">);</span>
 <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">users</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">emails</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">'frodo'</span><span class="p">,</span> <span class="s1">'Frodo'</span><span class="p">,</span> <span class="s1">'Baggins'</span><span class="p">,</span> <span class="err">{</span><span class="s1">'f@baggins.com'</span><span class="p">,</span> <span class="s1">'baggins@gmail.com'</span><span class="err">}</span><span class="p">);</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">emails</span> <span class="o">=</span> <span class="n">emails</span> <span class="o">+</span> <span class="err">{</span><span class="s1">'fb@friendsofmordor.org'</span><span class="err">}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
@@ -469,12 +832,12 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">emails</span> <span class="o">=</span> <span class="err">{}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
 <span class="k">DELETE</span> <span class="n">emails</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
 
-<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">top_places</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">-- 向users表添加一个list列</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">top_places</span> <span class="n">list</span><span class="o">&lt;</span><span class="nb">text</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">-- 向users表添加一个list列</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">'rivendell'</span><span class="p">,</span> <span class="s1">'rohan'</span> <span class="p">]</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 使用UPDATA命令向list插入值</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">'the shire'</span> <span class="p">]</span> <span class="o">+</span> <span class="n">top_places</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 在list前面插入值 </span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="n">top_places</span> <span class="o">+</span> <span class="p">[</span> <span class="s1">'mordor'</span> <span class="p">]</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 在list后面插入值 </span>
 
-<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">todo</span> <span class="k">map</span><span class="o">&lt;</span><span class="k">timestamp</span><span class="p">,</span> <span class="n">text</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">todo</span> <span class="k">map</span><span class="o">&lt;</span><span class="nb">timestamp</span><span class="p">,</span> <span class="nb">text</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">todo</span> <span class="o">=</span> <span class="err">{</span> <span class="s1">'2012-9-24'</span> <span class="p">:</span> <span class="s1">'enter mordor'</span><span class="p">,</span> <span class="s1">'2014-10-2 12:00'</span> <span class="p">:</span> <span class="s1">'throw ring into mount doom'</span> <span class="err">}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
 
 <span class="c1">-- 使用TTL</span>
@@ -767,190 +1130,6 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html">DB Mysql</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="索引原理btree">索引原理(B+Tree)</h4>
-<ul>
-  <li>BS树(Binary Search Tree二叉查找树) -&gt; AVL(人名，平衡二叉树) Tree -&gt; 红黑树 -&gt; B-/B+Tree(平衡多路查找树) -&gt; LSM
-    <ul>
-      <li><a href="http://www.sohu.com/a/280609547_818692">http://www.sohu.com/a/280609547_818692</a>
-        <ul>
-          <li>既然hash比B+树更快，为啥mysql还用B+树来存索引吗？
-            <ol>
-              <li>这和业务场景有关。如果只选一个数据，那确实是hash更快。但是数据库中经常会选择多条，这时候由于B+树索引有序，并且又有链表相连，它的查询效率比hash就快很多了。</li>
-              <li>而且数据库中的索引一般是在磁盘上，数据量大的情况可能无法一次装入内存，B+树的设计可以允许数据分批加载，同时树的高度较低，提高查找效率。</li>
-              <li>与B数相比，如果是多条的话，B树需要做局部的中序遍历，可能要跨层访问。而B+树由于所有数据都在叶子结点，不用跨层，同时由于有链表结构，只需要找到首尾，通过链表就能把所有数据取出来了。</li>
-            </ol>
-          </li>
-          <li>AVLTree 在windowsNT内核中广泛使用，写少读多</li>
-          <li>红黑树适合于内存索引查找 比如Map、Set <a href="https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag">https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag</a></li>
-          <li>B树尤其是多路B数主要用在文件存储系统,文件系统和数据库的索引都是存在硬盘上的，并且如果数据量大的话，不一定能一次性加载到内存中。
-用B树可以一路一路的查找</li>
-          <li>红黑树常用于存储内存中的有序数据，增删很快，b+树常用于文件系统和数据库索引，因为b树的子节点大于红黑树，红黑树只能有2个子节点，b树子节点大于2，子节点树多这一特点保证了存储相同大小的数据，树的高度更小，数据局部更加紧凑，而硬盘读取有局部加载的优化（把要读取数据和周围的数据一起预先读取），b树相邻数据物理上更加紧凑这一特点符合硬盘进行io优化的特性。</li>
-        </ul>
-      </li>
-      <li>更加详细的应用范围<a href="https://www.cnblogs.com/tiancai/p/9024351.html">https://www.cnblogs.com/tiancai/p/9024351.html</a></li>
-      <li>完美总结B+树<a href="https://mp.weixin.qq.com/s/YMbRJwyjutGMD1KpI_fS0A">https://mp.weixin.qq.com/s/YMbRJwyjutGMD1KpI_fS0A</a></li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="各种优化">各种优化</h4>
-<ul>
-  <li><a href="https://www.jianshu.com/p/efaa9005a598">https://www.jianshu.com/p/efaa9005a598</a></li>
-  <li><a href="https://www.jb51.net/article/136701.htm">https://www.jb51.net/article/136701.htm</a></li>
-  <li><a href="https://www.cnblogs.com/houss/p/10598901.html">https://www.cnblogs.com/houss/p/10598901.html</a></li>
-  <li><a href="https://coolshell.cn/articles/1846.html">https://coolshell.cn/articles/1846.html</a>
-    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="err">优化</span><span class="mi">1</span>
-<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化前</span>
-<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="n">a</span> <span class="k">inner</span> <span class="k">join</span> <span class="p">(</span><span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="n">b</span> <span class="k">on</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化后</span>
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h4 id="常用指标">常用指标</h4>
-<ul>
-  <li>QPS   (2w/s与机器配置及数据量有关)</li>
-  <li>TPS   (1w/s)</li>
-  <li>并发数</li>
-  <li>连接数</li>
-  <li>缓存命中率</li>
-  <li>慢查询
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>slow_query_log=on
-slow_query_log_file=存放目录
-long_query_time=0.1秒
-log_queries_not_using_indexes=on
-</code></pre></div>    </div>
-  </li>
-  <li>主从延迟
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show slave status;
-Seconds_Behind_Master
-</code></pre></div>    </div>
-  </li>
-  <li>死锁
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set global innodb_print_all_deadlocks=on; 
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h4 id="mysql-wal技术-write-ahead-logging">Mysql WAL技术 Write-Ahead Logging</h4>
-
-<p>在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
-   在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
-   为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
-   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。 
-   什么是WAL？<a href="https://www.cnblogs.com/hzmark/p/wal.html">https://www.cnblogs.com/hzmark/p/wal.html</a></p>
-
-<h4 id="innodb与myisamindex-sequence-access-method">InnoDB与MyISAM(Index Sequence Access Method)</h4>
-<ul>
-  <li>核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
-MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
-    <ul>
-      <li>4个隔离级别透彻分析 <a href="https://www.jianshu.com/p/db334404d909">https://www.jianshu.com/p/db334404d909</a></li>
-      <li>Mysql中MVCC的使用及原理详解 <a href="https://blog.csdn.net/w2064004678/article/details/83012387">https://blog.csdn.net/w2064004678/article/details/83012387</a></li>
-    </ul>
-  </li>
-  <li>索引结构不同
-    <ul>
-      <li><a href="https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew">https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew</a></li>
-    </ul>
-  </li>
-  <li>其他不同
-    <ul>
-      <li><a href="https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg">https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg</a></li>
-      <li><a href="https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A">https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A</a></li>
-    </ul>
-  </li>
-  <li>引擎不同的几个方面：Storage mechanism、Locking levels、Indexing、Capabilities and functions</li>
-</ul>
-
-<h4 id="faq">FAQ</h4>
-<ul>
-  <li>
-    <p>问题：INT(M)中M究竟有何用？</p>
-
-    <p>int类型占四个字节，一个字节8比特位，也就是4*8=32比特位，可以表示的数字个数是2的32次方个(2^32)。声明一个int类型的数据，长度便已经固定，那么这个M究竟有何用？
-  结论：INT(M)中的M与数据存储长度没有关系，只是标识数据显示长度，在显示时不足无数会自动填充0进行补齐，必须配合AutoFill使用。</p>
-  </li>
-  <li>
-    <p>MySQL 中 InnoDB 引擎的行锁是通过加在什么上完成(或称实现) 的?</p>
-
-    <p>InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。
-  InnoDB 这 种行锁实现特点意味着:只有通过索引条件检索数据，InnoDB 才使用行级 锁，否则，InnoDB 将使用表锁!</p>
-  </li>
-  <li>各种锁
-    <ul>
-      <li>本质都为了实现数据一致性及各种事务控制</li>
-      <li>悲观锁：读取数据时就加锁排他</li>
-      <li>乐观锁：读取数据不加锁，更新时处理（比如版本号机制、CAS compare and swap算法）</li>
-      <li>共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁 意向共享锁和意向排他锁锁定的是表。
-  <a href="https://www.jianshu.com/p/c456f726e9c7">https://www.jianshu.com/p/c456f726e9c7</a></li>
-    </ul>
-  </li>
-  <li>数据库三范式
-    <ul>
-      <li>表中的每个字段不可分割</li>
-      <li>表有且只有一个主键，也即是每个表只是描述一件事</li>
-      <li>不存在对非主键列的依赖传递，比如userId,userName不要同时出现在order中，有时为了查询效率也冗余个别字段</li>
-    </ul>
-  </li>
-  <li>一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?
-  (1)如果表的类型是 MyISAM，那么是 18
-      因为 MyISAM 表会把自增主键的最大 ID 记录到数据文件里，重启 MySQL 自增主键的最大 ID 也不会丢失
-  (2)如果表的类型是 InnoDB，那么是 15
-      InnoDB 表只是把自增主键的最大 ID 记录到内存中，所以重启数据库或者是对表进行 OPTIMIZE 操作，都会导致最大 ID 丢失</li>
-  <li>
-    <p>如何区分 FLOAT 和 DOUBLE?</p>
-
-    <p>以下是 FLOAT 和 DOUBLE 的区别:
-  浮点数以 8 位精度存储在 FLOAT 中，并且有四个字节。 浮点数存储在 DOUBLE 中，精度为 18 位，有八个字节。</p>
-  </li>
-  <li>
-    <p>区分 CHAR_LENGTH 和 LENGTH?</p>
-
-    <p>CHAR_LENGTH 是字符数，而 LENGTH 是字节数。Latin 字符的这两个数据是相同的，但是对 于 Unicode 和其他编码，它们是不同的。</p>
-  </li>
-  <li>
-    <p>federated 表是什么?</p>
-
-    <p>federated 表，允许访问位于其他服务器数据库上的表。
-  <a href="https://blog.csdn.net/qq_33578833/article/details/80177115">https://blog.csdn.net/qq_33578833/article/details/80177115</a></p>
-  </li>
-  <li>
-    <p>可以使用多少列创建索引?</p>
-
-    <p>任何标准表最多可以创建 16 个索引列。</p>
-  </li>
-</ul>
-
-<h4 id="其他">其他</h4>
-<ul>
-  <li>Mysql主从同步 <a href="https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw">https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw</a></li>
-  <li>Mysql+Keepalived实现双高可用 <a href="https://www.cnblogs.com/kevingrace/p/6710136.html">https://www.cnblogs.com/kevingrace/p/6710136.html</a></li>
-  <li>PROCEDURE ANALYSE</li>
-  <li>全文索引</li>
-  <li>分区表 <a href="https://www.jianshu.com/p/b61d767f4ff5">https://www.jianshu.com/p/b61d767f4ff5</a></li>
-  <li>UTF-8编码占几个字节 <a href="https://blog.csdn.net/bluetjs/article/details/52936943">https://blog.csdn.net/bluetjs/article/details/52936943</a></li>
-</ul>
-
-<p><a href="https://database.51cto.com/art/201910/604128.htm">数据库规范</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -1172,6 +1351,13 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
       
       <a  href="/tag/用户">
       <span class="label label-default">用户 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/tob">
+      <span class="label label-default">toB ( 1 )</span>
       </a><br />
 
       

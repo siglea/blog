@@ -5,19 +5,51 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 22 Jun 2020 17:00:39 +0800</pubDate>
-    <lastBuildDate>Mon, 22 Jun 2020 17:00:39 +0800</lastBuildDate>
-    <generator>Jekyll v3.8.5</generator>
+    <pubDate>Mon, 22 Jun 2020 23:35:12 +0800</pubDate>
+    <lastBuildDate>Mon, 22 Jun 2020 23:35:12 +0800</lastBuildDate>
+    <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>SaaS业务分析</title>
+        <description>&lt;h4 id=&quot;中国saas的增长困境&quot;&gt;中国SaaS的增长困境&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;SaaS的收入模式是订阅模式，而订阅收入的衡量指标是所谓的NDR（Net Dollar Retention），也就是收入的净留存。
+  NDR的计算公式为：NDR=(beginningrevenue+upgrades-downgrades-churn)/beginning revenue&lt;/li&gt;
+  &lt;li&gt;SaaS销售员的首要任务不是成交，而是找到可合作的优质客户，其次的责任才是成交。&lt;/li&gt;
+  &lt;li&gt;销售员这个角色，在SaaS公司应该被定义为播种者，而非收割者。
+改变培训导向和调整提成制度。引导价值成交，树立SaaS的销售业绩导向。&lt;/li&gt;
+  &lt;li&gt;ARR是annual recurring revenue的缩写&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://news.futunn.com/market/125247&quot;&gt;https://news.futunn.com/market/125247&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/101133113&quot;&gt;https://zhuanlan.zhihu.com/p/101133113&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Mon, 22 Jun 2020 21:58:00 +0800</pubDate>
+        <link>http://localhost:4000/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/SaaS%E4%B8%9A%E5%8A%A1.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/SaaS%E4%B8%9A%E5%8A%A1.html</guid>
+        
+        <category>toB</category>
+        
+        
+        <category>产品商业</category>
+        
+      </item>
     
       <item>
         <title>用户画像</title>
-        <description>&lt;h4 id=&quot;用户画像概述&quot;&gt;用户画像概述&lt;/h4&gt;
+        <description>&lt;h4 id=&quot;核心&quot;&gt;核心&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;用户画像体系，有这一篇就够了 &lt;a href=&quot;https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q&quot;&gt;https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;用户画像原理、技术选型及架构实现 &lt;a href=&quot;https://blog.csdn.net/SecondLieutenant/article/details/81153565&quot;&gt;https://blog.csdn.net/SecondLieutenant/article/details/81153565&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;用户画像概述&quot;&gt;用户画像概述&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;用户画像根本目的就是寻找目标客户、优化产品设计，指导运营策略，分析业务场景和完善业务形态。&lt;/li&gt;
   &lt;li&gt;不同的企业做用户画像有不同的战略目的，广告公司做用户画像是为精准广告服务，电商做用户画像是为用户购买更多商品，内容平台做用户画像是推荐用户更感兴趣的内容提升流量再变现，金融行业做用户画像是为了寻找到目标客户的同时做好风险的控制。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;画像分类&quot;&gt;画像分类&lt;/h4&gt;
+&lt;h4 id=&quot;画像维度&quot;&gt;画像维度&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;特征：
     &lt;ul&gt;
@@ -40,6 +72,17 @@
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;画像之静态标签动态标签&quot;&gt;画像之静态标签、动态标签&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;静态画像：实时性弱、覆盖广、粒度粗&lt;/li&gt;
+  &lt;li&gt;动态画像：
+    &lt;ul&gt;
+      &lt;li&gt;一般建立兴趣模型，更加实时并且动态&lt;/li&gt;
+      &lt;li&gt;用户行为可疑结构为5W（What/Who/When/Where/Why)&lt;/li&gt;
+      &lt;li&gt;时效性非常敏感&lt;/li&gt;
+      &lt;li&gt;在空间上，不同应用领域侧重点不同，营销领域更侧重消费习惯，推荐领域更侧重喜好&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h4 id=&quot;画像之标签结构化程度&quot;&gt;画像之标签结构化程度&lt;/h4&gt;
 &lt;ul&gt;
@@ -53,6 +96,15 @@
       &lt;li&gt;电商行业的实际做法大家都看到了，基本上不依靠分类，完全以“单品+个性化推荐”的方法构建和使用标签体系。&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;画像之应用&quot;&gt;画像之应用&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;精准营销：根据历史用户特征，分析产品的潜在用户和用户的潜在需求，针对特定群体，利用短信、邮件等方式进行营销。&lt;/li&gt;
+  &lt;li&gt;用户统计：根据用户的属性、行为特征对用户进行分类后，统计不同特征下的用户数量、分布；分析不同用户画像群体的分布特征。&lt;/li&gt;
+  &lt;li&gt;数据挖掘：以用户画像为基础构建推荐系统、搜索引擎、广告投放系统，提升服务精准度。&lt;/li&gt;
+  &lt;li&gt;服务产品：对产品进行用户画像，对产品进行受众分析，更透彻地理解用户使用产品的心理动机和行为习惯，完善产品运营，提升服务质量。&lt;/li&gt;
+  &lt;li&gt;行业报告&amp;amp;用户研究：通过用户画像分析可以了解行业动态，比如人群消费习惯、消费偏好分析、不同地域品类消费差异分析&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;画像之reachctr曲线&quot;&gt;画像之reach/CTR曲线&lt;/h4&gt;
@@ -125,6 +177,19 @@
   &lt;li&gt;电商案例、金融案例（用户画像标签体系——从零开始搭建实时用户画像） &lt;a href=&quot;https://cloud.tencent.com/developer/column/79937&quot;&gt;https://cloud.tencent.com/developer/column/79937&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;航空公司案例、证券案例、打车公司案例 &lt;a href=&quot;https://www.zhihu.com/question/302695500&quot;&gt;https://www.zhihu.com/question/302695500&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;从阿里会员解读会员体系建设 &lt;a href=&quot;https://zhuanlan.zhihu.com/p/88738148&quot;&gt;https://zhuanlan.zhihu.com/p/88738148&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;用户画像10大误区 &lt;a href=&quot;https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA&quot;&gt;https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;1号店案例 &lt;a href=&quot;https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg&quot;&gt;https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Qunar用户画像构建策略及应用实践 &lt;a href=&quot;https://blog.csdn.net/xiaoshunzi111/article/details/53170658&quot;&gt;https://blog.csdn.net/xiaoshunzi111/article/details/53170658&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;table&gt;
+      &lt;tbody&gt;
+        &lt;tr&gt;
+          &lt;td&gt;携程&lt;/td&gt;
+          &lt;td&gt;手把手教你用大数据打造用户画像 &lt;a href=&quot;https://blog.csdn.net/chenjunji123456/article/details/54966633&quot;&gt;https://blog.csdn.net/chenjunji123456/article/details/54966633&lt;/a&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/li&gt;
 &lt;/ul&gt;
 </description>
         <pubDate>Mon, 22 Jun 2020 10:08:00 +0800</pubDate>
@@ -1321,89 +1386,6 @@ create &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; /node1-temp /node1-conte
         <pubDate>Sun, 31 May 2020 19:25:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html</link>
         <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html</guid>
-        
-        <category>数据结构与算法</category>
-        
-        
-        <category>技术</category>
-        
-      </item>
-    
-      <item>
-        <title>排序算法概述</title>
-        <description>&lt;h4 id=&quot;冒泡排序&quot;&gt;冒泡排序&lt;/h4&gt;
-&lt;pre&gt;
-从左开始比较，大的往右换
-或
-从右开始比较，小的往左换
-重复上一步骤
-&lt;/pre&gt;
-&lt;h4 id=&quot;鸡尾排序&quot;&gt;鸡尾排序&lt;/h4&gt;
-&lt;pre&gt;
-也叫双向冒泡或者定向冒泡，
-从左开始比较，大的往右换
-与
-从右开始比较，小的往左换
-同时进行
-&lt;/pre&gt;
-&lt;h4 id=&quot;选择排序&quot;&gt;选择排序&lt;/h4&gt;
-&lt;pre&gt;
-与冒泡排序相比减少了多余的交换
-找出最小的元素放在最左侧，接着找第二小的...直到最后排完(不稳定)
-&lt;/pre&gt;
-&lt;h4 id=&quot;快速排序&quot;&gt;快速排序&lt;/h4&gt;
-&lt;pre&gt;
-选中一个基准元素X，小于X放在左侧，大于X放在右侧，分而治之，不断重复
-&lt;/pre&gt;
-&lt;h4 id=&quot;插入排序&quot;&gt;插入排序&lt;/h4&gt;
-&lt;pre&gt;
-从左侧开始设定一个有序区，从第二个元素开始去有序找自己的位置插入进去
-&lt;/pre&gt;
-&lt;h4 id=&quot;希尔排序&quot;&gt;希尔排序&lt;/h4&gt;
-&lt;pre&gt;
-两两分组，跨度交换，左小右大，逐渐缩小跨度为1，即完成&lt;/pre&gt;
-&lt;h4 id=&quot;归并排序比武排序&quot;&gt;归并排序(比武排序)&lt;/h4&gt;
-&lt;pre&gt;
-由一组数字分为两组，逐渐分为只包含2个元素的小组
-开始比较大小，左小右大
-比较完毕之后，开始合并，合并的时候按照小大顺序把2个小组合并成1个有序大组，直到最后1个最大有序组
-&lt;/pre&gt;
-&lt;h4 id=&quot;计数排序&quot;&gt;计数排序&lt;/h4&gt;
-&lt;pre&gt;
-建立【元素都为0】的空数组，开始遍历待排序数组
-如果待排元素值等于空数组的位置角标，则【元素+1】
-&lt;/pre&gt;
-&lt;h4 id=&quot;桶排序&quot;&gt;桶排序&lt;/h4&gt;
-&lt;pre&gt;
-计数排序的升级版，计数排序每个索引只能记录一个值，
-索引升级为桶（比如桶范围2.0-3.5）
-此时，一个桶里就可以放多个数据范围内的数据
-&lt;/pre&gt;
-&lt;h4 id=&quot;基数排序按位排序&quot;&gt;基数排序（按位排序）&lt;/h4&gt;
-&lt;pre&gt;
-提取每个元素的最后一位进行计数排序
-再提取倒数第二位进行计数排序
-直到最前一位
-比如：单词排序，长度不一的末尾用0代替
-&lt;/pre&gt;
-&lt;h4 id=&quot;堆排序&quot;&gt;堆排序&lt;/h4&gt;
-&lt;pre&gt;
-主要利用二叉堆是完全二叉堆这样的数据结构的特性
-把无序数组构建成二叉堆。
-循环删除堆顶元素，移到集合尾部，调节堆产生新的堆顶。
-
-二叉堆虽然是一颗完全二叉树，但它的存储方式并不是链式存储，而是顺序存储。换句话说，二叉堆的所有节点都存储在数组当中。
-利用大顶堆，删除顶点放于数组未部，此后二叉堆自我调整选出新的堆顶
-&lt;/pre&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg&quot;&gt;https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;参考-httpsmpweixinqqcomsteogqlslb6ap4aqrx7ttza&quot;&gt;参考 &lt;a href=&quot;https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA&quot;&gt;https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA&lt;/a&gt;&lt;/h4&gt;
-</description>
-        <pubDate>Sun, 31 May 2020 11:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html</guid>
         
         <category>数据结构与算法</category>
         

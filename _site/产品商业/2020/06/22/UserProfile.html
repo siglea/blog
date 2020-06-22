@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>用户画像</title>
-  <meta name="description" content="用户画像概述  用户画像根本目的就是寻找目标客户、优化产品设计，指导运营策略，分析业务场景和完善业务形态。  不同的企业做用户画像有不同的战略目的，广告公司做用户画像是为精准广告服务，电商做用户画像是为用户购买更多商品，内容平台做用户画像是推荐用户更感兴趣的内容提升流量再变现，金融行业做用户画像是为了寻找到目标客...">
+  <meta name="description" content="核心  用户画像体系，有这一篇就够了 https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q  用户画像原理、技术选型及架构实现 https://blog.csdn.net/SecondLieutenant/article/details/81153565">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,13 +60,19 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="用户画像概述">用户画像概述</h4>
+    <h4 id="核心">核心</h4>
+<ul>
+  <li>用户画像体系，有这一篇就够了 <a href="https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q">https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q</a></li>
+  <li>用户画像原理、技术选型及架构实现 <a href="https://blog.csdn.net/SecondLieutenant/article/details/81153565">https://blog.csdn.net/SecondLieutenant/article/details/81153565</a></li>
+</ul>
+
+<h4 id="用户画像概述">用户画像概述</h4>
 <ul>
   <li>用户画像根本目的就是寻找目标客户、优化产品设计，指导运营策略，分析业务场景和完善业务形态。</li>
   <li>不同的企业做用户画像有不同的战略目的，广告公司做用户画像是为精准广告服务，电商做用户画像是为用户购买更多商品，内容平台做用户画像是推荐用户更感兴趣的内容提升流量再变现，金融行业做用户画像是为了寻找到目标客户的同时做好风险的控制。</li>
 </ul>
 
-<h4 id="画像分类">画像分类</h4>
+<h4 id="画像维度">画像维度</h4>
 <ul>
   <li>特征：
     <ul>
@@ -89,6 +95,17 @@
 </ul>
 
 <h4 id="画像之静态标签动态标签">画像之静态标签、动态标签</h4>
+<ul>
+  <li>静态画像：实时性弱、覆盖广、粒度粗</li>
+  <li>动态画像：
+    <ul>
+      <li>一般建立兴趣模型，更加实时并且动态</li>
+      <li>用户行为可疑结构为5W（What/Who/When/Where/Why)</li>
+      <li>时效性非常敏感</li>
+      <li>在空间上，不同应用领域侧重点不同，营销领域更侧重消费习惯，推荐领域更侧重喜好</li>
+    </ul>
+  </li>
+</ul>
 
 <h4 id="画像之标签结构化程度">画像之标签结构化程度</h4>
 <ul>
@@ -102,6 +119,15 @@
       <li>电商行业的实际做法大家都看到了，基本上不依靠分类，完全以“单品+个性化推荐”的方法构建和使用标签体系。</li>
     </ul>
   </li>
+</ul>
+
+<h4 id="画像之应用">画像之应用</h4>
+<ul>
+  <li>精准营销：根据历史用户特征，分析产品的潜在用户和用户的潜在需求，针对特定群体，利用短信、邮件等方式进行营销。</li>
+  <li>用户统计：根据用户的属性、行为特征对用户进行分类后，统计不同特征下的用户数量、分布；分析不同用户画像群体的分布特征。</li>
+  <li>数据挖掘：以用户画像为基础构建推荐系统、搜索引擎、广告投放系统，提升服务精准度。</li>
+  <li>服务产品：对产品进行用户画像，对产品进行受众分析，更透彻地理解用户使用产品的心理动机和行为习惯，完善产品运营，提升服务质量。</li>
+  <li>行业报告&amp;用户研究：通过用户画像分析可以了解行业动态，比如人群消费习惯、消费偏好分析、不同地域品类消费差异分析</li>
 </ul>
 
 <h4 id="画像之reachctr曲线">画像之reach/CTR曲线</h4>
@@ -174,6 +200,19 @@
   <li>电商案例、金融案例（用户画像标签体系——从零开始搭建实时用户画像） <a href="https://cloud.tencent.com/developer/column/79937">https://cloud.tencent.com/developer/column/79937</a></li>
   <li>航空公司案例、证券案例、打车公司案例 <a href="https://www.zhihu.com/question/302695500">https://www.zhihu.com/question/302695500</a></li>
   <li>从阿里会员解读会员体系建设 <a href="https://zhuanlan.zhihu.com/p/88738148">https://zhuanlan.zhihu.com/p/88738148</a></li>
+  <li>用户画像10大误区 <a href="https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA">https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA</a></li>
+  <li>1号店案例 <a href="https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg">https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg</a></li>
+  <li>Qunar用户画像构建策略及应用实践 <a href="https://blog.csdn.net/xiaoshunzi111/article/details/53170658">https://blog.csdn.net/xiaoshunzi111/article/details/53170658</a></li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>携程</td>
+          <td>手把手教你用大数据打造用户画像 <a href="https://blog.csdn.net/chenjunji123456/article/details/54966633">https://blog.csdn.net/chenjunji123456/article/details/54966633</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
 </ul>
 
   </div>
