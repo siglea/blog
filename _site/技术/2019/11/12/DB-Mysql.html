@@ -174,7 +174,7 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
       <li>本质都为了实现数据一致性及各种事务控制</li>
       <li>悲观锁：读取数据时就加锁排他</li>
       <li>乐观锁：读取数据不加锁，更新时处理（比如版本号机制、CAS compare and swap算法）</li>
-      <li>共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁
+      <li>共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁 意向共享锁和意向排他锁锁定的是表。
   <a href="https://www.jianshu.com/p/c456f726e9c7">https://www.jianshu.com/p/c456f726e9c7</a></li>
     </ul>
   </li>

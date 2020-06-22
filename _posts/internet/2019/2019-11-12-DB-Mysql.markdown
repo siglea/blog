@@ -91,7 +91,7 @@ set global innodb_print_all_deadlocks=on;
     - 本质都为了实现数据一致性及各种事务控制
     - 悲观锁：读取数据时就加锁排他
     - 乐观锁：读取数据不加锁，更新时处理（比如版本号机制、CAS compare and swap算法）
-    - 共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁
+    - 共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁 意向共享锁和意向排他锁锁定的是表。
         <https://www.jianshu.com/p/c456f726e9c7>
 - 数据库三范式
     - 表中的每个字段不可分割

@@ -54,6 +54,205 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html"> kafka activeMQ RabbitMq RocketMQ </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 22, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>MQ</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="amqp即advanced-message-queuing-protocolactivemqrabbitmq都支持">AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）</h4>
+<ul>
+  <li>RabbitMQ <a href="https://www.jianshu.com/p/78847c203b76">https://www.jianshu.com/p/78847c203b76</a></li>
+</ul>
+
+<h4 id="两种消息模型">两种消息模型：</h4>
+<ul>
+  <li>点对点（单播），当采用点对点模型时，消息将发送到一个队列，该队列的消息只能被一个消费者消费。</li>
+  <li>publish-subscribe（发布订阅、广播）模型。而采用发布订阅模型时，消息可以被多个消费者消费。
+在发布订阅模型中，生产者和消费者完全独立，不需要感知对方的存在。
+例如，在用户登录后，各个其他模板更加登录进行不同的处理</li>
+</ul>
+
+<h4 id="如何保证可用性">如何保证可用性</h4>
+<ul>
+  <li>主从架构（ActiveMQ、RabbitMQ、RocketMQ）</li>
+  <li>分布式架构（kafka）</li>
+</ul>
+
+<h4 id="如何保证消息不被重复消费">如何保证消息不被重复消费？</h4>
+<ul>
+  <li>分析:这个问题其实换一种问法就是，如何保证消息队列的幂等性?这个问题可以认为是消息队列领域的基本问题。换句话来说，是在考察你的设计能力，这个问题的回答可以根据具体的业务场景来答，没有固定的答案。</li>
+  <li>回答:先来说一下为什么会造成重复消费?
+  其实无论是那种消息队列，造成重复消费原因其实都是类似的。正常情况下，消费者在消费消息时候，消费完毕后，会发送一个确认信息给消息队列，消息队列就知道该消息被消费了，就会将该消息从消息队列中删除。只是不同的消息队列发送的确认信息形式不同,例如RabbitMQ是发送一个ACK确认消息，RocketMQ是返回一个CONSUME_SUCCESS成功标志，kafka实际上有个offset的概念，简单说一下(如果还不懂，出门找一个kafka入门到精通教程),就是每一个消息都有一个offset，kafka消费过消息后，需要提交offset，让消息队列知道自己已经消费过了。那造成重复消费的原因?，就是因为网络传输等等故障，确认信息没有传送到消息队列，导致消息队列不知道自己已经消费过该消息了，再次将该消息分发给其他的消费者。
+  如何解决?这个问题针对业务场景来答分以下几点
+  - 比如，你拿到这个消息做数据库的insert操作。那就容易了，给这个消息做一个唯一主键，那么就算出现重复消费的情况，就会导致主键冲突，避免数据库出现脏数据。
+    <ul>
+      <li>再比如，你拿到这个消息做redis的set的操作，那就容易了，不用解决，因为你无论set几次结果都是一样的，set操作本来就算幂等操作。
+  - 如果上面两种情况还不行，上大招。准备一个第三方介质,来做消费记录。以redis为例，给消息分配一个全局id，只要消费过该消息，将&lt;id,message&gt;以K-V形式写入redis。那消费者开始消费前，先去redis中查询有没消费记录即可。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="消费者消费失败如何处理">消费者消费失败，如何处理？</h4>
+<ul>
+  <li>消费成功时，手动ack，这样队列会再次推送或者再次pull</li>
+  <li>用redis对立的”伪消费队列”最大的问题就是在于消费后没有ACK，发生意外会有很多脏数据</li>
+  <li>也可以用幂等的方式消费者保存业务的进展，用单独程序做补偿消费</li>
+  <li>如果消费者处理一个消息失败了，消息系统一般会把这个消息放回队列，这样其他消费者可以继续处理</li>
+</ul>
+
+<h4 id="如何保证消费的可靠性传输">如何保证消费的可靠性传输?</h4>
+<ul>
+  <li>RabbitMQ
+    <ul>
+      <li>生产者丢数据，可以用事务方式来保证发送成功或回滚，也可以队列接受后异步返回ack或nack来实现</li>
+      <li>消息队列丢数据，可以持久化队列并且配置自动重复参数</li>
+      <li>消费者丢数据，手动ack
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rabbitmq-server start
+service rabbitmq-server restart
+rabbitmqctl status
+rabbitmq-plugins <span class="nb">enable </span>rabbitmq_management
+rabbitmqctl add_user rabbitmq 123456
+rabbitmqctl set_user_tags rabbitmq administrator
+rabbitmqctl set_permissions <span class="nt">-p</span> / rabbitmq <span class="s2">".*"</span> <span class="s2">".*"</span> <span class="s2">".*"</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>kafka
+    <ul>
+      <li>(1)生产者丢数据
+在kafka生产中，基本都有一个leader和多个follwer。follwer会去同步leader的信息。因此，为了避免生产者丢数据，做如下两点配置
+        <ol>
+          <li>第一个配置要在producer端设置acks=all。这个配置保证了，follwer同步完成后，才认为消息发送成功。</li>
+          <li>在producer端设置retries=MAX，一旦写入失败，这无限重试</li>
+        </ol>
+      </li>
+      <li>消息队列丢数据
+针对消息队列丢数据的情况，无外乎就是，数据还没同步，leader就挂了，这时zookpeer会将其他的follwer切换为leader,那数据就丢失了。针对这种情况，应该做两个配置。
+        <ol>
+          <li>replication.factor参数，这个值必须大于1，即要求每个partition必须有至少2个副本</li>
+          <li>min.insync.replicas参数，这个值必须大于1，这个是要求一个leader至少感知到有至少一个follower还跟自己保持联系
+这两个配置加上上面生产者的配置联合起来用，基本可确保kafka不丢数据</li>
+        </ol>
+      </li>
+      <li>消费者丢数据
+这种情况一般是自动提交了offset，然后你处理程序过程中挂了。kafka以为你处理好了。再强调一次offset是干嘛的
+offset：指的是kafka的topic中的每个消费组消费的下标。简单的来说就是一条消息对应一个offset下标，每次消费数据的时候如果提交offset，那么下次消费就会从提交的offset加一那里开始消费。</li>
+    </ul>
+  </li>
+  <li>rocketmq</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># install rocketmq</span>
+unzip rocketmq-all-4.7.0-source-release.zip
+<span class="nb">cd </span>rocketmq-all-4.7.0/
+mvn <span class="nt">-Prelease-all</span> <span class="nt">-DskipTests</span> clean <span class="nb">install</span> <span class="nt">-U</span>
+<span class="nb">cd </span>distribution/target/rocketmq-4.7.0/rocketmq-4.7.0
+
+<span class="c"># config JAVA_HOME</span>
+vim ~/.bashrc
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/lib/jvm/jdk-13
+<span class="nb">export </span><span class="nv">JRE_HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/jre
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/lib:<span class="k">${</span><span class="nv">JRE_HOME</span><span class="k">}</span>/lib
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin:<span class="nv">$PATH</span>
+
+<span class="c">#Start Name Server</span>
+<span class="nb">nohup </span>sh bin/mqnamesrv &amp;
+<span class="nb">tail</span> <span class="nt">-f</span> ~/logs/rocketmqlogs/namesrv.log
+<span class="c">#The Name Server boot success...</span>
+
+<span class="c">#Start Broker</span>
+<span class="nb">nohup </span>sh bin/mqbroker <span class="nt">-n</span> localhost:9876 &amp;
+<span class="c">#The broker[%s, 172.30.30.233:10911] boot success...</span>
+
+<span class="c"># 外网访问 配置 /etc/hosts</span>
+<span class="c"># 相关报错 RemotingTooMuchRequestException: sendDefaultImpl call timeout；</span>
+broker机器的内网ip  hostname.com
+<span class="c"># 配置conf/broker.conf </span>
+<span class="nv">brokerIP1</span><span class="o">=</span>hostname.com
+./mqbroker <span class="nt">-n</span> localhost:9876 <span class="nt">-c</span> ../conf/broker.conf &amp;
+
+<span class="c"># 相关报错 No route info of this topic</span>
+<span class="c"># 保持客户端rocketmq版本号与服务器一致</span>
+<span class="c"># 设置该属性 autoCreateTopicEnable=true </span>
+./mqadmin topicList <span class="nt">-n</span> localhost:9876
+
+</code></pre></div></div>
+<ul>
+  <li>rocketmq为什么使用nameserver而不使用ZooKeeper？<a href="https://blog.csdn.net/earthhour/article/details/78718064">https://blog.csdn.net/earthhour/article/details/78718064</a></li>
+  <li>点赞削峰 <a href="https://mp.weixin.qq.com/s/w6aCc-ueYHjkNeEZYcmAhw">https://mp.weixin.qq.com/s/w6aCc-ueYHjkNeEZYcmAhw</a></li>
+</ul>
+
+<h4 id="推拉模式">推拉模式</h4>
+<p>消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。</p>
+
+<h4 id="关于kafka">关于kafka</h4>
+<ul>
+  <li>Apache Kafka不是消息中间件的一种实现。相反，它只是一种分布式流式系统。
+不同于基于队列和交换器的RabbitMQ，Kafka的存储层是使用分区事务日志来实现的。</li>
+  <li>过期日志会根据时间或大小，进行清除</li>
+  <li>极好的总结 <a href="https://segmentfault.com/a/1190000021138998">https://segmentfault.com/a/1190000021138998</a></li>
+  <li>zookeeper在kafka中的作用 <a href="https://www.jianshu.com/p/a036405f989c">https://www.jianshu.com/p/a036405f989c</a></li>
+  <li>一次事故 <a href="https://www.jianshu.com/p/72a54f835b6b">https://www.jianshu.com/p/72a54f835b6b</a>
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#启动zk</span>
+bin/zookeeper-server-start.sh config/zookeeper.properties &amp;
+<span class="c">#启动kafka</span>
+bin/kafka-server-start.sh config/server.properties
+<span class="c"># kafka默认只支持本地访问，如果需要外网访问，需要用hostname.com的方式配置</span>
+<span class="c"># hostname.com可以是任意自定义的，不需要备案，只是起到"代名词"作用</span>
+<span class="c">#1、</span>
+config/server.properties
+<span class="nv">listeners</span><span class="o">=</span>PLAINTEXT://hostname.com:9092
+<span class="c">#2、</span>
+<span class="c">#kafka broker机器配置hosts</span>
+broker机器的内网ip  hostname.com
+<span class="c">#3、</span>
+<span class="c">#调用端也是是kafka的Client端 的机器配置hosts</span>
+broker机器的外网ip  hostname.com
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>消息队列常见问题
+    <ul>
+      <li><a href="https://www.cnblogs.com/williamjie/p/9481780.html">https://www.cnblogs.com/williamjie/p/9481780.html</a></li>
+    </ul>
+  </li>
+  <li>优知学院消息队列
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/60288173">https://zhuanlan.zhihu.com/p/60288173</a></li>
+      <li><a href="https://zhuanlan.zhihu.com/p/60288391">https://zhuanlan.zhihu.com/p/60288391</a></li>
+    </ul>
+  </li>
+  <li>IM系统的MQ消息中间件选型：Kafka还是RabbitMQ？
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/37993013">https://zhuanlan.zhihu.com/p/37993013</a></li>
+    </ul>
+  </li>
+  <li>MQ消息队列的12点核心原理总结
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/60289322">https://zhuanlan.zhihu.com/p/60289322</a></li>
+    </ul>
+  </li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty.html">Netty</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 18, 2020</span>
@@ -884,130 +1083,6 @@ Failsafe 即使失败了也不会影响整个调用流程，它的失败不影�
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html"> SpringCloud </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Spring</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="关于微服务">关于微服务</h3>
-<ul>
-  <li>SOA(ESB)与微服务
-    <ul>
-      <li><a href="https://zhuanlan.zhihu.com/p/30477325">https://zhuanlan.zhihu.com/p/30477325</a></li>
-      <li><a href="https://www.cnblogs.com/guanghe/p/10978349.html">https://www.cnblogs.com/guanghe/p/10978349.html</a></li>
-      <li><a href="https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA">https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA</a></li>
-    </ul>
-  </li>
-  <li>微服务哪些事
-    <ul>
-      <li><a href="https://windmt.com/2018/04/14/spring-cloud-0-microservices/">https://windmt.com/2018/04/14/spring-cloud-0-microservices/</a></li>
-      <li><a href="https://windmt.com/2018/04/14/spring-cloud-1-services-governance/">https://windmt.com/2018/04/14/spring-cloud-1-services-governance/</a></li>
-    </ul>
-  </li>
-  <li>SpringCloud &amp; Dubbo
-    <ul>
-      <li><a href="https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ">https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ</a></li>
-      <li><a href="https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A">https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A</a></li>
-      <li><a href="http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html">阿里Dubbo与Spring Cloud</a></li>
-    </ul>
-  </li>
-  <li>RPC之thrift/gRPC
-    <ul>
-      <li><a href="https://blog.csdn.net/kesonyk/article/details/50924489">https://blog.csdn.net/kesonyk/article/details/50924489</a></li>
-      <li><a href="https://developer.51cto.com/art/201908/601617.htm">https://developer.51cto.com/art/201908/601617.htm</a></li>
-      <li><a href="https://segmentfault.com/a/1190000011478469">https://segmentfault.com/a/1190000011478469</a></li>
-      <li><a href="https://zhuanlan.zhihu.com/p/136112210">https://zhuanlan.zhihu.com/p/136112210</a></li>
-      <li>RPC与HTTP的关系 <a href="https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg">https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg</a></li>
-      <li>快速理解RPC技术——基本概念、原理和用途 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620</a></li>
-    </ul>
-  </li>
-  <li>WebService某种程度上也是一种RPC
-    <ul>
-      <li>WebService的历史 <a href="https://www.iteye.com/blog/andot-662787">https://www.iteye.com/blog/andot-662787</a></li>
-      <li>WebService的demo<a href="https://blog.csdn.net/weixin_42672054/article/details/81708464">https://blog.csdn.net/weixin_42672054/article/details/81708464</a></li>
-      <li>2000年左右出现xml，借此微软等联盟推出了基于XML的SOAP协议，实现各系统之间的通信</li>
-      <li>thrift/webservice等可以生成客户端代码，隐藏了底层通信细节，对象化了数据（否则需要自行解析）</li>
-      <li>thrift、dobbo等方式基于TCP实现，主要是性能方面的考虑吧</li>
-    </ul>
-  </li>
-  <li>hessian / sofa</li>
-</ul>
-
-<h3 id="just-do-springcloud">Just Do SpringCloud</h3>
-<ul>
-  <li>首选 <a href="https://windmt.com/tags/Spring-Cloud/">https://windmt.com/tags/Spring-Cloud/</a></li>
-  <li><a href="https://www.springcloud.cc/">springcloud.cc</a></li>
-  <li><a href="http://springcloud.fun">springcloud.fun</a></li>
-  <li><a href="https://www.zhihu.com/question/283286745/answer/763040709">大话SpringCloud</a></li>
-  <li><a href="https://www.geekdigging.com">https://www.geekdigging.com</a></li>
-</ul>
-
-<h3 id="常见组件">常见组件</h3>
-<ul>
-  <li>服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul、携程apollo
-    <ul>
-      <li><a href="https://www.jianshu.com/p/5c5753d2aeb0">Zookeeper保证的是CP，Eureka保证的是AP</a></li>
-    </ul>
-  </li>
-  <li>客户端负载均衡：Netflix Ribbon (提供云端负载均衡，有多种负载均衡策略可供选择，可配合服务发现和断路器使用。)
-    <ul>
-      <li>客户端负载均衡(Ribbon)服务实例的清单在客户端，客户端进行负载均衡算法分配。(从上面的知识我们已经知道了：客户端可以从Eureka Server中得到一份服务清单，在发送请求时通过负载均衡算法，在多个服务器之间选择一个进行访问)
-Zuul路由的业务，对业务进行了归类，并交给了对应的微服务。</li>
-      <li>服务端负载均衡(Nginx)服务实例的清单在服务端，服务器进行负载均衡算法分配,
-Nginx路由请求的压力，对请求进行平均后，交给了服务器处理。</li>
-      <li><a href="https://www.cnblogs.com/kongxianghai/p/8477781.html">撸一撸Spring Cloud Ribbon的原理-负载均衡策略</a></li>
-      <li>可以使用Ribbon + resetTemplate 或者直接使用 Feign（已经内置Ribbon）来实现客户端侧的负载均衡</li>
-    </ul>
-  </li>
-  <li>熔断器：Netflix Hystrix（Envoy)</li>
-  <li>Spring Cloud Feign：它基于 Netflix Feign 实现，整合了 Spring Cloud Ribbon 与 Spring Cloud Hystrix, 除了整合这两者的强大功能之外，它还提 供了声明式的服务调用(不再通过RestTemplate)。
-  生产环境一般使用restTemplate + ribbon</li>
-  <li>服务网关: Netflix Zuul  、 Spring Cloud GateWay
-    <ul>
-      <li>Zuul相当于一个分布式的大Servlet+Filter入口可进行路由及过滤等</li>
-      <li>Zuul也可以近似的理解为是SOA里的ESB，统一入口调用</li>
-      <li>Zuul也默认集成了Hystrix与Ribbon</li>
-    </ul>
-  </li>
-  <li>分布式配置：Spring Cloud Config (Chef)</li>
-  <li>时间消息总线：Spring Cloud Bus</li>
-  <li>链路追踪：Spring Cloud Sleuth 与 Twitter Zipkin</li>
-  <li>数据流：Spring Cloud Stream (数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。)</li>
-  <li>服务监控：Zabbix、Nagios、Metrics、Spectator</li>
-</ul>
-
-<h3 id="相关组件">相关组件</h3>
-<h4 id="zookeeper">zookeeper</h4>
-<ul>
-  <li>简单理解，zk就是一套简单的文件系统结构，本目录(节点)可以设置value及subNode,
-并且该节点可以设置不同的权限（默认/用户名+密码/ip/秘钥，这4种)</li>
-  <li>zk集群简单理解就是，基于ZAB一致性算法的变种keep alived集群</li>
-  <li>zk集群是CP模型，强一致性的，也就是说数据出现了不一致性（通常是节点挂了），整个服务集群就会Hold住等待数据一致，
-所以，这个缺点导致zk并不是最佳的注册中心，因为服务注册中心AP模型最好，部分服务有问题并不表示所有服务不可用。</li>
-  <li>zookeeper 命令 <a href="https://blog.csdn.net/feixiang2039/article/details/79810102">https://blog.csdn.net/feixiang2039/article/details/79810102</a></li>
-  <li>Curator实现的zk分布式锁 <a href="https://www.sohu.com/a/341386202_315839">https://www.sohu.com/a/341386202_315839</a></li>
-</ul>
-
-<h3 id="基于springcloud的开源项目">基于SpringCloud的开源项目</h3>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -1059,6 +1134,10 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       
       
       <a href="/page11" class="button page-button">11</a>
+      
+      
+      
+      <a href="/page12" class="button page-button">12</a>
       
       
 
@@ -1218,6 +1297,13 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
       
       <a  href="/tag/mq">
       <span class="label label-default">MQ ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/用户">
+      <span class="label label-default">用户 ( 1 )</span>
       </a><br />
 
       

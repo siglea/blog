@@ -54,6 +54,130 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html"> SpringCloud </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Spring</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="关于微服务">关于微服务</h3>
+<ul>
+  <li>SOA(ESB)与微服务
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/30477325">https://zhuanlan.zhihu.com/p/30477325</a></li>
+      <li><a href="https://www.cnblogs.com/guanghe/p/10978349.html">https://www.cnblogs.com/guanghe/p/10978349.html</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA">https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA</a></li>
+    </ul>
+  </li>
+  <li>微服务哪些事
+    <ul>
+      <li><a href="https://windmt.com/2018/04/14/spring-cloud-0-microservices/">https://windmt.com/2018/04/14/spring-cloud-0-microservices/</a></li>
+      <li><a href="https://windmt.com/2018/04/14/spring-cloud-1-services-governance/">https://windmt.com/2018/04/14/spring-cloud-1-services-governance/</a></li>
+    </ul>
+  </li>
+  <li>SpringCloud &amp; Dubbo
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ">https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A">https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A</a></li>
+      <li><a href="http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html">阿里Dubbo与Spring Cloud</a></li>
+    </ul>
+  </li>
+  <li>RPC之thrift/gRPC
+    <ul>
+      <li><a href="https://blog.csdn.net/kesonyk/article/details/50924489">https://blog.csdn.net/kesonyk/article/details/50924489</a></li>
+      <li><a href="https://developer.51cto.com/art/201908/601617.htm">https://developer.51cto.com/art/201908/601617.htm</a></li>
+      <li><a href="https://segmentfault.com/a/1190000011478469">https://segmentfault.com/a/1190000011478469</a></li>
+      <li><a href="https://zhuanlan.zhihu.com/p/136112210">https://zhuanlan.zhihu.com/p/136112210</a></li>
+      <li>RPC与HTTP的关系 <a href="https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg">https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg</a></li>
+      <li>快速理解RPC技术——基本概念、原理和用途 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620</a></li>
+    </ul>
+  </li>
+  <li>WebService某种程度上也是一种RPC
+    <ul>
+      <li>WebService的历史 <a href="https://www.iteye.com/blog/andot-662787">https://www.iteye.com/blog/andot-662787</a></li>
+      <li>WebService的demo<a href="https://blog.csdn.net/weixin_42672054/article/details/81708464">https://blog.csdn.net/weixin_42672054/article/details/81708464</a></li>
+      <li>2000年左右出现xml，借此微软等联盟推出了基于XML的SOAP协议，实现各系统之间的通信</li>
+      <li>thrift/webservice等可以生成客户端代码，隐藏了底层通信细节，对象化了数据（否则需要自行解析）</li>
+      <li>thrift、dobbo等方式基于TCP实现，主要是性能方面的考虑吧</li>
+    </ul>
+  </li>
+  <li>hessian / sofa</li>
+</ul>
+
+<h3 id="just-do-springcloud">Just Do SpringCloud</h3>
+<ul>
+  <li>首选 <a href="https://windmt.com/tags/Spring-Cloud/">https://windmt.com/tags/Spring-Cloud/</a></li>
+  <li><a href="https://www.springcloud.cc/">springcloud.cc</a></li>
+  <li><a href="http://springcloud.fun">springcloud.fun</a></li>
+  <li><a href="https://www.zhihu.com/question/283286745/answer/763040709">大话SpringCloud</a></li>
+  <li><a href="https://www.geekdigging.com">https://www.geekdigging.com</a></li>
+</ul>
+
+<h3 id="常见组件">常见组件</h3>
+<ul>
+  <li>服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul、携程apollo
+    <ul>
+      <li><a href="https://www.jianshu.com/p/5c5753d2aeb0">Zookeeper保证的是CP，Eureka保证的是AP</a></li>
+    </ul>
+  </li>
+  <li>客户端负载均衡：Netflix Ribbon (提供云端负载均衡，有多种负载均衡策略可供选择，可配合服务发现和断路器使用。)
+    <ul>
+      <li>客户端负载均衡(Ribbon)服务实例的清单在客户端，客户端进行负载均衡算法分配。(从上面的知识我们已经知道了：客户端可以从Eureka Server中得到一份服务清单，在发送请求时通过负载均衡算法，在多个服务器之间选择一个进行访问)
+Zuul路由的业务，对业务进行了归类，并交给了对应的微服务。</li>
+      <li>服务端负载均衡(Nginx)服务实例的清单在服务端，服务器进行负载均衡算法分配,
+Nginx路由请求的压力，对请求进行平均后，交给了服务器处理。</li>
+      <li><a href="https://www.cnblogs.com/kongxianghai/p/8477781.html">撸一撸Spring Cloud Ribbon的原理-负载均衡策略</a></li>
+      <li>可以使用Ribbon + resetTemplate 或者直接使用 Feign（已经内置Ribbon）来实现客户端侧的负载均衡</li>
+    </ul>
+  </li>
+  <li>熔断器：Netflix Hystrix（Envoy)</li>
+  <li>Spring Cloud Feign：它基于 Netflix Feign 实现，整合了 Spring Cloud Ribbon 与 Spring Cloud Hystrix, 除了整合这两者的强大功能之外，它还提 供了声明式的服务调用(不再通过RestTemplate)。
+  生产环境一般使用restTemplate + ribbon</li>
+  <li>服务网关: Netflix Zuul  、 Spring Cloud GateWay
+    <ul>
+      <li>Zuul相当于一个分布式的大Servlet+Filter入口可进行路由及过滤等</li>
+      <li>Zuul也可以近似的理解为是SOA里的ESB，统一入口调用</li>
+      <li>Zuul也默认集成了Hystrix与Ribbon</li>
+    </ul>
+  </li>
+  <li>分布式配置：Spring Cloud Config (Chef)</li>
+  <li>时间消息总线：Spring Cloud Bus</li>
+  <li>链路追踪：Spring Cloud Sleuth 与 Twitter Zipkin</li>
+  <li>数据流：Spring Cloud Stream (数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。)</li>
+  <li>服务监控：Zabbix、Nagios、Metrics、Spectator</li>
+</ul>
+
+<h3 id="相关组件">相关组件</h3>
+<h4 id="zookeeper">zookeeper</h4>
+<ul>
+  <li>简单理解，zk就是一套简单的文件系统结构，本目录(节点)可以设置value及subNode,
+并且该节点可以设置不同的权限（默认/用户名+密码/ip/秘钥，这4种)</li>
+  <li>zk集群简单理解就是，基于ZAB一致性算法的变种keep alived集群</li>
+  <li>zk集群是CP模型，强一致性的，也就是说数据出现了不一致性（通常是节点挂了），整个服务集群就会Hold住等待数据一致，
+所以，这个缺点导致zk并不是最佳的注册中心，因为服务注册中心AP模型最好，部分服务有问题并不表示所有服务不可用。</li>
+  <li>zookeeper 命令 <a href="https://blog.csdn.net/feixiang2039/article/details/79810102">https://blog.csdn.net/feixiang2039/article/details/79810102</a></li>
+  <li>Curator实现的zk分布式锁 <a href="https://www.sohu.com/a/341386202_315839">https://www.sohu.com/a/341386202_315839</a></li>
+</ul>
+
+<h3 id="基于springcloud的开源项目">基于SpringCloud的开源项目</h3>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html"> Nginx </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
@@ -680,133 +804,6 @@ Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html">Docker</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 12, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>容器</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="docker原理-">Docker原理 ☆☆☆</h4>
-<ul>
-  <li>cgroups (2006年 linux推出)</li>
-  <li>namespace</li>
-</ul>
-
-<h4 id="docker-hello-world">Docker Hello World!</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run hello-world
-docker run ubuntu:15.10 /bin/echo <span class="s2">"Hello world"</span>
-</code></pre></div></div>
-<h4 id="docker-pull-image">Docker pull Image</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull library/hello-world
-</code></pre></div></div>
-<h4 id="docker-run-nginx">docker run nginx</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">--name</span> my_nginx_v1 <span class="nt">-p</span> 8080:80 <span class="nt">-d</span> nginx:v1
-<span class="c">## --name nginx-test：容器名称。</span>
-<span class="c">## -p 8080:80： 端口进行映射，将本地 8080 端口映射到容器内部的 80 端口。</span>
-<span class="c">## -d nginx： 设置容器在在后台一直运行。</span>
-</code></pre></div></div>
-<p><a href="https://www.runoob.com/docker/docker-install-nginx.html">https://www.runoob.com/docker/docker-install-nginx.html</a></p>
-
-<h4 id="docker-run-springboot">docker run springboot</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-p</span> 8080:8080 <span class="nt">-t</span> springboot/spring-boot-docker
-</code></pre></div></div>
-<p><a href="http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html">http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html</a></p>
-<h4 id="查看运行的容器">查看运行的容器</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker ps
-docker ps <span class="nt">-a</span>
-<span class="c"># 输出详情介绍：</span>
-<span class="c">## CONTAINER ID: 容器 ID。</span>
-<span class="c">## IMAGE: 使用的镜像。</span>
-<span class="c">## COMMAND: 启动容器时运行的命令。</span>
-<span class="c">## CREATED: 容器的创建时间。</span>
-
-<span class="c">## STATUS: 容器状态。</span>
-<span class="c">## 状态有7种：</span>
-<span class="c">### created（已创建）</span>
-<span class="c">### restarting（重启中）</span>
-<span class="c">### running（运行中）</span>
-<span class="c">### removing（迁移中）</span>
-<span class="c">### paused（暂停）</span>
-<span class="c">### exited（停止）</span>
-<span class="c">### dead（死亡）</span>
-
-<span class="c">## PORTS: 容器的端口信息和使用的连接类型（tcp\udp）。</span>
-<span class="c">## NAMES: 自动分配的容器名称。</span>
-</code></pre></div></div>
-<h4 id="查看容器内的标准输出日志">查看容器内的标准输出日志</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker logs 2b1b7a428627
-</code></pre></div></div>
-<h4 id="启动重启停止容器">启动/重启/停止容器</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start/restart amazing_cori
-docker stop 2b1b7a428627
-</code></pre></div></div>
-<h4 id="删除容器镜像">删除容器/镜像</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">rm </span>20ca2a70ee13
-docker rmi ec49dbd13cf5
-</code></pre></div></div>
-<h4 id="compose-machine-swarm">Compose Machine Swarm</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-</code></pre></div></div>
-<p><a href="http://www.ityouknow.com/docker/2018/03/22/docker-compose.html">http://www.ityouknow.com/docker/2018/03/22/docker-compose.html</a></p>
-<h4 id="docker中run和start的区别">docker中run和start的区别</h4>
-<ul>
-  <li>docker run 后面指定的是一个镜像</li>
-  <li>而docker start指定的是一个容器</li>
-  <li>docker run是利用镜像生成容器，并启动容器，而docker start是启动一个之前生成过的容器</li>
-</ul>
-
-<h4 id="dockerfile-命令详解">Dockerfile 命令详解</h4>
-<p><a href="http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html">http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html</a></p>
-
-<p><a href="http://www.ityouknow.com/docker.html">http://www.ityouknow.com/docker.html</a></p>
-
-<h4 id="cloud-foundry和-kubernetes-的区别">Cloud Foundry和 Kubernetes 的区别</h4>
-<p><a href="https://blog.csdn.net/qq_30154571/article/details/84955097">https://blog.csdn.net/qq_30154571/article/details/84955097</a></p>
-
-<h4 id="cloud-foundry-与kubernetes-cfk8s结合简史">Cloud Foundry 与Kubernetes: CF/K8s结合简史</h4>
-<p><a href="https://blog.csdn.net/zhanggongsw/article/details/79948420">https://blog.csdn.net/zhanggongsw/article/details/79948420</a></p>
-
-<h4 id="阿里飞天云apsara-stack和openstack">阿里飞天云Apsara Stack和OpenStack</h4>
-<ul>
-  <li><a href="https://blog.csdn.net/liuxiao723846/article/details/82630926">https://blog.csdn.net/liuxiao723846/article/details/82630926</a></li>
-  <li><a href="https://www.csdn.net/gather_21/MtTaYg1sNTY5Mi1ibG9n.html">https://www.csdn.net/gather_21/MtTaYg1sNTY5Mi1ibG9n.html</a></li>
-</ul>
-
-<h4 id="kubernetes-vs-openstack">Kubernetes vs OpenStack</h4>
-<ul>
-  <li><a href="https://blog.csdn.net/luanpeng825485697/article/details/86706131">https://blog.csdn.net/luanpeng825485697/article/details/86706131</a></li>
-  <li><a href="https://blog.csdn.net/dualvencsdn/article/details/79207281">https://blog.csdn.net/dualvencsdn/article/details/79207281</a></li>
-  <li><a href="https://www.kubernetes.org.cn/2121.html">https://www.kubernetes.org.cn/2121.html</a></li>
-  <li><a href="https://www.cnblogs.com/goldsunshine/p/9872142.html">https://www.cnblogs.com/goldsunshine/p/9872142.html</a></li>
-</ul>
-
-<h4 id="google-kubernetes--docker-swarm--mesos-marathon">Google Kubernetes &amp; Docker Swarm &amp; Mesos Marathon</h4>
-<ul>
-  <li><a href="https://www.kubernetes.org.cn/757.html">https://www.kubernetes.org.cn/757.html</a></li>
-  <li><a href="https://www.zhihu.com/question/55391506">https://www.zhihu.com/question/55391506</a></li>
-  <li><a href="https://www.cnblogs.com/wzj4858/p/7910883.html">https://www.cnblogs.com/wzj4858/p/7910883.html</a></li>
-  <li><a href="http://dockone.io/article/823">http://dockone.io/article/823</a></li>
-  <li><a href="https://zhuanlan.zhihu.com/p/28301108">https://zhuanlan.zhihu.com/p/28301108</a></li>
-</ul>
-
-<h4 id="国内外paas服务一览">国内外PaaS服务一览</h4>
-<p><a href="https://www.jianshu.com/p/a4b9be650fa4">https://www.jianshu.com/p/a4b9be650fa4</a></p>
-
-<p><a href="https://mp.weixin.qq.com/s/_m_ZV9LdbQQqFbshxIgWrA">https://mp.weixin.qq.com/s/_m_ZV9LdbQQqFbshxIgWrA</a>
-<a href="https://mp.weixin.qq.com/s/u0LRq_NNkCtU3wkdMdYlUA">https://mp.weixin.qq.com/s/u0LRq_NNkCtU3wkdMdYlUA</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -858,6 +855,10 @@ docker rmi ec49dbd13cf5
       
       
       <a href="/page11" class="button page-button">11</a>
+      
+      
+      
+      <a href="/page12" class="button page-button">12</a>
       
       
 
@@ -1017,6 +1018,13 @@ docker rmi ec49dbd13cf5
       
       <a  href="/tag/mq">
       <span class="label label-default">MQ ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/用户">
+      <span class="label label-default">用户 ( 1 )</span>
       </a><br />
 
       
