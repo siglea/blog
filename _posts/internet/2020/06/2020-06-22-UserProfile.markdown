@@ -27,6 +27,13 @@ categories:
     - 偏好属性：兴趣爱好、品牌爱好、产品爱好、网购偏好、支付偏好、价格偏好
     - 潜在需求：
 
+#### 指标体系
+ - 用户属性维度
+ - 用户行为维度
+ - 用户消费维度
+ - 风险控制维度
+ - 社交属性维度
+
 #### 画像之静态标签、动态标签
 - 静态画像：实时性弱、覆盖广、粒度粗
 - 动态画像：
@@ -58,6 +65,12 @@ categories:
 
 #### 用户画像架构图
  <img src="/img/user_profile.jpg" width="600px">
+
+#### 用户画像后台标签
+ <img src="/img/user_profile_admin.jpg" width="600px">
+
+#### 用户业务标签
+ <img src="/img/user_profile_tags.jpg" width="600px">
  
 #### 会员理论模型
 - 会员体系模型：AIPL
@@ -107,3 +120,5 @@ categories:
 - 1号店案例 <https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg>
 - Qunar用户画像构建策略及应用实践 <https://blog.csdn.net/xiaoshunzi111/article/details/53170658>
 - 携程 | 手把手教你用大数据打造用户画像 <https://blog.csdn.net/chenjunji123456/article/details/54966633>
+- 《用户画像：方法论与工程化解决方案》<https://www.jianshu.com/p/94dadecc162b>
+- 汽车之家如何构建用户画像 <https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw>
