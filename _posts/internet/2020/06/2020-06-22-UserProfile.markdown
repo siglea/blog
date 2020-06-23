@@ -83,6 +83,7 @@ categories:
     - R(Recency)近度：距某节点最近的一次消费
     - F(Frequency)频度：消费频次
     - M (Monetary)额度：消费金额
+<img src="/img/RFM.jpg" width="600px">
 
 - 会员体系模型：AARRR
     - Acquisition（获取用户）：关注PV、UV、CPC、点击转化率、注册量、注册率、获客成本CAC
