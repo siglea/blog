@@ -54,6 +54,44 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html">算法时间复杂度</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="时间复杂度原则">时间复杂度原则</h4>
+<ul>
+  <li>如果运行时间是常数量级，用常数1表示</li>
+  <li>只保留时间函数中的最高阶项
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 0.5n^2 + 0.5n
+T(n) = O(n^2)
+</code></pre></div>    </div>
+  </li>
+  <li>如果最高阶项存在，则省去最高阶项前面的系数
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 3n
+T(n) = O(n)
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="时间复杂度排序">时间复杂度排序</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>O(1) &lt; O(logN) &lt; O(n) &lt; O(n^2)
+</code></pre></div></div>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Elasticsearch-Summary.html"> Elasticsearch  Summary </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
@@ -490,34 +528,6 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/server-performance.html">服务器性能</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/server-performance.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="单服务器性能评估">单服务器性能评估</h4>
-<p><a href="https://cloud.tencent.com/developer/article/1004754">https://cloud.tencent.com/developer/article/1004754</a></p>
-
-<h4 id="单服务器并发连接评估">单服务器并发连接评估</h4>
-<p><a href="https://www.zhihu.com/question/20831000">https://www.zhihu.com/question/20831000</a>
-<a href="https://www.cnblogs.com/duanxz/p/4464178.html">https://www.cnblogs.com/duanxz/p/4464178.html</a></p>
-
-<h4 id="烦人的代理">烦人的代理</h4>
-<p><a href="https://blog.csdn.net/plychoz/article/details/83147759">https://blog.csdn.net/plychoz/article/details/83147759</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/server-performance.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -746,6 +756,13 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       <a  href="/tag/tob">
       <span class="label label-default">toB ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/方法论">
+      <span class="label label-default">方法论 ( 1 )</span>
       </a><br />
 
       

@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title> Java SPI </title>
-  <meta name="description" content="SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和...">
+  <title>麦肯锡方法</title>
+  <meta name="description" content="专业主义  结构化的思维，清晰的语言，具有责任心同时又敢于发表不同意见的知识精英以及专业化的目标，  这都是会让一个组织及其人员发挥其最大的潜力。">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html">
+  <link rel="canonical" href="http://localhost:4000/%E9%9A%8F%E8%AE%B0/2020/06/25/MckinseyMethodology.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -55,31 +55,91 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline"> Java SPI </h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-05-01T19:25:00+08:00" itemprop="datePublished">May 1, 2020</time></p>
+    <h1 class="post-title" itemprop="name headline">麦肯锡方法</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-06-25T08:38:00+08:00" itemprop="datePublished">Jun 25, 2020</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <p>SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。
-Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。
-在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。</p>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
-    <span class="kd">implements</span> <span class="nc">Iterable</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
-<span class="o">{</span>
+    <h4 id="专业主义">专业主义</h4>
+<ul>
+  <li>结构化的思维，清晰的语言，具有责任心同时又敢于发表不同意见的知识精英以及专业化的目标，
+  这都是会让一个组织及其人员发挥其最大的潜力。</li>
+</ul>
 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
-            <span class="nc">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
-            <span class="k">return</span> <span class="nc">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
+<h4 id="主要方法论">主要方法论</h4>
+<ul>
+  <li>以事实为基础</li>
+  <li>严格的结构化（MESE原则，相互独立完全穷尽）</li>
+  <li>以假设为导向，寻找关键路径。（错误的路径某种程度上会促使你发现正确路径）</li>
+</ul>
 
-<p><a href="https://blog.csdn.net/sweatOtt/article/details/83055191">https://blog.csdn.net/sweatOtt/article/details/83055191</a></p>
+<h4 id="作用力量分析框架">作用力量分析框架</h4>
+<ul>
+  <li>客户的供应商</li>
+  <li>顾客</li>
+  <li>竞争对手</li>
+  <li>可能的替代产品</li>
+</ul>
 
-<p><a href="https://juejin.im/post/5af952fdf265da0b9e652de3">https://juejin.im/post/5af952fdf265da0b9e652de3</a></p>
+<h4 id="重要原则">重要原则</h4>
+<ul>
+  <li>80/20原则</li>
+  <li>电梯测试</li>
+  <li>界定你的前提，这是把你由问题引向解决方案的路线图</li>
+  <li>为你的情况说明”预先布线”以确保成功的秘密</li>
+  <li>为什么问题不会永远是问题？
+    <ul>
+      <li>不要去重新发明轮子，尽可能寻找现有的或类似的解决方案</li>
+      <li>每个客户都是独一无二的，不存在一刀切的解决办法</li>
+      <li>不要让事实去适应你的解决办法</li>
+      <li>确保你的解决办法适合你的客户</li>
+      <li>有时候你必须让解决方案来找你。（收集事实，描述清楚问题，解决方案就会自己找上门来）</li>
+      <li>遇到”不可能解决”的难题怎么办？
+        <ul>
+          <li>重新定义问题</li>
+          <li>锲而不舍实施看似不是最优方案的方案，最终有可能就是最优</li>
+          <li>解决政治问题</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>成功地进行收集信息的谈话的7个要诀
+    <ul>
+      <li>让被访者的上司安排会面</li>
+      <li>两个人一起进行走访</li>
+      <li>倾听，不要指导</li>
+      <li>复述、复述、复述</li>
+      <li>采用旁敲侧击的方式</li>
+      <li>不要问太多</li>
+      <li>采用考伦波的策略。（电梯间提问，此时大家都放松了，可能能得到意想不到的答案）</li>
+    </ul>
+  </li>
+  <li>高效沟通的3个构成要素
+    <ul>
+      <li>简洁、完整、结构</li>
+    </ul>
+  </li>
+  <li>如何应付”讨债鬼”似的团队成员或难以打交道的同事。
+    <ul>
+      <li>清除或转化</li>
+    </ul>
+  </li>
+  <li>如何让整个企业接受你的方案。
+    <ul>
+      <li>让客户参与，并从上到下的沟通实施</li>
+    </ul>
+  </li>
+</ul>
 
-<p><a href="https://www.jianshu.com/p/46b42f7f593c">https://www.jianshu.com/p/46b42f7f593c</a></p>
+<h4 id="如何保持团队士气">如何保持团队士气</h4>
+<ul>
+  <li>把握团队温度</li>
+  <li>掌握稳定的过程</li>
+  <li>让团队明白为什么他们要干正在干的事情</li>
+  <li>以尊重对待你的团队</li>
+  <li>把队友当成人来了解</li>
+  <li>耐心坚持</li>
+</ul>
 
   </div>
 </article>

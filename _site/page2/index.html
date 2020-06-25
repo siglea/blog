@@ -54,6 +54,88 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html">经典算法思想</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>数据结构算法，问题TOP10 <a href="https://mp.weixin.qq.com/s/rqzCvFWira204eJ1HA22yg">https://mp.weixin.qq.com/s/rqzCvFWira204eJ1HA22yg</a></p>
+
+<h4 id="贪心算法">贪心算法</h4>
+<ul>
+  <li>贪心的意思在于在作出选择时，每次都要选择对自身最为有利的结果，保证自身利益的最大化。贪心算法就是利用这种贪心思想而得出一种算法。</li>
+  <li>例：小明手中有 1，5，10，50，100 五种面额的纸币，每种纸币对应张数分别为 5，2，2，3，5 张。若小明需要支付 456 元，则需要多少张纸币？</li>
+  <li>最小生成树 Kruskal算法</li>
+  <li>最小生成树 prim算法</li>
+  <li>分发饼干、跳跃游戏、无重叠区间、摆动序列 <a href="https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw">https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw</a></li>
+  <li>分糖果、无重叠区间 <a href="https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow">https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow</a></li>
+</ul>
+
+<h4 id="分治算法">分治算法</h4>
+<ul>
+  <li>快速排序算法、大整数乘法、残缺棋盘游戏 <a href="https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ">https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ</a></li>
+  <li>汉诺塔、快速排序、归并排序 <a href="https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ">https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ</a></li>
+</ul>
+
+<h4 id="动态规划算法-dynamic-programming">动态规划算法 Dynamic Programming</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F<span class="o">(</span>1<span class="o">)</span> <span class="o">=</span> 1<span class="p">;</span>
+F<span class="o">(</span>2<span class="o">)</span> <span class="o">=</span> 2<span class="p">;</span> 
+F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>n-1<span class="o">)</span>+F<span class="o">(</span>n-2<span class="o">)</span><span class="p">;</span>（n&gt;<span class="o">=</span>3）
+
+F<span class="o">(</span>10<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>9<span class="o">)</span> + F<span class="o">(</span>8<span class="o">)</span> <span class="c">#最优子结构</span>
+F<span class="o">(</span>1<span class="o">)</span> F<span class="o">(</span>2<span class="o">)</span> <span class="c">#边界</span>
+F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<span class="o">(</span>n-1<span class="o">)</span> + F<span class="o">(</span>n-2<span class="o">)</span> <span class="c">#状态转移方程</span>
+</code></pre></div></div>
+<ul>
+  <li>斐波那契 <a href="https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ">https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ</a></li>
+  <li>上台阶与挖黄金 <a href="https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg">https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg</a></li>
+  <li>高楼扔鸡蛋 <a href="https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA">https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA</a></li>
+</ul>
+
+<h4 id="回溯法">回溯法</h4>
+<ul>
+  <li>深度优先遍历 <a href="https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA">https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA</a></li>
+  <li>八皇后问题 <a href="https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA">https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA</a></li>
+  <li>八皇后问题与数独 <a href="https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg">https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg</a></li>
+  <li>A*寻路算法 <a href="https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA">https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA</a></li>
+  <li>多源最短路径，弗洛伊德算法 Floyd-Warshall <a href="https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg">https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg</a></li>
+</ul>
+
+<h4 id="分支定界法">分支定界法</h4>
+<ul>
+  <li>广度优先遍历 <a href="https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ">https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ</a></li>
+</ul>
+
+<h4 id="字符串匹配算法">字符串匹配算法</h4>
+<ul>
+  <li>BF算法，是Brute Force（暴力算法，按位比较 O(m*n)）<a href="https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg">https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg</a></li>
+  <li>RK算法，是Rabin-Karp (计算hash值进行比较 O(n)) <a href="https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g">https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g</a></li>
+  <li>Knuth-Morris-Pratt算法（简称KMP）是最常用的之一 <a href="https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w">https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w</a></li>
+  <li>字符串匹配算法综述:BF、RK、KMP、BM、Sunday <a href="https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA">https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA</a></li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>小灰算法2017 <a href="https://mp.weixin.qq.com/s/4kTtn_gLYQrX7JFlEJdsZg">https://mp.weixin.qq.com/s/4kTtn_gLYQrX7JFlEJdsZg</a></li>
+  <li>小灰算法2018 <a href="https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw">https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw</a></li>
+  <li>小灰算法2019 <a href="https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw">https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw</a></li>
+  <li>小灰算法2020 <a href="https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA">https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA</a></li>
+  <li>二十世纪最伟大的10大算法 <a href="https://blog.csdn.net/v_JULY_v/article/details/6127953">https://blog.csdn.net/v_JULY_v/article/details/6127953</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html">BitMap-BloomFilter</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
@@ -227,107 +309,6 @@ create <span class="nt">-e</span> /node1-temp /node1-content-temp
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html"> 数据结构 </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 31, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="数组">数组</h4>
-<ul>
-  <li>数组可以说是最基本最常见的数据结构。数组一般用来存储相同类型的数据，可通过数组名和下标进行数据的访问和更新。数组中元素的存储是按照先后顺序进行的，同时在内存中也是按照这个顺序进行连续存放。数组相邻元素之间的内存地址的间隔一般就是数组数据类型的大小。</li>
-</ul>
-
-<h4 id="链表">链表</h4>
-<ul>
-  <li>链表相较于数组，除了数据域，还增加了指针域用于构建链式的存储数据。链表中每一个节点都包含此节点的数据和指向下一节点地址的指针。由于是通过指针进行下一个数据元素的查找和访问，使得链表的自由度更高。</li>
-  <li>这表现在对节点进行增加和删除时，只需要对上一节点的指针地址进行修改，而无需变动其它的节点。不过事物皆有两极，指针带来高自由度的同时，自然会牺牲数据查找的效率和多余空间的使用。</li>
-  <li>一般常见的是有头有尾的单链表，对指针域进行反向链接，还可以形成双向链表或者循环链表。</li>
-</ul>
-
-<h4 id="跳表">跳表</h4>
-<ul>
-  <li>链表虽然通过增加指针域提升了自由度，但是却导致数据的查询效率恶化。特别是当链表长度很长的时候，对数据的查询还得从头依次查询，这样的效率会更低。跳表的产生就是为了解决链表过长的问题，通过增加链表的多级索引来加快原始链表的查询效率。这样的方式可以让查询的时间复杂度从O(n)提升至O(logn)。</li>
-  <li>跳表通过增加的多级索引能够实现高效的动态插入和删除，其效率和红黑树和平衡二叉树不相上下。目前redis和levelDB都有用到跳表。</li>
-</ul>
-
-<h4 id="栈">栈</h4>
-<ul>
-  <li>后进先出</li>
-</ul>
-
-<h4 id="队列">队列</h4>
-<ul>
-  <li>先进先出</li>
-</ul>
-
-<h4 id="树">树</h4>
-<ul>
-  <li>别看树好像很高级，其实可看作是链表的高配版。树的实现就是对链表的指针域进行了扩充，增加了多个地址指向子结点。同时将“链表”竖起来，从而凸显了结点之间的层次关系，更便于分析和理解。</li>
-  <li>树遍历
-    <ul>
-      <li>前序遍历：根结点 —&gt; 左子树 —&gt; 右子树</li>
-      <li>中序遍历：左子树—&gt; 根结点 —&gt; 右子树</li>
-      <li>后序遍历：左子树 —&gt; 右子树 —&gt; 根结点</li>
-      <li>层次遍历：仅仅需按层次遍历就可以</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="平衡二叉树">平衡二叉树</h4>
-<ul>
-  <li>平衡二叉树又被称为AVL树，它是一棵二叉排序树，且具有以下性质：它是一棵空树或它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树。</li>
-</ul>
-
-<h4 id="红黑树">红黑树</h4>
-<ul>
-  <li>每个结点要么是红的要么是黑的。</li>
-  <li>根结点是黑的。</li>
-  <li>每个叶结点（叶结点即指树尾端NIL指针或NULL结点）都是黑的。</li>
-  <li>如果一个结点是红的，那么它的两个儿子都是黑的。</li>
-  <li>对于任意结点而言，其到叶结点树尾端NIL指针的每条路径都包含相同数目的黑结点。</li>
-  <li>Map、Set、epoll/select中句柄集</li>
-</ul>
-
-<h4 id="堆">堆</h4>
-<ul>
-  <li>了解完二叉树，再来理解堆就不是什么难事了。堆通常是一个可以被看做一棵树的数组对象。堆的具体实现一般不通过指针域，而是通过构建一个一维数组与二叉树的父子结点进行对应，因此堆总是一颗完全二叉树。</li>
-  <li>堆中某个节点的值总是不大于或不小于其父节点的值。将根节点最大的堆叫做最大堆或大根堆，根节点最小的堆叫做最小堆或小根堆。</li>
-</ul>
-
-<h4 id="散列表-hash">散列表 Hash</h4>
-<ul>
-  <li>通过某种算法确定唯一（有些算法会出现不同的value算出相同的Hash值）</li>
-</ul>
-
-<h4 id="图">图</h4>
-<ul>
-  <li>多维数据存储,实际应用中是通过图这种模式建立索引与关联关系</li>
-  <li>图数据库？
-    <ul>
-      <li>图数据库(Graph database)并非指存储图片的数据库，而是以图这种数据结构存储和查询数据。</li>
-      <li>图形数据库是一种在线数据库管理系统，具有处理图形数据模型的创建，读取，更新和删除（CRUD）操作。</li>
-      <li>与其他数据库不同，关系在图数据库中占首要地位。这意味着应用程序不必使用外键或带外处理（如MapReduce）来推断数据连接。</li>
-      <li>与关系数据库或其他NoSQL数据库相比，图数据库的数据模型也更加简单，更具表现力。</li>
-      <li>图形数据库是为与事务（OLTP）系统一起使用而构建的，并且在设计时考虑了事务完整性和操作可用性。</li>
-    </ul>
-  </li>
-</ul>
-
-<p><a href="https://mp.weixin.qq.com/s/TFG7bWo1BFzjusQ2fEvVSA">https://mp.weixin.qq.com/s/TFG7bWo1BFzjusQ2fEvVSA</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -560,6 +541,13 @@ create <span class="nt">-e</span> /node1-temp /node1-content-temp
       
       <a  href="/tag/tob">
       <span class="label label-default">toB ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/方法论">
+      <span class="label label-default">方法论 ( 1 )</span>
       </a><br />
 
       
