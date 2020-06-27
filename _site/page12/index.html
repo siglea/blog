@@ -54,6 +54,174 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html">Numpy学习笔记</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 26, 2018</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>python</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h2 id="nparray">np.array</h2>
+<ul>
+  <li>construct ndarray from python array</li>
+  <li>ndim: 返回值有几个括弧</li>
+  <li>dtype: 也是object，指定ndarray的型, 必须整个数列都是一个型的
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ndmin</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+<span class="c1"># =&gt; [[ 1.+0.j,  2.+0.j,  3.+0.j]]
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="npdtype">np.dtype</h2>
+<ul>
+  <li><code class="highlighter-rouge">dtype</code>是object而不是常数</li>
+  <li><code class="highlighter-rouge">np.int32</code>是type class，和<code class="highlighter-rouge">np.dtype</code>不同
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="ndarrayshape">ndarray.shape</h2>
+<ul>
+  <li>overwrite shape can reshape the array, reshape后维度不会变， 原来的array会被覆盖</li>
+  <li>reshape会返回新的array
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+<span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="ndarrayndim">ndarray.ndim</h2>
+<ul>
+  <li>返回维度（int）</li>
+</ul>
+
+<h2 id="新建np-array">新建np array</h2>
+<ol>
+  <li>np.empty (default dtype float 64)</li>
+  <li>np.ones (default dtype float 64)</li>
+  <li>np.zeros (default dtype float 64)
+    <ul>
+      <li>shape can be <code class="highlighter-rouge">(1, 2)</code> or <code class="highlighter-rouge">[1, 2]</code></li>
+      <li>如果只指定<code class="highlighter-rouge">int</code>，默认是<code class="highlighter-rouge">int64</code></li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="从既存的array创建">从既存的array创建</h2>
+<ul>
+  <li>原来的array和ndarray一定是两个object
+    <ol>
+      <li>np.asarray (list or tuple)</li>
+    </ol>
+  </li>
+  <li>！⚠️tuple的元素对齐返回值不同
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span> <span class="c1">#返回二元数组，dtype是int
+</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span> <span class="c1">#返回一元数组，dtype是object
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="nparange">np.arange</h2>
+<ul>
+  <li>dtype是int，输入float的时候小数点部分会被切掉</li>
+  <li><code class="highlighter-rouge">endpoint=False</code>会把最后那个数也加进去
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="nplinspace">np.linspace</h2>
+<ul>
+  <li><code class="highlighter-rouge">base</code>是log space的底，default是0（线性）
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># 起点，终点，点数
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="slice">slice</h2>
+<ol>
+  <li>use <code class="highlighter-rouge">slice</code> method
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>[start:stop:step]
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">7</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+</code></pre></div>    </div>
+    <p>二元数组的情况下</p>
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+<span class="n">a</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="c1"># =&gt; True
+</span></code></pre></div>    </div>
+  </li>
+  <li>boolean slicing
+    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+<span class="n">a</span><span class="p">[</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">]</span> <span class="c1"># =&gt; 返回一位数组
+</span></code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="boradcasting">boradcasting</h2>
+<ol>
+  <li>两个ndarray shape相同时，操作是element-wise</li>
+  <li>可以boardcast的情况：形状完全相同，形状(n, 1)和(n, m)的情况</li>
+</ol>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html">Use `raise_error` matcher in Rspec</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 25, 2018</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>Yesterday I came accross a tricky useage of <code class="highlighter-rouge">raise_error</code> matcher in rspec, first I try to use the one line syntax <code class="highlighter-rouge">is_expected.to</code></p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>but I got an eror which stops the test before the test is finished.</p>
+
+<p>It is confusing in the first time, because <code class="highlighter-rouge">is_expected.to</code> is shortcut for <code class="highlighter-rouge">expect(subject)</code>.</p>
+
+<p>Then I found this <a href="https://github.com/rspec/rspec-expectations/issues/805#issuecomment-112239820">excellent explanation</a> in Github isses.</p>
+
+<p>So <code class="highlighter-rouge">expect(subject)</code> is not a block, subject is executed instantly, so rspec will stop before evaluating <code class="highlighter-rouge">raise_error</code> matcher.</p>
+
+<p>In order to make it work, we can make subject itself a block</p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span> <span class="p">}</span>
+
+<span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>But this syntax is creepy, instead it’s better to use</p>
+<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span>
+
+<span class="n">expect</span> <span class="p">{</span> <span class="n">subject</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span>
+</code></pre></div></div>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2018/10/25/serialize-non-activerecord-model-in-rails.html">Serialize Non-ActiveRecord Model Using ActiveModel::Serializer in Rails</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 25, 2018</span>
@@ -315,7 +483,7 @@
       
       
       <a  href="/tag/网络">
-      <span class="label label-default">网络 ( 5 )</span>
+      <span class="label label-default">网络 ( 6 )</span>
       </a><br />
 
       
@@ -371,7 +539,7 @@
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 8 )</span>
+      <span class="label label-default">Java ( 9 )</span>
       </a><br />
 
       
@@ -428,6 +596,13 @@
       
       <a  href="/tag/mq">
       <span class="label label-default">MQ ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/安全">
+      <span class="label label-default">安全 ( 1 )</span>
       </a><br />
 
       

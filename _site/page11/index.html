@@ -54,6 +54,353 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html">Http&https抓包</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>工具</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="下载地址">下载地址</h4>
+<p><a href="https://www.charlesproxy.com/">https://www.charlesproxy.com/</a></p>
+
+<h4 id="破解charles">破解charles</h4>
+<p><a href="https://www.zzzmode.com/mytools/charles/">https://www.zzzmode.com/mytools/charles/</a></p>
+
+<h4 id="https抓取">Https抓取</h4>
+<p><a href="https://www.jianshu.com/p/ec0a38d9a8cf">https://www.jianshu.com/p/ec0a38d9a8cf</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html">TCP/IP十问</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p><a href="https://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ">https://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ</a></p>
+<h4 id="tcp建立连接的本质含义是">TCP建立连接的本质含义是？</h4>
+<ol>
+  <li>确定通信整个链路的是否接通</li>
+  <li>告知彼此的第一个发送字节的初始序列号，建立连接后对每一个发送的字节都需要以初始序列号为原点进行编号。</li>
+  <li>TCP是双工的，所以建立连接后，两端都是互为客户端服务端</li>
+  <li>连接成功建立表示双方维护了一个可用连接的映射关系</li>
+  <li>建连三次握手，断连四次握手（可能是3三次）</li>
+</ol>
+<div align="left">
+<img src="/img/tcp_open_close.jpg" width="400px" />
+<img src="/img/1.png" width="400px" />
+<img src="/img/2.png" width="400px" />
+<img src="/img/3.png" width="400px" />
+</div>
+
+<h4 id="在tcp有keepalive机制的情况下为什么还要有应用层保活">在TCP有keepalive机制的情况下，为什么还要有应用层保活？</h4>
+<ol>
+  <li>TCP KeepAlive机制 的作用 是检测连接的有无（死活），但无法检测连接是否有效。“连接有效”的定义 = 双方具备发送 &amp; 接收消息的能力</li>
+  <li>比如服务器负载过高，从而无法响应任何业务，即连接无效，但是仍然是ESTABLISHED，KeepAlive机制检测不出</li>
+  <li>其他一些复杂的情况比如路由器挂了，网线被拔除，keepalive也是失效的</li>
+  <li>KeepAlive默认的参数设置的时间太长，如果频次过快放到服务端检测，服务端压力太大</li>
+  <li>KeepAlive 机制只是操作系统底层的一个被动机制，不应该被上层应用层使用，当系统关闭一个由KeepAlive 机制检查出来的死连接时，是不会主动通知上层应用的，只能通过调用相应IO操作的返回值中发现</li>
+</ol>
+<p><a href="https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA">https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA</a></p>
+
+<h4 id="sync-flooding-攻击">SYNC Flooding 攻击</h4>
+<ul>
+  <li><a href="https://blog.csdn.net/bigtree_3721/article/details/77619877">https://blog.csdn.net/bigtree_3721/article/details/77619877</a></li>
+</ul>
+
+<h4 id="应用层编程时socket写入成功的含义返回值有意义吗">应用层编程时socket写入成功的含义？返回值有意义吗？</h4>
+<ol>
+  <li>send/write只是表示把数据写入socket缓冲区，之后操作系统会遵循TCP协议规范进行发送，发送实际上没有失败状态而是收不到Ack，收不到Ack会触发重传。如果该连接有各种错误（诸如缓冲区满了、连接状态不对），在send/write时
+就会直接返回错误了，只要能写入成功，操作系统会按照缓冲区的先后顺序把数据发送出去。进入缓冲区的数据，如果重传多次仍然失败，会强制断连，之后重新建连之后会继续发送缓冲区的数据。</li>
+  <li>如果缓冲区已满（发送窗口为0）再次调用send发送数据时，若socket为阻塞的，send会一直阻塞到发送缓冲区中有空闲空间；若socket为非阻塞（切记不是异步），则会直接返回-1，并将errno设置为EAGAIN。</li>
+  <li>理论上连接建立之后，拿到合法seq，就可以一直传输数据直到有明确错误或者一直收不到Ack</li>
+  <li>I/O缓冲区在每个TCP套接字中单独存在；I/O缓冲区在创建套接字时自动生成；即使关闭套接字也会继续传送输出缓冲区中遗留的数据；关闭套接字将丢失输入缓冲区中的数据。</li>
+</ol>
+
+<h4 id="mfc-绑定窗口消息还是iocp">MFC 绑定窗口消息？还是IOCP????</h4>
+<ul>
+  <li>常见错误状态 <a href="https://blog.csdn.net/allens_zhou/article/details/47400833">https://blog.csdn.net/allens_zhou/article/details/47400833</a></li>
+</ul>
+
+<h4 id="seqack是序号要区别于控制位acksyn">Seq、Ack是序号要区别于控制位ACK、SYN</h4>
+<ol>
+  <li>两端分别产生Seq，Ack=Seq+1 ，Sequence Number（缩写为ISN：Inital Sequence Number）</li>
+  <li>解决乱序、重传、丢包等问题都依赖于Seq</li>
+  <li>ISN会和一个假的时钟绑在一起，这个时钟会在每4微秒对ISN做加一操作，直到超过2^32，又从0开始</li>
+  <li>在建立连接初始化Seq时，控制位SYN=1，否则都为0</li>
+  <li>控制位ACK=1，该数据包中的Ack才有用</li>
+  <li>重新建立连接之后seq都是要重新随机生成，因此收到上次残留的数据包会被忽略掉，重新建立连接之后缓存区中的数据应该也会清除</li>
+</ol>
+
+<h4 id="tcp状态详解">TCP状态详解</h4>
+<ul>
+  <li>LISTEN</li>
+  <li>SYN-SEND</li>
+  <li>SYN-REVEIVED</li>
+  <li>ESTABLISHED</li>
+  <li>FIN-WAIT-1</li>
+  <li>FIN-WAIT-2</li>
+  <li>CLOSING/CLOSE-WAIT</li>
+  <li>LAST-ACK</li>
+  <li>TIME_WAIT</li>
+  <li>CLOSED</li>
+</ul>
+
+<h4 id="大量time_wait解决办法">大量TIME_WAIT解决办法</h4>
+<ul>
+  <li><a href="http://coolnull.com/3605.html">http://coolnull.com/3605.html</a></li>
+  <li><a href="http://www.52im.net/thread-1007-1-1.html">http://www.52im.net/thread-1007-1-1.html</a></li>
+</ul>
+
+<h4 id="tcp重传机制超时重传错误重传">TCP重传机制（超时重传、错误重传）</h4>
+<ol>
+  <li><a href="https://coolshell.cn/articles/11564.html">https://coolshell.cn/articles/11564.html</a></li>
+  <li>经典重传
+根据超时时间重传(只传丢失的包或者丢失的包之后的全部重传)
+在定时器的Timeout内收不到ack，会按照1、2、4….64秒，逐渐延迟重传</li>
+  <li>快速重传Fast Retransmit
+接收方只ack连续的seq，比如1成功了，2丢了，收到了3、4、5，仍然ack=1+1，
+发送方连续收到3个相同的ack即可开始重传，但是还不能解决重传哪些包的问题。</li>
+  <li>Selective Acknowledgment (SACK) optional
+在快速重传的基础上，接收方在正常ack基础上，追加SACK（收到的不连续包的seq段），
+发送方是否重传哪个包，还是要依赖该包本身对应的ack，不能依赖SACK</li>
+  <li>Duplicate SACK又称D-SACK optional
+使用D-SACK来告诉发送方有哪些数据被重复接收了；可以让发送方知道，是发出去的包丢了，还是回来的ACK包丢了。</li>
+</ol>
+
+<h4 id="tcp-rttround-trip-time-----retransmission-timeout超时时间判断机制">TCP-RTT（Round Trip Time  -  Retransmission TimeOut）超时时间判断机制</h4>
+<ol>
+  <li>经典采样算法，最近几次RTT，平滑计算加权平均</li>
+  <li>Karn / Partridge 算法，忽略掉重传的RTT，只取正常的RTT，遇到重传RTO翻倍</li>
+  <li>Jacobson / Karels 算法，最新RTT与平滑过的RTT按照某种规则取值(目前使用的算法)
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SRTT <span class="o">=</span> SRTT + α <span class="o">(</span>RTT – SRTT<span class="o">)</span>  —— 计算平滑RTT
+DevRTT <span class="o">=</span> <span class="o">(</span>1-β<span class="o">)</span><span class="k">*</span>DevRTT + β<span class="k">*</span><span class="o">(</span>|RTT-SRTT|<span class="o">)</span> ——计算平滑RTT和真实的差距（加权移动平均）
+<span class="nv">RTO</span><span class="o">=</span> µ <span class="k">*</span> SRTT + ∂ <span class="k">*</span>DevRTT —— 神一样的公式
+（其中：在Linux下，α <span class="o">=</span> 0.125，β <span class="o">=</span> 0.25， μ <span class="o">=</span> 1，∂ <span class="o">=</span> 4 ——这就是算法中的“调得一手好参数”，nobody knows why, it just works…） 最后的这个算法在被用在今天的TCP协议中（Linux的源代码在：tcp_rtt_estimator）。
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h4 id="tcp限流控制流控拥塞处理慢热启动算法拥塞避免算法快速恢复算法">TCP限流控制、流控、拥塞处理、慢热启动算法、拥塞避免算法、快速恢复算法</h4>
+<ol>
+  <li>滑动窗口，根据双方发送和接受数据的快慢，计算出一个“窗口”，窗口为0就不传输数据</li>
+  <li>如果窗口为0了，发送最多3次Zero Window Probe缩写为ZWP包，
+查询接受方的window size，如果3次都为0，就RST连接</li>
+  <li>Silly Window Syndrome翻译成中文就是“糊涂窗口综合症”。正如你上面看到的一样，如果我们的接收方太忙了，来不及取走Receive Windows里的数据，那么，就会导致发送方越来越小。到最后，如果接收方腾出几个字节并告诉发送方现在有几个字节的window，而我们的发送方会义无反顾地发送这几个字节。
+为解决这种情况，如果是接受端的问题，窗口缩减为0，中断连接
+如果是发送端的问题，采用Nagle算法，累计够数据再发送（会产生粘包，需要应用层解包处理）</li>
+  <li>拥塞处理Congestion Handling
+慢启动，逐渐加速，预警拥堵主动减速，拥塞发生快速恢复</li>
+  <li>慢启动发送，根据回复ack的快慢调节时间窗口</li>
+</ol>
+<p><a href="http://www.52im.net/thread-515-1-1.html">http://www.52im.net/thread-515-1-1.html</a></p>
+
+<h4 id="数据包一览与tcp-udpip包的最大长度">数据包一览与TCP 、UDP、IP包的最大长度</h4>
+<ul>
+  <li>对于UDP协议来说，整个包的最大长度为65535，其中包头长度是65535-20=65515；</li>
+  <li>对于TCP协议来说，整个包的最大长度是由最大传输大小（MSS，Maxitum Segment Size）决定，MSS就是TCP数据包每次能够传
+输的最大数据分段。为了达到最佳的传输效能TCP协议在建立连接的时候通常要协商双方的MSS值，这个值TCP协议在实现的时候往往用MTU值代替（需
+要减去IP数据包包头的大小20Bytes和TCP数据段的包头20Bytes）所以往往MSS为1460。通讯双方会根据双方提供的MSS值得最小值
+确定为这次连接的最大MSS值。</li>
+  <li>IP层：对于IP协议来说，IP包的大小由MTU决定（IP数据包长度就是MTU-28（包头长度）。 MTU值越大，封包就越大，理论上可增加传送速率，但
+MTU值又不能设得太大，因为封包太大，传送时出现错误的机会大增。一般默认的设置，PPPoE连接的最高MTU值是1492, 而以太网
+（Ethernet）的最高MTU值则是1500,而在Internet上，默认的MTU大小是576字节</li>
+  <li><a href="https://www.cnblogs.com/jiangzhaowei/p/9273854.html">https://www.cnblogs.com/jiangzhaowei/p/9273854.html</a></li>
+  <li><a href="https://cloud.tencent.com/developer/article/1021196">https://cloud.tencent.com/developer/article/1021196</a></li>
+  <li><a href="http://www.ruanyifeng.com/blog/2017/06/tcp-protocol.html">http://www.ruanyifeng.com/blog/2017/06/tcp-protocol.html</a></li>
+  <li><a href="http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html">http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html</a></li>
+</ul>
+<div align="left">
+<img src="/img/4.jpg" width="400px" />
+<img src="/img/5.png" width="400px" />
+</div>
+
+<h4 id="控制位标志符详解">控制位标志符详解</h4>
+<div align="left">
+<img src="/img/6.png" width="400px" />
+</div>
+<ul>
+  <li>控制位：这六位有很重要的作用，TCP的连接、传输和断开都受这六个控制位的指挥。各位含义如下：
+    <ol>
+      <li>URG：紧急指针有效位。</li>
+      <li>ACK：只有当ACK=1时，确认序列号字段才有效（除了SYS=0时，ACK必须=1）；当ACK=0时，确认号字段无效。</li>
+      <li>PSH：标志位为1时，要求接受方尽快将数据段送达应用层。</li>
+      <li>RST：当RST值为1时，通知重新建立TCP连接。</li>
+      <li>SYN：同步序号位，TCP需要建立连接时将这个值设为1。</li>
+      <li>FIN：发送端完成发送任务，当TCP完成数据传输需要断开连接时，提出断开连接一方将这个值设为1。</li>
+    </ol>
+  </li>
+  <li><a href="https://blog.csdn.net/weixin_44907813/article/details/90444151">https://blog.csdn.net/weixin_44907813/article/details/90444151</a></li>
+  <li><a href="https://blog.csdn.net/summy_J/article/details/74849675">https://blog.csdn.net/summy_J/article/details/74849675</a></li>
+</ul>
+
+<h4 id="认证登录与安全">认证登录与安全</h4>
+<ul>
+  <li>TLS  Transport Layer Security</li>
+  <li>SSL  Secure Sockets Layer 安全套接层</li>
+  <li>图解SSL/TLS协议
+    <ol>
+      <li><a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html">http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html</a></li>
+      <li><a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html</a></li>
+      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=970&amp;highlight=%B0%B2%C8%AB">http://www.52im.net/forum.php?mod=viewthread&amp;tid=970&amp;highlight=%B0%B2%C8%AB</a></li>
+      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=310&amp;highlight=%B0%B2%C8%AB">http://www.52im.net/forum.php?mod=viewthread&amp;tid=310&amp;highlight=%B0%B2%C8%AB</a></li>
+      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=427&amp;highlight=%B0%B2%C8%AB">http://www.52im.net/forum.php?mod=viewthread&amp;tid=427&amp;highlight=%B0%B2%C8%AB</a></li>
+      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=327&amp;highlight=ssl">http://www.52im.net/forum.php?mod=viewthread&amp;tid=327&amp;highlight=ssl</a></li>
+      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=426">http://www.52im.net/forum.php?mod=viewthread&amp;tid=426</a></li>
+    </ol>
+  </li>
+  <li>建立连接，通过自定义的鉴权协议，传输token或者公钥，实现身份登录认证
+<a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2106&amp;highlight=%C8%CF%D6%A4">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2106&amp;highlight=%C8%CF%D6%A4</a></li>
+</ul>
+
+<h4 id="单台服务器并发tcp连接数到底可以有多少-">单台服务器并发TCP连接数到底可以有多少 ？</h4>
+<ul>
+  <li>只要资源够用，理论可以支持无限。</li>
+  <li>操作系统65535个端口限制，以及进程能打开的1024个文件描述符的限制(可修改)，其实并没有标志唯一链接</li>
+  <li><a href="https://mp.weixin.qq.com/s/OJKWVHgbJGPwCklMRE38DA">https://mp.weixin.qq.com/s/OJKWVHgbJGPwCklMRE38DA</a></li>
+  <li>C10K到C10M <a href="http://www.52im.net/thread-561-1-1.html">http://www.52im.net/thread-561-1-1.html</a></li>
+  <li>C10K问题本质上是操作系统的问题。对于Web1.0/2.0时代的操作系统而言， 传统的同步阻塞I/O模型都是一样的，处理的方式都是requests per second，并发10K和100的区别关键在于CPU。创建的进程线程多了，数据拷贝频繁（缓存I/O、内核将数据拷贝到用户进程空间、阻塞）， 进程/线程上下文切换消耗大， 导致操作系统崩溃，这就是C10K问题的本质！
+可见，解决C10K问题的关键就是尽可能减少这些CPU等核心计算资源消耗，从而榨干单台服务器的性能，突破C10K问题所描述的瓶颈。</li>
+  <li>Epoll就成为C10K killer、高并发、高性能、异步非阻塞这些技术的代名词了。FreeBSD推出了kqueue，Linux推出了epoll，Windows推出了IOCP，Solaris推出了/dev/poll。这些操作系统提供的功能就是为了解决C10K问题。epoll技术的编程模型就是异步非阻塞回调，也可以叫做Reactor，事件驱动，事件轮循（EventLoop）。Nginx，libevent，node.js这些就是Epoll时代的产物。</li>
+  <li>为什么QQ用的是UDP协议而不是TCP协议？也是因为早期TCP维护连接成本高，服务器贵死，就采用了UDP+应用层保活心跳之类的综合方案。</li>
+</ul>
+
+<h4 id="natp2p打洞">NAT、P2P（打洞）</h4>
+<ul>
+  <li>NAT（Network Address Translator），主要是IP地址的绑定（内部与公网）</li>
+  <li>NAPT（Network Address/Port Translator），主要是IP与端口共同绑定（内部与公网）</li>
+  <li>实现P2P必须基于NAT，而NAT需要软硬件设备支持</li>
+  <li>打洞原理是通过中间服务器S”伪装”连接，获取到P1与P2的公网IP+端口组合，然后P1与P2分别伪装S与彼此建立连接</li>
+  <li>打洞原理及TCP/UDP打洞流程<a href="https://www.cnblogs.com/GO-NO-1/p/7241556.html">https://www.cnblogs.com/GO-NO-1/p/7241556.html</a></li>
+  <li><a href="https://www.cnblogs.com/mq0036/p/4644776.html">https://www.cnblogs.com/mq0036/p/4644776.html</a></li>
+</ul>
+
+<h4 id="tcp-服务器集群搭建">tcp 服务器集群搭建</h4>
+<ul>
+  <li>【阿里】基于阿里TableStore Timeline 实现的IM</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/muS68_vtXTrIGd1JNmS50A">https://mp.weixin.qq.com/s/muS68_vtXTrIGd1JNmS50A</a></p>
+<ul>
+  <li>如何造一个“钉钉”？谈谈消息系统架构的实现</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/5-7qCF4P15PfEv3d-PylCw">https://mp.weixin.qq.com/s/5-7qCF4P15PfEv3d-PylCw</a>
+<a href="https://github.com/aliyun/tablestore-examples/tree/master/demos/ImChart">https://github.com/aliyun/tablestore-examples/tree/master/demos/ImChart</a></p>
+<ul>
+  <li>高并发IM系统架构优化实践</li>
+</ul>
+<p><a href="https://yq.aliyun.com/articles/66461?spm=a2c4e.11153940.0.0.7b2d55b2ztsBXG">https://yq.aliyun.com/articles/66461?spm=a2c4e.11153940.0.0.7b2d55b2ztsBXG</a></p>
+<ul>
+  <li>如何打造千万级Feed流系统</li>
+</ul>
+<p><a href="https://yq.aliyun.com/articles/224132?spm=a2c4e.11153940.0.0.7b2d55b2bjKqT9">https://yq.aliyun.com/articles/224132?spm=a2c4e.11153940.0.0.7b2d55b2bjKqT9</a></p>
+<ul>
+  <li>TableStore Timeline：轻松构建千万级IM和Feed流系统</li>
+</ul>
+<p><a href="https://yq.aliyun.com/articles/319138">https://yq.aliyun.com/articles/319138</a></p>
+<ul>
+  <li>亿级消息系统的核心存储：Tablestore发布Timeline 2.0模型</li>
+</ul>
+<p><a href="https://www.jianshu.com/p/cc61a80286cb">https://www.jianshu.com/p/cc61a80286cb</a></p>
+<ul>
+  <li>表格存储Tablestore权威指南</li>
+</ul>
+<p><a href="https://blog.csdn.net/cpongo1/article/details/89533133">https://blog.csdn.net/cpongo1/article/details/89533133</a></p>
+
+<h4 id="常用协议">常用协议</h4>
+<ul>
+  <li>MQTT（Message Queuing Telemetry Transport，消息队列遥测传输）是IBM开发的一个即时通讯协议，有可能成为物联网的重要组成部分。</li>
+  <li>XMPP</li>
+  <li>JSON</li>
+  <li>Protobuf 序列化后所生成的二进制消息非常紧凑，这得益于 Protobuf 采用的非常巧妙的 Encoding 方法。
+考察消息结构之前，让我首先要介绍一个叫做 Varint 的术语。Varint 是一种紧凑的表示数字的方法。它用一个或多个字节来表示一个数字，值越小的数字使用越少的字节数。这能减少用来表示数字的字节数。</li>
+</ul>
+
+<h4 id="其他">其他</h4>
+<ul>
+  <li>MSL：Maximum Segment Lifetime</li>
+  <li>MSS：Maximum Segment Size</li>
+  <li>MTU:  Maximum Transmission Unit</li>
+  <li>TCB：Transmission Control Block</li>
+  <li>
+    <p>TTL：Time To Live</p>
+  </li>
+  <li>相关协议之TCP与UDP</li>
+  <li><a href="http://www.52im.net/thread-580-1-1.html">http://www.52im.net/thread-580-1-1.html</a></li>
+  <li><a href="http://www.52im.net/thread-1160-1-1.html">http://www.52im.net/thread-1160-1-1.html</a></li>
+  <li>
+    <p><a href="http://www.52im.net/thread-279-1-1.html">http://www.52im.net/thread-279-1-1.html</a></p>
+  </li>
+  <li>相关协议之ICMP
+ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP）
+完全理解icmp协议</li>
+</ul>
+<p><a href="https://www.cnblogs.com/iiiiher/p/8513748.html">https://www.cnblogs.com/iiiiher/p/8513748.html</a></p>
+
+<ul>
+  <li>相关协议之Ping/Traceroute</li>
+</ul>
+<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=157&amp;highlight=ping">http://www.52im.net/forum.php?mod=viewthread&amp;tid=157&amp;highlight=ping</a>
+<a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1973&amp;highlight=ping">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1973&amp;highlight=ping</a></p>
+
+<ul>
+  <li>相关协议之DHCP</li>
+</ul>
+<p><a href="http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html">http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html</a></p>
+
+<ul>
+  <li>查看TCP握手耗时 handshake: 0.022, SSL握手耗时 handshake: 0.064
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-w</span> <span class="s2">"TCP handshake: %{time_connect}, SSL handshake: %{time_appconnect}</span><span class="se">\n</span><span class="s2">"</span> <span class="nt">-so</span> /dev/null https://www.alipay.com
+</code></pre></div>    </div>
+  </li>
+  <li>HTTPS的七个误解</li>
+</ul>
+<p><a href="http://www.ruanyifeng.com/blog/2011/02/seven_myths_about_https.html">http://www.ruanyifeng.com/blog/2011/02/seven_myths_about_https.html</a></p>
+
+<ul>
+  <li>RSA算法原理</li>
+</ul>
+<p><a href="http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html">http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html</a></p>
+
+<ul>
+  <li>Http各个版本介绍</li>
+</ul>
+<p><a href="http://www.ruanyifeng.com/blog/2016/08/http.html">http://www.ruanyifeng.com/blog/2016/08/http.html</a></p>
+
+<h5 id="参考资料">参考资料</h5>
+
+<p><a href="http://www.52im.net/">即时通讯网</a></p>
+
+<p><a href="https://java-mzd.iteye.com/blog/1007577">TCP-IP的20问</a></p>
+
+<p><a href="https://www.jianshu.com/p/16c8c9e09feb">长连接及心跳保活原理简介</a></p>
+
+<p><a href="https://www.cnblogs.com/imstudy/p/5846363.html">为什么说基于TCP的移动端IM仍然需要心跳保活？</a></p>
+
+<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=195&amp;ctid=10">微信对网络影响的技术试验及分析（论文全文）</a></p>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html">Welcome to Jekyll!</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 14, 2019</span>
@@ -225,174 +572,6 @@
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html">Numpy学习笔记</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 26, 2018</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>python</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h2 id="nparray">np.array</h2>
-<ul>
-  <li>construct ndarray from python array</li>
-  <li>ndim: 返回值有几个括弧</li>
-  <li>dtype: 也是object，指定ndarray的型, 必须整个数列都是一个型的
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ndmin</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
-<span class="c1"># =&gt; [[ 1.+0.j,  2.+0.j,  3.+0.j]]
-</span></code></pre></div>    </div>
-  </li>
-</ul>
-
-<h2 id="npdtype">np.dtype</h2>
-<ul>
-  <li><code class="highlighter-rouge">dtype</code>是object而不是常数</li>
-  <li><code class="highlighter-rouge">np.int32</code>是type class，和<code class="highlighter-rouge">np.dtype</code>不同
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h2 id="ndarrayshape">ndarray.shape</h2>
-<ul>
-  <li>overwrite shape can reshape the array, reshape后维度不会变， 原来的array会被覆盖</li>
-  <li>reshape会返回新的array
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
-<span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h2 id="ndarrayndim">ndarray.ndim</h2>
-<ul>
-  <li>返回维度（int）</li>
-</ul>
-
-<h2 id="新建np-array">新建np array</h2>
-<ol>
-  <li>np.empty (default dtype float 64)</li>
-  <li>np.ones (default dtype float 64)</li>
-  <li>np.zeros (default dtype float 64)
-    <ul>
-      <li>shape can be <code class="highlighter-rouge">(1, 2)</code> or <code class="highlighter-rouge">[1, 2]</code></li>
-      <li>如果只指定<code class="highlighter-rouge">int</code>，默认是<code class="highlighter-rouge">int64</code></li>
-    </ul>
-  </li>
-</ol>
-
-<h2 id="从既存的array创建">从既存的array创建</h2>
-<ul>
-  <li>原来的array和ndarray一定是两个object
-    <ol>
-      <li>np.asarray (list or tuple)</li>
-    </ol>
-  </li>
-  <li>！⚠️tuple的元素对齐返回值不同
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span> <span class="c1">#返回二元数组，dtype是int
-</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span> <span class="c1">#返回一元数组，dtype是object
-</span></code></pre></div>    </div>
-  </li>
-</ul>
-
-<h2 id="nparange">np.arange</h2>
-<ul>
-  <li>dtype是int，输入float的时候小数点部分会被切掉</li>
-  <li><code class="highlighter-rouge">endpoint=False</code>会把最后那个数也加进去
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h2 id="nplinspace">np.linspace</h2>
-<ul>
-  <li><code class="highlighter-rouge">base</code>是log space的底，default是0（线性）
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># 起点，终点，点数
-</span></code></pre></div>    </div>
-  </li>
-</ul>
-
-<h2 id="slice">slice</h2>
-<ol>
-  <li>use <code class="highlighter-rouge">slice</code> method
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">s</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-</code></pre></div>    </div>
-  </li>
-  <li>[start:stop:step]
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">7</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
-</code></pre></div>    </div>
-    <p>二元数组的情况下</p>
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
-<span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
-<span class="n">a</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="c1"># =&gt; True
-</span></code></pre></div>    </div>
-  </li>
-  <li>boolean slicing
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
-<span class="n">a</span><span class="p">[</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">]</span> <span class="c1"># =&gt; 返回一位数组
-</span></code></pre></div>    </div>
-  </li>
-</ol>
-
-<h2 id="boradcasting">boradcasting</h2>
-<ol>
-  <li>两个ndarray shape相同时，操作是element-wise</li>
-  <li>可以boardcast的情况：形状完全相同，形状(n, 1)和(n, m)的情况</li>
-</ol>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html">Use `raise_error` matcher in Rspec</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 25, 2018</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>Yesterday I came accross a tricky useage of <code class="highlighter-rouge">raise_error</code> matcher in rspec, first I try to use the one line syntax <code class="highlighter-rouge">is_expected.to</code></p>
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
-</code></pre></div></div>
-
-<p>but I got an eror which stops the test before the test is finished.</p>
-
-<p>It is confusing in the first time, because <code class="highlighter-rouge">is_expected.to</code> is shortcut for <code class="highlighter-rouge">expect(subject)</code>.</p>
-
-<p>Then I found this <a href="https://github.com/rspec/rspec-expectations/issues/805#issuecomment-112239820">excellent explanation</a> in Github isses.</p>
-
-<p>So <code class="highlighter-rouge">expect(subject)</code> is not a block, subject is executed instantly, so rspec will stop before evaluating <code class="highlighter-rouge">raise_error</code> matcher.</p>
-
-<p>In order to make it work, we can make subject itself a block</p>
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span> <span class="p">}</span>
-
-<span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
-</code></pre></div></div>
-
-<p>But this syntax is creepy, instead it’s better to use</p>
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span>
-
-<span class="n">expect</span> <span class="p">{</span> <span class="n">subject</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span>
-</code></pre></div></div>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -494,7 +673,7 @@
       
       
       <a  href="/tag/网络">
-      <span class="label label-default">网络 ( 5 )</span>
+      <span class="label label-default">网络 ( 6 )</span>
       </a><br />
 
       
@@ -550,7 +729,7 @@
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 8 )</span>
+      <span class="label label-default">Java ( 9 )</span>
       </a><br />
 
       
@@ -607,6 +786,13 @@
       
       <a  href="/tag/mq">
       <span class="label label-default">MQ ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/安全">
+      <span class="label label-default">安全 ( 1 )</span>
       </a><br />
 
       
