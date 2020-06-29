@@ -54,6 +54,124 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html"> Dubbo </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="dubbo">Dubbo</h3>
+<ul>
+  <li>官网 <a href="http://dubbo.apache.org/">http://dubbo.apache.org/</a></li>
+  <li>start <a href="http://start.dubbo.io/">http://start.dubbo.io/</a></li>
+  <li>Dubbo实践 <a href="https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/">https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/</a></li>
+  <li>通俗易懂的 Dubbo 教程 <a href="https://blog.csdn.net/Geffin/category_9931110.html">https://blog.csdn.net/Geffin/category_9931110.html</a></li>
+  <li>Java RMI &amp; Dubbo <a href="http://dubbo.apache.org/zh-cn/blog/dubbo-101.html">http://dubbo.apache.org/zh-cn/blog/dubbo-101.html</a>
+    <h3 id="dubbo负载均衡">Dubbo负载均衡</h3>
+  </li>
+</ul>
+<p><a href="http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html">http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html</a></p>
+<h4 id="dubbo-内置了四种负载均衡策略分别如下">Dubbo 内置了四种负载均衡策略，分别如下：</h4>
+<ul>
+  <li>RandomLoadBalance：随机负载均衡</li>
+  <li>RoundRobinLoadBalance：轮询负载均衡</li>
+  <li>LeastActiveLoadBalance：最少活跃调用数负载均衡</li>
+  <li>ConsistentHashLoadBalance：一致性哈希负载均衡</li>
+</ul>
+
+<h4 id="随机负载均衡">随机负载均衡</h4>
+<p>随机负载均衡是 Dubbo 默认的负载均衡策略，顾名思义，就是从多个服务提供者中随机选择一个。
+需要注意的是，Dubbo 的随机负载均衡并非是完全的随机，它有一个权重的概念，会按照权重来设置随机概率，举个例子，我们现在有两个服务提供者，一个的权重是100，另一个的权重是300，那么前者被分配的概率就为 25%，后者被分配的概率为 75%。
+我们可以对服务提供者设置不同的权重，例如对性能较好的机器设置大权重，对差一点的机器设置小一点的权重。</p>
+
+<h4 id="轮询负载均衡">轮询负载均衡</h4>
+<p>轮询负载均衡，即会轮询每一个服务提供者，依次对其进行调用。
+轮询负载均衡也有权重的概念，可以严格按照我们设置的比例进行分配，这个是该算法的优点，不过，该算法的缺点也很明显，可能会存在较慢的机器，那么请求会在这台机器上进行累积，很容易导致整个系统变慢。</p>
+
+<h4 id="最少活跃调用数负载均衡">最少活跃调用数负载均衡</h4>
+<p>最少活跃调用数负载均衡会将请求转发至活跃调用数最少的机器上，如果有两台机器活跃数相同，会采取随机负载均衡的策略。
+什么是活跃调用数呢？每个服务维护一个活跃数计数器，该计数器存放机器未处理完的请求。当有请求产生时，会选择活跃数最小的机器去执行。
+最少活跃调用数负载均衡可以令慢的机器收到更少的请求。</p>
+
+<h4 id="一致性哈希负载均衡">一致性哈希负载均衡</h4>
+<p>要了解这种负载均衡策略，我们首先得学习一下一致性哈希算法。不会一致性哈希算法的同学可以看一下我之前写的这篇博客，质量保证过硬：一致性哈希算法详解
+一致性哈希可以保证相同参数的请求一定会发送到同一台机器上，即使有机器崩溃，由于一致性哈希算法的特性与虚拟节点的存在，发往该机器的请求会被发送到其它机器上，并不会引发剧烈变动。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="n">ChangeService</span> <span class="o">{</span>
+
+    <span class="nd">@Reference</span><span class="o">(</span><span class="n">loadbalance</span> <span class="o">=</span> <span class="s">"roundrobin"</span><span class="o">)</span>
+    <span class="n">NameService</span> <span class="n">nameService</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">change</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">nameService</span><span class="o">.</span><span class="na">updateName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="dubbo集群容错">Dubbo集群容错</h3>
+<h4 id="内置容错策略">内置容错策略</h4>
+<p>Dubbo默认内置了一些容错策略，如果还不能满足用户需求，我们可以自定义容错策略进行配置。Dubbo 内置了以下几种容错策略：</p>
+<ul>
+  <li>Failover(失败自动切换)</li>
+  <li>Failsafe(失败安全)</li>
+  <li>Failfast(快速失败)</li>
+  <li>Failback(失败自动恢复)</li>
+  <li>Forking(并行调用)</li>
+  <li>Broadcast(广播调用)</li>
+</ul>
+
+<h4 id="failover失败自动切换">Failover(失败自动切换)</h4>
+<p>Failover 是 Dubbo 默认的容错策略。
+其实，Failover 是高可用的一个常用概念，服务器通常拥有主备两套机器配置，当主服务器出现故障时，会自动切换到备服务器中，从而保证了整体的高可用性。
+当调用失败时，会根据配置的重试次数，自动从其他可用地址中重新选择一个可用的地址进行调用，直到调用成功，或者是达到重试的上限位置。
+Failover 会自动对失败进行重试，但它也带来了一些副作用。首先，重试会增加开销，再者，重试会增加调用的响应时间，最后，在某些情况下，重试会造成资源的浪费。</p>
+
+<h4 id="failsafe失败安全">Failsafe(失败安全)</h4>
+<p>Failsafe 在调用失败时，会忽略此错误，并记录一条日志，同时返回一个空结果，在上游看来调用是成功的。
+Failsafe 即使失败了也不会影响整个调用流程，它的失败不影响核心业务的正确性，通常用于旁路系统或流程中，一般用于写入审计日志等操作。</p>
+
+<h4 id="failfast快速失败">Failfast(快速失败)</h4>
+<p>有一些业务场景中，其操作是非幂等的，不能重复调用。这种情况下，重试并不是一个好办法，需要用到 Failfast，调用失败立即报错，让调用方来决定下一步的操作并保证业务的幂等性。</p>
+
+<h4 id="failback失败自动恢复">Failback(失败自动恢复)</h4>
+<p>在 Failback 中，如果调用失败，则此次失败相当于 Failsafe，将返回一个空结果，但与 Failsafe 不同的是，Failback 策略会将这次调用加入内存中的失败列表中，对于这个列表中的失败调用，会在另一个线程中进行异步重试，重试如果再发生失败，则会忽略，即使重试调用成功，原来的调用方也感知不到了。因此它通常适合于对于实时性要求不高，且不需要返回值的一些异步操作。</p>
+
+<h4 id="forking并行调用">Forking(并行调用)</h4>
+<p>Forking 在第一次调用就同时发起多个调用，只要其中一个调用成功，就认为成功。在资源充足，且对于失败的容忍度较低的场景下，可以采用此策略。</p>
+
+<h4 id="broadcast广播调用">Broadcast(广播调用)</h4>
+<p>在某些场景下，我们可能需要对所有服务提供者进行操作，我们可以采用广播调用策略，会逐个调用所有提供者，只要任意有一个提供者出错，则认为此次调用出错。通常用于通知所有提供者更新缓存或日志等本地资源信息。</p>
+
+<h4 id="降级容错熔断方式">降级容错熔断方式</h4>
+<ul>
+  <li>Dubbo服务之Stub和Mock <a href="https://www.jianshu.com/p/f4255a14e53f">https://www.jianshu.com/p/f4255a14e53f</a></li>
+  <li>Dubbo服务之RPC扩展和本地Mock <a href="https://www.cnblogs.com/hyry/p/12067497.html">https://www.cnblogs.com/hyry/p/12067497.html</a></li>
+  <li>Dubbo与断路器 Hystrix 的集成 <a href="https://blog.csdn.net/Geffin/article/details/105808745">https://blog.csdn.net/Geffin/article/details/105808745</a></li>
+</ul>
+
+<h4 id="dubbo27新特性">Dubbo2.7新特性</h4>
+<p>异步化改造，三大中心改造，服务治理增强 <a href="http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html">http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html</a></p>
+
+<h4 id="通过qos对服务进行动态控制">通过QoS对服务进行动态控制</h4>
+<p>在Dubbo中，QoS Quality of Service 这个概念被用于动态的对服务进行查询和控制。例如对获取当前提供和消费的所有服务，以及对服务进行动态的上下线，即从注册中心上进行注册和反注册操作。
+<a href="http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html">http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html</a></p>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html"> SpringCloud </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
@@ -660,150 +778,6 @@ location @custom <span class="o">{</span>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html"> JVM 常用工具 </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 27, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="jmap--内存占用情况查询">jmap : 内存占用情况查询</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 查询某个pid进程对应的应用程序内存占用情况</span>
-jmap <span class="nt">-heap</span> pid
- 
-<span class="c">## 示例1</span>
-jmap <span class="nt">-heap</span> 5940
-
-<span class="o">[</span>root@VM_0_8_centos ~]# jmap <span class="nt">-heap</span> 27472
-Attaching to process ID 27472, please wait...
-Debugger attached successfully.
-Server compiler detected.
-JVM version is 25.171-b11
-
-using thread-local object allocation.
-Parallel GC with 2 thread<span class="o">(</span>s<span class="o">)</span>
-
-Heap Configuration:
-   MinHeapFreeRatio         <span class="o">=</span> 0
-   MaxHeapFreeRatio         <span class="o">=</span> 100
-   MaxHeapSize              <span class="o">=</span> 2051014656 <span class="o">(</span>1956.0MB<span class="o">)</span>
-   NewSize                  <span class="o">=</span> 42991616 <span class="o">(</span>41.0MB<span class="o">)</span>
-   MaxNewSize               <span class="o">=</span> 683671552 <span class="o">(</span>652.0MB<span class="o">)</span>
-   OldSize                  <span class="o">=</span> 87031808 <span class="o">(</span>83.0MB<span class="o">)</span>
-   NewRatio                 <span class="o">=</span> 2
-   SurvivorRatio            <span class="o">=</span> 8
-   MetaspaceSize            <span class="o">=</span> 21807104 <span class="o">(</span>20.796875MB<span class="o">)</span>
-   CompressedClassSpaceSize <span class="o">=</span> 1073741824 <span class="o">(</span>1024.0MB<span class="o">)</span>
-   MaxMetaspaceSize         <span class="o">=</span> 17592186044415 MB
-   G1HeapRegionSize         <span class="o">=</span> 0 <span class="o">(</span>0.0MB<span class="o">)</span>
-
-Heap Usage:
-PS Young Generation
-Eden Space:
-   capacity <span class="o">=</span> 37224448 <span class="o">(</span>35.5MB<span class="o">)</span>
-   used     <span class="o">=</span> 14139096 <span class="o">(</span>13.484092712402344MB<span class="o">)</span>
-   free     <span class="o">=</span> 23085352 <span class="o">(</span>22.015907287597656MB<span class="o">)</span>
-   37.98335975324604% used
-From Space:
-   capacity <span class="o">=</span> 3145728 <span class="o">(</span>3.0MB<span class="o">)</span>
-   used     <span class="o">=</span> 2929584 <span class="o">(</span>2.7938690185546875MB<span class="o">)</span>
-   free     <span class="o">=</span> 216144 <span class="o">(</span>0.2061309814453125MB<span class="o">)</span>
-   93.12896728515625% used
-To Space:
-   capacity <span class="o">=</span> 3670016 <span class="o">(</span>3.5MB<span class="o">)</span>
-   used     <span class="o">=</span> 0 <span class="o">(</span>0.0MB<span class="o">)</span>
-   free     <span class="o">=</span> 3670016 <span class="o">(</span>3.5MB<span class="o">)</span>
-   0.0% used
-PS Old Generation
-   capacity <span class="o">=</span> 165150720 <span class="o">(</span>157.5MB<span class="o">)</span>
-   used     <span class="o">=</span> 98856376 <span class="o">(</span>94.27678680419922MB<span class="o">)</span>
-   free     <span class="o">=</span> 66294344 <span class="o">(</span>63.22321319580078MB<span class="o">)</span>
-   59.8582773359995% used
-
-26452 interned Strings occupying 2659208 bytes.
-
-<span class="c">## 示例2</span>
-jmap <span class="nt">-F</span> <span class="nt">-histo</span> 16464 <span class="o">&gt;</span> 16464.log
-<span class="nt">-histo</span><span class="o">[</span>:live] 打印每个class的实例数目,内存占用,类全名信息. VM的内部类名字开头会加上前缀”<span class="k">*</span>”. 如果live子参数加上后,只统计活的对象数量. 
-
-<span class="c">## 示例2</span>
-jmap <span class="nt">-dump</span>:format<span class="o">=</span>b,file<span class="o">=</span>outfile 3024可以将3024进程的内存heap输出出来到outfile文件里，再配合MAT（内存分析工具）。
-
-</code></pre></div></div>
-
-<h4 id="jstat-可以实时监测系统资源占用与jvm运行情况">jstat: 可以实时监测系统资源占用与jvm运行情况</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 命令语法结构：
-Usage: jstat -help|-options
-       jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]]
-## 参数解释：
-Options — 选项，我们一般使用 -gcutil 查看gc情况
--t      — 输出Timestamp
-vmid    — VM的进程号，即当前运行的java进程号
-interval– 间隔时间，单位为秒或者毫秒
-count   — 打印次数，如果缺省则打印无数次
- 
-S0  — Heap上的 Survivor space 0 区已使用空间的百分比
-S1  — Heap上的 Survivor space 1 区已使用空间的百分比
-E   — Heap上的 Eden space 区已使用空间的百分比
-O   — Heap上的 Old space 区已使用空间的百分比
-P   — Perm space 区已使用空间的百分比
-YGC — 从应用程序启动到采样时发生 Young GC 的次数
-YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒)
-FGC — 从应用程序启动到采样时发生 Full GC 的次数
-FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒)
-GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒)
-
-## jstat -options
-    -class 类加载统计
-    -compiler 编译统计 
-    -gc
-    -gccapacity
-    -gccause Allocation Failure
-    -gcmetacapacity 元数据空间统计
-    -gcnew
-    -gcnewcapacity
-    -gcold
-    -gcoldcapacity
-    -gcutil 总结垃圾回收统计
-    -printcompilation JVM编译方法统计
-
-## 示例1 总结垃圾回收统计
-[root@VM_0_8_centos ~]# jstat -gcutil 27472 1000 5
-  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT
- 78.04   0.00  14.10  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  24.05  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  34.14  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  40.62  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  47.20  61.31  96.88  94.27    288    5.612     4    3.335    8.947
-
-## 示例2 类加载统计
-[root@VM_0_8_centos ~]# jstat -class -t 27472 1000 5
-Timestamp       加载class的数量  所占用空间大小  未加载数量  未加载占用空间     Time(秒)
-Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
-         5359.3  10847 20148.1        0     0.0      46.25
-         5360.4  10847 20148.1        0     0.0      46.25
-         5361.4  10847 20148.1        0     0.0      46.25
-         5362.3  10847 20148.1        0     0.0      46.25
-         5363.3  10847 20148.1        0     0.0      46.25
-
-</code></pre></div></div>
-<p>jstat命令使用
-<a href="https://www.cnblogs.com/lizhonghua34/p/7307139.html">https://www.cnblogs.com/lizhonghua34/p/7307139.html</a></p>
-
-<p>JVM运行时内存使用情况监控
-<a href="https://blog.csdn.net/zmx729618/article/details/78392715">https://blog.csdn.net/zmx729618/article/details/78392715</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -909,7 +883,7 @@ Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
       
       
       <a  href="/tag/网络">
-      <span class="label label-default">网络 ( 6 )</span>
+      <span class="label label-default">网络 ( 7 )</span>
       </a><br />
 
       

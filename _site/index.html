@@ -54,6 +54,159 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html">HTTP-HTTPS</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 29, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="linux版本">Linux版本</h4>
+<ul>
+  <li>0.00  1991.2-4 两个进程分别显示AAA BBB</li>
+  <li>0.01  1991.9 第一个正式向外公布的Linux内核版本</li>
+  <li>0.02  1991.10.5 Linus Torvalds将当时最初的0.02内核版本发布到了Minix新闻组，很快就得到了反应。Linus Torvalds在这种简单的任务切换机制上进行扩展，并在很多热心支持者的帮助下开发和推出了Linux的第一个稳定的工作版本。</li>
+  <li>0.03  1991.10.5</li>
+  <li>0.10  1991.10 Linux0.10版本内核发布，0.11版本随后在1991年12月推出，当时它被发布在Internet上，供人们免费使用。</li>
+  <li>0.11  1991.12.8 基本可以正常运行的内核版本</li>
+  <li>0.12  1992.1.15 主要加入对数学协处理器的软件模拟程序</li>
+  <li>0.95（0.13） 1992.3.8 开始加入虚拟文件系统思想的内核版本</li>
+  <li>0.96  1992.5.12 开始加入网络支持和虚拟文件系统</li>
+  <li>0.97  1992.8.1</li>
+  <li>0.98  1992.9.29</li>
+  <li>0.99  1992.12.13</li>
+  <li>1.0   1994.3.14 Linux1.0版本内核发布，使用它的用户越来越多，而且Linux系统的核心开发队伍也建起来了。</li>
+  <li>1.2   1995.3.7</li>
+  <li>2.0   1996.2.9</li>
+  <li>2.2   1999.1.26</li>
+  <li>2.4   2001.1.4 Linux2.4.0版本内核发布。</li>
+  <li>2.6.x 2003-12 2011-05</li>
+  <li>3.x   2011-06 2015-02</li>
+  <li>4.x   2015-04 2018-12</li>
+  <li>5.x   2019-03</li>
+</ul>
+
+<h4 id="http版本差异">HTTP版本差异</h4>
+<ul>
+  <li>HTTP/0.9 (1991)
+    <ul>
+      <li>只支持GET、无协议头、无图片的HTML</li>
+      <li>连接用完立即关闭、无错误码</li>
+    </ul>
+  </li>
+  <li>HTTP/1.0 (1992-1996)
+    <ul>
+      <li>请求与响应支持头域</li>
+      <li>响应对象以一个响应状态行开始</li>
+      <li>响应对象不只限于超文本</li>
+      <li>开始支持客户端通过POST方法向Web服务器提交数据，支持GET、HEAD、POST方法</li>
+      <li>支持长连接（但默认还是使用短连接），缓存机制，以及身份认证</li>
+    </ul>
+  </li>
+  <li>HTTP/1.1 (1997-1999)
+    <ul>
+      <li>keepalive连接</li>
+      <li>chunked编码传输</li>
+      <li>字节范围请求，断点续传</li>
+      <li>请求流水线，同时交叉请求</li>
+      <li>请求消息和响应消息都应支持Host头域</li>
+      <li>增加了OPTIONS,PUT, DELETE, TRACE, CONNECT方法</li>
+      <li>HTTP/1.1在1.0的基础上加入了一些cache的新特性，引入了实体标签，一般被称为e-tags，新增更为强大的Cache-Control头。</li>
+    </ul>
+  </li>
+  <li>HTTP/2.0 (2012-2014)
+    <ul>
+      <li>多路复用（二进制分帧）</li>
+      <li>头部压缩</li>
+      <li>随时复位</li>
+      <li>Server PUSH</li>
+      <li>优先权依赖</li>
+    </ul>
+  </li>
+  <li>SPDY 协议
+    <ul>
+      <li>2009年，谷歌公开了自行研发的 SPDY 协议，主要解决 HTTP/1.1 效率不高的问题。
+这个协议在Chrome浏览器上证明可行以后，就被当作 HTTP/2 的基础，主要特性都在 HTTP/2 之中得到继承。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="ssltls历史">SSL/TLS历史</h4>
+<ul>
+  <li>1994年，NetScape公司设计了SSL协议（Secure Sockets Layer）的1.0版，但是未发布。</li>
+  <li>1995年，NetScape公司发布SSL 2.0版，很快发现有严重漏洞。</li>
+  <li>1996年，SSL 3.0版问世，得到大规模应用。</li>
+  <li>1999年，互联网标准化组织ISOC接替NetScape公司，发布了SSL的升级版TLS 1.0版。</li>
+  <li>2006年和2008年，TLS进行了两次升级，分别为TLS 1.1版和TLS 1.2版。最新的变动是2011年TLS 1.2的修订版。</li>
+  <li>目前，应用最广泛的是TLS 1.0，接下来是SSL 3.0。但是，主流浏览器都已经实现了TLS 1.2的支持。
+TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
+</ul>
+
+<h4 id="ssltls简介">SSL/TLS简介</h4>
+<ul>
+  <li>SSL：（Secure Socket Layer，安全套接字层），位于可靠的面向连接的网络层协议和应用层协议之间的一种协议层。SSL通过互相认证、使用数字签名确保完整性、使用加密确保私密性，以实现客户端和服务器之间的安全通讯。该协议由两层组成：SSL记录协议和SSL握手协议。</li>
+  <li>TLS：(Transport Layer Security，传输层安全协议)，用于两个应用程序之间提供保密性和数据完整性。该协议由两层组成：TLS记录协议和TLS握手协议。</li>
+  <li>SSL是Netscape开发的专门用户保护Web通讯的，目前版本为3.0。最新版本的TLS 1.0是IETF(工程任务组)制定的一种新的协议，它建立在SSL 3.0协议规范之上，是SSL 3.0的后续版本。两者差别极小，可以理解为SSL 3.1，它是写入了RFC的。</li>
+  <li><a href="https://kb.cnblogs.com/page/197396/">https://kb.cnblogs.com/page/197396/</a></li>
+</ul>
+
+<h4 id="mitm攻击">MITM攻击</h4>
+<ul>
+  <li>理解清楚中间人攻击（Man-in-the-MiddleAttack，简称“MITM攻击”）也就理解了HTTPS。</li>
+  <li>中间人攻击（MITM攻击）是指，黑客拦截并篡改网络中的通信数据。又分为被动MITM和主动MITM，被动MITM只窃取通信数据而不修改，而主动MITM不但能窃取数据，还会篡改通信数据。最常见的中间人攻击常常发生在公共wifi或者公共路由上。</li>
+</ul>
+
+<h4 id="https加密原理">HTTPS加密原理</h4>
+<ol>
+  <li>各个操作系统或浏览器提前内置或缓存了合法CA机构的公钥</li>
+  <li>服务器提交相关信息给CA机构</li>
+  <li>CA机构生成该服务器对应的私钥+证书（包含服务器公钥、数字签名等）</li>
+  <li>客户端发起请求到服务器，服务器返回CA机构生成的证书</li>
+  <li>客户端用提前内置的CA机构的公钥解密该证书，并验证该证书是否合法</li>
+  <li>验证证书合法后，从证书中提取服务器的公钥，开始SSL/TLS交互</li>
+  <li>其他方便理解的总结
+    <ul>
+      <li>引入CA之后，重点是有2个公钥：自己服务器的公钥、CA机构的公钥</li>
+      <li>当客户端收到证书之后，使用本地配置的权威机构的公钥对证书进行解密得到服务端的公钥和证书的数字签名，数字签名经过CA公钥解密得到证书信息摘要。</li>
+      <li>然后用证书签名的方法计算一下当前证书的信息摘要，与收到的信息摘要作对比，如果一样，表示证书一定是服务器下发的，没有被中间人篡改过。因为中间人虽然有权威机构的公钥，能够解析证书内容并篡改，但是篡改完成之后中间人需要将证书重新加密，但是中间人没有权威机构的私钥，无法加密，强行加密只会导致客户端无法解密，如果中间人强行乱修改证书，就会导致证书内容和证书签名不匹配。</li>
+      <li>客户端验证证书的合法性，包括：
+        <ul>
+          <li>证书是否过期</li>
+          <li>发行服务器证书的CA是否可靠</li>
+          <li>本地CA公钥是否能正确解开证书</li>
+          <li>服务器证书上的域名是否和服务器的实际域名相匹配</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="第三方攻击者能否让自己的证书显示出来的信息也是服务端呢">第三方攻击者能否让自己的证书显示出来的信息也是服务端呢？</h4>
+<p>-（伪装服务端一样的配置）显然这个是不行的，因为当第三方攻击者去CA那边寻求认证的时候CA会要求其提供例如域名的whois信息、域名管理邮箱等证明你是服务端域名的拥有者，而第三方攻击者是无法提供这些信息所以他就是无法骗CA他拥有属于服务端的域名</p>
+
+<h4 id="ios-面试题什么是中间人攻击如何避免">iOS 面试题·什么是中间人攻击？如何避免？</h4>
+<ul>
+  <li>客户端不要轻易信任证书</li>
+  <li>App可以提前预埋证书在本地</li>
+  <li><a href="https://www.jianshu.com/p/210c296eb836">https://www.jianshu.com/p/210c296eb836</a></li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>理解HTTPS <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1890&amp;highlight=https">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1890&amp;highlight=https</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/27/JavaAgent-Instrument.html">JavaAgent-Instrument</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 27, 2020</span>
@@ -235,197 +388,6 @@ https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html">用户画像</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 22, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>用户</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="核心">核心</h4>
-<ul>
-  <li>用户画像体系，有这一篇就够了 <a href="https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q">https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q</a></li>
-  <li>用户画像原理、技术选型及架构实现 <a href="https://blog.csdn.net/SecondLieutenant/article/details/81153565">https://blog.csdn.net/SecondLieutenant/article/details/81153565</a></li>
-</ul>
-
-<h4 id="用户画像概述">用户画像概述</h4>
-<ul>
-  <li>用户画像根本目的就是寻找目标客户、优化产品设计，指导运营策略，分析业务场景和完善业务形态。</li>
-  <li>不同的企业做用户画像有不同的战略目的，广告公司做用户画像是为精准广告服务，电商做用户画像是为用户购买更多商品，内容平台做用户画像是推荐用户更感兴趣的内容提升流量再变现，金融行业做用户画像是为了寻找到目标客户的同时做好风险的控制。</li>
-</ul>
-
-<h4 id="画像维度">画像维度</h4>
-<ul>
-  <li>特征：
-    <ul>
-      <li>人口统计：性别、年龄、教育</li>
-      <li>社会属性：家庭、社交、职业</li>
-    </ul>
-  </li>
-  <li>行为：
-    <ul>
-      <li>使用行为：手机使用、电脑类型、套餐使用、套餐余额</li>
-      <li>消费行为：购买力、购买频次、购买渠道、额度、信用等级</li>
-    </ul>
-  </li>
-  <li>需求
-    <ul>
-      <li>偏好属性：兴趣爱好、品牌爱好、产品爱好、网购偏好、支付偏好、价格偏好</li>
-      <li>潜在需求：</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="指标体系">指标体系</h4>
-<ul>
-  <li>用户属性维度</li>
-  <li>用户行为维度</li>
-  <li>用户消费维度</li>
-  <li>风险控制维度</li>
-  <li>社交属性维度</li>
-</ul>
-
-<h4 id="画像之静态标签动态标签">画像之静态标签、动态标签</h4>
-<ul>
-  <li>静态画像：实时性弱、覆盖广、粒度粗</li>
-  <li>动态画像：
-    <ul>
-      <li>一般建立兴趣模型，更加实时并且动态</li>
-      <li>用户行为可疑结构为5W（What/Who/When/Where/Why)</li>
-      <li>时效性非常敏感</li>
-      <li>在空间上，不同应用领域侧重点不同，营销领域更侧重消费习惯，推荐领域更侧重喜好</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="画像之标签结构化程度">画像之标签结构化程度</h4>
-<ul>
-  <li>结构化标签体系，定向广告平台采用的结构化标签体系</li>
-  <li>半结构化标签体系，在用于效果广告时，标签设计的灵活性大大提高了。标签体系是不是规整，就不那么重要了，只要有效果就行。</li>
-  <li>非结构化标签体系，非结构化，就是各个标签就事论事，各自反应各自的用户兴趣，彼此之间并无层级关系，也很难组织成规整的树状结构。非结构化标签的典型例子，是搜索广告里用的关键词。还有Facebook用的用户兴趣词</li>
-  <li>例如
-    <ul>
-      <li>汽车行业的标签体系大体应该是：价格—&gt;车型—&gt;品牌</li>
-      <li>游戏行业：按照类别、游戏素材、游戏厂商等等。游戏的用户决策过程总体上令人难以捉摸，这是因为它有点儿电影、音乐一样的艺术性特质。而人们对艺术的喜爱，并不是理性的，也就难以总结规律。</li>
-      <li>电商行业的实际做法大家都看到了，基本上不依靠分类，完全以“单品+个性化推荐”的方法构建和使用标签体系。</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="画像之应用">画像之应用</h4>
-<ul>
-  <li>精准营销：根据历史用户特征，分析产品的潜在用户和用户的潜在需求，针对特定群体，利用短信、邮件等方式进行营销。</li>
-  <li>用户统计：根据用户的属性、行为特征对用户进行分类后，统计不同特征下的用户数量、分布；分析不同用户画像群体的分布特征。</li>
-  <li>数据挖掘：以用户画像为基础构建推荐系统、搜索引擎、广告投放系统，提升服务精准度。</li>
-  <li>服务产品：对产品进行用户画像，对产品进行受众分析，更透彻地理解用户使用产品的心理动机和行为习惯，完善产品运营，提升服务质量。</li>
-  <li>行业报告&amp;用户研究：通过用户画像分析可以了解行业动态，比如人群消费习惯、消费偏好分析、不同地域品类消费差异分析</li>
-</ul>
-
-<h4 id="画像之reachctr曲线">画像之reach/CTR曲线</h4>
-<ul>
-  <li>reach：该标签占总用户比例</li>
-  <li>CTR：点击率</li>
-  <li>reach越大，一般情况CTR会小</li>
-</ul>
-
-<h4 id="用户画像架构图">用户画像架构图</h4>
-<p><img src="/img/user_profile.jpg" width="600px" /></p>
-
-<h4 id="用户画像后台标签">用户画像后台标签</h4>
-<p><img src="/img/user_profile_admin.jpg" width="600px" /></p>
-
-<h4 id="用户业务标签">用户业务标签</h4>
-<p><img src="/img/user_profile_tags.jpg" width="600px" /></p>
-
-<h4 id="会员理论模型">会员理论模型</h4>
-<ul>
-  <li>会员体系模型：AIPL
-    <ul>
-      <li>Awareness潜客：内容运营、宣传吸引、新手任务、了解产品</li>
-      <li>Interest粉丝：社会新闻、热点话题、习惯养成、积分积累</li>
-      <li>Purchase会员：日常任务、促销活动、品牌影响力、共同利益</li>
-      <li>Loyalty超级会员：专属特权、心理诉求、社群活动、1V1维护</li>
-    </ul>
-  </li>
-  <li>会员体系模型：RFM
-    <ul>
-      <li>R(Recency)近度：距某节点最近的一次消费</li>
-      <li>F(Frequency)频度：消费频次</li>
-      <li>M (Monetary)额度：消费金额
-<img src="/img/RFM.jpg" width="600px" /></li>
-    </ul>
-  </li>
-  <li>会员体系模型：AARRR
-    <ul>
-      <li>Acquisition（获取用户）：关注PV、UV、CPC、点击转化率、注册量、注册率、获客成本CAC</li>
-      <li>Activation（提高活跃度）：关注登陆量、激活转化率、活跃度指标</li>
-      <li>Retention（提高留存率）：关注留存率、复购率、人均购买次数、召回率</li>
-      <li>Revenue（获取收入）：关注获客成本、顾客终身价值、营销ROI</li>
-      <li>Referral（传播）：关注邀请量、激活量、邀请激活率、传播系数</li>
-    </ul>
-  </li>
-  <li>鱼塘理论
-    <ul>
-      <li>养鱼、抓潜、成交、追销、形成自己的鱼塘</li>
-    </ul>
-  </li>
-  <li>Hook模型概念
-    <ul>
-      <li>触发Trigger：即诱发用户采取行动，进入系统的契机。这是上瘾模型的第一步，也是最关键一步，如果这步不能引起用户的兴趣，后续就无从谈起。</li>
-      <li>行动Action：按照斯坦福大学B.J.Fogg博士的Behavior Model理论，B=MAT，即行动（Behavior）=动机（Motivation）+能力（Ability）+触发器（Trigger）。</li>
-      <li>多变的酬赏Variable Reward：当行为被触发之后，接下来就需要给用户一些酬赏进行持续刺激，以培养对他们对产品的使用习惯。酬赏简单来说就是产品带给用户的满足感，但为什么要强调“多变”呢？
-  据行为学研究，人们对产品的满足感会随着时间的推移逐渐降低，即使现阶段用户因为产品解决了某方面问题而产生依赖，但市面上的新产品层出不穷，要想不被淘汰，“无穷的多变性”是保持产品神秘感和吸引力，维持用户长期兴趣的关键。</li>
-      <li>投入Investment：有研究表明，用户对某个产品投入时间精力的多寡与对这个产品的依赖程度成正比，就像免费东西你不会珍惜，而氪过金的游戏或服务反而会不断充值一样。已经享受酬赏的用户，想要他们对你的产品彻底“上瘾”，最后一步就是要让他们有所投入。</li>
-    </ul>
-  </li>
-  <li>《疯传》STEPPS原则
-    <ul>
-      <li>社交货币（Social Currency）：我们会共享那些能让我们显得更优秀的事情</li>
-      <li>诱因（Triggers）：顶尖的记忆，风口浪尖的提醒</li>
-      <li>情绪（Emotion）：当我们关心时，我们回去分享</li>
-      <li>公共性（Public）：构建可视的、正面的事物</li>
-      <li>实用价值（Practical Value）：如果有用，人们会情不自禁地分享</li>
-      <li>故事（Stories）：好故事就意味着成功了一般，好故事都有翅膀</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="参考">参考</h4>
-<ul>
-  <li>用户研究：如何做用户画像分析 <a href="https://www.jianshu.com/p/440c30383bec">https://www.jianshu.com/p/440c30383bec</a></li>
-  <li>什么是用户画像和标签？ <a href="http://www.woshipm.com/user-research/1083807.html">http://www.woshipm.com/user-research/1083807.html</a></li>
-  <li>结构化标签、非结构化标签及reach/CTR曲线 <a href="http://www.woshipm.com/user-research/436269.html">http://www.woshipm.com/user-research/436269.html</a></li>
-  <li>电商案例、金融案例（用户画像标签体系——从零开始搭建实时用户画像） <a href="https://cloud.tencent.com/developer/column/79937">https://cloud.tencent.com/developer/column/79937</a></li>
-  <li>航空公司案例、证券案例、打车公司案例 <a href="https://www.zhihu.com/question/302695500">https://www.zhihu.com/question/302695500</a></li>
-  <li>从阿里会员解读会员体系建设 <a href="https://zhuanlan.zhihu.com/p/88738148">https://zhuanlan.zhihu.com/p/88738148</a></li>
-  <li>用户画像10大误区 <a href="https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA">https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA</a></li>
-  <li>1号店案例 <a href="https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg">https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg</a></li>
-  <li>Qunar用户画像构建策略及应用实践 <a href="https://blog.csdn.net/xiaoshunzi111/article/details/53170658">https://blog.csdn.net/xiaoshunzi111/article/details/53170658</a></li>
-  <li>
-    <table>
-      <tbody>
-        <tr>
-          <td>携程</td>
-          <td>手把手教你用大数据打造用户画像 <a href="https://blog.csdn.net/chenjunji123456/article/details/54966633">https://blog.csdn.net/chenjunji123456/article/details/54966633</a></td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
-  <li>《用户画像：方法论与工程化解决方案》<a href="https://www.jianshu.com/p/94dadecc162b">https://www.jianshu.com/p/94dadecc162b</a></li>
-  <li>汽车之家如何构建用户画像 <a href="https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw">https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -529,7 +491,7 @@ https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
       
       
       <a  href="/tag/网络">
-      <span class="label label-default">网络 ( 6 )</span>
+      <span class="label label-default">网络 ( 7 )</span>
       </a><br />
 
       

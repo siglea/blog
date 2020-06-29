@@ -5,9 +5,157 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 29 Jun 2020 11:48:40 +0800</pubDate>
-    <lastBuildDate>Mon, 29 Jun 2020 11:48:40 +0800</lastBuildDate>
+    <pubDate>Mon, 29 Jun 2020 18:06:49 +0800</pubDate>
+    <lastBuildDate>Mon, 29 Jun 2020 18:06:49 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>HTTP-HTTPS</title>
+        <description>&lt;h4 id=&quot;linux版本&quot;&gt;Linux版本&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;0.00  1991.2-4 两个进程分别显示AAA BBB&lt;/li&gt;
+  &lt;li&gt;0.01  1991.9 第一个正式向外公布的Linux内核版本&lt;/li&gt;
+  &lt;li&gt;0.02  1991.10.5 Linus Torvalds将当时最初的0.02内核版本发布到了Minix新闻组，很快就得到了反应。Linus Torvalds在这种简单的任务切换机制上进行扩展，并在很多热心支持者的帮助下开发和推出了Linux的第一个稳定的工作版本。&lt;/li&gt;
+  &lt;li&gt;0.03  1991.10.5&lt;/li&gt;
+  &lt;li&gt;0.10  1991.10 Linux0.10版本内核发布，0.11版本随后在1991年12月推出，当时它被发布在Internet上，供人们免费使用。&lt;/li&gt;
+  &lt;li&gt;0.11  1991.12.8 基本可以正常运行的内核版本&lt;/li&gt;
+  &lt;li&gt;0.12  1992.1.15 主要加入对数学协处理器的软件模拟程序&lt;/li&gt;
+  &lt;li&gt;0.95（0.13） 1992.3.8 开始加入虚拟文件系统思想的内核版本&lt;/li&gt;
+  &lt;li&gt;0.96  1992.5.12 开始加入网络支持和虚拟文件系统&lt;/li&gt;
+  &lt;li&gt;0.97  1992.8.1&lt;/li&gt;
+  &lt;li&gt;0.98  1992.9.29&lt;/li&gt;
+  &lt;li&gt;0.99  1992.12.13&lt;/li&gt;
+  &lt;li&gt;1.0   1994.3.14 Linux1.0版本内核发布，使用它的用户越来越多，而且Linux系统的核心开发队伍也建起来了。&lt;/li&gt;
+  &lt;li&gt;1.2   1995.3.7&lt;/li&gt;
+  &lt;li&gt;2.0   1996.2.9&lt;/li&gt;
+  &lt;li&gt;2.2   1999.1.26&lt;/li&gt;
+  &lt;li&gt;2.4   2001.1.4 Linux2.4.0版本内核发布。&lt;/li&gt;
+  &lt;li&gt;2.6.x 2003-12 2011-05&lt;/li&gt;
+  &lt;li&gt;3.x   2011-06 2015-02&lt;/li&gt;
+  &lt;li&gt;4.x   2015-04 2018-12&lt;/li&gt;
+  &lt;li&gt;5.x   2019-03&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;http版本差异&quot;&gt;HTTP版本差异&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;HTTP/0.9 (1991)
+    &lt;ul&gt;
+      &lt;li&gt;只支持GET、无协议头、无图片的HTML&lt;/li&gt;
+      &lt;li&gt;连接用完立即关闭、无错误码&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;HTTP/1.0 (1992-1996)
+    &lt;ul&gt;
+      &lt;li&gt;请求与响应支持头域&lt;/li&gt;
+      &lt;li&gt;响应对象以一个响应状态行开始&lt;/li&gt;
+      &lt;li&gt;响应对象不只限于超文本&lt;/li&gt;
+      &lt;li&gt;开始支持客户端通过POST方法向Web服务器提交数据，支持GET、HEAD、POST方法&lt;/li&gt;
+      &lt;li&gt;支持长连接（但默认还是使用短连接），缓存机制，以及身份认证&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;HTTP/1.1 (1997-1999)
+    &lt;ul&gt;
+      &lt;li&gt;keepalive连接&lt;/li&gt;
+      &lt;li&gt;chunked编码传输&lt;/li&gt;
+      &lt;li&gt;字节范围请求，断点续传&lt;/li&gt;
+      &lt;li&gt;请求流水线，同时交叉请求&lt;/li&gt;
+      &lt;li&gt;请求消息和响应消息都应支持Host头域&lt;/li&gt;
+      &lt;li&gt;增加了OPTIONS,PUT, DELETE, TRACE, CONNECT方法&lt;/li&gt;
+      &lt;li&gt;HTTP/1.1在1.0的基础上加入了一些cache的新特性，引入了实体标签，一般被称为e-tags，新增更为强大的Cache-Control头。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;HTTP/2.0 (2012-2014)
+    &lt;ul&gt;
+      &lt;li&gt;多路复用（二进制分帧）&lt;/li&gt;
+      &lt;li&gt;头部压缩&lt;/li&gt;
+      &lt;li&gt;随时复位&lt;/li&gt;
+      &lt;li&gt;Server PUSH&lt;/li&gt;
+      &lt;li&gt;优先权依赖&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;SPDY 协议
+    &lt;ul&gt;
+      &lt;li&gt;2009年，谷歌公开了自行研发的 SPDY 协议，主要解决 HTTP/1.1 效率不高的问题。
+这个协议在Chrome浏览器上证明可行以后，就被当作 HTTP/2 的基础，主要特性都在 HTTP/2 之中得到继承。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;ssltls历史&quot;&gt;SSL/TLS历史&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;1994年，NetScape公司设计了SSL协议（Secure Sockets Layer）的1.0版，但是未发布。&lt;/li&gt;
+  &lt;li&gt;1995年，NetScape公司发布SSL 2.0版，很快发现有严重漏洞。&lt;/li&gt;
+  &lt;li&gt;1996年，SSL 3.0版问世，得到大规模应用。&lt;/li&gt;
+  &lt;li&gt;1999年，互联网标准化组织ISOC接替NetScape公司，发布了SSL的升级版TLS 1.0版。&lt;/li&gt;
+  &lt;li&gt;2006年和2008年，TLS进行了两次升级，分别为TLS 1.1版和TLS 1.2版。最新的变动是2011年TLS 1.2的修订版。&lt;/li&gt;
+  &lt;li&gt;目前，应用最广泛的是TLS 1.0，接下来是SSL 3.0。但是，主流浏览器都已经实现了TLS 1.2的支持。
+TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;ssltls简介&quot;&gt;SSL/TLS简介&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;SSL：（Secure Socket Layer，安全套接字层），位于可靠的面向连接的网络层协议和应用层协议之间的一种协议层。SSL通过互相认证、使用数字签名确保完整性、使用加密确保私密性，以实现客户端和服务器之间的安全通讯。该协议由两层组成：SSL记录协议和SSL握手协议。&lt;/li&gt;
+  &lt;li&gt;TLS：(Transport Layer Security，传输层安全协议)，用于两个应用程序之间提供保密性和数据完整性。该协议由两层组成：TLS记录协议和TLS握手协议。&lt;/li&gt;
+  &lt;li&gt;SSL是Netscape开发的专门用户保护Web通讯的，目前版本为3.0。最新版本的TLS 1.0是IETF(工程任务组)制定的一种新的协议，它建立在SSL 3.0协议规范之上，是SSL 3.0的后续版本。两者差别极小，可以理解为SSL 3.1，它是写入了RFC的。&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://kb.cnblogs.com/page/197396/&quot;&gt;https://kb.cnblogs.com/page/197396/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;mitm攻击&quot;&gt;MITM攻击&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;理解清楚中间人攻击（Man-in-the-MiddleAttack，简称“MITM攻击”）也就理解了HTTPS。&lt;/li&gt;
+  &lt;li&gt;中间人攻击（MITM攻击）是指，黑客拦截并篡改网络中的通信数据。又分为被动MITM和主动MITM，被动MITM只窃取通信数据而不修改，而主动MITM不但能窃取数据，还会篡改通信数据。最常见的中间人攻击常常发生在公共wifi或者公共路由上。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;https加密原理&quot;&gt;HTTPS加密原理&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;各个操作系统或浏览器提前内置或缓存了合法CA机构的公钥&lt;/li&gt;
+  &lt;li&gt;服务器提交相关信息给CA机构&lt;/li&gt;
+  &lt;li&gt;CA机构生成该服务器对应的私钥+证书（包含服务器公钥、数字签名等）&lt;/li&gt;
+  &lt;li&gt;客户端发起请求到服务器，服务器返回CA机构生成的证书&lt;/li&gt;
+  &lt;li&gt;客户端用提前内置的CA机构的公钥解密该证书，并验证该证书是否合法&lt;/li&gt;
+  &lt;li&gt;验证证书合法后，从证书中提取服务器的公钥，开始SSL/TLS交互&lt;/li&gt;
+  &lt;li&gt;其他方便理解的总结
+    &lt;ul&gt;
+      &lt;li&gt;引入CA之后，重点是有2个公钥：自己服务器的公钥、CA机构的公钥&lt;/li&gt;
+      &lt;li&gt;当客户端收到证书之后，使用本地配置的权威机构的公钥对证书进行解密得到服务端的公钥和证书的数字签名，数字签名经过CA公钥解密得到证书信息摘要。&lt;/li&gt;
+      &lt;li&gt;然后用证书签名的方法计算一下当前证书的信息摘要，与收到的信息摘要作对比，如果一样，表示证书一定是服务器下发的，没有被中间人篡改过。因为中间人虽然有权威机构的公钥，能够解析证书内容并篡改，但是篡改完成之后中间人需要将证书重新加密，但是中间人没有权威机构的私钥，无法加密，强行加密只会导致客户端无法解密，如果中间人强行乱修改证书，就会导致证书内容和证书签名不匹配。&lt;/li&gt;
+      &lt;li&gt;客户端验证证书的合法性，包括：
+        &lt;ul&gt;
+          &lt;li&gt;证书是否过期&lt;/li&gt;
+          &lt;li&gt;发行服务器证书的CA是否可靠&lt;/li&gt;
+          &lt;li&gt;本地CA公钥是否能正确解开证书&lt;/li&gt;
+          &lt;li&gt;服务器证书上的域名是否和服务器的实际域名相匹配&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;第三方攻击者能否让自己的证书显示出来的信息也是服务端呢&quot;&gt;第三方攻击者能否让自己的证书显示出来的信息也是服务端呢？&lt;/h4&gt;
+&lt;p&gt;-（伪装服务端一样的配置）显然这个是不行的，因为当第三方攻击者去CA那边寻求认证的时候CA会要求其提供例如域名的whois信息、域名管理邮箱等证明你是服务端域名的拥有者，而第三方攻击者是无法提供这些信息所以他就是无法骗CA他拥有属于服务端的域名&lt;/p&gt;
+
+&lt;h4 id=&quot;ios-面试题什么是中间人攻击如何避免&quot;&gt;iOS 面试题·什么是中间人攻击？如何避免？&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;客户端不要轻易信任证书&lt;/li&gt;
+  &lt;li&gt;App可以提前预埋证书在本地&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/210c296eb836&quot;&gt;https://www.jianshu.com/p/210c296eb836&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;参考&quot;&gt;参考&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;理解HTTPS &lt;a href=&quot;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=1890&amp;amp;highlight=https&quot;&gt;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=1890&amp;amp;highlight=https&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Mon, 29 Jun 2020 15:42:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html</guid>
+        
+        <category>网络</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
     
       <item>
         <title>JavaAgent-Instrument</title>
@@ -1314,40 +1462,6 @@ F&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;n&lt;span class=&quot;o&quot;&gt;
         <pubDate>Sun, 07 Jun 2020 13:25:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html</link>
         <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html</guid>
-        
-        <category>数据结构与算法</category>
-        
-        
-        <category>技术</category>
-        
-      </item>
-    
-      <item>
-        <title>BitMap-BloomFilter</title>
-        <description>&lt;h4 id=&quot;bitmap&quot;&gt;BitMap&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;近似的理解为用一个大数组的索引来表示数字本身，用0或1表示该数字是否存在&lt;/li&gt;
-  &lt;li&gt;一个32位的int，只用一个标志位来表示是否存在&lt;/li&gt;
-  &lt;li&gt;但是数字如果重复只会保留一个，主要用于去重类似的场景&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;bloomfilter&quot;&gt;BloomFilter&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;判断短连接是否重复、垃圾邮件等场景&lt;/li&gt;
-  &lt;li&gt;把url，3次不同hash，得到3个不同的hashcode，存入bitmap&lt;/li&gt;
-  &lt;li&gt;多次hash是为了降低hash重复的概率&lt;/li&gt;
-  &lt;li&gt;由于以上特性，bloomFilter算法计算出不存在的一定就是不存在，如果计算出来存在有一定几率重复（因为hash的特性）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;参考链接&quot;&gt;参考链接&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;Bitmap算法 整合版 &lt;a href=&quot;https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg&quot;&gt;https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;什么是布隆算法？&lt;a href=&quot;https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ&quot;&gt;https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Sun, 07 Jun 2020 13:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html</guid>
         
         <category>数据结构与算法</category>
         
