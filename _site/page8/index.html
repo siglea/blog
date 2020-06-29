@@ -54,6 +54,121 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html">一致性（Consistency）与 共识（Consensus）</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="byzantine-fault-tolerance-分类">Byzantine Fault Tolerance 分类</h4>
+<p>在分布式系统中，这种不听指挥的坏节点，就被称为“拜占庭错误节点”。一般来说，按照对“拜占庭错误节点”的容忍程度（简称BFT，Byzantine Fault Tolerance），分布式系统可以分为以下三类：</p>
+<ul>
+  <li>非BFT类：完全无法容忍“拜占庭错误节点”，但可以容忍其他错误的系统。（包括Pasox、SOLO、RAFT等。）</li>
+  <li>BFT类：可以容忍“拜占庭错误节点”的系统。（包括PBFT、SBFT、VBFT、DBFT等。）</li>
+  <li>区块链类：不仅可以容忍“拜占庭错误节点”，还可以容忍节点的自由进出，这才是我们真正意义上的、狭义上的“区块链”。
+ （包括我们熟悉的POW、POS、DPOS等等。）</li>
+  <li>其实与git的版本分支管理思想是一致的</li>
+</ul>
+
+<p><a href="https://www.cnblogs.com/X-knight/p/9157814.html">https://www.cnblogs.com/X-knight/p/9157814.html</a></p>
+
+<h4 id="一致性consistency和共识consensus">“一致性（Consistency）”和“共识（Consensus）”</h4>
+<p>Paxos、Raft等通常被误称为“一致性算法”。但是“一致性（Consistency）”和“共识（Consensus）”并不是同一个概念。Paxos、Raft等其实都是共识（Consensus）算法。
+从专业的角度来讲，我们通常所说的一致性（Consistency）在分布式系统中指的是对于同一个数据的多个副本，其对外表现的数据一致性，如强一致性、顺序一致性、最终一致性等，都是用来描述副本问题中的一致性的。而共识（Consensus）则不同，简单来说，共识问题是要经过某种算法使多个节点达成相同状态的一个过程。一致性强调结果，共识强调过程。
+<a href="https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg">https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg</a></p>
+
+<h4 id="一致性分类">一致性分类</h4>
+<ul>
+  <li>弱一致性（最终一致性）
+    <ol>
+      <li>DNS（Domain Name System）</li>
+      <li>Gossip（Cassandra、Redis的通信协议）<a href="https://www.jianshu.com/p/54eab117e6ae">https://www.jianshu.com/p/54eab117e6ae</a></li>
+    </ol>
+  </li>
+  <li>强一致性
+    <ul>
+      <li>主从同步</li>
+      <li>多数一致，每次写都保证写入大于N/2个节点，每次读保证从大于N/2个节点中读。
+Paxos、Raft（multi-paxos）、ZAB（multi-paxos，Zookeeper atomic broadcast protocol，是Zookeeper内部用到的一致性协议。基本与Raft相同）</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="pasox">Pasox</h4>
+<p>Paxos算法是莱斯利·兰伯特(Leslie Lamport)1990年提出的一种基于消息传递的一致性算法。
+Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos</p>
+
+<h4 id="basic-paxos">Basic Paxos</h4>
+<ol>
+  <li>多个Proposer，都可以拿最新的编号N，进行prepare()，</li>
+  <li>每个Acceptor会响应大于本地编号的所有prepare()，并且只会promise()最大的那个编号的提案</li>
+  <li>最大编号的Proposer，收集够过半的票数之后，立即发送accept()给对应的Acceptor</li>
+  <li>接受到accept()的Acceptor就有了最新的确认提案结果
+    <ul>
+      <li>如果此时有新的大于N的prepare()就会进入下次选举循环，否则Acceptor会返回最新的提议结果给调用方</li>
+      <li>如果此时收到不大于N的accept()则拒绝回应或者回应error；</li>
+    </ul>
+  </li>
+  <li>活锁，可能会存在一种情况：假定有2个proposer先后向acceptor发送请求，acceptor在接收到proposer1的prepare请求后更新编号为proposer1的编号；此时，proposer2接着向acceptor发送比proposer1编号更大的prepare请求，acceptor会立刻更新成proposer2的编号，那么当proposer1发送accept请求时由于编号不满足要求就会被accept给拒绝掉，则重新获取编号再次回到第一阶段发送prepare请求；从此2个proposer之间不断重复发送prepare请求，导致系统出现活锁</li>
+</ol>
+<p><a href="https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg">https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg</a></p>
+
+<h4 id="multi-paxos之raft-reliable-replicated-redundant-and-fault-tolerant">Multi Paxos之Raft (Reliable, Replicated, Redundant, And Fault-Tolerant)</h4>
+<ul>
+  <li>多个follower变身为candidate，同时term++，投票给自己同时向其他节点发送RequestVote RPC</li>
+  <li>节点(N)会投票给term是最新的，log至少和自身(N)一样新的candidate</li>
+  <li>candidate收到多数投票，然后发送自己已经是leader的HeartBeat，接受者转变为follower，选举结束</li>
+  <li>一段时间后依然没有胜者。该种情况下会开启新一轮的选举。（Raft中使用随机选举超时时间来解决当票数相同无法确定leader的问题。）</li>
+  <li>日志复制（Log Replication）主要作用是用于保证节点的一致性，这阶段所做的操作也是为了保证一致性与高可用性。
+当Leader选举出来后便开始负责客户端的请求，所有事务（更新操作）请求都必须先经过Leader处理，日志复制（Log Replication）就是为了保证执行相同的操作序列所做的工作。
+在Raft中当接收到客户端的日志（事务请求）后先把该日志追加到本地的Log中，然后通过heartbeat把该Entry同步给其他Follower，Follower接收到日志后记录日志然后向Leader发送ACK，当Leader收到大多数（n/2+1）Follower的ACK信息后将该日志设置为已提交并追加到本地磁盘中，通知客户端并在下个heartbeat中Leader将通知所有的Follower将该日志存储在自己的本地磁盘中。</li>
+</ul>
+<p><a href="https://www.cnblogs.com/binyue/p/8647733.html">https://www.cnblogs.com/binyue/p/8647733.html</a></p>
+
+<h4 id="如何解决split-brain问题">如何解决split brain问题</h4>
+<ul>
+  <li>分布式协议一个著名问题就是 split brain 问题。
+简单说，就是比如当你的 cluster 里面有两个结点，它们都知道在这个 cluster 里需要选举出一个 master。那么当它们两之间的通信完全没有问题的时候，就会达成共识，选出其中一个作为 master。但是如果它们之间的通信出了问题，那么两个结点都会觉得现在没有 master，所以每个都把自己选举成 master。于是 cluster 里面就会有两个 master。
+区块链的分叉其实类似分布式系统的split brain。
+一般来说，Zookeeper会默认设置：
+    <ul>
+      <li>zookeeper cluster的节点数目必须是奇数。</li>
+      <li>zookeeper 集群中必须超过半数节点(Majority)可用，整个集群才能对外可用。</li>
+    </ul>
+  </li>
+  <li>Majority(大多数) 就是一种 Quorum(法定代表人) 的方式来支持Leader选举，可以防止 split brain出现。奇数个节点可以在相同容错能力的情况下节省资源。</li>
+</ul>
+
+<h4 id="zab算法-zookeeper-atomic-broadcast-protocol">ZAB算法 Zookeeper atomic broadcast protocol</h4>
+<ul>
+  <li>基本与Raft相同，在一些名词叫起来是有区别的</li>
+  <li>ZAB将Leader的一个生命周期叫做epoch，而Raft称之为term</li>
+  <li>实现上也有些许不同，如raft保证日志的连续性，心跳是Leader向Follower发送，而ZAB方向与之相反</li>
+</ul>
+
+<h4 id="一致性算法的实践">一致性算法的实践</h4>
+<ul>
+  <li>使用Paxos的组件，Chubby(Google首次运用Multi Paxos算法到工程领域)</li>
+  <li>使用Raft的组件，Redis-Cluster、etcd</li>
+  <li>使用ZAB的组件，Zookeeper（Yahoo开源）</li>
+</ul>
+
+<p><a href="https://www.cnblogs.com/think90/p/11443428.html">https://www.cnblogs.com/think90/p/11443428.html</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html">Not Only SQL</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -340,10 +455,10 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
 <span class="k">describe</span> <span class="n">tables</span><span class="p">;</span> <span class="c1">-- 查看已有表</span>
 <span class="k">describe</span> <span class="k">table</span> <span class="k">table_name</span> <span class="c1">-- 查看表结构</span>
 <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="p">(</span>
-  <span class="n">user_id</span> <span class="nb">text</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-  <span class="n">first_name</span> <span class="nb">text</span><span class="p">,</span>
-  <span class="n">last_name</span> <span class="nb">text</span><span class="p">,</span>
-  <span class="n">emails</span> <span class="k">set</span><span class="o">&lt;</span><span class="nb">text</span><span class="o">&gt;</span> <span class="c1">-- 集合 Cassandra特有处理方式</span>
+  <span class="n">user_id</span> <span class="n">text</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">first_name</span> <span class="n">text</span><span class="p">,</span>
+  <span class="n">last_name</span> <span class="n">text</span><span class="p">,</span>
+  <span class="n">emails</span> <span class="k">set</span><span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span> <span class="c1">-- 集合 Cassandra特有处理方式</span>
 <span class="p">);</span>
 <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">users</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">emails</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">'frodo'</span><span class="p">,</span> <span class="s1">'Frodo'</span><span class="p">,</span> <span class="s1">'Baggins'</span><span class="p">,</span> <span class="err">{</span><span class="s1">'f@baggins.com'</span><span class="p">,</span> <span class="s1">'baggins@gmail.com'</span><span class="err">}</span><span class="p">);</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">emails</span> <span class="o">=</span> <span class="n">emails</span> <span class="o">+</span> <span class="err">{</span><span class="s1">'fb@friendsofmordor.org'</span><span class="err">}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
@@ -354,12 +469,12 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">emails</span> <span class="o">=</span> <span class="err">{}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
 <span class="k">DELETE</span> <span class="n">emails</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
 
-<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">top_places</span> <span class="n">list</span><span class="o">&lt;</span><span class="nb">text</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">-- 向users表添加一个list列</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">top_places</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">-- 向users表添加一个list列</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">'rivendell'</span><span class="p">,</span> <span class="s1">'rohan'</span> <span class="p">]</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 使用UPDATA命令向list插入值</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">'the shire'</span> <span class="p">]</span> <span class="o">+</span> <span class="n">top_places</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 在list前面插入值 </span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="n">top_places</span> <span class="o">+</span> <span class="p">[</span> <span class="s1">'mordor'</span> <span class="p">]</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 在list后面插入值 </span>
 
-<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">todo</span> <span class="k">map</span><span class="o">&lt;</span><span class="nb">timestamp</span><span class="p">,</span> <span class="nb">text</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">todo</span> <span class="k">map</span><span class="o">&lt;</span><span class="k">timestamp</span><span class="p">,</span> <span class="n">text</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">todo</span> <span class="o">=</span> <span class="err">{</span> <span class="s1">'2012-9-24'</span> <span class="p">:</span> <span class="s1">'enter mordor'</span><span class="p">,</span> <span class="s1">'2014-10-2 12:00'</span> <span class="p">:</span> <span class="s1">'throw ring into mount doom'</span> <span class="err">}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
 
 <span class="c1">-- 使用TTL</span>
@@ -836,181 +951,6 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html">2PC 3PC</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="分布式事务精华">分布式事务精华</h4>
-<ol>
-  <li>X/Open DTP模型体系 Distribution Transaction Process
-    <ul>
-      <li>XA模式 eXtend Architecture</li>
-    </ul>
-  </li>
-  <li>Seata体系 Simple Extensible Autonomous Transaction Architecture
-    <ul>
-      <li>AT模式，AT模式基于本地事务的特性，通过拦截并解析 SQL 的方式，记录自定义的回滚日志，从而打破 XA 协议阻塞性的制约，在一致性、性能、易用性三个方面取得一定的平衡：在达到确定一致性（非最终一致）的前提下，即保障一定的性能，又能完全不侵入业务。在很多应用场景下，Seata的AT模式都能很好地发挥作用，把应用的分布式事务支持成本降到极低的水平。</li>
-      <li>TCC模式，先扣下资源，又业务方编写commit或cancel代码，对业务侵入性强，要求幂等。由于是预扣机制，因此需要有补偿方案。长事务解决方案。</li>
-      <li>Saga模式，长事务解决方案，有补偿机制，其理论基础在于，其假设所有事件按照顺序推进，总能达到系统的最终一致性，因此 Saga需要服务分别定义提交接口以及补偿接口，当某个事务分支失败时，调用其它的分支的补偿接口来进行回滚。
-        <ul>
-          <li>Saga模式所具备的优势有：一阶段提交本地数据库事务，无锁，高性能；参与者可以采用事务驱动异步执行，高吞吐；补偿服务即正向服务的“反向”，易于理解、易于实现；不过，Saga 模式由于一阶段已经提交本地数据库事务，且没有进行“预留”动作，所以不能保证隔离性。</li>
-          <li>由于Saga不保证隔离性，所以我们在业务设计的时候需要做到“宁可长款，不可短款”的原则，长款是指在出现差错的时候站在我方的角度钱多了的情况，钱少了则是短款，因为如果长款可以给客户退款，而短款则可能钱追不回来了，也就是说在业务设计的时候，一定是先扣客户帐再入帐，如果因为隔离性问题造成覆盖更新，也不会出现钱少了的情况。</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>本地消息表，eBay方案，事务发起方，以消息表的方式记录后续业务方处理方的处理状态，然后发送消息出去，消费者执行完毕回传结果，如果长时间没有结果发起方就轮训本地消息表。超时转人工。</li>
-  <li>消息事务，采用本地消息表方案和采用RocketMQ事务消息方案的对比，其实，我们不难发现RocketMQ的这种事务方案就是对本地消息表的封装，其MQ内部实现了本地消息表的功能，其他方面的协议基本与本地消息表一致。</li>
-  <li>最大努力通知型（Best-effort Delivery），支付宝、微信方案，用于跨系统的调用。多次推送+查询接口。</li>
-  <li>各种区别
-    <ul>
-      <li>TCC模型中的主业务服务相当于DTP模型中AP，从业务服务相当于DTP模型中的RM，两者也都有一个事务管理器；TCC模型中从业务服务器所提供的Try/Commit/Cancel接口相当于DTP模型中RM提供的Prepare/Commit/Rollback接口。</li>
-      <li>XA 方案的 RM 是放在数据库层的，它依赖了数据库的 XA 驱动程序。而上图（右），Seata 的 RM 实际上是已中间件的形式放在应用层，不用依赖数据库对协议的支持，完全剥离了分布式事务方案对数据库在协议支持上的要求。</li>
-      <li>TCC分布式事务模型相对于 XA 等传统模型，其特征在于它不依赖资源管理器（RM）对分布式事务的支持，而是通过对业务逻辑的分解来实现分布式事务。</li>
-      <li>XA两阶段提交是资源层面的，而TCC实际上把资源层面二阶段提交上提到了业务层面来实现，有效了的避免了XA两阶段提交占用资源锁时间过长导致的性能低下问题。TCC也没有AT模式中的全局行锁，所以性能也会比AT模式高很多。不过，TCC模式对业务代码有很大的侵入性，主业务服务和从业务服务都需要进行改造，从业务方改造成本更高。</li>
-      <li>Saga（易用、高性能）；AT（易用、隔离性）；TCC（性能、隔离性）</li>
-      <li>基于本地消息表的分布式事务方案就介绍到这里了，本地消息表的方案的优点是建设成本比较低，其虽然实现了可靠消息的传递确保了分布式事务的最终一致性，其实它也有一些缺陷：
-本地消息表与业务耦合在一起，难以做成通用性，不可独立伸缩。本地消息表是基于数据库来做的，而数据库是要读写磁盘IO的，因此在高并发下是有性能瓶颈的。</li>
-      <li>MQ在本地消息表或者消息事务方案中起到了协调者的作用，Transaction Coordinator（TC）：事务协调器</li>
-    </ul>
-  </li>
-</ol>
-
-<h4 id="mysql实现事务acid特性的方式总结如下">MySQL实现事务ACID特性的方式总结如下：</h4>
-<ul>
-  <li>原子性：使用 undo log来实现，如果事务执行过程中出错或者用户执行了rollback，系统通过undo log日志返回事务开始的状态。</li>
-  <li>持久性：使用 redo log来实现，只要redo log日志持久化了，当系统崩溃，即可通过redo log把数据恢复。</li>
-  <li>隔离性：通过锁以及MVCC来实现。</li>
-  <li>一致性：通过回滚、恢复以及并发情况下的隔离性，从而实现一致性。</li>
-</ul>
-
-<h4 id="在分布式服务中经常出现直接或间接调用数据库此时的事务保证如何进行">在分布式服务中，经常出现直接或间接调用数据库，此时的事务保证如何进行？</h4>
-<ul>
-  <li>解决此问题，唯一的方法就是引入”中间人”事务管理器（Transaction Manager，简称 TM，也被称之为“协调者”）</li>
-  <li>无论哪种方案，都需要制定”协议”，由各个数据库配合实现（资源管理器 Resource Manager，简称 RM，也被称之为“参与者”）</li>
-  <li>无论是 2PC 还是 3PC 都不能保证分布式系统中的数据 100% 一致，只能尽可能的做到</li>
-</ul>
-
-<h4 id="2pc3pc">2PC、3PC</h4>
-<ul>
-  <li>二阶段提交（Two-phase Commit，简称2PC）
-    <ul>
-      <li>步骤：Prepare（实际上是3PC的PreCommit）、Commit（DoCommit）</li>
-    </ul>
-  </li>
-  <li>三阶段提交（Three-phase Commit，简称3PC）
-    <ul>
-      <li>步骤：CanCommit(新增机制，尝试获取锁)、PreCommit、DoCommit</li>
-    </ul>
-  </li>
-  <li>区别
-    <ol>
-      <li>超时机制
-        <ul>
-          <li>2PC由于RM没有超时机制会产生各种阻塞问题，导致即使失败了RM的事务也不能回滚</li>
-          <li>3PC引入RM超时机制，在第二阶段PreCommit超时回滚，第三阶段DoCommit超时提交</li>
-        </ul>
-      </li>
-      <li>相较于2PC而言，3PC多设置了一个缓冲阶段尽可能保证了在最后提交阶段之前各参与节点的状态是一致的。</li>
-      <li>由于多个参与者最终Commit提交发生的意外(网络或者协调者故障)，还是会产生不一致，无法彻底解决</li>
-    </ol>
-  </li>
-</ul>
-
-<h4 id="常用分布式事务框架">常用分布式事务框架</h4>
-<ul>
-  <li>X/Open DTP(Distributed Transaction Process)模型与XA(eXtended Architecture)
-    <ul>
-      <li>DTP模型里面定义了XA接口，TM 和 RM 通过XA接口进行双向通信（这也是XA的主要作用， 除此之外，XA还对两阶段提交协议进行了部分优化），例如：TM通知RM提交事务或者回滚事务，RM把提交结果通知给TM。XA 的全称是eXtended Architecture，它是一个分布式事务协议，它通过二阶段提交协议保证强一致性。</li>
-      <li>基于XA协议实现的分布式事务是强一致性的分布式事务，典型应用场景如JAVA中有关分布式事务的规范如JTA（Java Transaction API）和JTS（Java Transaction Service）中就涉及到了XA。</li>
-    </ul>
-  </li>
-  <li>Seata（Simple Extensible Autonomous Transaction Architecture，一站式分布式事务解决方案）是2019年1月份蚂蚁金服和阿里巴巴共同开源的分布式事务解决方案。 Seata 会有 4 种分布式事务解决方案，分别是 AT 模式、TCC(Try、Commit、Cancel) 模式、Saga 模式和 XA 模式。
-    <ul>
-      <li>AT（Automatic Transaction）模式是基于XA事务演进而来，核心是对业务无侵入，是一种改进后的两阶段提交，需要数据库支持。
-解析SQL，提取元数据，保存before image，执行SQL，保存after image，生成行锁。需要回滚就比对数据版本号，一直就自动回滚，不一致人工处理。</li>
-      <li>TCC(Try、Commit、Cancel) 模式
-        <ul>
-          <li>锁定，提交/回滚。业务实现回滚代码也就是cancel回调实现。</li>
-          <li>XA两阶段提交是资源层面的，而TCC实际上把资源层面二阶段提交上提到了业务层面来实现，有效了的避免了XA两阶段提交占用资源锁时间过长导致的性能低下问题。TCC也没有AT模式中的全局行锁，所以性能也会比AT模式高很多。不过，TCC模式对业务代码有很大的侵入性，主业务服务和从业务服务都需要进行改造，从业务方改造成本更高。</li>
-        </ul>
-      </li>
-      <li>Saga 算法（https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf）于 1987 年提出，是一种异步的分布式事务解决方案。其理论基础在于，其假设所有事件按照顺序推进，总能达到系统的最终一致性，因此 Saga需要服务分别定义提交接口以及补偿接口，当某个事务分支失败时，调用其它的分支的补偿接口来进行回滚。
-在Saga模式下，分布式事务内有多个参与者，每一个参与者都是一个冲正补偿服务，需要用户根据业务场景实现其正向操作和逆向回滚操作。</li>
-      <li>XA 模式</li>
-      <li>参考 <a href="https://mp.weixin.qq.com/s/67NvEVljnU-0-6rb7MWpGw">https://mp.weixin.qq.com/s/67NvEVljnU-0-6rb7MWpGw</a></li>
-      <li>Seata实战入门 <a href="https://mp.weixin.qq.com/s/-iEAfrhuObMd9W5SpHXDtg">https://mp.weixin.qq.com/s/-iEAfrhuObMd9W5SpHXDtg</a></li>
-      <li>官网文档 <a href="https://seata.io/zh-cn/docs/overview/what-is-seata.html">https://seata.io/zh-cn/docs/overview/what-is-seata.html</a></li>
-    </ul>
-  </li>
-  <li>本地消息表</li>
-  <li>消息事务 RocketMQ(阿里开源)</li>
-  <li>最大努力通知型（Best-effort Delivery）</li>
-</ul>
-
-<h4 id="分布式事务的取舍">分布式事务的取舍</h4>
-<ul>
-  <li>严格的ACID事务对隔离性的要求很高，在事务执行中必须将所有的资源锁定，对于长事务来说，整个事务期间对数据的独占，将严重影响系统并发性能。因此，在高并发场景中，对ACID的部分特性进行放松从而提高性能，这便产生了BASE柔性事务。柔性事务的理念则是通过业务逻辑将互斥锁操作从资源层面上移至业务层面。通过放宽对强一致性要求，来换取系统吞吐量的提升。另外提供自动的异常恢复机制，可以在发生异常后也能确保事务的最终一致。</li>
-  <li>柔性事务需要应用层进行参与，因此这类分布式事务框架一个首要的功能就是怎么最大程度降低业务改造成本，然后就是尽可能提高性能（响应时间、吞吐），最好是保证隔离性。</li>
-  <li>当然如果我们要自己设计一个分布式事务框架，还需要考虑很多其它特性，在明确目标场景偏好后进行权衡取舍，这些特性包括但不限于以下：
-    <ul>
-      <li>业务侵入性（基于注解、XML，补偿逻辑）；</li>
-      <li>隔离性（写隔离/读隔离/读未提交，业务隔离/技术隔离）；</li>
-      <li>TM/TC部署形态（单独部署、与应用部署一起）；</li>
-      <li>错误恢复（自动恢复、手动恢复）；</li>
-      <li>性能（回滚的概率、付出的代价,响应时间、吞吐）；</li>
-      <li>高可用（注册中心、数据库）；</li>
-      <li>持久化（数据库、文件、多副本一致算法）；</li>
-      <li>同步/异步（2PC执行方式）；</li>
-      <li>日志清理(自动、手动)；</li>
-      <li>……</li>
-    </ul>
-  </li>
-  <li>分布式事务一直是业界难题，难在于CAP定理，在于分布式系统8大错误假设 ，在于FLP不可能原理 ，在于我们习惯于单机事务ACID做对比。无论是数据库领域XA，还是微服务下AT、TCC、Saga、本地消息表、事务消息、最大努力通知等方案，都没有完美解决分布式事务问题，它们不过是各自在性能、一致性、可用性等方面做取舍，寻求某些场景偏好下的权衡。</li>
-</ul>
-
-<h4 id="flp-impossibilityflp不可能性-fischer-lynch-and-patterson">FLP Impossibility（FLP不可能性 Fischer, Lynch and Patterson）</h4>
-<p>在异步通信场景，即使只有一个进程失败，也没有任何算法能保证非失败进程达到一致性！
-<a href="https://www.cnblogs.com/firstdream/p/6585923.html">https://www.cnblogs.com/firstdream/p/6585923.html</a></p>
-
-<h4 id="分布式系统的8个谬误">分布式系统的8个谬误</h4>
-<p><a href="http://www.360doc.com/content/18/0715/15/11935121_770570455.shtml">http://www.360doc.com/content/18/0715/15/11935121_770570455.shtml</a></p>
-<ul>
-  <li>网络可靠</li>
-  <li>延迟为零。</li>
-  <li>带宽是无限的。</li>
-  <li>网络是安全的。</li>
-  <li>拓扑不会改变。</li>
-  <li>“无所不能”的管理员。</li>
-  <li>传输成本为零。</li>
-  <li>网络是同构的。</li>
-</ul>
-
-<h4 id="参考">参考</h4>
-<ul>
-  <li>2PC和3PC原理 <a href="https://zhuanlan.zhihu.com/p/91263461">https://zhuanlan.zhihu.com/p/91263461</a></li>
-  <li>分布式事务科普 上<a href="https://mp.weixin.qq.com/s/ek3ycMJ1qbMXtMRAvTQDZg">https://mp.weixin.qq.com/s/ek3ycMJ1qbMXtMRAvTQDZg</a></li>
-  <li>分布式事务科普 下 ☆☆☆<a href="https://mp.weixin.qq.com/s/As8QpwpJvwAViZ2otiZnPg">https://mp.weixin.qq.com/s/As8QpwpJvwAViZ2otiZnPg</a></li>
-  <li>实战案例 <a href="https://springboot.io/t/topic/1658">https://springboot.io/t/topic/1658</a></li>
-  <li>实战案例 <a href="https://blog.csdn.net/hosaos/article/details/89136666">https://blog.csdn.net/hosaos/article/details/89136666</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -1066,6 +1006,10 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
       
       
       <a href="/page12" class="button page-button">12</a>
+      
+      
+      
+      <a href="/page13" class="button page-button">13</a>
       
       
 
@@ -1246,6 +1190,13 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
       
       <a  href="/tag/tob">
       <span class="label label-default">toB ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/策略">
+      <span class="label label-default">策略 ( 1 )</span>
       </a><br />
 
       

@@ -54,6 +54,66 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html">aws developer associate test IAM quick note</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jan 11, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>云服务</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h1 id="iam">iam</h1>
+<ul>
+  <li>components: <code class="highlighter-rouge">user, group, role, policy</code></li>
+  <li>user has many groups</li>
+  <li>role is defined for aws resources</li>
+  <li>policy can be used to define <code class="highlighter-rouge">role, user, group</code> access</li>
+  <li>policy is a json file defining one or more permissions</li>
+</ul>
+
+<h2 id="create-a-user">create a user</h2>
+<ol>
+  <li>console
+    <ul>
+      <li>need user name and password</li>
+      <li>can reqeust to reset password</li>
+    </ul>
+  </li>
+  <li>programtic
+    <ul>
+      <li>access key id, access key secret</li>
+      <li>only able to see the secret when creating the user, need to download the csv for further reference</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="create-a-role">create a role</h2>
+<ol>
+  <li>can create from a aws resource
+    <ul>
+      <li>e.g EC2 giving s3 read permission, any instance has this role attached can access S3</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="exam-tips">exam tips</h2>
+<ul>
+  <li>iam is global, does not relate to region</li>
+  <li>root account is the account first created, shouldn’t use this account normally</li>
+  <li>always use MFA on root account</li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html">Numpy学习笔记</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 26, 2018</span>
@@ -343,47 +403,6 @@
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html">Configure Mailgun settings in Rails app</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 29, 2017</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>Recently I’m learning to create a Rails 5 api only application with an android mobile application. I want to send a activation email after user registered from the android app, and I found there is a free Mailgun add-on on Heroku. It’s perfect choice to start to play with because you can send up to 100 messages/hour without being charged. The documentation is good enough but I do found several steps confusing.</p>
-
-<p>Firstly, you need to create a Mailgun account and add your credit card information, otherwise you can’t send to recipents other than authorized ones(which means test only).</p>
-
-<p>Then, use the test domain(XXX@XXX.mailgun.org) to ensure Mailgun not being blocked by your test mail address(In my case I use qq mail at first, it actually blocks all traffic from mailgun). After that, you need to add a custom domain. Go to your domain name provider and configure DNS settings as following the steps of Mailgun instructions. In my case I use Namecheap and it took me a while(a cup of coffee) for Mailgun to verify my domain.</p>
-
-<p>After your custom domain is active, configure your development environment and make sure it works. In my case I use smtp instead of api call, the settings are for example:</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-	:address =&gt; "smtp.mailgun.org",
-	:port =&gt; 587,
-	:domain =&gt; mydomain.club',
-	:user_name =&gt; "postmaster@mydomain.club",
-	:password =&gt; XXXX
-  }
-</code></pre></div></div>
-
-<p>Then start your rails server and see if the mail was delivered. I spent quite a few hours here because at first my emails weren’t delivered. I refered to the log and showed Mailgun accepted the mail address, and one minute later a ESP throttling message showed up. The reason is Mailgun being blocked by certain ISP(like qq mail, in this case I have to use an extra mail hosting service), so I couldn’t see any mail sent inbox.</p>
-
-<p>If OK in development environemnt, change your production settings as well, it should work as well.</p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -441,7 +460,13 @@
       <a href="/page11" class="button current-page-button">12</a>
       
       
+      
+      <a href="/page13" class="button page-button">13</a>
+      
+      
 
+      
+      <a href="/page13" class="button page-button">&raquo;</a>
       
     </div>
     
@@ -617,6 +642,13 @@
       
       <a  href="/tag/tob">
       <span class="label label-default">toB ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/策略">
+      <span class="label label-default">策略 ( 1 )</span>
       </a><br />
 
       
