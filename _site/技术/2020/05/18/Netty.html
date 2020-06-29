@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Netty</title>
-  <meta name="description" content="从零开发一个IM服务端  通俗易懂 http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty  基于Netty实现海量接入的推送服务技术要点 http://www.52im.net/forum.php?mod=vie...">
+  <meta name="description" content="Netty的零拷贝1. ReadBuffer copyTo AppBuffer2. AppBuffer  copyTo SocketBuffer3. SocketBuffer  copyTo  NIC Buffer通过transferTo()，减少了从内核态copyTo用户态，演变为1. ReadBuffer c...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,7 +60,22 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="从零开发一个im服务端">从零开发一个IM服务端</h4>
+    <h4 id="netty的零拷贝">Netty的零拷贝</h4>
+<pre>
+1. ReadBuffer copyTo AppBuffer
+2. AppBuffer  copyTo SocketBuffer
+3. SocketBuffer  copyTo  NIC Buffer
+通过transferTo()，减少了从内核态copyTo用户态，演变为
+1. ReadBuffer copyTo SocketBuffer
+3. SocketBuffer  copyTo  NIC Buffer
+通过sendfile，去除了SocketBuffer，演变为
+1. ReadBuffer copyTo  NIC Buffer
+根据socket buffer中的位置和偏移量直接将kernel buffer的数据copy到网卡设备（protocol engine）中，演变为
+1. 根据位置和偏移量，   NIC Buffer，直接从ReadBuffer读取
+</pre>
+
+<p>DMA(Direct Memory Access，直接存储器访问)</p>
+<h4 id="从零开发一个im服务端">从零开发一个IM服务端</h4>
 <ul>
   <li>通俗易懂 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty</a></li>
   <li>基于Netty实现海量接入的推送服务技术要点 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty</a></li>
