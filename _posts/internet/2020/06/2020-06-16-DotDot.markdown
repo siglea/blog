@@ -137,7 +137,7 @@ int listen (int socketfd, int backlog)
     - RTO计算
     - Nagle算法，累计够数据再发送
 - netty 高性能
-    - 无锁设计、线程绑定，类似偏向锁读写操作会判断是否是之前绑定的线程
+    - 无锁设计、线程绑定，类似偏向锁读写操作会判断是否是之前绑定的线程，相比于同一个多列多个线程模式
     - 用户可以实现其它的高性能序列化框架，例如 Thrift 的压缩二进制编解码框架。
     - 小包封大包，防止网络阻塞
     - 软中断 Hash 值和 CPU 绑定，也就是说将每个连接和 cpu 绑定，并通过这个 hash 值，来均衡软中断在多个 cpu 上，提升 网络并行处理性能。
@@ -153,37 +153,6 @@ observer角色不参与投票，它只是投票结果的"听众"，除此之外�
 对于写请求，当写请求发送到某server上后，无论这个节点是follower还是observer，都会将它发送给leader。然后leader组织投票过程，所有server都收到这个proposal(包括observer，因为proposal是广播出去的)，但是leader和follower以及observer通过配置文件，都知道自己是不是observer以及谁是observer。自己是observer的server不参与投票。当leader收集完投票后，将那些observer的server去掉，在剩下的server中计算大多数，如果投票结果达到了大多数，这次写事务就成功，于是leader通知所有的节点(包括observer)，让它们将事务写入事务日志，并提交。
 
 Pojo(plian ordinary普通的; 平常的; java object)
-
-#### JVM
-```shell
--Xms2g：初始化推大小为 2g；
--Xmx2g：堆最大内存为 2g；
--XX:NewRatio=4：设置年轻的和老年代的内存比例为 1:4；
--XX:SurvivorRatio=8：设置新生代 Eden 和 Survivor 比例为 8:2；
-–XX:+UseParNewGC：指定使用 ParNew + Serial Old 垃圾回收器组合；
--XX:+UseParallelOldGC：指定使用 ParNew + ParNew Old 垃圾回收器组合；
--XX:+UseConcMarkSweepGC：指定使用 CMS + Serial Old 垃圾回收器组合；
--XX:+PrintGC：开启打印 gc 信息；
--XX:+PrintGCDetails：打印 gc 详细信息。
-```
-
-#### 分代垃圾回收器是怎么工作的？
-- 分代回收器有两个分区：老生代和新生代，新生代默认的空间占比总空间的 1/3，老生代的默认占比是 2/3。
-- 新生代使用的是复制算法，新生代里有 3 个分区：Eden、To Survivor、From Survivor，它们的默认占比是  8:1:1，它的执行流程如下：
-- 把 Eden + From Survivor 存活的对象放入 To Survivor 区；
-清空 Eden 和 From Survivor 分区；
-From Survivor 和 To Survivor 分区交换，From Survivor 变 To Survivor，To Survivor 变 From Survivor。
-每次在 From Survivor 到 To Survivor 移动时都存活的对象，年龄就 +1，当年龄到达 15（默认配置是 15）时，升级为老生代。大对象也会直接进入老生代。
-- 老生代当空间占用到达某个值之后就会触发全局垃圾收回，一般使用标记整理的执行算法。以上这些循环往复就构成了整个分代垃圾回收的整体执行流程。
-
-#### 垃圾回收器
-- Serial收集器（复制算法): 新生代单线程收集器，标记和清理都是单线程，优点是简单高效；
-- ParNew收集器 (复制算法): 新生代收并行集器，实际上是Serial收集器的多线程版本，在多核CPU环境下有着比Serial更好的表现；
-- Parallel Scavenge收集器 (复制算法): 新生代并行收集器，追求高吞吐量，高效利用 CPU。吞吐量 = 用户线程时间/(用户线程时间+GC线程时间)，高吞吐量可以高效率的利用CPU时间，尽快完成程序的运算任务，适合后台应用等对交互相应要求不高的场景；
-- Serial Old收集器 (标记-整理算法): 老年代单线程收集器，Serial收集器的老年代版本；
-- Parallel Old收集器 (标记-整理算法)： 老年代并行收集器，吞吐量优先，Parallel Scavenge收集器的老年代版本；
-- CMS(Concurrent Mark Sweep)收集器（标记-清除算法）： 老年代并行收集器，以获取最短回收停顿时间为目标的收集器，具有高并发、低停顿的特点，追求最短GC回收停顿时间。
-- G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。
 
 #### BIO,NIO,AIO 有什么区别?
 BIO：Block IO 同步阻塞式 IO，就是我们平常使用的传统 IO，它的特点是模式简单使用方便，并发处理能力低。
@@ -359,3 +328,34 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
     - & ParNew
     - & Parallel Scavenge New
 - CMS短停顿 与 Scavenge 高吞吐不可一组
+
+#### 垃圾回收器
+- Serial收集器（复制算法): 新生代单线程收集器，标记和清理都是单线程，优点是简单高效；
+- ParNew收集器 (复制算法): 新生代收并行集器，实际上是Serial收集器的多线程版本，在多核CPU环境下有着比Serial更好的表现；
+- Parallel Scavenge收集器 (复制算法): 新生代并行收集器，追求高吞吐量，高效利用 CPU。吞吐量 = 用户线程时间/(用户线程时间+GC线程时间)，高吞吐量可以高效率的利用CPU时间，尽快完成程序的运算任务，适合后台应用等对交互相应要求不高的场景；
+- Serial Old收集器 (标记-整理算法): 老年代单线程收集器，Serial收集器的老年代版本；
+- Parallel Old收集器 (标记-整理算法)： 老年代并行收集器，吞吐量优先，Parallel Scavenge收集器的老年代版本；
+- CMS(Concurrent Mark Sweep)收集器（标记-清除算法）： 老年代并行收集器，以获取最短回收停顿时间为目标的收集器，具有高并发、低停顿的特点，追求最短GC回收停顿时间。
+- G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。
+
+#### JVM
+```shell
+-Xms2g：初始化推大小为 2g；
+-Xmx2g：堆最大内存为 2g；
+-XX:NewRatio=4：设置年轻的和老年代的内存比例为 1:4；
+-XX:SurvivorRatio=8：设置新生代 Eden 和 Survivor 比例为 8:2；
+–XX:+UseParNewGC：指定使用 ParNew + Serial Old 垃圾回收器组合；
+-XX:+UseParallelOldGC：指定使用 ParNew + ParNew Old 垃圾回收器组合；
+-XX:+UseConcMarkSweepGC：指定使用 CMS + Serial Old 垃圾回收器组合；
+-XX:+PrintGC：开启打印 gc 信息；
+-XX:+PrintGCDetails：打印 gc 详细信息。
+```
+
+#### 分代垃圾回收器是怎么工作的？
+- 分代回收器有两个分区：老生代和新生代，新生代默认的空间占比总空间的 1/3，老生代的默认占比是 2/3。
+- 新生代使用的是复制算法，新生代里有 3 个分区：Eden、To Survivor、From Survivor，它们的默认占比是  8:1:1，它的执行流程如下：
+- 把 Eden + From Survivor 存活的对象放入 To Survivor 区；
+清空 Eden 和 From Survivor 分区；
+From Survivor 和 To Survivor 分区交换，From Survivor 变 To Survivor，To Survivor 变 From Survivor。
+每次在 From Survivor 到 To Survivor 移动时都存活的对象，年龄就 +1，当年龄到达 15（默认配置是 15）时，升级为老生代。大对象也会直接进入老生代。
+- 老生代当空间占用到达某个值之后就会触发全局垃圾收回，一般使用标记整理的执行算法。以上这些循环往复就构成了整个分代垃圾回收的整体执行流程。

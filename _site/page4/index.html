@@ -54,6 +54,107 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html"> 数据结构 </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 31, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="数组">数组</h4>
+<ul>
+  <li>数组可以说是最基本最常见的数据结构。数组一般用来存储相同类型的数据，可通过数组名和下标进行数据的访问和更新。数组中元素的存储是按照先后顺序进行的，同时在内存中也是按照这个顺序进行连续存放。数组相邻元素之间的内存地址的间隔一般就是数组数据类型的大小。</li>
+</ul>
+
+<h4 id="链表">链表</h4>
+<ul>
+  <li>链表相较于数组，除了数据域，还增加了指针域用于构建链式的存储数据。链表中每一个节点都包含此节点的数据和指向下一节点地址的指针。由于是通过指针进行下一个数据元素的查找和访问，使得链表的自由度更高。</li>
+  <li>这表现在对节点进行增加和删除时，只需要对上一节点的指针地址进行修改，而无需变动其它的节点。不过事物皆有两极，指针带来高自由度的同时，自然会牺牲数据查找的效率和多余空间的使用。</li>
+  <li>一般常见的是有头有尾的单链表，对指针域进行反向链接，还可以形成双向链表或者循环链表。</li>
+</ul>
+
+<h4 id="跳表">跳表</h4>
+<ul>
+  <li>链表虽然通过增加指针域提升了自由度，但是却导致数据的查询效率恶化。特别是当链表长度很长的时候，对数据的查询还得从头依次查询，这样的效率会更低。跳表的产生就是为了解决链表过长的问题，通过增加链表的多级索引来加快原始链表的查询效率。这样的方式可以让查询的时间复杂度从O(n)提升至O(logn)。</li>
+  <li>跳表通过增加的多级索引能够实现高效的动态插入和删除，其效率和红黑树和平衡二叉树不相上下。目前redis和levelDB都有用到跳表。</li>
+</ul>
+
+<h4 id="栈">栈</h4>
+<ul>
+  <li>后进先出</li>
+</ul>
+
+<h4 id="队列">队列</h4>
+<ul>
+  <li>先进先出</li>
+</ul>
+
+<h4 id="树">树</h4>
+<ul>
+  <li>别看树好像很高级，其实可看作是链表的高配版。树的实现就是对链表的指针域进行了扩充，增加了多个地址指向子结点。同时将“链表”竖起来，从而凸显了结点之间的层次关系，更便于分析和理解。</li>
+  <li>树遍历
+    <ul>
+      <li>前序遍历：根结点 —&gt; 左子树 —&gt; 右子树</li>
+      <li>中序遍历：左子树—&gt; 根结点 —&gt; 右子树</li>
+      <li>后序遍历：左子树 —&gt; 右子树 —&gt; 根结点</li>
+      <li>层次遍历：仅仅需按层次遍历就可以</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="平衡二叉树">平衡二叉树</h4>
+<ul>
+  <li>平衡二叉树又被称为AVL树，它是一棵二叉排序树，且具有以下性质：它是一棵空树或它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树。</li>
+</ul>
+
+<h4 id="红黑树">红黑树</h4>
+<ul>
+  <li>每个结点要么是红的要么是黑的。</li>
+  <li>根结点是黑的。</li>
+  <li>每个叶结点（叶结点即指树尾端NIL指针或NULL结点）都是黑的。</li>
+  <li>如果一个结点是红的，那么它的两个儿子都是黑的。</li>
+  <li>对于任意结点而言，其到叶结点树尾端NIL指针的每条路径都包含相同数目的黑结点。</li>
+  <li>Map、Set、epoll/select中句柄集</li>
+</ul>
+
+<h4 id="堆">堆</h4>
+<ul>
+  <li>了解完二叉树，再来理解堆就不是什么难事了。堆通常是一个可以被看做一棵树的数组对象。堆的具体实现一般不通过指针域，而是通过构建一个一维数组与二叉树的父子结点进行对应，因此堆总是一颗完全二叉树。</li>
+  <li>堆中某个节点的值总是不大于或不小于其父节点的值。将根节点最大的堆叫做最大堆或大根堆，根节点最小的堆叫做最小堆或小根堆。</li>
+</ul>
+
+<h4 id="散列表-hash">散列表 Hash</h4>
+<ul>
+  <li>通过某种算法确定唯一（有些算法会出现不同的value算出相同的Hash值）</li>
+</ul>
+
+<h4 id="图">图</h4>
+<ul>
+  <li>多维数据存储,实际应用中是通过图这种模式建立索引与关联关系</li>
+  <li>图数据库？
+    <ul>
+      <li>图数据库(Graph database)并非指存储图片的数据库，而是以图这种数据结构存储和查询数据。</li>
+      <li>图形数据库是一种在线数据库管理系统，具有处理图形数据模型的创建，读取，更新和删除（CRUD）操作。</li>
+      <li>与其他数据库不同，关系在图数据库中占首要地位。这意味着应用程序不必使用外键或带外处理（如MapReduce）来推断数据连接。</li>
+      <li>与关系数据库或其他NoSQL数据库相比，图数据库的数据模型也更加简单，更具表现力。</li>
+      <li>图形数据库是为与事务（OLTP）系统一起使用而构建的，并且在设计时考虑了事务完整性和操作可用性。</li>
+    </ul>
+  </li>
+</ul>
+
+<p><a href="https://mp.weixin.qq.com/s/TFG7bWo1BFzjusQ2fEvVSA">https://mp.weixin.qq.com/s/TFG7bWo1BFzjusQ2fEvVSA</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html">排序算法概述</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 31, 2020</span>
@@ -1029,45 +1130,6 @@ d89f620da4754e1092402b577f589f8a：这就是用来存储真实数据的hfile
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"> Java SPI </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。
-Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。
-在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。</p>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
-    <span class="kd">implements</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
-<span class="o">{</span>
-
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
-            <span class="k">return</span> <span class="n">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<p><a href="https://blog.csdn.net/sweatOtt/article/details/83055191">https://blog.csdn.net/sweatOtt/article/details/83055191</a></p>
-
-<p><a href="https://juejin.im/post/5af952fdf265da0b9e652de3">https://juejin.im/post/5af952fdf265da0b9e652de3</a></p>
-
-<p><a href="https://www.jianshu.com/p/46b42f7f593c">https://www.jianshu.com/p/46b42f7f593c</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -1187,7 +1249,7 @@ Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义C
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 15 )</span>
+      <span class="label label-default">分布式 ( 16 )</span>
       </a><br />
 
       
@@ -1215,7 +1277,7 @@ Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义C
       
       
       <a  href="/tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 11 )</span>
+      <span class="label label-default">数据结构与算法 ( 12 )</span>
       </a><br />
 
       
@@ -1278,7 +1340,7 @@ Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义C
       
       
       <a  href="/tag/bigdata">
-      <span class="label label-default">BigData ( 4 )</span>
+      <span class="label label-default">BigData ( 5 )</span>
       </a><br />
 
       
