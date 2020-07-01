@@ -67,7 +67,7 @@ categories:
  <img src="/img/user_profile.jpg" width="600px">
 
 #### 用户画像后台标签
- <img src="/img/user_profile_admin.jpg" width="600px">
+ <img src="/img/user_profile_admin.jpg" width="600px"> 
 
 #### 用户业务标签
  <img src="/img/user_profile_tags.jpg" width="600px">

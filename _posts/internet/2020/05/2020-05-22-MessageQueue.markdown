@@ -8,6 +8,11 @@ tags:
 categories:
 - 技术
 ---
+<img src="/img/mq.jpg" width="600px"> 
+
+17 个方面，综合对比 Kafka、RabbitMQ、RocketMQ、ActiveMQ 
+<https://mp.weixin.qq.com/s/u7pyzEQgqmux9qUI_SPaNw>
+
 ### AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）
 - 高级消息队列协议，是应用层协议的一个开放标准，为面向消息的中间件设计。消息中间件主要用于组件之间的解耦，消息的发送者无需知道消息使用者的存在，反之亦然。
 - AMQP的主要特征是面向消息、队列、路由（包括点对点和发布/订阅）、可靠性、安全。RabbitMQ是一个开源的AMQP实现，服务器端用Erlang语言编写，支持多种客户端，如：Python、Ruby、.NET、Java、JMS、C、PHP、ActionScript、XMPP、STOMP等，支持AJAX。用于在分布式系统中存储转发消息，在易用性、扩展性、高可用性等方面表现不俗。
@@ -24,6 +29,26 @@ categories:
 
 #### 推拉模式
 消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。
+
+### ActiveMQ
+
+#### ActiveMQ 服务器宕机怎么办？
+这得从 ActiveMQ 的储存机制说起。在通常的情况下，非持久化消息是存储在内存中的，持久化消息是存储在文件中的，它们的最大限制在配置文件的节点中配置。但是，在非持久化消息堆积到一定程度，内存告急的时候，ActiveMQ 会将内存中的非持久化消息写入临时文件中，以腾出内存。虽然都保存到了文件里，但它和持久化消息的区别是，重启后持久化消息会从文件中恢复，非持久化的临时文件会直接删除。
+那如果文件增大到达了配置中的最大限制的时候会发生什么？我做了以下实验：
+设置 2G 左右的持久化文件限制，大量生产持久化消息直到文件达到最大限制，此时生产者阻塞，但消费者可正常连接并消费消息，等消息消费掉一部分，文件删除又腾出空间之后，生产者又可继续发送消息， 服务自动恢复正常。
+设置 2G 左右的临时文件限制，大量生产非持久化消息并写入临时文件，在达到最大限制时，生产者阻塞，消费者可正常连接但不能消费消息，或者原本慢速消费的消费者，消费突然停止。整个系统可连接， 但是无法提供服务，就这样挂了。
+
+#### ActiveMQ 消息的不均匀消费。
+有时在发送一些消息之后，开启 2 个消费者去处理消息。会发现一个消费者处理了所有的消息，另一个消费者根本没收到消息。原因在于 ActiveMQ 的 prefetch 机制。当消费者去获取消息时，不会一条一条去获取，而是一次性获取一批，默认是 1000 条。这些预获取的消息，在还没确认消费之前，在管理控制台还是可以看见这些消息的，但是不会再分配给其他消费者，此时这些消息的状态应该算作“已分配未消 费”，如果消息最后被消费，则会在服务器端被删除，如果消费者崩溃，则这些消息会被重新分配给新的消费者。但是如果消费者既不消费确认，又不崩溃，那这些消息就永远躺在消费者的缓存区里无法处理。更通常的情况是，消费这些消息非常耗时，你开了 10 个消费者去处理，结果发现只有一台机器吭哧吭哧处理，另外 9 台啥事不干。
+解决方案：将 prefetch 设为 1，每次处理 1 条消息，处理完再去取，这样也慢不了多少。
+
+#### ActiveMQ 死信队列。
+如果你想在消息处理失败后，不被服务器删除，还能被其他消费者处理或重试，可以关闭AUTO_ACKNOWLEDGE，将 ack 交由程序自己处理。那如果使用了 AUTO_ACKNOWLEDGE，消息是什么时候被确认的，还有没有阻止消息确认的方法？有！
+消费消息有 2 种方法：
+- 一种是调用 consumer.receive()方法，该方法将阻塞直到获得并返回一条消息。这种情况下，消息返回给方法调用者之后就自动被确认了。
+- 一种方法是采用 listener 回调函数，在有消息到达时，会调用 listener 接口的 onMessage 方法。在这种情况下，在 onMessage 方法执行完毕后， 消息才会被确认，此时只要在方法中抛出异常，该消息就不会被确认。
+那么问题来了，如果一条消息不能被处理，会被退回服务器重新分配，如果只有一个消费者，该消息又会重新被获取，重新抛异常。就算有多个消费者，往往在一个服务器上不能处理的消息，在另外的服务器上依然不能被处理。难道就这么退回–获取–报错死循环了吗？
+- 在重试 6 次后，ActiveMQ 认为这条消息是“有毒”的，将会把消息丢到死信队列里。如果你的消息不见了，去 ActiveMQ.DLQ 里找找，说不定就躺在那里。
 
 ### RabbitMq
 - Exchange：消息交换机，生产者不是直接将消息投递到Queue中的，实际上是生产者将消息发送到Exchange（交换器，下图中的X），由Exchange将消息路由到一个或多个Queue中（或者丢弃）。
@@ -73,6 +98,11 @@ rabbitmqctl set_permissions -p / rabbitmq ".*" ".*" ".*"
     因为consumer在本地缓存所有的message，从而极有可能导致OOM或者导致服务器内存不足影响其它进程的正常运行。
     所以我们需要通过设置Qos的prefetch count来控制consumer的流量。同时设置得当也会提高consumer的吞吐量。
 
+#### Master是最终读写保存的地方，Slave中转     
+除发送消息（Basic.Publish）外的所有动作都只会向 master 发送，然后再由master 将命令执行的结果广播给各个 slave。
+如果消费者与 slave 建立连接并进行订阅消费，其实质都是从 master 上获取消息，只不过看似是从 slave 上消费而已。比如消费者与 slave 建立了 TCP 连接之后执行一个 Basic.Get 操作，那么首先是由 slave 将Basic.Get 请求发往 master，再由 master 准备好数据返回给 slave，最后由 slave 投递给消费者。
+
+
 #### RabbitMq参考
 - RabbitMQ <https://www.jianshu.com/p/78847c203b76>
 - RabbitMQ镜像队列 <https://www.jianshu.com/p/fcc35573567c>
@@ -113,6 +143,12 @@ rabbitmqctl set_permissions -p / rabbitmq ".*" ".*" ".*"
       offset：指的是kafka的topic中的每个消费组消费的下标。简单的来说就是一条消息对应一个offset下标，每次消费数据的时候如果提交offset，那么下次消费就会从提交的offset加一那里开始消费。
 
 ### Kafka
+#### 写操作都发生在leader broker，其他broker会告诉client，leader在哪里
+producer是否直接将数据发送到broker的leader(主节点
+producer直接将数据发送到broker的leader(主节点)，不需要在多个节点
+逬行分发，为了帮助producer做到这点，所有的Kafka节点都可以及时
+的告知:哪些节点是活动的，目标topic目标分区的leader在哪。这样
+producer就可以直接将消息发送到目的地了
 
 #### Kafka 数据传输的事物定义有哪三种?
 数据传输的事务定义通常有以下三种级别:
@@ -218,6 +254,9 @@ brokerIP1=hostname.com
 ```
 - rocketmq为什么使用nameserver而不使用ZooKeeper？<https://blog.csdn.net/earthhour/article/details/78718064>
 - 点赞削峰 <https://mp.weixin.qq.com/s/w6aCc-ueYHjkNeEZYcmAhw>
+- <http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/>
+- <https://blog.csdn.net/javahongxi/article/details/84931747>
+- <https://www.jianshu.com/p/2838890f3284>
 
 #### 参考
 - 消息队列常见问题 

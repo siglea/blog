@@ -153,7 +153,12 @@
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="amqp即advanced-message-queuing-protocolactivemqrabbitmq都支持">AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）</h3>
+	<p><img src="/img/mq.jpg" width="600px" /></p>
+
+<p>17 个方面，综合对比 Kafka、RabbitMQ、RocketMQ、ActiveMQ
+<a href="https://mp.weixin.qq.com/s/u7pyzEQgqmux9qUI_SPaNw">https://mp.weixin.qq.com/s/u7pyzEQgqmux9qUI_SPaNw</a></p>
+
+<h3 id="amqp即advanced-message-queuing-protocolactivemqrabbitmq都支持">AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）</h3>
 <ul>
   <li>高级消息队列协议，是应用层协议的一个开放标准，为面向消息的中间件设计。消息中间件主要用于组件之间的解耦，消息的发送者无需知道消息使用者的存在，反之亦然。</li>
   <li>AMQP的主要特征是面向消息、队列、路由（包括点对点和发布/订阅）、可靠性、安全。RabbitMQ是一个开源的AMQP实现，服务器端用Erlang语言编写，支持多种客户端，如：Python、Ruby、.NET、Java、JMS、C、PHP、ActionScript、XMPP、STOMP等，支持AJAX。用于在分布式系统中存储转发消息，在易用性、扩展性、高可用性等方面表现不俗。</li>
@@ -175,6 +180,28 @@
 
 <h4 id="推拉模式">推拉模式</h4>
 <p>消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。</p>
+
+<h3 id="activemq">ActiveMQ</h3>
+
+<h4 id="activemq-服务器宕机怎么办">ActiveMQ 服务器宕机怎么办？</h4>
+<p>这得从 ActiveMQ 的储存机制说起。在通常的情况下，非持久化消息是存储在内存中的，持久化消息是存储在文件中的，它们的最大限制在配置文件的节点中配置。但是，在非持久化消息堆积到一定程度，内存告急的时候，ActiveMQ 会将内存中的非持久化消息写入临时文件中，以腾出内存。虽然都保存到了文件里，但它和持久化消息的区别是，重启后持久化消息会从文件中恢复，非持久化的临时文件会直接删除。
+那如果文件增大到达了配置中的最大限制的时候会发生什么？我做了以下实验：
+设置 2G 左右的持久化文件限制，大量生产持久化消息直到文件达到最大限制，此时生产者阻塞，但消费者可正常连接并消费消息，等消息消费掉一部分，文件删除又腾出空间之后，生产者又可继续发送消息， 服务自动恢复正常。
+设置 2G 左右的临时文件限制，大量生产非持久化消息并写入临时文件，在达到最大限制时，生产者阻塞，消费者可正常连接但不能消费消息，或者原本慢速消费的消费者，消费突然停止。整个系统可连接， 但是无法提供服务，就这样挂了。</p>
+
+<h4 id="activemq-消息的不均匀消费">ActiveMQ 消息的不均匀消费。</h4>
+<p>有时在发送一些消息之后，开启 2 个消费者去处理消息。会发现一个消费者处理了所有的消息，另一个消费者根本没收到消息。原因在于 ActiveMQ 的 prefetch 机制。当消费者去获取消息时，不会一条一条去获取，而是一次性获取一批，默认是 1000 条。这些预获取的消息，在还没确认消费之前，在管理控制台还是可以看见这些消息的，但是不会再分配给其他消费者，此时这些消息的状态应该算作“已分配未消 费”，如果消息最后被消费，则会在服务器端被删除，如果消费者崩溃，则这些消息会被重新分配给新的消费者。但是如果消费者既不消费确认，又不崩溃，那这些消息就永远躺在消费者的缓存区里无法处理。更通常的情况是，消费这些消息非常耗时，你开了 10 个消费者去处理，结果发现只有一台机器吭哧吭哧处理，另外 9 台啥事不干。
+解决方案：将 prefetch 设为 1，每次处理 1 条消息，处理完再去取，这样也慢不了多少。</p>
+
+<h4 id="activemq-死信队列">ActiveMQ 死信队列。</h4>
+<p>如果你想在消息处理失败后，不被服务器删除，还能被其他消费者处理或重试，可以关闭AUTO_ACKNOWLEDGE，将 ack 交由程序自己处理。那如果使用了 AUTO_ACKNOWLEDGE，消息是什么时候被确认的，还有没有阻止消息确认的方法？有！
+消费消息有 2 种方法：</p>
+<ul>
+  <li>一种是调用 consumer.receive()方法，该方法将阻塞直到获得并返回一条消息。这种情况下，消息返回给方法调用者之后就自动被确认了。</li>
+  <li>一种方法是采用 listener 回调函数，在有消息到达时，会调用 listener 接口的 onMessage 方法。在这种情况下，在 onMessage 方法执行完毕后， 消息才会被确认，此时只要在方法中抛出异常，该消息就不会被确认。
+那么问题来了，如果一条消息不能被处理，会被退回服务器重新分配，如果只有一个消费者，该消息又会重新被获取，重新抛异常。就算有多个消费者，往往在一个服务器上不能处理的消息，在另外的服务器上依然不能被处理。难道就这么退回–获取–报错死循环了吗？</li>
+  <li>在重试 6 次后，ActiveMQ 认为这条消息是“有毒”的，将会把消息丢到死信队列里。如果你的消息不见了，去 ActiveMQ.DLQ 里找找，说不定就躺在那里。</li>
+</ul>
 
 <h3 id="rabbitmq">RabbitMq</h3>
 <ul>
@@ -245,6 +272,10 @@ rabbitmqctl set_permissions <span class="nt">-p</span> / rabbitmq <span class="s
   所以我们需要通过设置Qos的prefetch count来控制consumer的流量。同时设置得当也会提高consumer的吞吐量。</li>
 </ul>
 
+<h4 id="master是最终读写保存的地方slave中转">Master是最终读写保存的地方，Slave中转</h4>
+<p>除发送消息（Basic.Publish）外的所有动作都只会向 master 发送，然后再由master 将命令执行的结果广播给各个 slave。
+如果消费者与 slave 建立连接并进行订阅消费，其实质都是从 master 上获取消息，只不过看似是从 slave 上消费而已。比如消费者与 slave 建立了 TCP 连接之后执行一个 Basic.Get 操作，那么首先是由 slave 将Basic.Get 请求发往 master，再由 master 准备好数据返回给 slave，最后由 slave 投递给消费者。</p>
+
 <h4 id="rabbitmq参考">RabbitMq参考</h4>
 <ul>
   <li>RabbitMQ <a href="https://www.jianshu.com/p/78847c203b76">https://www.jianshu.com/p/78847c203b76</a></li>
@@ -307,6 +338,12 @@ offset：指的是kafka的topic中的每个消费组消费的下标。简单的�
 </ul>
 
 <h3 id="kafka">Kafka</h3>
+<h4 id="写操作都发生在leader-broker其他broker会告诉clientleader在哪里">写操作都发生在leader broker，其他broker会告诉client，leader在哪里</h4>
+<p>producer是否直接将数据发送到broker的leader(主节点
+producer直接将数据发送到broker的leader(主节点)，不需要在多个节点
+逬行分发，为了帮助producer做到这点，所有的Kafka节点都可以及时
+的告知:哪些节点是活动的，目标topic目标分区的leader在哪。这样
+producer就可以直接将消息发送到目的地了</p>
 
 <h4 id="kafka-数据传输的事物定义有哪三种">Kafka 数据传输的事物定义有哪三种?</h4>
 <p>数据传输的事务定义通常有以下三种级别:</p>
@@ -427,6 +464,9 @@ broker机器的内网ip  hostname.com
 <ul>
   <li>rocketmq为什么使用nameserver而不使用ZooKeeper？<a href="https://blog.csdn.net/earthhour/article/details/78718064">https://blog.csdn.net/earthhour/article/details/78718064</a></li>
   <li>点赞削峰 <a href="https://mp.weixin.qq.com/s/w6aCc-ueYHjkNeEZYcmAhw">https://mp.weixin.qq.com/s/w6aCc-ueYHjkNeEZYcmAhw</a></li>
+  <li><a href="http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/">http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/</a></li>
+  <li><a href="https://blog.csdn.net/javahongxi/article/details/84931747">https://blog.csdn.net/javahongxi/article/details/84931747</a></li>
+  <li><a href="https://www.jianshu.com/p/2838890f3284">https://www.jianshu.com/p/2838890f3284</a></li>
 </ul>
 
 <h4 id="参考">参考</h4>
@@ -600,13 +640,13 @@ broker机器的内网ip  hostname.com
     <span class="nd">@Value</span><span class="o">(</span><span class="s">"${server.port}"</span><span class="o">)</span>
     <span class="kd">private</span> <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>
     <span class="c1">// 通过nio方式来接收连接和处理连接</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="n">EventLoopGroup</span> <span class="n">boss</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NioEventLoopGroup</span><span class="o">();</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="n">EventLoopGroup</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NioEventLoopGroup</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">EventLoopGroup</span> <span class="n">boss</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">EventLoopGroup</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
 
     <span class="c1">// 启动引导器</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="n">ServerBootstrap</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServerBootstrap</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">ServerBootstrap</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">();</span>
     <span class="nd">@Autowired</span>
-    <span class="kd">private</span> <span class="n">EchoServerHandler</span> <span class="n">echoServerHandler</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">EchoServerHandler</span> <span class="n">echoServerHandler</span><span class="o">;</span>
 
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span>
     <span class="o">{</span>
@@ -614,14 +654,14 @@ broker机器的内网ip  hostname.com
         <span class="o">{</span>
             <span class="n">b</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">boss</span><span class="o">,</span> <span class="n">work</span><span class="o">);</span>
             <span class="c1">// 设置nio类型的channel</span>
-            <span class="n">b</span><span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="n">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+            <span class="n">b</span><span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
             <span class="c1">// 设置监听端口</span>
-            <span class="n">b</span><span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">port</span><span class="o">));</span>
+            <span class="n">b</span><span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">port</span><span class="o">));</span>
             <span class="c1">// 设置通道初始化</span>
-            <span class="n">b</span><span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">ChannelInitializer</span><span class="o">&lt;</span><span class="n">SocketChannel</span><span class="o">&gt;()</span>
+            <span class="n">b</span><span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">ChannelInitializer</span><span class="o">&lt;</span><span class="nc">SocketChannel</span><span class="o">&gt;()</span>
             <span class="o">{</span>
                 <span class="c1">//有连接到达时会创建一个channel</span>
-                <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
+                <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
                 <span class="o">{</span>
                     <span class="c1">// pipeline管理channel中的Handler</span>
                     <span class="c1">// 在channel队列中添加一个handler来处理业务</span>
@@ -631,14 +671,14 @@ broker机器的内网ip  hostname.com
             <span class="c1">// 配置完成，开始绑定server</span>
             <span class="c1">// 通过调用sync同步方法阻塞直到绑定成功</span>
 
-            <span class="n">ChannelFuture</span> <span class="n">f</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="na">bind</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">EchoServer</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span>
+            <span class="nc">ChannelFuture</span> <span class="n">f</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="na">bind</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">EchoServer</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span>
                     <span class="s">" started and listen on "</span> <span class="o">+</span> <span class="n">f</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">localAddress</span><span class="o">());</span>
 
             <span class="c1">// 监听服务器关闭事件</span>
             <span class="c1">// 应用程序会一直等待，直到channel关闭</span>
             <span class="n">f</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">closeFuture</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span>
         <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">finally</span>
@@ -668,41 +708,41 @@ broker机器的内网ip  hostname.com
 <span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
 
 <span class="nd">@Service</span><span class="o">(</span><span class="s">"echoServerHandler"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="n">ChannelInboundHandlerAdapter</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
 <span class="o">{</span>
 
     <span class="cm">/**
      * 建立连接时，发送一条消息
      */</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
     <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
         <span class="kd">super</span><span class="o">.</span><span class="na">channelActive</span><span class="o">(</span><span class="n">ctx</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Object</span> <span class="n">msg</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="k">try</span>
         <span class="o">{</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
 <span class="c1">//            ctx.write(msg);//写回数据，</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="n">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">){</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-            <span class="n">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="c1">//flush掉所有写回的数据</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="n">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="n">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="nc">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">cause</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="c1">//捕捉异常信息</span>
         <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
@@ -728,41 +768,41 @@ broker机器的内网ip  hostname.com
 <span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
 
 <span class="nd">@Service</span><span class="o">(</span><span class="s">"echoServerHandler"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="n">ChannelInboundHandlerAdapter</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
 <span class="o">{</span>
 
     <span class="cm">/**
      * 建立连接时，发送一条消息
      */</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
     <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
         <span class="kd">super</span><span class="o">.</span><span class="na">channelActive</span><span class="o">(</span><span class="n">ctx</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Object</span> <span class="n">msg</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="k">try</span>
         <span class="o">{</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
 <span class="c1">//            ctx.write(msg);//写回数据，</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="n">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">){</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-            <span class="n">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="c1">//flush掉所有写回的数据</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="n">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="n">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="nc">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">cause</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="c1">//捕捉异常信息</span>
         <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
@@ -789,16 +829,16 @@ broker机器的内网ip  hostname.com
 <span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
 
 <span class="nd">@Service</span><span class="o">(</span><span class="s">"echoClientHandler"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoClientHandler</span> <span class="kd">extends</span> <span class="n">ChannelInboundHandlerAdapter</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoClientHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
 <span class="o">{</span>
     <span class="cm">/**
      * 此方法会在连接到服务器后被调用
      */</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
     <span class="o">{</span>
 
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelActive"</span><span class="o">);</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"Netty rocks!"</span><span class="o">,</span> <span class="n">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelActive"</span><span class="o">);</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"Netty rocks!"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
         <span class="n">ctx</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
     <span class="o">}</span>
 
@@ -806,34 +846,34 @@ broker机器的内网ip  hostname.com
      * 业务逻辑处理
      */</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Object</span> <span class="n">msg</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
     <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelRead"</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelRead"</span><span class="o">);</span>
         <span class="c1">// 如果不是protobuf类型的数据</span>
-        <span class="k">if</span> <span class="o">(!(</span><span class="n">msg</span> <span class="k">instanceof</span> <span class="n">ByteBuf</span><span class="o">))</span>
+        <span class="k">if</span> <span class="o">(!(</span><span class="n">msg</span> <span class="k">instanceof</span> <span class="nc">ByteBuf</span><span class="o">))</span>
         <span class="o">{</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"未知数据!"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"未知数据!"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
             <span class="k">return</span><span class="o">;</span>
         <span class="o">}</span>
         <span class="k">try</span>
         <span class="o">{</span>
-            <span class="n">ByteBuf</span> <span class="n">in</span> <span class="o">=</span> <span class="o">(</span><span class="n">ByteBuf</span><span class="o">)</span> <span class="n">msg</span><span class="o">;</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Client received: "</span> <span class="o">+</span>
-                    <span class="n">ByteBufUtil</span><span class="o">.</span><span class="na">hexDump</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">())));</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span>
+            <span class="nc">ByteBuf</span> <span class="n">in</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ByteBuf</span><span class="o">)</span> <span class="n">msg</span><span class="o">;</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Client received: "</span> <span class="o">+</span>
+                    <span class="nc">ByteBufUtil</span><span class="o">.</span><span class="na">hexDump</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">())));</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span>
         <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">finally</span>
         <span class="o">{</span>
-            <span class="n">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
     <span class="cm">/**
      * 捕捉到异常
      */</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">cause</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
     <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"exceptionCaught"</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"exceptionCaught"</span><span class="o">);</span>
         <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="n">ctx</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
     <span class="o">}</span>
@@ -843,12 +883,12 @@ broker机器的内网ip  hostname.com
 <h4 id="netty--protobuf">Netty &amp; Protobuf</h4>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bootstrap</span><span class="o">.</span><span class="na">handler</span><span class="o">(</span>
-        <span class="k">new</span> <span class="n">ChannelInitializer</span><span class="o">&lt;</span><span class="n">SocketChannel</span><span class="o">&gt;()</span>
+        <span class="k">new</span> <span class="nc">ChannelInitializer</span><span class="o">&lt;</span><span class="nc">SocketChannel</span><span class="o">&gt;()</span>
         <span class="o">{</span>
-            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
             <span class="o">{</span>
-                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="n">ProtobufDecoder</span><span class="o">());</span>
-                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="n">ProtobufEncoder</span><span class="o">());</span>
+                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="nc">ProtobufDecoder</span><span class="o">());</span>
+                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="nc">ProtobufEncoder</span><span class="o">());</span>
                 <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="n">chatClientHandler</span><span class="o">);</span>
 <span class="err">​</span>
             <span class="o">}</span>
@@ -928,26 +968,26 @@ broker机器的内网ip  hostname.com
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">storm</span><span class="o">.</span><span class="na">analytics</span><span class="o">;</span>
 <span class="o">...</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">TopologyStarter</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="na">getRootLogger</span><span class="o">().</span><span class="na">removeAllAppenders</span><span class="o">();</span>
-        <span class="n">TopologyBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TopologyBuilder</span><span class="o">();</span>
-        <span class="n">builder</span><span class="o">.</span><span class="na">setSpout</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">,</span> <span class="k">new</span> <span class="n">UsersNavigationSpout</span><span class="o">(),</span><span class="mi">3</span><span class="o">);</span>
-        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="n">GetCategoryBolt</span><span class="o">(),</span><span class="mi">3</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Logger</span><span class="o">.</span><span class="na">getRootLogger</span><span class="o">().</span><span class="na">removeAllAppenders</span><span class="o">();</span>
+        <span class="nc">TopologyBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TopologyBuilder</span><span class="o">();</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setSpout</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">UsersNavigationSpout</span><span class="o">(),</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">GetCategoryBolt</span><span class="o">(),</span><span class="mi">3</span><span class="o">)</span>
                <span class="o">.</span><span class="na">shuffleGrouping</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">);</span>
-        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="n">UserHistoryBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
-               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Fields</span><span class="o">(</span><span class="s">"user"</span><span class="o">));</span>
-        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">,</span> <span class="k">new</span> <span class="n">ProductCategoriesCounterBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
-               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Fields</span><span class="o">(</span><span class="s">"product"</span><span class="o">));</span>
-        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"news-notifier"</span><span class="o">,</span> <span class="k">new</span> <span class="n">NewsNotifierBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">UserHistoryBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Fields</span><span class="o">(</span><span class="s">"user"</span><span class="o">));</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">ProductCategoriesCounterBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Fields</span><span class="o">(</span><span class="s">"product"</span><span class="o">));</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"news-notifier"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">NewsNotifierBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
                <span class="o">.</span><span class="na">shuffleGrouping</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">);</span>
 
-        <span class="n">Config</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Config</span><span class="o">();</span>
+        <span class="nc">Config</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Config</span><span class="o">();</span>
         <span class="n">conf</span><span class="o">.</span><span class="na">setDebug</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-host"</span><span class="o">,</span><span class="n">REDIS_HOST</span><span class="o">);</span>
-        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-port"</span><span class="o">,</span><span class="n">REDIS_PORT</span><span class="o">);</span>
-        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"webserver"</span><span class="o">,</span> <span class="n">WEBSERVER</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-host"</span><span class="o">,</span><span class="no">REDIS_HOST</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-port"</span><span class="o">,</span><span class="no">REDIS_PORT</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"webserver"</span><span class="o">,</span> <span class="no">WEBSERVER</span><span class="o">);</span>
 
-        <span class="n">LocalCluster</span> <span class="n">cluster</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LocalCluster</span><span class="o">();</span>
+        <span class="nc">LocalCluster</span> <span class="n">cluster</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LocalCluster</span><span class="o">();</span>
         <span class="n">cluster</span><span class="o">.</span><span class="na">submitTopology</span><span class="o">(</span><span class="s">"analytics"</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span> <span class="n">builder</span><span class="o">.</span><span class="na">createTopology</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span>  
@@ -1224,14 +1264,14 @@ Region 使用 HLOG 恢复完数据后触发</li>
 	<p>SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。
 Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。
 在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。</p>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
-    <span class="kd">implements</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
+    <span class="kd">implements</span> <span class="nc">Iterable</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
 <span class="o">{</span>
 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
-            <span class="k">return</span> <span class="n">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
+            <span class="k">return</span> <span class="nc">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
