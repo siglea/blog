@@ -313,6 +313,21 @@ curl -X GET  'localhost:9200/_search/scroll?scroll=1m&scroll_id=c2Nhbjs2OzM0NDg1
 - nutch主要用于采集网页，solr可以作为搜索服务器。nutch+solr可以搭建一个简单的搜索引擎。
 - 简单地讲，nutch就是用于分布式采集数据源，solr用于建索引和搜索服务。
 
+
+
+#### Es Bulk 一次最大处理多少数据量???
+bulk 会把将要处理的数据载入内存中，所以数据量是有限制的 最佳的数据量不是一个确定的数值，它取决于你的硬件，你的文档大小以及复杂性，你的索
+引以及搜索的负载。
+一般建议是 1000-5000 个文档，如果你的文档很大，可以适当减少队列,大小建议是 5-15MB，
+默认不能超过 100M，可以在 es 的配置文件中修改这个值 http.max_content_length: 100mb
+
+#### ES 在高并发的情况下如何保证数据线程安全问题?
+在读数据与写数据之间如果有其他线程进行写操作，就会出问题，es 使用版本控制才避免 这种问题
+在修改数据的时候指定版本号，操作一次版本号加 1
+
+#### ES 管理的工具有哪些?
+BigDesk Plugin、Elasticsearch Head Plugin 、Kibana
+
 ##### 参考资料
 - <https://www.cnblogs.com/yinhaiming/articles/1542921.html>
 - <https://www.cnblogs.com/fosilzhou/articles/4629220.html>

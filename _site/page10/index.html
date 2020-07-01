@@ -54,44 +54,6 @@
     
     <div class="post-contents">
       <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html">算法时间复杂度</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="时间复杂度原则">时间复杂度原则</h4>
-<ul>
-  <li>如果运行时间是常数量级，用常数1表示</li>
-  <li>只保留时间函数中的最高阶项
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 0.5n^2 + 0.5n
-T(n) = O(n^2)
-</code></pre></div>    </div>
-  </li>
-  <li>如果最高阶项存在，则省去最高阶项前面的系数
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 3n
-T(n) = O(n)
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h4 id="时间复杂度排序">时间复杂度排序</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>O(1) &lt; O(logN) &lt; O(n) &lt; O(n^2)
-</code></pre></div></div>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Elasticsearch-Summary.html"> Elasticsearch  Summary </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
@@ -443,6 +405,19 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
   <li>简单地讲，nutch就是用于分布式采集数据源，solr用于建索引和搜索服务。</li>
 </ul>
 
+<h4 id="es-bulk-一次最大处理多少数据量">Es Bulk 一次最大处理多少数据量???</h4>
+<p>bulk 会把将要处理的数据载入内存中，所以数据量是有限制的 最佳的数据量不是一个确定的数值，它取决于你的硬件，你的文档大小以及复杂性，你的索
+引以及搜索的负载。
+一般建议是 1000-5000 个文档，如果你的文档很大，可以适当减少队列,大小建议是 5-15MB，
+默认不能超过 100M，可以在 es 的配置文件中修改这个值 http.max_content_length: 100mb</p>
+
+<h4 id="es-在高并发的情况下如何保证数据线程安全问题">ES 在高并发的情况下如何保证数据线程安全问题?</h4>
+<p>在读数据与写数据之间如果有其他线程进行写操作，就会出问题，es 使用版本控制才避免 这种问题
+在修改数据的时候指定版本号，操作一次版本号加 1</p>
+
+<h4 id="es-管理的工具有哪些">ES 管理的工具有哪些?</h4>
+<p>BigDesk Plugin、Elasticsearch Head Plugin 、Kibana</p>
+
 <h5 id="参考资料-1">参考资料</h5>
 <ul>
   <li><a href="https://www.cnblogs.com/yinhaiming/articles/1542921.html">https://www.cnblogs.com/yinhaiming/articles/1542921.html</a></li>
@@ -524,6 +499,34 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       </div>
       <div style="height:50px;">
 	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/gupiao-10-wen.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/server-performance.html">服务器性能</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/server-performance.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="单服务器性能评估">单服务器性能评估</h4>
+<p><a href="https://cloud.tencent.com/developer/article/1004754">https://cloud.tencent.com/developer/article/1004754</a></p>
+
+<h4 id="单服务器并发连接评估">单服务器并发连接评估</h4>
+<p><a href="https://www.zhihu.com/question/20831000">https://www.zhihu.com/question/20831000</a>
+<a href="https://www.cnblogs.com/duanxz/p/4464178.html">https://www.cnblogs.com/duanxz/p/4464178.html</a></p>
+
+<h4 id="烦人的代理">烦人的代理</h4>
+<p><a href="https://blog.csdn.net/plychoz/article/details/83147759">https://blog.csdn.net/plychoz/article/details/83147759</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/server-performance.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -647,7 +650,7 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 16 )</span>
+      <span class="label label-default">分布式 ( 13 )</span>
       </a><br />
 
       
@@ -668,14 +671,14 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       
       <a  href="/tag/数据库">
-      <span class="label label-default">数据库 ( 6 )</span>
+      <span class="label label-default">数据库 ( 7 )</span>
       </a><br />
 
       
       
       
       <a  href="/tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 12 )</span>
+      <span class="label label-default">数据结构与算法 ( 9 )</span>
       </a><br />
 
       
@@ -689,7 +692,7 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 9 )</span>
+      <span class="label label-default">Java ( 10 )</span>
       </a><br />
 
       
@@ -738,7 +741,7 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       
       <a  href="/tag/bigdata">
-      <span class="label label-default">BigData ( 5 )</span>
+      <span class="label label-default">BigData ( 2 )</span>
       </a><br />
 
       

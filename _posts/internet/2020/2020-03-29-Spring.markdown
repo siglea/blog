@@ -74,6 +74,14 @@ public class SpringApplication {
 - 自动装配之@EnableAutoConfiguration详解
 <https://blog.csdn.net/mapleleafforest/article/details/87273213>
 
+#### Apache Shiro 
+Apache Shiro 是 Java 的一个安全框架。使用 shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 JavaSE 环境，也可以用在 JavaEE 环境。Shiro 可以帮助我们完成:认证、授权、加密、会话管理、与 Web 集成、缓存等。
+三个核心组件:Subject, SecurityManager 和 Realms.
+Subject:即“当前操作用户”。但是，在 Shiro 中，Subject 这一概念并不仅仅指人，也可以是第三方进程、后台帐 户(Daemon Account)或其他类似事物。它仅仅意味着“当前跟软件交互的东西”。但考虑到大多数目的和用途， 你可以把它认为是 Shiro 的“用户”概念。
+Subject 代表了当前用户的安全操作，SecurityManager 则管理所有用户的安全操作。
+SecurityManager:它是 Shiro 框架的核心，典型的 Facade 模式，Shiro 通过 SecurityManager 来管理内部组 件实例，并通过它来提供安全管理的各种服务。
+Realm: Realm 充当了 Shiro 与应用安全数据间的“桥梁”或者“连接器”。也就是说，当对用户执行认证(登 录)和授权(访问控制)验证时，Shiro 会从应用配置的 Realm 中查找用户及其权限信息。
+
 #### SpringBoot自动配置 ☆☆☆
 - SpringBoot项目配置注解@EnableAutoConfiguration后
 - SpringBoot启动扫描META-INF下的spring.factories
@@ -96,6 +104,7 @@ public class DataSourceAutoConfiguration {
 ```
 DataSourceAutoConfiguration解析
 <https://blog.csdn.net/kangsa998/article/details/90231518>
+
 #### SpringBoot的Starter ☆☆☆
 - 徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！
 <https://www.cnblogs.com/lenve/p/10892011.html>
@@ -107,6 +116,18 @@ DataSourceAutoConfiguration解析
 - 实现一个Spring boot stater
 
 <https://www.jianshu.com/p/fdb574e1f77c>
+
+#### SpringBoot Starter
+- 其实是Java的SPI的全名为Service Provider Interfac的一种实现
+- EnableAutoConfiguration 导入 @Import({AutoConfigurationImportSelector.class})
+- AutoConfigurationImportSelector 从classpath中搜寻所有的META-INF/spring.factories配置文件
+- 找到org.springframework.boot.autoconfigure.EnableAutoConfiguration该key对应的其他自动配置className
+- 通过反射按照相关Conditional进行实例化
+- 如关闭数据源自动配置功能: @SpringBootApplication(exclude ={ DataSourceAutoConfiguration.class })。
+
+#### 如何在 Spring Boot 启动的时候运行一些特定的代码?
+- 可以实现接口 ApplicationRunner 或者 CommandLineRunner，这两个接口实现方式一 样，它们都只提供了一个 run 方法。
+- Spring Boot 可以通过 @PropertySource,@Value,@Environment
 
 #### SpringBoot常用注解
 ```
@@ -230,3 +251,55 @@ public class LogTraceInterceptor extends HandlerInterceptorAdapter {
 #### 集成框架Spring Integration, Mule ESB or Apache Camel比较
 <https://www.jdon.com/soa/integration-framework-comparison-spring.html>
 <https://www.jianshu.com/p/68aba8d09a89>
+
+#### Spring
+- ApplicationContext
+    1. BeanFactory 是 Spring 框架的基础设施，面向 Spring 本身;ApplicationContext 面向使用 Spring 框架的开发者，几乎所有的应用场合我们都直接使用 ApplicationContext 而非底层 的 BeanFactory。
+    1. HierarchicalBeanFactory 父子级联，父子级联 IoC 容器的接口，子容器可以通过接口方法访问父容器; 通过 HierarchicalBeanFactory 接口， Spring 的 IoC 容器可以建立父子层级关联的容器体系，子 容器可以访问父容器中的 Bean，但父容器不能访问子容器的 Bean。Spring 使用父子容器实 现了很多功能，比如在 Spring MVC 中，展现层 Bean 位于一个子容器中，而业务层和持久 层的 Bean 位于父容器中。这样，展现层 Bean 就可以引用业务层和持久层的 Bean，而业务 层和持久层的 Bean 则看不到展现层的 Bean。
+    1. ClassPathXmlApplicationContext -> ApplicationContext -> HierarchicalBeanFactory/ListableBeanFactory
+    1. ConfigurableApplicationContext 扩展于 ApplicationContext，它新增加了两个主要 的方法: refresh()和 close()，让 ApplicationContext 具有启动、刷新和关闭应用上下 文的能力。在应用上下文关闭的情况下调用 refresh()即可启动应用上下文，在已经启动 的状态下，调用 refresh()则清除缓存并重新装载配置信息，而调用 close()则可关闭应用 上下文。
+    1. WebApplicationContext 是专门为 Web 应用准备的，它允许从相对于 Web 根目录的 路径中装载配置文件完成初始化工作。从 WebApplicationContext 中可以获得 ServletContext 的引用，整个 Web 应用上下文对象将作为属性放置到 ServletContext 中，以便 Web 应用环境可以访问 Spring 应用上下文。
+- Bean的Scope
+    1. singleton
+    2. prototype，每次都创建（对有状态的 bean 使用 prototype 作用域，而对无状态的 bean 使用 singleton 作用域。）
+    3. request：一次request一个实例
+    4. session：一个session一个实例
+    5. global Session:在一个全局的 Http Session 中，容器会返回该 Bean 的同一个实例，仅在 使用 portlet context 时有效。
+- Bean的生命周期
+    1. 根据scope，实例化
+    2. 设置属性
+    3. postProcessBeforeInitialization
+    4. afterPropertiesSet
+    5. postProcessAfterInitialization
+    6. Done
+```xml
+<bean id="" class="" init-method="初始化方法" destroy-method="销毁方法" />
+```   
+- 依赖注入
+    - 构造器注入
+    - setter 方法注入
+    - 接口注入
+
+- IOC:把对象的创建、初始化、销毁交给 spring 来管理，而不是由开发者控制，实现控制反转。
+    
+- 5 种不同方式的自动装配
+    - no:默认的方式是不进行自动装配，通过显式设置 ref 属性来进行装配。
+    - byName:通过参数名 自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被设置成 byname，之后容器试图匹配、装配和该 bean 的属性具有相同名字的 bean。
+    - byType:通过参数类型自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被 设置成 byType，之后容器试图匹配、装配和该 bean 的属性具有相同类型的 bean。如果有多个 bean 符合条件，则抛出错误。
+    - constructor:这个方式类似于 byType， 但是要提供给构造器参数，如果没有确定的带参数的构造器参数类型，将会抛出异常。
+    - autodetect:首先尝试使用 constructor 来自动装配，如果无法工作，则使用 byType 方式
+- AOP 核心概念 
+    - 切面(aspect):类是对物体特征的抽象，切面就是对横切关注点的抽象
+    - 横切关注点:对哪些方法进行拦截，拦截后怎么处理，这些关注点称之为横切关注点。 
+    - 连接点(joinpoint):被拦截到的点，因为 Spring 只支持方法类型的连接点，所以在 Spring中连接点指的就是被拦截到的方法，实际上连接点还可以是字段或者构造器。 
+    - 切入点(pointcut):对连接点进行拦截的定义
+    - 通知(advice):所谓通知指的就是指拦截到连接点之后要执行的代码，通知分为前置、后置、 异常、最终、环绕通知五类。
+    - 目标对象:代理的目标对象 
+    - 织入(weave):将切面应用到目标对象并导致代理对象创建的过程
+    - 引入(introduction):在不修改代码的前提下，引入可以在运行期为类动态地添加一些方法 或字段。
+- MyBatis缓存
+    - Mybatis 中有一级缓存和二级缓存，默认情况下一级缓存是开启的，而且是不能关闭的。一级缓存 是指 SqlSession 级别的缓存，当在同一个 SqlSession 中进行相同的 SQL 语句查询时，第二次以 后的查询不会从数据库查询，而是直接从缓存中获取，一级缓存最多缓存 1024 条 SQL。二级缓存 是指可以跨 SqlSession 的缓存。是 mapper 级别的缓存，对于 mapper 级别的缓存不同的 sqlsession 是可以共享的。
+    - 如果两次中间出现 commit 操作 (修改、添加、删除)，本 sqlsession 中的一级缓存区域全部清空，下次再去缓存中查询不到所 以要从数据库查询，从数据库查询到再写入缓存。
+- Slf4j
+  slf4j 的全称是 Simple Loging Facade For Java，即它仅仅是一个为 Java 程序提供日志输出的统一接 口，并不是一个具体的日志实现方案，就比如 JDBC 一样，只是一种规则而已。所以单独的 slf4j 是不 能工作的，必须搭配其他具体的日志实现方案，比如 apache 的 org.apache.log4j.Logger，jdk 自带 的 java.util.logging.Logger 等。
+  

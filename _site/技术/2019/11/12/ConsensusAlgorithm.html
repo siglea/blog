@@ -153,6 +153,40 @@ Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos</p>
   <li>使用ZAB的组件，Zookeeper（Yahoo开源）</li>
 </ul>
 
+<h4 id="zab协议4阶段">ZAB协议4阶段</h4>
+<ol>
+  <li>Leader election(选举阶段):节点在一开始都处于选举阶段，只要有一个节点得到超半数 节点的票数，它就可以当选准 leader。只有到达 广播阶段(broadcast) 准 leader 才会成 为真正的 leader。这一阶段的目的是就是为了选出一个准 leader，然后进入下一个阶段。</li>
+  <li>Discovery(发现阶段-接受提议、生成 epoch、接受 epoch):在这个阶段，followers 跟准 leader 进行通信，同步 followers 最近接收的事务提议。这个一阶段的主要目的是发现当前大多数节点接收的最新提议，并且 准 leader 生成新的 epoch，让 followers 接受，更新它们的 accepted Epoch
+ 一个 follower 只会连接一个 leader，如果有一个节点 f 认为另一个 follower p 是 leader，f 在尝试连接 p 时会被拒绝，f 被拒绝之后，就会进入重新选举阶段。</li>
+  <li>Synchronization(同步阶段):同步阶段主要是利用 leader 前一阶段获得的最新提议历史， 同步集群中所有的副本。只有当 大多数节点都同步完成，准 leader 才会成为真正的 leader。 follower 只会接收 zxid 比自己的 lastZxid 大的提议。</li>
+  <li>Broadcast(广播阶段-leader 消息广播) Broadcast(广播阶段):到了这个阶段，Zookeeper 集群才能正式对外提供事务服务，
+    <ul>
+      <li>两大阶段：让大家投票，告诉大家投票结果</li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="raft-协议和-zab-协议区别">raft 协议和 zab 协议区别</h4>
+<ul>
+  <li>相同点
+    <ul>
+      <li>采用quorum来确定整个系统的一致性,这个quorum一般实现是集群中半数以上的服务器,  zookeeper里还提供了带权重的quorum实现.</li>
+      <li>都由leader来发起写操作.</li>
+      <li>都采用心跳检测存活性</li>
+      <li>leader election都采用先到先得的投票方式</li>
+    </ul>
+  </li>
+  <li>不同点
+    <ul>
+      <li>zab用的是epoch和count的组合来唯一表示一个值,而raft用的是term和index</li>
+      <li>zab的follower在投票给一个leader之前必须和leader的日志达成一致,而raft的follower则简单地说是谁的 term 高就投票给谁</li>
+      <li>raft协议的心跳是从leader到follower,而zab协议则相反</li>
+      <li>raft协议数据只有单向地从leader到follower(成为leader的条件之一就是拥有最新的log),
+  而 zab 协议在 discovery 阶段, 一个 prospective leader 需要将自己的 log 更新为 quorum 里面 最新的 log,然后才好在 synchronization 阶段将 quorum 里的其他机器的 log 都同步到一致.</li>
+    </ul>
+  </li>
+</ul>
+
 <p><a href="https://www.cnblogs.com/think90/p/11443428.html">https://www.cnblogs.com/think90/p/11443428.html</a></p>
 
   </div>

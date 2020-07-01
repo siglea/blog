@@ -78,6 +78,25 @@ set global innodb_print_all_deadlocks=on;
     - <https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A>
 - 引擎不同的几个方面：Storage mechanism、Locking levels、Indexing、Capabilities and functions
 
+#### InnoDB引擎的4大特性
+https://www.cnblogs.com/zhs0/p/10528520.html
+- 插入缓冲（insert buffer)，只对于非聚集索引（非唯一）的插入和更新有效，对于每一次的插入不是写到索引页中，而是先判断插入的非聚集索引页是否在缓冲池中，如果在则直接插入；若不在，则先放到Insert Buffer 中，再按照一定的频率进行合并操作，再写回disk。这样通常能将多个插入合并到一个操作中，目的还是为了减少随机IO带来性能损耗。
+- 二次写(double write)
+    - InnoDB默认DB page为 16KB，而文件系统、磁盘、扇区对应的page小于该数字，因此，一次DB page可能被多次写入才能真正写入成功
+    - 在写数据时，会在共享表空间写一份数据，之后再同步到磁盘
+    - 在应用（apply）重做日志前，用户需要一个页的副本，当写入失效发生时，先通过页的副本来还原该页，再进行重做，这就是double write
+    - <https://www.cnblogs.com/chenpingzhao/p/4876282.html>
+- 自适应哈希索引(ahi)，innodb会监控表上多个索引页的查询。如果观察到建立哈希索引可以带来速度提升，则自动建立哈希索引，称之为自适应哈希索引（Adaptive Hash Index，AHI）。
+    主要是精确等值查找，对范围查找搜索不生效
+- 预读(read ahead)，数据预加载
+
+##### 共享表空间 、独立表空间
+- 共享表空间： Innodb的所有数据保存在一个单独的表空间里面，而这个表空间可以由很多个文件组成，一个表可以跨多个文件存在，所以其大小限制不再是文件大小的限制，而是其自身的限制。从Innodb的官方文档中可以看到，其表空间的最大限制为64TB，也就是说，Innodb的单表限制基本上也在64TB左右了，当然这个大小是包括这个表的所有索引等其他相关数据。
+- 独占表空间:  每一个表都将会生成以独立的文件方式来进行存储，每一个表都有一个.frm表描述文件，还有一个.ibd文件。 其中这个文件包括了单独一个表的数据内容以及索引内容，默认情况下它的存储位置也是在表的位置之中。
+
+##### 聚集索引 与 非聚集索引
+- <https://blog.csdn.net/riemann_/article/details/90324846>
+
 #### FAQ
 - 问题：INT(M)中M究竟有何用？
 

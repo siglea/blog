@@ -54,50 +54,46 @@
     
     <div class="post-contents">
       <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/30/DotDot3.html">DotDot3</a>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html">myBatis</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 30, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/30/DotDot3.html#disqus_thread"></a></span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html#disqus_thread"></a></span>
       
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>BigData</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="java内存泄露">Java内存泄露</h4>
+	<h4 id="mybatis-和的区别是什么">myBatis #{}和${}的区别是什么?</h4>
+<p>1)#{}是预编译处理，${}是字符串替换。
+2)Mybatis 在处理#{}时，会将 sql 中的#{}替换为?号，调用 PreparedStatement 的 set 方法来赋值;
+3)Mybatis 在处理${}时，就是把${}替换成变量的值。 4)使用#{}可以有效的防止 SQL 注入，提高系统安全性。</p>
+
+<h4 id="35ibatis-和-mybatis-区别">35、IBatis 和 MyBatis 区别</h4>
 <ul>
-  <li>非静态内部类引用了外部类，类似循环引用。使用静态内部类解决该问题。</li>
+  <li>IBatis 里面的核心处理类交 SqlMapClient,MyBatis 里面的核心处理类叫做 SqlSession。</li>
+  <li>在 sql 里面变量命名有原来的#变量# 变成了#{变量}</li>
+  <li>原来的$变量$变成了${变量}</li>
+  <li>原来在 sql 节点里面的 class 都换名字交 type</li>
+  <li>原来的 queryForObject queryForList 变成了 selectOne selectList5)原来的别名设置在映射 文件里面放在了核心配置文件里。</li>
 </ul>
 
-<h4 id="分布式垃圾回收dgc">分布式垃圾回收DGC？</h4>
-<ul>
-  <li>分布式垃圾回收。RMI使用DGC来做自动垃圾回收，因为RMI包含了跨虚拟机的远程对象的引用，
-  垃圾回收是很困难的。DGC使用引用计数算法来给远程对象提供自动内存管理。</li>
-</ul>
-
-<h4 id="请对比下-volatile-对比-synchronized-的异同">请对比下 volatile 对比 Synchronized 的异同。</h4>
-<ul>
-  <li>Synchronized 既能保证可见性，又能保证原子性，而 volatile 只能保证可见性，无法保证原子性。</li>
-  <li>ThreadLocal 和 Synchonized 都用于解决多线程并发访问，防止任务在共享资源上产生冲突。但是Thread Local 与 Synchronized 有本质的区别。
-    <ul>
-      <li>Synchronized 用于实现同步机制，是利用锁的机制使变量或代码块在某一时该只能被一个线程访问，是一种“以时间换空间”的方式。</li>
-      <li>而ThreadLocal 为每一个线程都提供了变量的副本，使得每个线程在某一时间访问到的并不是同一个对象，根除了对变量的共享，是一种“以空间换时间”的方式。</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="请谈谈-threadlocal-是怎么解决并发安全的">请谈谈 ThreadLocal 是怎么解决并发安全的？</h4>
-<ul>
-  <li>ThreadLocal 这是Java提供的一种保存线程私有信息的机制，因为其在整个线程生命周期内有效，所以可以方便地在一个线程关联的不同业务模块之间传递信息，
-  比如事务, Cookie等上下文相关信息。 ThreadLocal 为每一个线程维护变量的副本，把共享数据的可见范围限制在同一个线程之内，其实现原理是，在ThreadLocal 类中有一个Map ，用于存储每一个线程的变量的副本。</li>
-</ul>
+<h4 id="mybatis是否支持延迟加载如果支持它的实现原理是什么">Mybatis是否支持延迟加载?如果支持，它的实现原理是什么？</h4>
+<ol>
+  <li>Mybatis仅支持association关联对象和collection关联集合对象的延迟 
+ 加载，association指的就是一对一，collection指的就是一对多查询。在 
+ Mybatis配置文件中，可以配置是否启用延迟加载 
+ lazyLoadingEnabled=true|false</li>
+  <li>它的原理是，使用CGLIB创建目标对象的代理对象，当调用目标方法 
+ 时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke〇 
+ 方法发现a.getB〇是null值，那么就会单独发送事先保存好的查询关联B 
+ 对象的sql，把B查询上来，然后调用fsetB(b)l，于是a的对象b属 
+ 性就有值了，接着完成|a.getB() .getNamet)]方法的调用。这就是延迟 
+ 加载的基本原理。</li>
+</ol>
 
       </div>
       <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/30/DotDot3.html" class="button readmore-button">Read More</a>
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -747,7 +743,7 @@ https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 16 )</span>
+      <span class="label label-default">分布式 ( 13 )</span>
       </a><br />
 
       
@@ -768,14 +764,14 @@ https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
       
       
       <a  href="/tag/数据库">
-      <span class="label label-default">数据库 ( 6 )</span>
+      <span class="label label-default">数据库 ( 7 )</span>
       </a><br />
 
       
       
       
       <a  href="/tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 12 )</span>
+      <span class="label label-default">数据结构与算法 ( 9 )</span>
       </a><br />
 
       
@@ -789,7 +785,7 @@ https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 9 )</span>
+      <span class="label label-default">Java ( 10 )</span>
       </a><br />
 
       
@@ -838,7 +834,7 @@ https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
       
       
       <a  href="/tag/bigdata">
-      <span class="label label-default">BigData ( 5 )</span>
+      <span class="label label-default">BigData ( 2 )</span>
       </a><br />
 
       

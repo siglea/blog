@@ -1,0 +1,33 @@
+---
+layout: post
+title:  "myBatis"
+date:   2020-06-30 17:06:00 +0900
+comments: true
+tags:
+- 数据库 
+categories:
+- 技术
+---
+#### myBatis #{}和${}的区别是什么? 
+1)#{}是预编译处理，${}是字符串替换。
+2)Mybatis 在处理#{}时，会将 sql 中的#{}替换为?号，调用 PreparedStatement 的 set 方法来赋值;
+3)Mybatis 在处理${}时，就是把${}替换成变量的值。 4)使用#{}可以有效的防止 SQL 注入，提高系统安全性。
+
+#### 35、IBatis 和 MyBatis 区别
+- IBatis 里面的核心处理类交 SqlMapClient,MyBatis 里面的核心处理类叫做 SqlSession。
+- 在 sql 里面变量命名有原来的#变量# 变成了#{变量}
+- 原来的$变量$变成了${变量}
+- 原来在 sql 节点里面的 class 都换名字交 type
+- 原来的 queryForObject queryForList 变成了 selectOne selectList5)原来的别名设置在映射 文件里面放在了核心配置文件里。
+    
+#### Mybatis是否支持延迟加载?如果支持，它的实现原理是什么？
+1. Mybatis仅支持association关联对象和collection关联集合对象的延迟 
+    加载，association指的就是一对一，collection指的就是一对多查询。在 
+    Mybatis配置文件中，可以配置是否启用延迟加载 
+    lazyLoadingEnabled=true|false 
+2. 它的原理是，使用CGLIB创建目标对象的代理对象，当调用目标方法 
+    时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke〇 
+    方法发现a.getB〇是null值，那么就会单独发送事先保存好的查询关联B 
+    对象的sql，把B查询上来，然后调用fsetB(b)l，于是a的对象b属 
+    性就有值了，接着完成|a.getB() .getNamet)]方法的调用。这就是延迟 
+    加载的基本原理。

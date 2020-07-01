@@ -10,6 +10,21 @@ tags:
 categories:
 - 技术
 ---
+### 存储精华
+- 说到存储，其实效率才是最主要的，容量不是我们关心的，但是说到存储，不只是mq，所有需要高效率的存储其实最后利用的核心都是一样的。
+    1. 随机写转换成顺序写：现在主流的硬盘是机械硬盘，
+        机械硬盘的机械结构一次读写时间 = 寻道时间 + 旋转延迟 + 读取数据时间，
+        那么寻道时间比较长，如果是顺序写，只需要一次寻道时间，关于机械硬盘整个过程，读者可自行google。
+    2. 集中刷盘：
+        因为每次刷盘都会进行系统调用，第二还是跟硬盘的本身属性有关，无论是机械硬盘还是ssd按照一定块刷盘会比小数据刷盘效率更好
+- 对于存储系统而言，原本存储在一台机器上的数据，现在要存放在多台机器上。此时必须解决两个问题：分片，复制。
+    - 数据分片(sharding)，又称分区(partition)，将数据集“合理的”拆分成多个分片，每台机器负责其中若干个分片。以此来突破单机容量的限制，同时也提升了整体的访问能力。另外，分片也降低了单个分片故障的影响范围。
+    - 数据复制(replica)，也叫“副本”。分片无法解决单机故障丢数据的问题，所以，必然要通过冗余来解决系统高可用的问题。同时，副本机制也是提升系统吞吐、解决热点问题的重要手段。
+    - 分片和副本是正交的，这意味着我们可以只使用其中一种或都使用，但通常都是同时使用的。因为分片解决的是规模和扩展性的问题，副本解决可靠、可用性的问题。对于一个生产可用的系统，二者必须同时具备。
+    - 从使用者/客户端的角度看，分片和副本可以归结为同一个问题：请求路由，即请求应该发送给哪台机器来处理。
+    - 读数据时，能通过某种机制来确保有一个合适的分片/副本来提供服务
+    - 写数据时，能通过同样的机制来确保写到一个合适的地方，并确保副本的一致性        
+
 #### SQL-CAP
 <div align="left">
 <img src="/img/nosql-cap.jpg" width="500px">
@@ -161,6 +176,11 @@ db.user.find({"geo": {$near: [118.10388605,24.48923061], $maxDistance:0.1}},{id:
 <https://www.jianshu.com/p/fffb581bb1a9>
 <https://www.jianshu.com/p/4ecde929b17d>
 
+#### MongoDB的Map/Reduce
+- Mongodb 中的 Map/reduce 主要是用来对数据进行批量处理和聚合操作。
+- Map 和 Reduce。Map 函数调用 emit(key,value)遍历集合中所有的记录，将 key 与 value 传 给 Reduce 函数进行处理。
+- Map 函数和 Reduce 函数是使用 Javascript 编写的，并可以通过 db.runCommand 或 mapre duce 命令来执行 MapReduce 操作。
+
 #### Cassandra
 - 我们不能希望cassandra完全适用于我们的逻辑，而是应该将我们的逻辑设计的更适合于cassandra
 - Cassandra数据建模 <https://www.cnblogs.com/cjsblog/p/12878330.html>
@@ -275,6 +295,92 @@ COPY users (user_id, first_name, last_name, emails) TO 'kevinfile'; -- 将名为
         - 第一主键 只能用=号查询
         - 第二主键 支持= > < >= <=
         - 索引列 只支持=号
+
+### HBase Cassandra MongoDB
+- 与RDBMS的区别
+    - 关系数据库，磁盘存储是一行接一行，而列式存储是一列接一列
+- 存储结构
+    - MongoDB：GridFS、JSON/BSON
+    - HBase：HRegionServer：【HLog、HRegion：【Store MemStore、StoreFile、HFile】】、HDFS。
+        - HBase的数据分片按表进行，以行为粒度，基于rowkey范围进行拆分，每个分片称为一个region。一个集群有多张表，每张表划分为多个region，每台服务器服务很多region。所以，HBase的服务器称为RegionServer，简称RS。RS与表是正交的，即一张表的region会分布到多台RS上，一台RS也会调度多张表的region
+        - HBase是水平拆分,意思是行是region划分的最小单位，即一行数据要么属于A region，要么属于Bregion，不会被拆到两个region中去。
+        - 浅谈HBase的数据分布 <https://zhuanlan.zhihu.com/p/47074785>
+        - hbase.regionserver.global.memstore.upperLimit、hbase.regionserver.global.memstore.lowerLimit、hbase.hregion.memstore.flush.size
+        - HLog限制，hase.regionserver.max.logs
+    - Cassandra：LSM、HashNode（一致性Hash的虚拟节点）、CommitLog、memtable、SSTable
+        - Durable_writes，默认情况下，表的durable_writes属性设置为true，但可以将其设置为false。durable_writes参数用于设置写数据时是否写入commit log,如果设置为false,则写请求不会写commit log，会有丢失数据的风险。此参数默认为true,即要写commit log,生产系统应该将该参数设置为true。
+    - HBase、Cassandra都是基于类似的LSM机制
+- 存储形式
+    - MongoDB：Collection JSON
+    - Cassandra：Column family ，Row，Name/Value/Timestamp
+    - HBase：put 't_user','1001','st1:age','18'
+- 范围分页查询
+    - MongoDB：利用skip().limit()实现
+    - HBase：scan  'stu2',{COLUMNS => 'cf1:age', LIMMIT 10, STARTROW => 'xx'}
+    - Cassandra：select * from teacher where token(id)>token(1) limit 1;
+- 数据类型
+    - MongoDB丰富，类似SQL
+    - HBase只支持字符串
+    - Cassandra多种
+- 索引、二级索引、辅助索引
+    - MongoDB：支持全索引，实现高性能。单一索引、复合、哈希、地址位置、文本等索引。BTree
+    - HBase：主要是设计二级索引。二级索引的本质就是建立各列值与行键之间的映射关系。简单的可以借助RowKey
+        1. RowKey也是基于B+树
+        1. MapReduce方案 
+        1. ITHBASE（Indexed-Transanctional HBase）方案 
+        1. IHBASE（Index HBase）方案 
+        1. Hbase Coprocessor(协处理器)方案 
+        1. Solr+HBase方案
+        1. CCIndex（complemental clustering index）方案
+        1. Phoenix
+        1. HBase RowKey与索引设计 <https://www.cnblogs.com/swordfall/p/10597802.html>
+    - Cassandra
+        - 第一主键 只能用=号查询
+        - 第二主键 支持= > < >= <= 但是必须后面加 ALLOW FILTERING
+        - 索引列 只支持=号    
+        - 索引列 支持 like，只有主键支持 group by
+        - PRIMARY KEY (user_id, uploaded_date, article_id)，第一列仍然是数据的partition key。其后所跟的所有的列都称为clustering column
+        - CQL查询语句的特殊规则 <https://blog.csdn.net/ZZQHELLO2018/article/details/106302161>
+- 事务
+    - HBase的事务是行级事务，可以保证行级数据的原子性、一致性、隔离性以及持久性
+    - MongoDB不支持事务
+    - Cassandra支持行一级的原子性和隔离性，但与之交换的是高度的可用性和快速的读写性能。Cassandra写入具有持久性。
+- 一致性和CAP
+    - MongoDB、HBase强一致性，CP，0 数据丢失
+    - Cassandra最终一致性（可调一致性），数据可能丢失，AP
+        - Consistency，此命令显示当前的一致性级别，或设置新的一致性级别。Consistency可以理解读和写操作的Consistency Level。
+          写操作的consistency level指定了写操作在通知客户端请求成功之前，必须确保已经成功完成写操作的replica的数量。
+- Join支持
+    - MongoDB不支持多表连接
+    - Cassandra不支持多表连接，用数据冗余解决问题hotels_by_poi
+    - HBase不支持Join，需要借助其他工具或者算法实现 
+- 读写
+    - HBase快速读取和写入，具有可扩展性。读写性能数据读写定位可能要通过最多 6 次的网络RPC，性能较低。
+    - Cassandra快速随机性读取/写入，写多读少。数据读写定位非常快。
+    
+- MongoDB、HBase、Cassandra比较<https://www.cnblogs.com/yanduanduan/p/10563678.html>    
+- Hbase和Cassandra <https://blog.csdn.net/aa5305123/article/details/83142514>    
+
+<pre>
+1.强一致性的读写：HBase不是一个最终一致性的存储。
+2.自动sharding：HBase的table在集群种被分布在各个region，region可以做自动切分。
+3.regionserver的failover；
+4.Hadoop/HDFS的集成；
+5.MapReduce：支持大数据的并行处理；
+6.JAVA Client 以及Thrift/RESR API 访问；
+7.Block Cache 以及Bloom filter；
+8.操作管理。
+
+1.C*借鉴Dynamo的架构思想，把自己叫做一个最终一致性的系统，如果使用至少是QUORUM 读写，还算是一个强一致的系统。
+2.C*的sharding方式：一致性hash，有2种：
+（1）人为配置好initial_token；
+2.使用vnode，集群初始化以及节点bootstrap的时候会计算token，基于这些token做数据sharding。
+3.可以容忍：replicator_number - (read/write level sufficient nodes)个节点挂了，比如3个副本，读写级别QUORUM（sufficient nodes是2），能容忍1节点挂；
+4.支持MapReduce;
+5.Thrift、CQL访问;
+6.大数据处理的bloom filter 必备；
+7.自己有jmx等常见管理，且datastax 公司有提供ops center；
+</pre>
         
 #### "图"数据库 Graph Database Neo4J
 <https://www.cnblogs.com/loveis715/p/5277051.html>
@@ -298,6 +404,7 @@ COPY users (user_id, first_name, last_name, emails) TO 'kevinfile'; -- 将名为
 - 一种集时序数据高效读写，压缩存储，实时计算能力为一体的数据库服务，可广泛应用于物联网和互联网领域，实现对设备及业务服务的实时监控，实时预测告警。
 <https://www.jianshu.com/p/31afb8492eff>
 - 阿里巴巴双11千万级实时监控系统技术揭秘  <https://www.sohu.com/a/300572910_465959>
+
 #### 其他
 - 分布式系统之Quorum机制 <https://blog.csdn.net/tb3039450/article/details/80249664>
 - NoSQL漫谈 <http://www.nosqlnotes.com/>

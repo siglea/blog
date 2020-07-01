@@ -256,6 +256,11 @@ BlockingQueue接口是Queue的子接口，它的主要用途并不是作为容�
 1. 如果使用的是无界队列LinkedBlockingQueue，也就是无界队列的话，没关系，继续添加任务到阻塞队列中等待执行，因为LinkedBlockingQueue可以近乎认为是一个无穷大的队列，可以无限存放任务
 1. 如果使用的是有界队列比如ArrayBlockingQueue，任务首先会被添加到ArrayBlockingQueue中，ArrayBlockingQueue满了，会根据maximumPoolSize的值增加线程数量，如果增加了线程数量还是处理不过来，ArrayBlockingQueue继续满，那么则会使用拒绝策略RejectedExecutionHandler处理满了的任务，默认是AbortPolicy
 
+#### CyclicBarrier、CountDownLatch、Semaphore 的用法
+- CountDownLatch，等多搞一
+- CyclicBarrier，等多搞多
+- Semaphore，8个工人5台机器
+
 #### 参考资料
 并发编程 <https://segmentfault.com/a/1190000022039255>
 

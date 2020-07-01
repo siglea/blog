@@ -54,91 +54,6 @@
     
     <div class="post-contents">
       <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html">DB Shard</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="主键避重问题">主键避重问题</h4>
-<ul>
-  <li>ID生成器
-    <ul>
-      <li>Twitter Snowflake</li>
-      <li>美团 LeftUid</li>
-      <li>百度 Uid-genarator</li>
-    </ul>
-  </li>
-  <li>散表规则
-    <ul>
-      <li>按照ID范围，要求ID自增</li>
-      <li>简单Hash(取模)</li>
-      <li>Hash一致性算法</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="分页查询问题">分页查询问题</h4>
-<ul>
-  <li>分表查，应用程序合并</li>
-</ul>
-
-<h4 id="关联查询问题">关联查询问题</h4>
-<ul>
-  <li>避免join操作，改造为多次查询，由应用程序合并</li>
-  <li>使用现成的中间件</li>
-  <li>实际业务中可能会结合Redis/Es等解决方案</li>
-</ul>
-
-<h4 id="公共表问题">公共表问题</h4>
-<ul>
-  <li>公共表多库冗余，多库同步</li>
-</ul>
-
-<h4 id="事务一致性">事务一致性</h4>
-<p><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a>
-<a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></p>
-<h5 id="jtaxa">JTA*XA</h5>
-
-<h4 id="比较常见的中间件cobartddlatlassharding-jdbcmycat">比较常见的中间件cobar、TDDL、atlas、sharding-jdbc、mycat</h4>
-<ul>
-  <li>cobar：阿里b2b团队开发和开源的，属于proxy层方案。早些年还可以用，但是最近几年都没更新了，基本没啥人用，差不多算是被抛弃的状态吧。而且不支持读写分离、存储过程、跨库join和分页等操作。</li>
-  <li>TDDL：淘宝团队开发的，属于client层方案。不支持join、多表查询等语法，就是基本的crud语法是ok，但是支持读写分离。目前使用的也不多，因为还依赖淘宝的diamond配置管理系统。</li>
-  <li>atlas：360开源的，属于proxy层方案，以前是有一些公司在用的，但是确实有一个很大的问题就是社区最新的维护都在5年前了。所以，现在用的公司基本也很少了。</li>
-  <li>sharding-jdbc：当当开源的，属于client层方案。确实之前用的还比较多一些，因为SQL语法支持也比较多，没有太多限制，而且目前推出到了2.0版本，支持分库分表、读写分离、分布式id生成、柔性事务（最大努力送达型事务、TCC事务）。而且确实之前使用的公司会比较多一些（这个在官网有登记使用的公司，可以看到从2017年一直到现在，是不少公司在用的），目前社区也还一直在开发和维护，还算是比较活跃，个人认为算是一个现在也可以选择的方案。</li>
-  <li>
-    <p>mycat：基于cobar改造的，属于proxy层方案，支持的功能非常完善，而且目前应该是非常火的而且不断流行的数据库中间件，社区很活跃，也有一些公司开始在用了。但是确实相比于sharding jdbc来说，年轻一些，经历的锤炼少一些。</p>
-
-    <p>所以综上所述，现在其实建议考量的，就是sharding-jdbc和mycat，这两个都可以去考虑使用。
-  sharding-jdbc这种client层方案的优点在于不用部署，运维成本低，不需要代理层的二次转发请求，性能很高，但是如果遇到升级啥的需要各个系统都重新升级版本再发布，各个系统都需要耦合sharding-jdbc的依赖；
-  mycat这种proxy层方案的缺点在于需要部署，自己及运维一套中间件，运维成本高，但是好处在于对于各个项目是透明的，如果遇到升级之类的都是自己中间件那里搞就行了。
-  通常来说，这两个方案其实都可以选用，但是我个人建议中小型公司选用sharding-jdbc，client层方案轻便，而且维护成本低，不需要额外增派人手，而且中小型公司系统复杂度会低一些，项目也没那么多；
-  但是中大型公司最好还是选用mycat这类proxy层方案，因为可能大公司系统和项目非常多，团队很大，人员充足，那么最好是专门弄个人来研究和维护mycat，然后大量项目直接透明使用即可。</p>
-  </li>
-</ul>
-
-<h4 id="主从同步">主从同步</h4>
-<ul>
-  <li>半同步复制，semi-sync复制，指的就是主库写入binlog日志之后，就会将强制此时立即将数据同步到从库，从库将日志写入自己本地的relay log之后，接着会返回一个ack给主库，主库接收到至少一个从库的ack之后才会认为写操作完成了。</li>
-  <li>并行复制，指的是从库开启多个线程，并行读取relay log中不同库的日志，然后并行重放不同库的日志，这是库级别的并行。</li>
-</ul>
-
-<h4 id="其他">其他</h4>
-<p><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651960212&amp;idx=1&amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS">58用户系统分库分表实战</a></p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html">DB Mysql</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -241,6 +156,34 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
     </ul>
   </li>
   <li>引擎不同的几个方面：Storage mechanism、Locking levels、Indexing、Capabilities and functions</li>
+</ul>
+
+<h4 id="innodb引擎的4大特性">InnoDB引擎的4大特性</h4>
+<p>https://www.cnblogs.com/zhs0/p/10528520.html</p>
+<ul>
+  <li>插入缓冲（insert buffer)，只对于非聚集索引（非唯一）的插入和更新有效，对于每一次的插入不是写到索引页中，而是先判断插入的非聚集索引页是否在缓冲池中，如果在则直接插入；若不在，则先放到Insert Buffer 中，再按照一定的频率进行合并操作，再写回disk。这样通常能将多个插入合并到一个操作中，目的还是为了减少随机IO带来性能损耗。</li>
+  <li>二次写(double write)
+    <ul>
+      <li>InnoDB默认DB page为 16KB，而文件系统、磁盘、扇区对应的page小于该数字，因此，一次DB page可能被多次写入才能真正写入成功</li>
+      <li>在写数据时，会在共享表空间写一份数据，之后再同步到磁盘</li>
+      <li>在应用（apply）重做日志前，用户需要一个页的副本，当写入失效发生时，先通过页的副本来还原该页，再进行重做，这就是double write</li>
+      <li><a href="https://www.cnblogs.com/chenpingzhao/p/4876282.html">https://www.cnblogs.com/chenpingzhao/p/4876282.html</a></li>
+    </ul>
+  </li>
+  <li>自适应哈希索引(ahi)，innodb会监控表上多个索引页的查询。如果观察到建立哈希索引可以带来速度提升，则自动建立哈希索引，称之为自适应哈希索引（Adaptive Hash Index，AHI）。
+  主要是精确等值查找，对范围查找搜索不生效</li>
+  <li>预读(read ahead)，数据预加载</li>
+</ul>
+
+<h5 id="共享表空间-独立表空间">共享表空间 、独立表空间</h5>
+<ul>
+  <li>共享表空间： Innodb的所有数据保存在一个单独的表空间里面，而这个表空间可以由很多个文件组成，一个表可以跨多个文件存在，所以其大小限制不再是文件大小的限制，而是其自身的限制。从Innodb的官方文档中可以看到，其表空间的最大限制为64TB，也就是说，Innodb的单表限制基本上也在64TB左右了，当然这个大小是包括这个表的所有索引等其他相关数据。</li>
+  <li>独占表空间:  每一个表都将会生成以独立的文件方式来进行存储，每一个表都有一个.frm表描述文件，还有一个.ibd文件。 其中这个文件包括了单独一个表的数据内容以及索引内容，默认情况下它的存储位置也是在表的位置之中。</li>
+</ul>
+
+<h5 id="聚集索引-与-非聚集索引">聚集索引 与 非聚集索引</h5>
+<ul>
+  <li><a href="https://blog.csdn.net/riemann_/article/details/90324846">https://blog.csdn.net/riemann_/article/details/90324846</a></li>
 </ul>
 
 <h4 id="faq">FAQ</h4>
@@ -507,7 +450,66 @@ MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用�
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="gc的收集算法实战中是集中算法组合使用">GC的收集算法（实战中是集中算法组合使用）</h4>
+	<h4 id="垃圾回收器组合-7种">垃圾回收器组合 7种</h4>
+<ul>
+  <li>Parallel Old &amp; Parallel Scavenge New 高吞吐量 （1种）</li>
+  <li>G1 （1种）</li>
+  <li>Serial Old （5种）
+    <ul>
+      <li>
+        <table>
+          <tbody>
+            <tr>
+              <td>&amp; CMS Old &amp; (Serial</td>
+              <td> </td>
+              <td>ParNew 2种)</td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+      <li>&amp; Serial</li>
+      <li>&amp; ParNew</li>
+      <li>&amp; Parallel Scavenge New</li>
+    </ul>
+  </li>
+  <li>CMS短停顿 与 Scavenge 高吞吐不可一组</li>
+</ul>
+
+<h4 id="垃圾回收器">垃圾回收器</h4>
+<ul>
+  <li>Serial收集器（复制算法): 新生代单线程收集器，标记和清理都是单线程，优点是简单高效；</li>
+  <li>ParNew收集器 (复制算法): 新生代收并行集器，实际上是Serial收集器的多线程版本，在多核CPU环境下有着比Serial更好的表现；</li>
+  <li>Parallel Scavenge收集器 (复制算法): 新生代并行收集器，追求高吞吐量，高效利用 CPU。吞吐量 = 用户线程时间/(用户线程时间+GC线程时间)，高吞吐量可以高效率的利用CPU时间，尽快完成程序的运算任务，适合后台应用等对交互相应要求不高的场景；</li>
+  <li>Serial Old收集器 (标记-整理算法): 老年代单线程收集器，Serial收集器的老年代版本；</li>
+  <li>Parallel Old收集器 (标记-整理算法)： 老年代并行收集器，吞吐量优先，Parallel Scavenge收集器的老年代版本；</li>
+  <li>CMS(Concurrent Mark Sweep)收集器（标记-清除算法）： 老年代并行收集器，以获取最短回收停顿时间为目标的收集器，具有高并发、低停顿的特点，追求最短GC回收停顿时间。</li>
+  <li>G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。</li>
+</ul>
+
+<h4 id="jvm">JVM</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-Xms2g</span>：初始化推大小为 2g；
+<span class="nt">-Xmx2g</span>：堆最大内存为 2g；
+<span class="nt">-XX</span>:NewRatio<span class="o">=</span>4：设置年轻的和老年代的内存比例为 1:4；
+<span class="nt">-XX</span>:SurvivorRatio<span class="o">=</span>8：设置新生代 Eden 和 Survivor 比例为 8:2；
+–XX:+UseParNewGC：指定使用 ParNew + Serial Old 垃圾回收器组合；
+<span class="nt">-XX</span>:+UseParallelOldGC：指定使用 ParNew + ParNew Old 垃圾回收器组合；
+<span class="nt">-XX</span>:+UseConcMarkSweepGC：指定使用 CMS + Serial Old 垃圾回收器组合；
+<span class="nt">-XX</span>:+PrintGC：开启打印 gc 信息；
+<span class="nt">-XX</span>:+PrintGCDetails：打印 gc 详细信息。
+</code></pre></div></div>
+
+<h4 id="分代垃圾回收器是怎么工作的">分代垃圾回收器是怎么工作的？</h4>
+<ul>
+  <li>分代回收器有两个分区：老生代和新生代，新生代默认的空间占比总空间的 1/3，老生代的默认占比是 2/3。</li>
+  <li>新生代使用的是复制算法，新生代里有 3 个分区：Eden、To Survivor、From Survivor，它们的默认占比是  8:1:1，它的执行流程如下：</li>
+  <li>把 Eden + From Survivor 存活的对象放入 To Survivor 区；
+清空 Eden 和 From Survivor 分区；
+From Survivor 和 To Survivor 分区交换，From Survivor 变 To Survivor，To Survivor 变 From Survivor。
+每次在 From Survivor 到 To Survivor 移动时都存活的对象，年龄就 +1，当年龄到达 15（默认配置是 15）时，升级为老生代。大对象也会直接进入老生代。</li>
+  <li>老生代当空间占用到达某个值之后就会触发全局垃圾收回，一般使用标记整理的执行算法。以上这些循环往复就构成了整个分代垃圾回收的整体执行流程。</li>
+</ul>
+
+<h4 id="gc的收集算法实战中是集中算法组合使用">GC的收集算法（实战中是集中算法组合使用）</h4>
 <ul>
   <li>标记-复制：复制到新区域，回收老区域
   Serial New、Parallel New、Parallel Scavenge New、G1</li>
@@ -989,6 +991,44 @@ http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
     </div>
     <br />
     
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html">算法时间复杂度</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="时间复杂度原则">时间复杂度原则</h4>
+<ul>
+  <li>如果运行时间是常数量级，用常数1表示</li>
+  <li>只保留时间函数中的最高阶项
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 0.5n^2 + 0.5n
+T(n) = O(n^2)
+</code></pre></div>    </div>
+  </li>
+  <li>如果最高阶项存在，则省去最高阶项前面的系数
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>T(n) = 3n
+T(n) = O(n)
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="时间复杂度排序">时间复杂度排序</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>O(1) &lt; O(logN) &lt; O(n) &lt; O(n^2)
+</code></pre></div></div>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/algorithm-O.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
 
     <div style="text-align:center">
     
@@ -1108,7 +1148,7 @@ http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 16 )</span>
+      <span class="label label-default">分布式 ( 13 )</span>
       </a><br />
 
       
@@ -1129,14 +1169,14 @@ http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
       
       
       <a  href="/tag/数据库">
-      <span class="label label-default">数据库 ( 6 )</span>
+      <span class="label label-default">数据库 ( 7 )</span>
       </a><br />
 
       
       
       
       <a  href="/tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 12 )</span>
+      <span class="label label-default">数据结构与算法 ( 9 )</span>
       </a><br />
 
       
@@ -1150,7 +1190,7 @@ http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 9 )</span>
+      <span class="label label-default">Java ( 10 )</span>
       </a><br />
 
       
@@ -1199,7 +1239,7 @@ http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</p>
       
       
       <a  href="/tag/bigdata">
-      <span class="label label-default">BigData ( 5 )</span>
+      <span class="label label-default">BigData ( 2 )</span>
       </a><br />
 
       

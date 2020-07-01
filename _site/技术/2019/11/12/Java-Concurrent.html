@@ -388,6 +388,13 @@ BlockingQueue接口是Queue的子接口，它的主要用途并不是作为容�
   <li>如果使用的是有界队列比如ArrayBlockingQueue，任务首先会被添加到ArrayBlockingQueue中，ArrayBlockingQueue满了，会根据maximumPoolSize的值增加线程数量，如果增加了线程数量还是处理不过来，ArrayBlockingQueue继续满，那么则会使用拒绝策略RejectedExecutionHandler处理满了的任务，默认是AbortPolicy</li>
 </ol>
 
+<h4 id="cyclicbarriercountdownlatchsemaphore-的用法">CyclicBarrier、CountDownLatch、Semaphore 的用法</h4>
+<ul>
+  <li>CountDownLatch，等多搞一</li>
+  <li>CyclicBarrier，等多搞多</li>
+  <li>Semaphore，8个工人5台机器</li>
+</ul>
+
 <h4 id="参考资料">参考资料</h4>
 <p>并发编程 <a href="https://segmentfault.com/a/1190000022039255">https://segmentfault.com/a/1190000022039255</a></p>
 

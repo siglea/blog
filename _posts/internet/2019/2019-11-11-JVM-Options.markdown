@@ -7,6 +7,46 @@ tags:
 categories:
 - 技术
 ---
+#### 垃圾回收器组合 7种
+- Parallel Old & Parallel Scavenge New 高吞吐量 （1种）
+- G1 （1种）
+- Serial Old （5种）
+    - & CMS Old & (Serial || ParNew 2种)
+    - & Serial
+    - & ParNew
+    - & Parallel Scavenge New
+- CMS短停顿 与 Scavenge 高吞吐不可一组
+
+#### 垃圾回收器
+- Serial收集器（复制算法): 新生代单线程收集器，标记和清理都是单线程，优点是简单高效；
+- ParNew收集器 (复制算法): 新生代收并行集器，实际上是Serial收集器的多线程版本，在多核CPU环境下有着比Serial更好的表现；
+- Parallel Scavenge收集器 (复制算法): 新生代并行收集器，追求高吞吐量，高效利用 CPU。吞吐量 = 用户线程时间/(用户线程时间+GC线程时间)，高吞吐量可以高效率的利用CPU时间，尽快完成程序的运算任务，适合后台应用等对交互相应要求不高的场景；
+- Serial Old收集器 (标记-整理算法): 老年代单线程收集器，Serial收集器的老年代版本；
+- Parallel Old收集器 (标记-整理算法)： 老年代并行收集器，吞吐量优先，Parallel Scavenge收集器的老年代版本；
+- CMS(Concurrent Mark Sweep)收集器（标记-清除算法）： 老年代并行收集器，以获取最短回收停顿时间为目标的收集器，具有高并发、低停顿的特点，追求最短GC回收停顿时间。
+- G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。
+
+#### JVM
+```shell
+-Xms2g：初始化推大小为 2g；
+-Xmx2g：堆最大内存为 2g；
+-XX:NewRatio=4：设置年轻的和老年代的内存比例为 1:4；
+-XX:SurvivorRatio=8：设置新生代 Eden 和 Survivor 比例为 8:2；
+–XX:+UseParNewGC：指定使用 ParNew + Serial Old 垃圾回收器组合；
+-XX:+UseParallelOldGC：指定使用 ParNew + ParNew Old 垃圾回收器组合；
+-XX:+UseConcMarkSweepGC：指定使用 CMS + Serial Old 垃圾回收器组合；
+-XX:+PrintGC：开启打印 gc 信息；
+-XX:+PrintGCDetails：打印 gc 详细信息。
+```
+
+#### 分代垃圾回收器是怎么工作的？
+- 分代回收器有两个分区：老生代和新生代，新生代默认的空间占比总空间的 1/3，老生代的默认占比是 2/3。
+- 新生代使用的是复制算法，新生代里有 3 个分区：Eden、To Survivor、From Survivor，它们的默认占比是  8:1:1，它的执行流程如下：
+- 把 Eden + From Survivor 存活的对象放入 To Survivor 区；
+清空 Eden 和 From Survivor 分区；
+From Survivor 和 To Survivor 分区交换，From Survivor 变 To Survivor，To Survivor 变 From Survivor。
+每次在 From Survivor 到 To Survivor 移动时都存活的对象，年龄就 +1，当年龄到达 15（默认配置是 15）时，升级为老生代。大对象也会直接进入老生代。
+- 老生代当空间占用到达某个值之后就会触发全局垃圾收回，一般使用标记整理的执行算法。以上这些循环往复就构成了整个分代垃圾回收的整体执行流程。
 
 #### GC的收集算法（实战中是集中算法组合使用）
 - 标记-复制：复制到新区域，回收老区域
