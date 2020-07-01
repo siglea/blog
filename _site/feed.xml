@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 01 Jul 2020 11:11:04 +0800</pubDate>
-    <lastBuildDate>Wed, 01 Jul 2020 11:11:04 +0800</lastBuildDate>
+    <pubDate>Wed, 01 Jul 2020 18:40:50 +0800</pubDate>
+    <lastBuildDate>Wed, 01 Jul 2020 18:40:50 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -811,7 +811,8 @@ ThreadID 的时候依赖一次 CAS 原子指令(由于一旦出现多线程竞�
 &lt;h4 id=&quot;请谈谈-threadlocal-是怎么解决并发安全的&quot;&gt;请谈谈 ThreadLocal 是怎么解决并发安全的？&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;ThreadLocal 这是Java提供的一种保存线程私有信息的机制，因为其在整个线程生命周期内有效，所以可以方便地在一个线程关联的不同业务模块之间传递信息，
-  比如事务, Cookie等上下文相关信息。 ThreadLocal 为每一个线程维护变量的副本，把共享数据的可见范围限制在同一个线程之内，其实现原理是，在ThreadLocal 类中有一个Map ，用于存储每一个线程的变量的副本。&lt;/li&gt;
+比如事务, Cookie等上下文相关信息。 ThreadLocal 为每一个线程维护变量的副本，把共享数据的可见范围限制在同一个线程之内，其实现原理是，在ThreadLocal 类中有一个Map ，用于存储每一个线程的变量的副本。
+ThreadLocal 注意需要自己remove，否则可能发生泄漏。&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;throwable-是-java-语言中所有错误或异常的超类下一层分为-error-和-exception&quot;&gt;Throwable 是 Java 语言中所有错误或异常的超类。下一层分为 Error 和 Exception&lt;/h4&gt;

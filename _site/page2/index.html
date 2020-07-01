@@ -324,7 +324,8 @@ ThreadID 的时候依赖一次 CAS 原子指令(由于一旦出现多线程竞�
 <h4 id="请谈谈-threadlocal-是怎么解决并发安全的">请谈谈 ThreadLocal 是怎么解决并发安全的？</h4>
 <ul>
   <li>ThreadLocal 这是Java提供的一种保存线程私有信息的机制，因为其在整个线程生命周期内有效，所以可以方便地在一个线程关联的不同业务模块之间传递信息，
-  比如事务, Cookie等上下文相关信息。 ThreadLocal 为每一个线程维护变量的副本，把共享数据的可见范围限制在同一个线程之内，其实现原理是，在ThreadLocal 类中有一个Map ，用于存储每一个线程的变量的副本。</li>
+比如事务, Cookie等上下文相关信息。 ThreadLocal 为每一个线程维护变量的副本，把共享数据的可见范围限制在同一个线程之内，其实现原理是，在ThreadLocal 类中有一个Map ，用于存储每一个线程的变量的副本。
+ThreadLocal 注意需要自己remove，否则可能发生泄漏。</li>
 </ul>
 
 <h4 id="throwable-是-java-语言中所有错误或异常的超类下一层分为-error-和-exception">Throwable 是 Java 语言中所有错误或异常的超类。下一层分为 Error 和 Exception</h4>
