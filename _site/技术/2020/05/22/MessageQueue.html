@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title> kafka activeMQ RabbitMq RocketMQ </title>
-  <meta name="description" content="">
+  <meta name="description" content="### MOM(Message Oriented Middleware)">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,7 +60,8 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <p><img src="/img/mq.jpg" width="600px" /></p>
+    <p>### MOM(Message Oriented Middleware)
+<img src="/img/mq.jpg" width="600px" /></p>
 
 <p>17 个方面，综合对比 Kafka、RabbitMQ、RocketMQ、ActiveMQ
 <a href="https://mp.weixin.qq.com/s/u7pyzEQgqmux9qUI_SPaNw">https://mp.weixin.qq.com/s/u7pyzEQgqmux9qUI_SPaNw</a></p>
@@ -333,6 +334,42 @@ broker机器的外网ip  hostname.com
 
 <h3 id="rocketmq">rocketmq</h3>
 
+<p><img src="/img/RocketMq.jpg" width="600px" /></p>
+
+<h4 id="rocketmq的部署结构有以下特点">RocketMQ的部署结构有以下特点：</h4>
+<ul>
+  <li>Name Server是一个几乎无状态节点，可集群部署，节点之间无任何信息同步。</li>
+  <li>Broker部署相对复杂，Broker分为Master与Slave，一个Master可以对应多个Slave，但是一个Slave只能对应一个Master，Master与Slave的对应关系通过指定相同的BrokerName，不同的BrokerId来定义，BrokerId为0表示Master，非0表示Slave。Master也可以部署多个。每个Broker与Name Server集群中的所有节点建立长连接，定时注册Topic信息到所有Name Server。</li>
+  <li>Producer与Name Server集群中的其中一个节点（随机选择）建立长连接，定期从Name Server取Topic路由信息，并向提供Topic服务的Master建立长连接，且定时向Master发送心跳。Producer完全无状态，可集群部署。</li>
+  <li>Consumer与Name Server集群中的其中一个节点（随机选择）建立长连接，定期从Name Server取Topic路由信息，并向提供Topic服务的Master、Slave建立长连接，且定时向Master、Slave发送心跳。Consumer既可以从Master订阅消息，也可以从Slave订阅消息，订阅规则由Broker配置决定。</li>
+</ul>
+
+<h4 id="rocketmq核心点">RocketMq核心点</h4>
+<ul>
+  <li>Broker上存Topic信息，Topic由多个队列组成，队列会平均分散在多个Broker上。Producer的发送机制保证消息尽量平均分布到 所有队列中，最终效果就是所有消息都平均落在每个Broker上。</li>
+  <li>RocketMQ的消息的存储是由ConsumeQueue和CommitLog配合来完成的，ConsumeQueue中只存储很少的数据，消息主体都是通过CommitLog来进行读写。 如果某个消息只在CommitLog中有数据，而ConsumeQueue中没有，则消费者无法消费，RocketMQ的事务消息实现就利用了这一点。
+    <ul>
+      <li>CommitLog：是消息主体以及元数据的存储主体，对CommitLog建立一个ConsumeQueue，每个ConsumeQueue对应一个（概念模型中的）MessageQueue，所以只要有 CommitLog在，ConsumeQueue即使数据丢失，仍然可以恢复出来。</li>
+      <li>ConsumeQueue：是一个消息的逻辑队列，存储了这个Queue在CommitLog中的起始offset，log大小和MessageTag的hashCode。每个Topic下的每个Queue都有一个对应的 ConsumeQueue文件，例如Topic中有三个队列，每个队列中的消息索引都会有一个编号，编号从0开始，往上递增。并由此一个位点offset的概念，有了这个概念，就可以对 Consumer端的消费情况进行队列定义。</li>
+    </ul>
+  </li>
+  <li>RocketMQ的高性能在于顺序写盘(CommitLog)、零拷贝和跳跃读(尽量命中PageCache)，高可靠性在于刷盘和Master/Slave，另外NameServer 全部挂掉不影响已经运行的Broker,Producer,Consumer。</li>
+  <li>发送消息负载均衡，且发送消息线程安全(可满足多个实例死循环发消息)，集群消费模式下消费者端负载均衡，这些特性加上上述的高性能读写， 共同造就了RocketMQ的高并发读写能力。</li>
+  <li>刷盘和主从同步均为异步(默认)时，broker进程挂掉(例如重启)，消息依然不会丢失，因为broker shutdown时会执行persist。 当物理机器宕机时，才有消息丢失的风险。另外，master挂掉后，消费者从slave消费消息，但slave不能写消息。</li>
+  <li>RocketMQ具有很好动态伸缩能力(非顺序消息)，伸缩性体现在Topic和Broker两个维度。
+    <ul>
+      <li>Topic维度：假如一个Topic的消息量特别大，但集群水位压力还是很低，就可以扩大该Topic的队列数，Topic的队列数跟发送、消费速度成正比。</li>
+      <li>Broker维度：如果集群水位很高了，需要扩容，直接加机器部署Broker就可以。Broker起来后向Namesrv注册，Producer、Consumer通过Namesrv 发现新Broker，立即跟该Broker直连，收发消息。</li>
+    </ul>
+  </li>
+  <li>Producer: 失败默认重试2次；sync/async；ProducerGroup，在事务消息机制中，如果发送消息的producer在还未commit/rollback前挂掉了，broker会在一段时间后回查ProducerGroup里的其他实例，确认消息应该commit/rollback</li>
+  <li>Consumer: DefaultPushConsumer/DefaultPullConsumer，push也是用pull实现的，采用的是长轮询方式；CLUSTERING模式下，一条消息只会被ConsumerGroup里的一个实例消费，但可以被多个不同的ConsumerGroup消费，BROADCASTING模式下，一条消息会被ConsumerGroup里的所有实例消费。</li>
+  <li>DefaultPushConsumer: Broker收到新消息请求后，如果队列里没有新消息，并不急于返回，通过一个循环不断查看状态，每次waitForRunning一段时间(5s)，然后在check。当一直没有新消息，第三次check时，等待时间超过suspendMaxTimeMills(15s)，就返回空结果。在等待的过程中，Broker收到了新的消息后会直接调用notifyMessageArriving返回请求结果。“长轮询”的核心是，Broker端Hold住(挂起)客户端客户端过来的请求一小段时间，在这个时间内有新消息到达，就利用现有的连接立刻返回消息给Consumer。“长轮询”的主动权还是掌握在Consumer手中，Broker即使有大量消息积压，也不会主动推送给Consumer。长轮询方式的局限性，是在Hold住Consumer请求的时候需要占用资源，它适合用在消息队列这种客户端连接数可控的场景中。</li>
+  <li>DefaultPullConsumer: 需要用户自己处理遍历MessageQueue、保存Offset，所以PullConsumer有更多的自主性和灵活性。</li>
+  <li>对于集群模式的非顺序消息，消费失败默认重试16次，延迟等级为3~18。(messageDelayLevel = “1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h”)</li>
+  <li>MQClientInstance是客户端各种类型的Consumer和Producer的底层类，由它与NameServer和Broker打交道。如果创建Consumer或Producer 类型的时候不手动指定instanceName，进程中只会有一个MQClientInstance对象，即当一个Java程序需要连接多个MQ集群时，必须手动指定不同的instanceName。需要一提的是，当消费者(不同jvm实例)都在同一台物理机上时，若指定instanceName，消费负载均衡将失效(每个实例都将消费所有消息)。另外，在一个jvm里模拟集群消费时，必须指定不同的instanceName，否则启动时会提示ConsumerGroup已存在。</li>
+</ul>
+
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># install rocketmq</span>
 unzip rocketmq-all-4.7.0-source-release.zip
 <span class="nb">cd </span>rocketmq-all-4.7.0/
@@ -371,13 +408,12 @@ broker机器的内网ip  hostname.com
 <ul>
   <li>rocketmq为什么使用nameserver而不使用ZooKeeper？<a href="https://blog.csdn.net/earthhour/article/details/78718064">https://blog.csdn.net/earthhour/article/details/78718064</a></li>
   <li>点赞削峰 <a href="https://mp.weixin.qq.com/s/w6aCc-ueYHjkNeEZYcmAhw">https://mp.weixin.qq.com/s/w6aCc-ueYHjkNeEZYcmAhw</a></li>
-  <li><a href="http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/">http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/</a></li>
-  <li><a href="https://blog.csdn.net/javahongxi/article/details/84931747">https://blog.csdn.net/javahongxi/article/details/84931747</a></li>
-  <li><a href="https://www.jianshu.com/p/2838890f3284">https://www.jianshu.com/p/2838890f3284</a></li>
-</ul>
-
-<h4 id="参考">参考</h4>
-<ul>
+  <li>RocketMQ吐血总结 <a href="https://blog.csdn.net/javahongxi/article/details/84931747">https://blog.csdn.net/javahongxi/article/details/84931747</a></li>
+  <li>从Mq到RocketMq <a href="http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/">http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/</a></li>
+  <li>Rocketmq、Kafka、RabbitMq对比<a href="https://www.jianshu.com/p/2838890f3284">https://www.jianshu.com/p/2838890f3284</a></li>
+  <li>RocketMq事务消息 <a href="https://www.jianshu.com/p/cc5c10221aa1">https://www.jianshu.com/p/cc5c10221aa1</a>
+    <h4 id="参考">参考</h4>
+  </li>
   <li>消息队列常见问题
     <ul>
       <li><a href="https://www.cnblogs.com/williamjie/p/9481780.html">https://www.cnblogs.com/williamjie/p/9481780.html</a></li>
