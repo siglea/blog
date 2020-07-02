@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>2PC 3PC</title>
-  <meta name="description" content="分布式事务精华  X/Open DTP模型体系 Distribution Transaction Process          XA模式 eXtend Architecture        Seata体系 Simple Extensible Autonomous Transaction Architectu...">
+  <meta name="description" content="先来案例  移动流量充值中心案例 https://mp.weixin.qq.com/s/MbsPqEfqvMahMk51LNC6_g  龙果支付系统（roncoo-pay）是国内首款开源的互联网支付系统 https://gitee.com/roncoocom/roncoo-pay  Seata实战-分布式事务简介...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,7 +60,19 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="分布式事务精华">分布式事务精华</h4>
+    <h4 id="先来案例">先来案例</h4>
+<ul>
+  <li>移动流量充值中心案例 <a href="https://mp.weixin.qq.com/s/MbsPqEfqvMahMk51LNC6_g">https://mp.weixin.qq.com/s/MbsPqEfqvMahMk51LNC6_g</a></li>
+  <li>龙果支付系统（roncoo-pay）是国内首款开源的互联网支付系统 <a href="https://gitee.com/roncoocom/roncoo-pay">https://gitee.com/roncoocom/roncoo-pay</a></li>
+  <li>Seata实战-分布式事务简介及demo <a href="https://blog.csdn.net/hosaos/article/details/89136666">https://blog.csdn.net/hosaos/article/details/89136666</a></li>
+  <li>Seata解决分布式事务案例 <a href="https://blog.csdn.net/Delicious_Life/article/details/107005466">https://blog.csdn.net/Delicious_Life/article/details/107005466</a></li>
+  <li>分布式事务系列 <a href="https://my.oschina.net/pingpangkuangmo/blog/413518?spm=a2c4e.10696291.0.0.73f319a4HnPsoM">https://my.oschina.net/pingpangkuangmo/blog/413518?spm=a2c4e.10696291.0.0.73f319a4HnPsoM</a></li>
+  <li>Spring Boot 集成 Seata 解决分布式事务问题 <a href="https://springboot.io/t/topic/1658">https://springboot.io/t/topic/1658</a></li>
+  <li>分布式事务终极解决方案汇总 <a href="https://mp.weixin.qq.com/s/L63t_ZwQapaEAUQ68kXx1A">https://mp.weixin.qq.com/s/L63t_ZwQapaEAUQ68kXx1A</a></li>
+  <li>分布式 实战（干货） <a href="https://blog.csdn.net/qq_27384769/article/details/79439782">https://blog.csdn.net/qq_27384769/article/details/79439782</a></li>
+</ul>
+
+<h4 id="分布式事务精华">分布式事务精华</h4>
 <ol>
   <li>X/Open DTP模型体系 Distribution Transaction Process
     <ul>
@@ -168,6 +180,14 @@
   <li>最大努力通知型（Best-effort Delivery）</li>
 </ul>
 
+<h4 id="tcc异常控制">TCC异常控制</h4>
+<ul>
+  <li>在有了一套完备的 TCC 接口之后，是不是就真的高枕无忧了呢？答案是否定的。在微服务架构下，很有可能出现网络超时、重发，机器宕机等一系列的异常情况。一旦遇到这些 情况，就会导致我们的分布式事务执行过程出现异常，最常见的主要是空回滚、幂等、悬挂。因此，在TCC接口设计中还需要处理好这三个问题。
+Cancel接口设计时需要允许空回滚。在Try接口因为丢包时没有收到，事务管理器会触发回滚，这时会触发Cancel接口，这时Cancel执行时发现没有对应的事务 XID或主键时，需要返回回滚成功。让事务服务管理器认为已回滚，否则会不断重试，而Cancel又没有对应的业务数据可以进行回滚。</li>
+  <li>幂等性的意思是对同一个系统使用同样的条件，一次请求和重复的多次请求对系统资源的影响是一致的。因为网络抖动或拥堵可能会超时，事务管理器会对资源进行重试操作，所以很可能一个业务操作会被重复调用，为了不因为重复调用而多次占用资源，需要对服务设计时进行幂等控制，通常我们可以用事务XID或业务主键判重来控制。</li>
+  <li>悬挂的意思是Cancel比Try接口先执行，出现的原因是Try由于网络拥堵而超时，事务管理器生成回滚，触发Cancel接口，而最终又收到了Try接口调用，但是Cancel比Try先到。按照前面允许空回滚的逻辑，回滚会返回成功，事务管理器认为事务已回滚成功，则此时的Try接口不应该执行，否则会产生数据不一致，所以我们在Cancel空回滚返回成功之前先记录该条事务 XID或业务主键，标识这条记录已经回滚过，Try接口先检查这条事务XID或业务主键如果已经标记为回滚成功过，则不执行Try的业务操作。</li>
+</ul>
+
 <h4 id="分布式事务的取舍">分布式事务的取舍</h4>
 <ul>
   <li>严格的ACID事务对隔离性的要求很高，在事务执行中必须将所有的资源锁定，对于长事务来说，整个事务期间对数据的独占，将严重影响系统并发性能。因此，在高并发场景中，对ACID的部分特性进行放松从而提高性能，这便产生了BASE柔性事务。柔性事务的理念则是通过业务逻辑将互斥锁操作从资源层面上移至业务层面。通过放宽对强一致性要求，来换取系统吞吐量的提升。另外提供自动的异常恢复机制，可以在发生异常后也能确保事务的最终一致。</li>
@@ -211,8 +231,6 @@
   <li>2PC和3PC原理 <a href="https://zhuanlan.zhihu.com/p/91263461">https://zhuanlan.zhihu.com/p/91263461</a></li>
   <li>分布式事务科普 上<a href="https://mp.weixin.qq.com/s/ek3ycMJ1qbMXtMRAvTQDZg">https://mp.weixin.qq.com/s/ek3ycMJ1qbMXtMRAvTQDZg</a></li>
   <li>分布式事务科普 下 ☆☆☆<a href="https://mp.weixin.qq.com/s/As8QpwpJvwAViZ2otiZnPg">https://mp.weixin.qq.com/s/As8QpwpJvwAViZ2otiZnPg</a></li>
-  <li>实战案例 <a href="https://springboot.io/t/topic/1658">https://springboot.io/t/topic/1658</a></li>
-  <li>实战案例 <a href="https://blog.csdn.net/hosaos/article/details/89136666">https://blog.csdn.net/hosaos/article/details/89136666</a></li>
 </ul>
 
   </div>

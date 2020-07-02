@@ -336,6 +336,28 @@ broker机器的外网ip  hostname.com
 
 <p><img src="/img/RocketMq.jpg" width="600px" /></p>
 
+<h4 id="rocketmq优点">RocketMq优点</h4>
+<ul>
+  <li>支持分布式：原生支持分布式,ActiveMQ原生存在单点</li>
+  <li>严格的消息顺序：保证严格的消息顺序，ActiveMQ无法保证</li>
+  <li>海量消息低延迟：RocketMQ支持亿级消息堆积能力，并可以保证亿级消息写入时达到低延迟</li>
+  <li>消息拉取模式
+    <ol>
+      <li>PUSH：消费者端设置Listener</li>
+      <li>PULL：应用可主动从Broker获取消息，主动拉取会存在消费记录位置问题（如果不记录位置，会出现重复消费）</li>
+    </ol>
+  </li>
+  <li>分布式协调：Metaq1.x/2.x版本，分布式协调采用Zookeeper，RocketMQ通过自己实现NameServer达到分布式协调，更轻量，由于自主实现，更贴近框架，性能更好</li>
+  <li>其它：消费重试机制、高效订阅者水平扩展功能、API（多语言）、分布式事务机制等！</li>
+</ul>
+
+<h4 id="rocketmq顺序消息">RocketMq顺序消息</h4>
+<ul>
+  <li>发送时同个orderId路由到相同分区</li>
+  <li>消费时由同一个消费者消费同一个订单</li>
+  <li><a href="https://www.cnblogs.com/hzmark/p/orderly_message.html">https://www.cnblogs.com/hzmark/p/orderly_message.html</a></li>
+</ul>
+
 <h4 id="rocketmq的部署结构有以下特点">RocketMQ的部署结构有以下特点：</h4>
 <ul>
   <li>Name Server是一个几乎无状态节点，可集群部署，节点之间无任何信息同步。</li>
