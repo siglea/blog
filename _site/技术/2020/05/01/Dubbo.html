@@ -66,11 +66,84 @@
   <li>start <a href="http://start.dubbo.io/">http://start.dubbo.io/</a></li>
   <li>Dubbo实践 <a href="https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/">https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/</a></li>
   <li>通俗易懂的 Dubbo 教程 <a href="https://blog.csdn.net/Geffin/category_9931110.html">https://blog.csdn.net/Geffin/category_9931110.html</a></li>
-  <li>Java RMI &amp; Dubbo <a href="http://dubbo.apache.org/zh-cn/blog/dubbo-101.html">http://dubbo.apache.org/zh-cn/blog/dubbo-101.html</a>
-    <h3 id="dubbo负载均衡">Dubbo负载均衡</h3>
+  <li>Java RMI &amp; Dubbo <a href="http://dubbo.apache.org/zh-cn/blog/dubbo-101.html">http://dubbo.apache.org/zh-cn/blog/dubbo-101.html</a></li>
+</ul>
+
+<p><img src="/img/dubbo1.jpg" width="600px" />
+<img src="/img/dubbo2.jpg" width="600px" /></p>
+
+<h4 id="dubbo架构10层">Dubbo架构10层</h4>
+<ul>
+  <li>服务接口层(Service):该层是与实际业务逻辑相关的，根据服务提 供方和服务消费方的业务设计对应的接口和实现。</li>
+  <li>配置层(Config):对外配置接口，以ServiceConfig和 ReferenceConfig 为中心。</li>
+  <li>服务代理层(Proxy):服务接口透明代理，生成服务的客户端Stub 和服务器端 Skeleton。</li>
+  <li>服务注册层(Registry):封装服务地址的注册与发现，以服务URL 为中心。</li>
+  <li>集群层(Cluster):封装多个提供者的路由及负载均衡，并桥接注册 中心，以 Invoker 为中心。</li>
+  <li>监控层(Monitor):RPC调用次数和调用时间监控。</li>
+  <li>远程调用层(Protocol):封将RPC调用，以Invocation和Result为中心，扩展接口为 Protocol、Invoker 和 Exporter。</li>
+  <li>信息交换层(Exchange):封装请求响应模式，同步转异步，以Request 和 Response 为中心。</li>
+  <li>网络传输层(Transport):抽象mina和netty为统一接口，以Message 为中心。</li>
+  <li>Serialize层</li>
+</ul>
+
+<p><img src="/img/dubbo3.jpg" width="600px" /></p>
+
+<p>Exporter是真正的发布？</p>
+<h4 id="dubbo是什么">Dubbo是什么？</h4>
+<ul>
+  <li>dubbo是一个分布式框架，远程服务调用的分布式框架，其核心部分包含:
+    <ul>
+      <li>自动发现:基于注册中心目录服务，使服务消费方能动态的查找服务提供方，使地址透明，使服务提供方可以平滑增加或减少机器。</li>
+      <li>远程通讯:提供对多种基于⻓连接的NIO框架抽象封装，包括多种线程模型，序列化，以及“请求-响应”模式的信息交换方式。</li>
+      <li>集群容错:提供基于接口方法的透明远程过程调用，包括多协议支持，以及软负载均衡，失败容错，地址路由，动态配置等集群支持。</li>
+    </ul>
   </li>
 </ul>
+
+<h4 id="dubbo组成">Dubbo组成</h4>
+<ul>
+  <li>provider:暴露服务的服务提供方</li>
+  <li>consumer:调用远程服务的服务消费方</li>
+  <li>registry:服务注册于发现的注册中心</li>
+  <li>monitor:统计服务调用次数和调用时间的监控中心</li>
+  <li>container:服务运行容器</li>
+</ul>
+
+<h4 id="dubbo之令牌验证">dubbo之令牌验证</h4>
+<ul>
+  <li>防止消费者绕过注册中心访问提供者</li>
+  <li>在注册中心控制权限，以决定要不要下发令牌给消费者</li>
+  <li>注册中心可灵活改变授权方式，而不需修改或升级提供者</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!--可以全局设置开启令牌验证--&gt;</span>
+
+<span class="c">&lt;!--随机token令牌，使用UUID生成--&gt;</span>
+<span class="nt">&lt;dubbo:provider</span> <span class="na">token=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!--固定token令牌，相当于密码--&gt;</span>
+<span class="nt">&lt;dubbo:provider</span>  <span class="na">token=</span><span class="s">"123456"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!--也可在服务级别设置：--&gt;</span>
+
+<span class="c">&lt;!--随机token令牌，使用UUID生成--&gt;</span>
+<span class="nt">&lt;dubbo:service</span> <span class="na">interface=</span><span class="s">"com.foo.BarService"</span> <span class="na">token=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!--固定token令牌，相当于密码--&gt;</span>
+<span class="nt">&lt;dubbo:service</span> <span class="na">interface=</span><span class="s">"com.foo.BarService"</span> <span class="na">token=</span><span class="s">"123456"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!--还可在协议级别设置：--&gt;</span>
+
+<span class="c">&lt;!--随机token令牌，使用UUID生成--&gt;</span>
+<span class="nt">&lt;dubbo:protocol</span> <span class="na">name=</span><span class="s">"dubbo"</span> <span class="na">token=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!--固定token令牌，相当于密码--&gt;</span>
+<span class="nt">&lt;dubbo:protocol</span> <span class="na">name=</span><span class="s">"dubbo"</span> <span class="na">token=</span><span class="s">"123456"</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<h4 id="dubbo27新特性">Dubbo2.7新特性</h4>
+<p>异步化改造，三大中心改造，服务治理增强 <a href="http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html">http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html</a></p>
+
+<h4 id="dubbo-哪些漏洞">Dubbo 哪些漏洞？</h4>
+
+<h3 id="dubbo负载均衡">Dubbo负载均衡</h3>
 <p><a href="http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html">http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html</a></p>
+
 <h4 id="dubbo-内置了四种负载均衡策略分别如下">Dubbo 内置了四种负载均衡策略，分别如下：</h4>
 <ul>
   <li>RandomLoadBalance：随机负载均衡</li>
@@ -78,6 +151,13 @@
   <li>LeastActiveLoadBalance：最少活跃调用数负载均衡</li>
   <li>ConsistentHashLoadBalance：一致性哈希负载均衡</li>
 </ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>缺省只对第一个参数Hash，如果要修改，请配置
+<span class="nt">&lt;dubbo:parameter</span> <span class="na">key=</span><span class="s">"hash.arguments"</span> <span class="na">value=</span><span class="s">"0,1"</span> <span class="nt">/&gt;</span>
+ 
+缺省用160份虚拟节点，如果要修改，请配置
+<span class="nt">&lt;dubbo:parameter</span> <span class="na">key=</span><span class="s">"hash.nodes"</span> <span class="na">value=</span><span class="s">"320"</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
 
 <h4 id="随机负载均衡">随机负载均衡</h4>
 <p>随机负载均衡是 Dubbo 默认的负载均衡策略，顾名思义，就是从多个服务提供者中随机选择一个。
@@ -97,13 +177,13 @@
 <p>要了解这种负载均衡策略，我们首先得学习一下一致性哈希算法。不会一致性哈希算法的同学可以看一下我之前写的这篇博客，质量保证过硬：一致性哈希算法详解
 一致性哈希可以保证相同参数的请求一定会发送到同一台机器上，即使有机器崩溃，由于一致性哈希算法的特性与虚拟节点的存在，发往该机器的请求会被发送到其它机器上，并不会引发剧烈变动。</p>
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="nc">ChangeService</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="n">ChangeService</span> <span class="o">{</span>
 
     <span class="nd">@Reference</span><span class="o">(</span><span class="n">loadbalance</span> <span class="o">=</span> <span class="s">"roundrobin"</span><span class="o">)</span>
-    <span class="nc">NameService</span> <span class="n">nameService</span><span class="o">;</span>
+    <span class="n">NameService</span> <span class="n">nameService</span><span class="o">;</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">change</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">change</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">nameService</span><span class="o">.</span><span class="na">updateName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -150,13 +230,24 @@ Failsafe 即使失败了也不会影响整个调用流程，它的失败不影�
   <li>Dubbo与断路器 Hystrix 的集成 <a href="https://blog.csdn.net/Geffin/article/details/105808745">https://blog.csdn.net/Geffin/article/details/105808745</a></li>
 </ul>
 
-<h4 id="dubbo27新特性">Dubbo2.7新特性</h4>
-<p>异步化改造，三大中心改造，服务治理增强 <a href="http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html">http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html</a></p>
-
 <h4 id="通过qos对服务进行动态控制">通过QoS对服务进行动态控制</h4>
 <p>在Dubbo中，QoS Quality of Service 这个概念被用于动态的对服务进行查询和控制。例如对获取当前提供和消费的所有服务，以及对服务进行动态的上下线，即从注册中心上进行注册和反注册操作。
 <a href="http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html">http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html</a></p>
 
+<h4 id="当一个服务接口有多种实现时怎么做">当一个服务接口有多种实现时怎么做?</h4>
+<p>当一个接口有多种实现时，可以用 group 属性来分组，服务提供方和消费方都指定同一个 group 即可</p>
+
+<h4 id="服务上线怎么兼容旧版本">服务上线怎么兼容旧版本?</h4>
+<p>可以用版本号(version)过渡，多个不同版本的服务注册到注册中心，版本号不同的服务 相互间不引用。这个和服务分组的概念有一点类似。</p>
+
+<h4 id="dubbo-支持服务降级吗">Dubbo 支持服务降级吗?</h4>
+<p>Dubbo 2.2.0 以上版本支持。</p>
+
+<h4 id="dubbo-的管理控制台能做什么">Dubbo 的管理控制台能做什么?</h4>
+<p>管理控制台主要包含:路由规则，动态配置，服务降级，访问控制，权重调整，负载均衡， 等管理功能。</p>
+
+<h4 id="说说-dubbo-服务暴露的过程">说说 Dubbo 服务暴露的过程。</h4>
+<p>Dubbo 会在 Spring 实例化完 bean 之后，在刷新容器最后一步发布 ContextRefreshEvent 事件的时候，通知实现了 ApplicationListener 的 ServiceBean 类进行回调 onApplicationEvent 事件方法，Dubbo 会在这个方法中调用 ServiceBean 父类 ServiceConfig 的 export 方法，而该方法真正实现了服务的(异步或者非异步)发 布。</p>
 
   </div>
 </article>
