@@ -37,15 +37,33 @@ Paxos、Raft等通常被误称为“一致性算法”。但是“一致性（Co
 Paxos算法是莱斯利·兰伯特(Leslie Lamport)1990年提出的一种基于消息传递的一致性算法。
 Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos
 
-#### Basic Paxos
-1. 多个Proposer，都可以拿最新的编号N，进行prepare()，
-1. 每个Acceptor会响应大于本地编号的所有prepare()，并且只会promise()最大的那个编号的提案
-1. 最大编号的Proposer，收集够过半的票数之后，立即发送accept()给对应的Acceptor
-1. 接受到accept()的Acceptor就有了最新的确认提案结果
-    - 如果此时有新的大于N的prepare()就会进入下次选举循环，否则Acceptor会返回最新的提议结果给调用方
-    - 如果此时收到不大于N的accept()则拒绝回应或者回应error；                   
-1. 活锁，可能会存在一种情况：假定有2个proposer先后向acceptor发送请求，acceptor在接收到proposer1的prepare请求后更新编号为proposer1的编号；此时，proposer2接着向acceptor发送比proposer1编号更大的prepare请求，acceptor会立刻更新成proposer2的编号，那么当proposer1发送accept请求时由于编号不满足要求就会被accept给拒绝掉，则重新获取编号再次回到第一阶段发送prepare请求；从此2个proposer之间不断重复发送prepare请求，导致系统出现活锁
-<https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg>
+#### Basic Paxos （忽然发现这个过程与3PC很相似，需要2次多数投票）
+- 一阶段，Proposer发出prepare()，Acceptor给出承诺promise()
+    - Proposer生成全局唯一且递增的Proposal ID (可使用时间戳加Server ID)，向所有Acceptors发送Prepare请求，这里无需携带提案内容，只携带Proposal ID即可。
+    - Acceptor承诺一：不再接受Proposal ID小于等于（注意：这里是<= ）当前请求的Prepare请求。
+    - Acceptor承诺二：不再接受Proposal ID小于（注意：这里是< ）当前请求的Propose请求。
+    - Acceptor应答一：不违背以前作出的承诺下，回复已经Accept过的提案中Proposal ID最大的那个提案的Value和Proposal ID，没有则返回空值。
+- 二阶段，Proposer发出提议propose()，Acceptor接受accept()
+    - Proposer提案：Proposer收到多数Acceptors的Promise应答后，从应答中选择Proposal ID最大的提案的Value，作为本次要发起的提案。如果所有应答的提案Value均为空值，则可以自己随意决定提案Value。然后携带当前Proposal ID，向所有Acceptors发送Propose请求。
+    - Acceptor接受：Acceptor收到Propose请求后，在不违背自己之前作出的承诺下，接受并持久化当前Proposal ID和提案Value。
+- 三阶段，Proposer发送最终决议
+    - Proposer收到多数Acceptors的Accept后，决议形成，将形成的决议发送给所有Learners。
+1. <https://zhuanlan.zhihu.com/p/31780743>                 
+1. <https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg>
+
+#### 活锁，可能会存在一种情况：假定有2个proposer先后向acceptor发送请求，acceptor在接收到proposer1的prepare请求后更新编号为proposer1的编号；
+此时，proposer2接着向acceptor发送比proposer1编号更大的prepare请求，acceptor会立刻更新成proposer2的编号，那么当proposer1发送accept请求时由于编号不满足要求就会被accept给拒绝掉，则重新获取编号再次回到第一阶段发送prepare请求；
+从此2个proposer之间不断重复发送prepare请求，导致系统出现活锁
+
+#### 如何解决split brain问题
+- 分布式协议一个著名问题就是 split brain 问题。
+简单说，就是比如当你的 cluster 里面有两个结点，它们都知道在这个 cluster 里需要选举出一个 master。那么当它们两之间的通信完全没有问题的时候，就会达成共识，选出其中一个作为 master。
+但是如果它们之间的通信出了问题，那么两个结点都会觉得现在没有 master，所以每个都把自己选举成 master。于是 cluster 里面就会有两个 master。
+区块链的分叉其实类似分布式系统的split brain。
+一般来说，Zookeeper会默认设置：
+    - zookeeper cluster的节点数目必须是奇数。
+    - zookeeper 集群中必须超过半数节点(Majority)可用，整个集群才能对外可用。
+- Majority(大多数) 就是一种 Quorum(法定代表人) 的方式来支持Leader选举，可以防止 split brain出现。奇数个节点可以在相同容错能力的情况下节省资源。
 
 #### Multi Paxos之Raft (Reliable, Replicated, Redundant, And Fault-Tolerant)
 - 多个follower变身为candidate，同时term++，投票给自己同时向其他节点发送RequestVote RPC
@@ -57,25 +75,6 @@ Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos
   在Raft中当接收到客户端的日志（事务请求）后先把该日志追加到本地的Log中，然后通过heartbeat把该Entry同步给其他Follower，Follower接收到日志后记录日志然后向Leader发送ACK，当Leader收到大多数（n/2+1）Follower的ACK信息后将该日志设置为已提交并追加到本地磁盘中，通知客户端并在下个heartbeat中Leader将通知所有的Follower将该日志存储在自己的本地磁盘中。
 <https://www.cnblogs.com/binyue/p/8647733.html>
 
-#### 如何解决split brain问题
-- 分布式协议一个著名问题就是 split brain 问题。
-简单说，就是比如当你的 cluster 里面有两个结点，它们都知道在这个 cluster 里需要选举出一个 master。那么当它们两之间的通信完全没有问题的时候，就会达成共识，选出其中一个作为 master。但是如果它们之间的通信出了问题，那么两个结点都会觉得现在没有 master，所以每个都把自己选举成 master。于是 cluster 里面就会有两个 master。
-区块链的分叉其实类似分布式系统的split brain。
-一般来说，Zookeeper会默认设置：
-    - zookeeper cluster的节点数目必须是奇数。
-    - zookeeper 集群中必须超过半数节点(Majority)可用，整个集群才能对外可用。
-- Majority(大多数) 就是一种 Quorum(法定代表人) 的方式来支持Leader选举，可以防止 split brain出现。奇数个节点可以在相同容错能力的情况下节省资源。
-
-#### ZAB算法 Zookeeper atomic broadcast protocol
-- 基本与Raft相同，在一些名词叫起来是有区别的
-- ZAB将Leader的一个生命周期叫做epoch，而Raft称之为term
-- 实现上也有些许不同，如raft保证日志的连续性，心跳是Leader向Follower发送，而ZAB方向与之相反
-
-#### 一致性算法的实践
-- 使用Paxos的组件，Chubby(Google首次运用Multi Paxos算法到工程领域)
-- 使用Raft的组件，Redis-Cluster、etcd
-- 使用ZAB的组件，Zookeeper（Yahoo开源）
-
 #### ZAB协议4阶段
 1. Leader election(选举阶段):节点在一开始都处于选举阶段，只要有一个节点得到超半数 节点的票数，它就可以当选准 leader。只有到达 广播阶段(broadcast) 准 leader 才会成 为真正的 leader。这一阶段的目的是就是为了选出一个准 leader，然后进入下一个阶段。
 2. Discovery(发现阶段-接受提议、生成 epoch、接受 epoch):在这个阶段，followers 跟准 leader 进行通信，同步 followers 最近接收的事务提议。这个一阶段的主要目的是发现当前大多数节点接收的最新提议，并且 准 leader 生成新的 epoch，让 followers 接受，更新它们的 accepted Epoch
@@ -83,6 +82,12 @@ Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos
 3. Synchronization(同步阶段):同步阶段主要是利用 leader 前一阶段获得的最新提议历史， 同步集群中所有的副本。只有当 大多数节点都同步完成，准 leader 才会成为真正的 leader。 follower 只会接收 zxid 比自己的 lastZxid 大的提议。
 4. Broadcast(广播阶段-leader 消息广播) Broadcast(广播阶段):到了这个阶段，Zookeeper 集群才能正式对外提供事务服务，
 - 两大阶段：让大家投票，告诉大家投票结果
+
+#### ZAB算法 Zookeeper atomic broadcast protocol
+- 基本与Raft相同，在一些名词叫起来是有区别的
+- ZAB将Leader的一个生命周期叫做epoch，而Raft称之为term
+- 实现上也有些许不同，如raft保证日志的连续性，心跳是Leader向Follower发送，而ZAB方向与之相反
+- ZAB选举阶段只接受比自己大的zxid，意味着经过多次之后，拥有最新数据的节点才有可能成为leader
 
 #### raft 协议和 zab 协议区别
 - 相同点
@@ -99,3 +104,8 @@ Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos
 
 
 <https://www.cnblogs.com/think90/p/11443428.html>
+
+#### 一致性算法的实践
+- 使用Paxos的组件，Chubby(Google首次运用Multi Paxos算法到工程领域)
+- 使用Raft的组件，Redis-Cluster、etcd
+- 使用ZAB的组件，Zookeeper（Yahoo开源）
