@@ -273,28 +273,28 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
      * 注册一个Transformer，从此之后的类加载都会被Transformer拦截。
      * Transformer可以直接对类的字节码byte[]进行修改
      */</span>
-    <span class="kt">void</span> <span class="nf">addTransformer</span><span class="o">(</span><span class="n">ClassFileTransformer</span> <span class="n">transformer</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">addTransformer</span><span class="o">(</span><span class="nc">ClassFileTransformer</span> <span class="n">transformer</span><span class="o">);</span>
     
     <span class="cm">/**
      * 对JVM已经加载的类重新触发类加载。使用的就是上面注册的Transformer。
      * retransformation可以修改方法体，但是不能变更方法签名、增加和删除方法/类的成员属性
      */</span>
-    <span class="kt">void</span> <span class="nf">retransformClasses</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">classes</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">UnmodifiableClassException</span><span class="o">;</span>
+    <span class="kt">void</span> <span class="nf">retransformClasses</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">classes</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">UnmodifiableClassException</span><span class="o">;</span>
     
     <span class="cm">/**
      * 获取一个对象的大小
      */</span>
-    <span class="kt">long</span> <span class="nf">getObjectSize</span><span class="o">(</span><span class="n">Object</span> <span class="n">objectToSize</span><span class="o">);</span>
+    <span class="kt">long</span> <span class="nf">getObjectSize</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objectToSize</span><span class="o">);</span>
     
     <span class="cm">/**
      * 将一个jar加入到bootstrap classloader的 classpath里
      */</span>
-    <span class="kt">void</span> <span class="nf">appendToBootstrapClassLoaderSearch</span><span class="o">(</span><span class="n">JarFile</span> <span class="n">jarfile</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">appendToBootstrapClassLoaderSearch</span><span class="o">(</span><span class="nc">JarFile</span> <span class="n">jarfile</span><span class="o">);</span>
     
     <span class="cm">/**
      * 获取当前被JVM加载的所有类对象
      */</span>
-    <span class="n">Class</span><span class="o">[]</span> <span class="nf">getAllLoadedClasses</span><span class="o">();</span>
+    <span class="nc">Class</span><span class="o">[]</span> <span class="nf">getAllLoadedClasses</span><span class="o">();</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
@@ -302,40 +302,40 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
  * 以vm参数的形式载入，在程序main方法执行之前执行
  * 其jar包的manifest需要配置属性Premain-Class
  */</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="n">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="n">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="nc">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="nc">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
 <span class="cm">/**
  * 以Attach的方式载入，在Java程序启动后执行
  * 其jar包的manifest需要配置属性Agent-Class
  */</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">agentmain</span><span class="o">(</span><span class="n">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="n">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">agentmain</span><span class="o">(</span><span class="nc">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="nc">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
 </code></pre></div></div>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">InstrumentationExample</span> <span class="o">{</span>
     <span class="c1">// Java agent指定的premain方法，会在main方法之前被调用</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">,</span> <span class="n">Instrumentation</span> <span class="n">inst</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">,</span> <span class="nc">Instrumentation</span> <span class="n">inst</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">// Instrumentation提供的addTransformer方法，在类加载时会回调ClassFileTransformer接口</span>
-        <span class="n">inst</span><span class="o">.</span><span class="na">addTransformer</span><span class="o">(</span><span class="k">new</span> <span class="n">ClassFileTransformer</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">inst</span><span class="o">.</span><span class="na">addTransformer</span><span class="o">(</span><span class="k">new</span> <span class="nc">ClassFileTransformer</span><span class="o">()</span> <span class="o">{</span>
             <span class="nd">@Override</span>
-            <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">transform</span><span class="o">(</span><span class="n">ClassLoader</span> <span class="n">loader</span><span class="o">,</span> <span class="n">String</span> <span class="n">className</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">classBeingRedefined</span><span class="o">,</span>
-                                    <span class="n">ProtectionDomain</span> <span class="n">protectionDomain</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">classfileBuffer</span><span class="o">)</span>
-                                    <span class="kd">throws</span> <span class="n">IllegalClassFormatException</span> <span class="o">{</span>
+            <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">transform</span><span class="o">(</span><span class="nc">ClassLoader</span> <span class="n">loader</span><span class="o">,</span> <span class="nc">String</span> <span class="n">className</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">classBeingRedefined</span><span class="o">,</span>
+                                    <span class="nc">ProtectionDomain</span> <span class="n">protectionDomain</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">classfileBuffer</span><span class="o">)</span>
+                                    <span class="kd">throws</span> <span class="nc">IllegalClassFormatException</span> <span class="o">{</span>
                 <span class="k">if</span> <span class="o">(!</span><span class="s">"com/test/TestClass"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">className</span><span class="o">))</span> <span class="o">{</span>
                     <span class="c1">// 只修改指定的Class</span>
                     <span class="k">return</span> <span class="n">classfileBuffer</span><span class="o">;</span>
                 <span class="o">}</span>
         
                 <span class="kt">byte</span><span class="o">[]</span> <span class="n">transformed</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-                <span class="n">CtClass</span> <span class="n">cl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                <span class="nc">CtClass</span> <span class="n">cl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
                 <span class="k">try</span> <span class="o">{</span>
                     <span class="c1">// CtClass、ClassPool、CtMethod、ExprEditor都是javassist提供的字节码操作的类</span>
-                    <span class="n">ClassPool</span> <span class="n">pool</span> <span class="o">=</span> <span class="n">ClassPool</span><span class="o">.</span><span class="na">getDefault</span><span class="o">();</span>
-                    <span class="n">cl</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="na">makeClass</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">classfileBuffer</span><span class="o">));</span>
-                    <span class="n">CtMethod</span><span class="o">[]</span> <span class="n">methods</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">getDeclaredMethods</span><span class="o">();</span>
+                    <span class="nc">ClassPool</span> <span class="n">pool</span> <span class="o">=</span> <span class="nc">ClassPool</span><span class="o">.</span><span class="na">getDefault</span><span class="o">();</span>
+                    <span class="n">cl</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="na">makeClass</span><span class="o">(</span><span class="k">new</span> <span class="nc">ByteArrayInputStream</span><span class="o">(</span><span class="n">classfileBuffer</span><span class="o">));</span>
+                    <span class="nc">CtMethod</span><span class="o">[]</span> <span class="n">methods</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">getDeclaredMethods</span><span class="o">();</span>
                     <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">methods</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-                        <span class="n">methods</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">instrument</span><span class="o">(</span><span class="k">new</span> <span class="n">ExprEditor</span><span class="o">()</span> <span class="o">{</span>
+                        <span class="n">methods</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">instrument</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExprEditor</span><span class="o">()</span> <span class="o">{</span>
         
                             <span class="nd">@Override</span>
-                            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">edit</span><span class="o">(</span><span class="n">MethodCall</span> <span class="n">m</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CannotCompileException</span> <span class="o">{</span>
+                            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">edit</span><span class="o">(</span><span class="nc">MethodCall</span> <span class="n">m</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">CannotCompileException</span> <span class="o">{</span>
                                 <span class="c1">// 把方法体直接替换掉，其中 $proceed($$);是javassist的语法，用来表示原方法体的调用</span>
                                 <span class="n">m</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="s">"{ long stime = System.currentTimeMillis();"</span> <span class="o">+</span> <span class="s">" $_ = $proceed($$);"</span>
                                           <span class="o">+</span> <span class="s">"System.out.println(\""</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="na">getClassName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"."</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="na">getMethodName</span><span class="o">()</span>
@@ -345,7 +345,7 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
                     <span class="o">}</span>
                     <span class="c1">// javassist会把输入的Java代码再编译成字节码byte[]</span>
                     <span class="n">transformed</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">toBytecode</span><span class="o">();</span>
-                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                     <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
                 <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
                     <span class="k">if</span> <span class="o">(</span><span class="n">cl</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
@@ -370,9 +370,9 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
 <h4 id="asm--cglib">ASM &amp; CGlib</h4>
 <p><img src="/img/AOP.jpg" width="600px" /></p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckClassAdapter</span> <span class="kd">extends</span> <span class="n">ClassAdapter</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckClassAdapter</span> <span class="kd">extends</span> <span class="nc">ClassAdapter</span> <span class="o">{</span>
  
-    <span class="kd">public</span> <span class="nf">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="n">ClassVisitor</span> <span class="n">cv</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="nc">ClassVisitor</span> <span class="n">cv</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">//Responsechain 的下一个 ClassVisitor，这里我们将传入 ClassWriter，</span>
         <span class="c1">// 负责改写后代码的输出</span>
         <span class="kd">super</span><span class="o">(</span><span class="n">cv</span><span class="o">);</span> 
@@ -380,29 +380,29 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
      
     <span class="c1">// 重写 visitMethod，访问到 "operation" 方法时，</span>
     <span class="c1">// 给出自定义 MethodVisitor，实际改写方法内容</span>
-    <span class="kd">public</span> <span class="n">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
-        <span class="kd">final</span> <span class="n">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="n">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span><span class="n">exceptions</span><span class="o">);</span>
-        <span class="n">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
+    <span class="kd">public</span> <span class="nc">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
+        <span class="kd">final</span> <span class="nc">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="nc">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span><span class="n">exceptions</span><span class="o">);</span>
+        <span class="nc">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
         <span class="k">if</span> <span class="o">(</span><span class="n">mv</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> 
             <span class="c1">// 对于 "operation" 方法</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"operation"</span><span class="o">))</span> <span class="o">{</span> 
                 <span class="c1">// 使用自定义 MethodVisitor，实际改写方法内容</span>
-                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
+                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
             <span class="o">}</span> 
         <span class="o">}</span> 
         <span class="k">return</span> <span class="n">wrappedMv</span><span class="o">;</span> 
     <span class="o">}</span> 
 
-    <span class="kd">public</span> <span class="n">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
-        <span class="kd">final</span> <span class="n">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="n">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span> <span class="n">exceptions</span><span class="o">);</span> 
-        <span class="n">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
+    <span class="kd">public</span> <span class="nc">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
+        <span class="kd">final</span> <span class="nc">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="nc">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span> <span class="n">exceptions</span><span class="o">);</span> 
+        <span class="nc">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
         <span class="k">if</span> <span class="o">(</span><span class="n">mv</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> 
             <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"operation"</span><span class="o">))</span> <span class="o">{</span> 
-                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
+                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
             <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"&lt;init&gt;"</span><span class="o">))</span> <span class="o">{</span> 
-                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">,</span> 
+                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">,</span> 
                     <span class="n">enhancedSuperName</span><span class="o">);</span> 
             <span class="o">}</span> 
         <span class="o">}</span> 
@@ -410,10 +410,10 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
     <span class="o">}</span>
 
     
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visit</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">version</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
-            <span class="kd">final</span> <span class="n">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">superName</span><span class="o">,</span> 
-            <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">interfaces</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="n">String</span> <span class="n">enhancedName</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"$EnhancedByASM"</span><span class="o">;</span>  <span class="c1">// 改变类命名</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visit</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">version</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
+            <span class="kd">final</span> <span class="nc">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">superName</span><span class="o">,</span> 
+            <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">interfaces</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="nc">String</span> <span class="n">enhancedName</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"$EnhancedByASM"</span><span class="o">;</span>  <span class="c1">// 改变类命名</span>
         <span class="n">enhancedSuperName</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span> <span class="c1">// 改变父类，这里是”Account”</span>
         <span class="kd">super</span><span class="o">.</span><span class="na">visit</span><span class="o">(</span><span class="n">version</span><span class="o">,</span> <span class="n">access</span><span class="o">,</span> <span class="n">enhancedName</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span> 
         <span class="n">enhancedSuperName</span><span class="o">,</span> <span class="n">interfaces</span><span class="o">);</span> 
@@ -422,31 +422,31 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
 <span class="o">}</span>
 </code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckMethodAdapter</span> <span class="kd">extends</span> <span class="n">MethodAdapter</span> <span class="o">{</span> 
-    <span class="kd">public</span> <span class="nf">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">MethodVisitor</span> <span class="n">mv</span><span class="o">)</span> <span class="o">{</span> 
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckMethodAdapter</span> <span class="kd">extends</span> <span class="nc">MethodAdapter</span> <span class="o">{</span> 
+    <span class="kd">public</span> <span class="nf">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="nc">MethodVisitor</span> <span class="n">mv</span><span class="o">)</span> <span class="o">{</span> 
         <span class="kd">super</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
     <span class="o">}</span> 
  
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitCode</span><span class="o">()</span> <span class="o">{</span> 
-        <span class="n">visitMethodInsn</span><span class="o">(</span><span class="n">Opcodes</span><span class="o">.</span><span class="na">INVOKESTATIC</span><span class="o">,</span> <span class="s">"SecurityChecker"</span><span class="o">,</span> 
+        <span class="n">visitMethodInsn</span><span class="o">(</span><span class="nc">Opcodes</span><span class="o">.</span><span class="na">INVOKESTATIC</span><span class="o">,</span> <span class="s">"SecurityChecker"</span><span class="o">,</span> 
            <span class="s">"checkSecurity"</span><span class="o">,</span> <span class="s">"()V"</span><span class="o">);</span> 
     <span class="o">}</span> 
 <span class="o">}</span>
 </code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">ChangeToChildConstructorMethodAdapter</span> <span class="kd">extends</span> <span class="n">MethodAdapter</span> <span class="o">{</span> 
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">superClassName</span><span class="o">;</span> 
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">ChangeToChildConstructorMethodAdapter</span> <span class="kd">extends</span> <span class="nc">MethodAdapter</span> <span class="o">{</span> 
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">superClassName</span><span class="o">;</span> 
  
-    <span class="kd">public</span> <span class="nf">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="n">MethodVisitor</span> <span class="n">mv</span><span class="o">,</span> 
-        <span class="n">String</span> <span class="n">superClassName</span><span class="o">)</span> <span class="o">{</span> 
+    <span class="kd">public</span> <span class="nf">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="nc">MethodVisitor</span> <span class="n">mv</span><span class="o">,</span> 
+        <span class="nc">String</span> <span class="n">superClassName</span><span class="o">)</span> <span class="o">{</span> 
         <span class="kd">super</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
         <span class="k">this</span><span class="o">.</span><span class="na">superClassName</span> <span class="o">=</span> <span class="n">superClassName</span><span class="o">;</span> 
     <span class="o">}</span> 
  
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitMethodInsn</span><span class="o">(</span><span class="kt">int</span> <span class="n">opcode</span><span class="o">,</span> <span class="n">String</span> <span class="n">owner</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
-        <span class="n">String</span> <span class="n">desc</span><span class="o">)</span> <span class="o">{</span> 
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitMethodInsn</span><span class="o">(</span><span class="kt">int</span> <span class="n">opcode</span><span class="o">,</span> <span class="nc">String</span> <span class="n">owner</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
+        <span class="nc">String</span> <span class="n">desc</span><span class="o">)</span> <span class="o">{</span> 
         <span class="c1">// 调用父类的构造函数时</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">opcode</span> <span class="o">==</span> <span class="n">Opcodes</span><span class="o">.</span><span class="na">INVOKESPECIAL</span> <span class="o">&amp;&amp;</span> <span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"&lt;init&gt;"</span><span class="o">))</span> <span class="o">{</span> 
+        <span class="k">if</span> <span class="o">(</span><span class="n">opcode</span> <span class="o">==</span> <span class="nc">Opcodes</span><span class="o">.</span><span class="na">INVOKESPECIAL</span> <span class="o">&amp;&amp;</span> <span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"&lt;init&gt;"</span><span class="o">))</span> <span class="o">{</span> 
             <span class="n">owner</span> <span class="o">=</span> <span class="n">superClassName</span><span class="o">;</span> 
         <span class="o">}</span> 
         <span class="kd">super</span><span class="o">.</span><span class="na">visitMethodInsn</span><span class="o">(</span><span class="n">opcode</span><span class="o">,</span> <span class="n">owner</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">);</span><span class="c1">// 改写父类为 superClassName </span>
@@ -456,28 +456,28 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SecureAccountGenerator</span> <span class="o">{</span> 
  
-    <span class="kd">private</span> <span class="kd">static</span> <span class="n">AccountGeneratorClassLoader</span> <span class="n">classLoader</span> <span class="o">=</span> 
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">AccountGeneratorClassLoader</span> <span class="n">classLoader</span> <span class="o">=</span> 
         <span class="k">new</span> <span class="nf">AccountGeneratorClassLoade</span><span class="o">();</span> 
      
-    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Class</span> <span class="n">secureAccountClass</span><span class="o">;</span> 
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Class</span> <span class="n">secureAccountClass</span><span class="o">;</span> 
      
-    <span class="kd">public</span> <span class="n">Account</span> <span class="nf">generateSecureAccount</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">ClassFormatError</span><span class="o">,</span> 
-        <span class="n">InstantiationException</span><span class="o">,</span> <span class="n">IllegalAccessException</span> <span class="o">{</span> 
+    <span class="kd">public</span> <span class="nc">Account</span> <span class="nf">generateSecureAccount</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">ClassFormatError</span><span class="o">,</span> 
+        <span class="nc">InstantiationException</span><span class="o">,</span> <span class="nc">IllegalAccessException</span> <span class="o">{</span> 
         <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">secureAccountClass</span><span class="o">)</span> <span class="o">{</span>            
-            <span class="n">ClassReader</span> <span class="n">cr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassReader</span><span class="o">(</span><span class="s">"Account"</span><span class="o">);</span> 
-            <span class="n">ClassWriter</span> <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassWriter</span><span class="o">(</span><span class="n">ClassWriter</span><span class="o">.</span><span class="na">COMPUTE_MAXS</span><span class="o">);</span> 
-            <span class="n">ClassAdapter</span> <span class="n">classAdapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="n">cw</span><span class="o">);</span>
-            <span class="n">cr</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">classAdapter</span><span class="o">,</span> <span class="n">ClassReader</span><span class="o">.</span><span class="na">SKIP_DEBUG</span><span class="o">);</span> 
+            <span class="nc">ClassReader</span> <span class="n">cr</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassReader</span><span class="o">(</span><span class="s">"Account"</span><span class="o">);</span> 
+            <span class="nc">ClassWriter</span> <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassWriter</span><span class="o">(</span><span class="nc">ClassWriter</span><span class="o">.</span><span class="na">COMPUTE_MAXS</span><span class="o">);</span> 
+            <span class="nc">ClassAdapter</span> <span class="n">classAdapter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="n">cw</span><span class="o">);</span>
+            <span class="n">cr</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">classAdapter</span><span class="o">,</span> <span class="nc">ClassReader</span><span class="o">.</span><span class="na">SKIP_DEBUG</span><span class="o">);</span> 
             <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span> 
             <span class="n">secureAccountClass</span> <span class="o">=</span> <span class="n">classLoader</span><span class="o">.</span><span class="na">defineClassFromClassFile</span><span class="o">(</span> 
                <span class="s">"Account$EnhancedByASM"</span><span class="o">,</span><span class="n">data</span><span class="o">);</span> 
         <span class="o">}</span> 
-        <span class="k">return</span> <span class="o">(</span><span class="n">Account</span><span class="o">)</span> <span class="n">secureAccountClass</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span> 
+        <span class="k">return</span> <span class="o">(</span><span class="nc">Account</span><span class="o">)</span> <span class="n">secureAccountClass</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span> 
     <span class="o">}</span> 
      
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">AccountGeneratorClassLoader</span> <span class="kd">extends</span> <span class="n">ClassLoader</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="n">Class</span> <span class="nf">defineClassFromClassFile</span><span class="o">(</span><span class="n">String</span> <span class="n">className</span><span class="o">,</span> 
-            <span class="kt">byte</span><span class="o">[]</span> <span class="n">classFile</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ClassFormatError</span> <span class="o">{</span> 
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">AccountGeneratorClassLoader</span> <span class="kd">extends</span> <span class="nc">ClassLoader</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="nc">Class</span> <span class="nf">defineClassFromClassFile</span><span class="o">(</span><span class="nc">String</span> <span class="n">className</span><span class="o">,</span> 
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">classFile</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">ClassFormatError</span> <span class="o">{</span> 
             <span class="k">return</span> <span class="nf">defineClass</span><span class="o">(</span><span class="s">"Account$EnhancedByASM"</span><span class="o">,</span> <span class="n">classFile</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> 
             <span class="n">classFile</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
         <span class="o">}</span> 
