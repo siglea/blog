@@ -67,6 +67,8 @@ public class CIMServer {
                 .localAddress(new InetSocketAddress(nettyPort))
                 //保持长连接
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
+                // Nagle拆包算法禁用
+                .childOption(ChannelOption.TCP_NODELAY, true)
                 // sync-recv个数，防止sync-blood攻击
                 .childOption(ChannelOption.SO_BACKLOG,1024)
                 .childHandler(new CIMServerInitializer());
@@ -132,6 +134,24 @@ public class CIMServer {
 1. a. 采用了独特的编码方式，如 Varint、Zigzag 编码方式等等
 2. b. 采用 T - L - V 的数据存储方式:减少了分隔符的使用 & 数据存储得紧凑
 
+<<<<<<< HEAD
+=======
+#### TCP 粘包/分包的原因:
+- 应用程序写入的字节大小大于套接字发送缓冲区的大小，会发生拆包现象，而应用程序写入 数据小于套接字缓冲区大小，网卡将应用多次写入的数据发送到网络上，这将会发生粘包现 象;
+- 进行 MSS 大小的 TCP 分段，当 TCP 报文长度-TCP 头部长度>MSS 的时候将发生拆包 以太网帧的 payload(净荷)大于 MTU(1500 字节)进行 ip 分片。
+- 解决方案
+    - FixedLengthFrameDecoder 客户端在发送数据包的时候，每个包都固定长度，比如1024个字节大小，如果客户端发送的数据长度不足1024个字节，则通过补充空格的方式补全到指定长度；
+    - LineBasedFrameDecoder/DelimiterBasedFrameDecoder 客户端在每个包的末尾使用固定的分隔符，例如\r\n，如果一个包被拆分了，则等待下一个包发送过来之后找到其中的\r\n，然后对其拆分后的头部部分与前一个包的剩余部分进行合并，这样就得到了一个完整的包；
+    - LengthFieldBasedFrameDecoder 将消息分为头部和消息体，在头部中保存有当前整个消息的长度，只有在读取到足够长度的消息之后才算是读到了一个完整的消息；
+```shell 
+ch.pipeline().addLast(new FixeLengthFrameDecoder(31))
+```
+    
+#### 从零开发一个IM服务端  
+- 通俗易懂 <http://www.52im.net/forum.php?mod=viewthread&tid=2768&highlight=netty>
+- 基于Netty实现海量接入的推送服务技术要点 <http://www.52im.net/forum.php?mod=viewthread&tid=166&highlight=netty>
+
+>>>>>>> gogogo
 #### BIO,NIO,AIO 有什么区别?
 - BIO：Block IO 同步阻塞式 IO，就是我们平常使用的传统 IO，它的特点是模式简单使用方便，并发处理能力低。
 - NIO：Non IO 同步非阻塞 IO，是传统 IO 的升级，客户端和服务器端通过 Channel（通道）通讯，实现了多路复用。
@@ -451,8 +471,26 @@ bootstrap.handler(
         }
 );
 ```
-- 游戏服务 <https://www.jianshu.com/p/82212eb7d76c>
-- Netty整合SpringBoot并使用Protobuf进行数据传输 <https://juejin.im/post/5bb596196fb9a05d0f16f006>
+
+#### 再说Netty 的零拷⻉
+##### 传统意义的拷⻉
+是在发送数据的时候，传统的实现方式是:
+1. `File.read(bytes)`
+2. `Socket.send(bytes)` 这种方式需要四次数据拷⻉和四次上下文切换: 1. 数据从磁盘读取到内核的read buffer
+2. 数据从内核缓冲区拷⻉到用戶缓冲区
+3. 数据从用戶缓冲区拷⻉到内核的socket buffer
+4. 数据从内核的socket buffer拷⻉到网卡接口(硬件)的缓冲区
+##### 零拷⻉的概念
+明显上面的第二步和第三步是没有必要的，通过java的FileChannel.transferTo方法，可以避免上面两次多余的拷⻉(当然这需要底层操作 系统支持)
+1. 调用transferTo,数据从文件由DMA引擎拷⻉到内核read buffer 2. 接着DMA从内核read buffer将数据拷⻉到网卡接口buffer 上面的两次操作都不需要CPU参与，所以就达到了零拷⻉。 3、Netty中的零拷⻉
+主要体现在三个方面:
+1、bytebuffer
+Netty发送和接收消息主要使用bytebuffer，bytebuffer使用对外内存(DirectMemory)直接进行Socket读写。
+原因:如果使用传统的堆内存进行Socket读写，JVM会将堆内存buffer拷⻉一份到直接内存中然后再写入socket，多了一次缓冲区的内存拷 ⻉。DirectMemory中可以直接通过DMA发送到网卡接口
+##### Composite Buffers
+传统的ByteBuffer，如果需要将两个ByteBuffer中的数据组合到一起，我们需要首先创建一个size=size1+size2大小的新的数组，然后将两 个数组中的数据拷⻉到新的数组中。但是使用Netty提供的组合ByteBuf，就可以避免这样的操作，因为CompositeByteBuf并没有真正将多 个Buffer组合起来，而是保存了它们的引用，从而避免了数据的拷⻉，实现了零拷⻉。
+##### 对于FileChannel.transferTo的使用 
+Netty中使用了FileChannel的transferTo方法，该方法依赖于操作系统实现零拷⻉。
 
 #### 看一看
 - <http://www.52im.net/forum.php?mod=viewthread&tid=2768&highlight=netty>
@@ -460,3 +498,6 @@ bootstrap.handler(
 - Netty精粹之JAVA NIO开发需要知道的 <https://my.oschina.net/andylucc/blog/614295>
 - 通俗易懂 <http://www.52im.net/forum.php?mod=viewthread&tid=2768&highlight=netty>
 - 基于Netty实现海量接入的推送服务技术要点 <http://www.52im.net/forum.php?mod=viewthread&tid=166&highlight=netty>
+- 游戏服务 <https://www.jianshu.com/p/82212eb7d76c>
+- Netty整合SpringBoot并使用Protobuf进行数据传输 <https://juejin.im/post/5bb596196fb9a05d0f16f006>
+
