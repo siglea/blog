@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>大数据常用算法概述</title>
-  <meta name="description" content="决策树算法回归算法朴素贝叶斯算法聚类-KNN算法SVM支持向量机推荐算法">
+  <meta name="description" content="决策树算法回归算法朴素贝叶斯分类算法聚类-KNN算法SVM支持向量机分类推荐算法">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -62,10 +62,25 @@
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
     <h4 id="决策树算法">决策树算法</h4>
 <h4 id="回归算法">回归算法</h4>
-<h4 id="朴素贝叶斯算法">朴素贝叶斯算法</h4>
+<h4 id="朴素贝叶斯分类算法">朴素贝叶斯分类算法</h4>
 <h4 id="聚类-knn算法">聚类-KNN算法</h4>
-<h4 id="svm支持向量机">SVM支持向量机</h4>
+<h4 id="svm支持向量机分类">SVM支持向量机分类</h4>
 <h4 id="推荐算法">推荐算法</h4>
+
+<h4 id="tf-idf">TF-IDF</h4>
+<ul>
+  <li>TF-IDF（term frequency–inverse document frequency，词频-逆向文件频率）是一种用于信息检索（information retrieval）与文本挖掘（text mining）的常用加权技术。</li>
+  <li>TF-IDF是一种统计方法，用以评估一字词对于一个文件集或一个语料库中的其中一份文件的重要程度。字词的重要性随着它在文件中出现的次数成正比增加，但同时会随着它在语料库中出现的频率成反比下降。</li>
+  <li>TF-IDF的主要思想是：如果某个单词在一篇文章中出现的频率TF高，并且在其他文章中很少出现，则认为此词或者短语具有很好的类别区分能力，适合用来分类。</li>
+</ul>
+
+<h4 id="tf-idf算法实现简单快速但是仍有许多不足之处">TF-IDF算法实现简单快速，但是仍有许多不足之处：</h4>
+<ul>
+  <li>没有考虑特征词的位置因素对文本的区分度，词条出现在文档的不同位置时，对区分度的贡献大小是不一样的。</li>
+  <li>按照传统TF-IDF，往往一些生僻词的IDF(反文档频率)会比较高、因此这些生僻词常会被误认为是文档关键词。</li>
+  <li>传统TF-IDF中的IDF部分只考虑了特征词与它出现的文本数之间的关系，而忽略了特征项在一个类别中不同的类别间的分布情况。</li>
+  <li>对于文档中出现次数较少的重要人名、地名信息提取效果不佳。</li>
+</ul>
 
   </div>
 </article>
