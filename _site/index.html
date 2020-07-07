@@ -54,6 +54,142 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html">用户画像之标签数据开发</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 7, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>用户</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="离线标签开发">离线标签开发</h4>
+<ul>
+  <li>统计类标签开发，是指统计用户相关数值、客户描述用户状态的标签，如用户的年龄、体重、累计购买金额、累计购买次数、近30日登陆次数
+    <ul>
+      <li>近30日购买行为（付款订单量ACTION_U_01_001、总付款金额ACTION_U_01_002、加入购物车次数ACTION_U_01_003）</li>
+      <li>最近来访：最近登录到今天的天数</li>
+    </ul>
+  </li>
+  <li>规则类标签开发，是指根据业务运营上的需要，在业务层面制定规则的标签。这类标签会带一些人为主观判断
+    <ul>
+      <li>数码达人，用户浏览的商品中有80%是3C产品，自动打标签</li>
+      <li>用户价值类RFM（重要/一般 价值/保持/发展/挽留）
+        <ul>
+          <li>R&lt;=90为近，R&gt;90为远</li>
+          <li>F&lt;=3为低频，F&gt;3为高频</li>
+          <li>M&lt;=300为低额，M&gt;300为高额</li>
+        </ul>
+      </li>
+      <li>用户活跃程度（用户留存率的拐点一般就是用户的生命周期）
+        <ul>
+          <li>ACTION_U_05_003 高活跃</li>
+          <li>ACTION_U_05_002 中活跃</li>
+          <li>ACTION_U_05_001 低活跃</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>挖掘类标签开发，是指需要应用算法挖掘用户相关特征，比如预测性别、预测下单、预测流失、预测偏好</li>
+</ul>
+
+<h4 id="实时类标签开发">实时类标签开发</h4>
+<ul>
+  <li>新人弹窗、新人红包</li>
+</ul>
+
+<h4 id="用户特征库开发">用户特征库开发</h4>
+<ul>
+  <li>浏览、搜索、收藏、下单等行为</li>
+</ul>
+
+<h4 id="人群计算">人群计算</h4>
+<ul>
+  <li>通过标签筛选人群</li>
+</ul>
+
+<h4 id="打通数据服务处">打通数据服务处</h4>
+<ul>
+  <li>把数据发送给相应的业务系统</li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html">用户画像之标签存储</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 7, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>用户</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="数据仓库">数据仓库</h4>
+<p>“数据􏱓库􏲄父”W.H.Inmon􏱖《Building the Data Warehouse》在一书􏰇􏰷定义数据􏱓仓库是“一个􏱥面􏰤向主题的、集成的、非易失的、随时􏰣变化的、用来支持􏲆管理人员决策的数据集合􏰬”。</p>
+<ul>
+  <li>面􏰤向主题:业􏰊务数据库中􏰷的数据主要􏲊对事务处􏲋理，各个业􏱇􏱥􏰊务系统之间􏰦􏰮􏲄􏰣是相互分离的，而􏱽数据􏱓仓库中􏰷的数据是􏲌按照一定主题进行组织的。</li>
+  <li>集成:数据仓􏱓库中􏰷存储的数据是从业􏰊务数据库中􏰷提取出来的，但􏱟并不是对原有数据的􏱂简单复􏲍制，而􏱽是经过了抽􏲎􏱗􏱞􏲏取、清􏲐理、转􏲑换 (ETL)等􏱣工作􏰔。业􏰊务数据库记􏱀录的是每􏱤一项􏰊业务处􏲋理的流水􏰸􏲒账。这􏲓些数据不适􏰬进行分析处理，进入数据􏱓库􏲄前需要􏲎􏱗一系列计算􏰢， 同时􏲔􏲕抛弃一些无关分析处理的数据。</li>
+  <li>非易􏲅失:􏰊业务数据库中􏰷一般􏲃􏲖存储短期数据，􏲗因此其数据是不稳定的，记􏱀的是􏰦􏰮􏰷数据变化的瞬态􏱪。数据􏱓仓库中􏰷的数据􏱝􏱿大多表示过􏱗去某􏱋一时刻的数据，主要用于查询、分析􏱼，不像􏰊业务系统中􏰦􏰮􏰷的数据库一样􏲎经常修改，一般􏲃数据􏱓仓库构􏰼建完成后主要用于􏰋访问􏱭，不进行修􏲘改􏱰删除。</li>
+  <li>随时􏰣变化:数据仓􏱓库关注􏱩的是历史􏲙数据，按􏲌时间􏰣顺序定期从􏰊业务库和􏱰日志􏱺库里面载􏲚入新的数据进行追􏲛加，带有时间属性􏰲。</li>
+</ul>
+
+<h4 id="标签分区存储">标签分区存储</h4>
+<p><img src="/img/up1.jpeg" width="600px" /></p>
+<ul>
+  <li>数字表示
+    <ul>
+      <li>0：用户没被打上该标签</li>
+      <li>1：用户被打上该标签，但是没有具体数值</li>
+      <li>具体数字：用户被打上该标签，有具体数值
+<img src="/img/up2.jpg" width="600px" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="标签以userid进行冗余存储">标签以UserID进行冗余存储</h4>
+<p><img src="/img/up3.jpg" width="600px" /></p>
+
+<h4 id="id-map">ID-MAP</h4>
+<ul>
+  <li>用户使用不同设备登录系统，或者同一设备登录多个用户</li>
+  <li>可以通过event_log、page_view_log等来获取登录时长、登录天数</li>
+  <li>userid与cookieId通常是多对多
+<img src="/img/up4.jpg" width="600px" /></li>
+</ul>
+
+<h4 id="mysql存储元数据管理">Mysql存储元数据管理</h4>
+<p><img src="/img/up5.jpg" width="600px" /></p>
+
+<h4 id="mysql存储结果集">Mysql存储结果集</h4>
+<p>比如用脚本通过Sqoop把Hive结果导入的mysql中，主要是离线，在线的建议用HBase</p>
+
+<h4 id="hbase存储">HBase存储</h4>
+<p>使用Spark，把用户标签同步到HBase以供线上实时访问
+<img src="/img/up6.jpg" width="600px" /></p>
+
+<h4 id="es做为hbase的二级索引方便快速检索">Es做为HBase的二级索引方便快速检索</h4>
+<p><img src="/img/up7.jpg" width="600px" /></p>
+
+<h4 id="从etlhivhbasees整个链路的数据监控旧数据可怕">从ETL/Hiv/HBase/Es整个链路的数据监控，旧数据可怕</h4>
+<p><img src="/img/up8.jpg" width="600px" /></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html">myBatis</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 30, 2020</span>
@@ -273,28 +409,28 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
      * 注册一个Transformer，从此之后的类加载都会被Transformer拦截。
      * Transformer可以直接对类的字节码byte[]进行修改
      */</span>
-    <span class="kt">void</span> <span class="nf">addTransformer</span><span class="o">(</span><span class="nc">ClassFileTransformer</span> <span class="n">transformer</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">addTransformer</span><span class="o">(</span><span class="n">ClassFileTransformer</span> <span class="n">transformer</span><span class="o">);</span>
     
     <span class="cm">/**
      * 对JVM已经加载的类重新触发类加载。使用的就是上面注册的Transformer。
      * retransformation可以修改方法体，但是不能变更方法签名、增加和删除方法/类的成员属性
      */</span>
-    <span class="kt">void</span> <span class="nf">retransformClasses</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">classes</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">UnmodifiableClassException</span><span class="o">;</span>
+    <span class="kt">void</span> <span class="nf">retransformClasses</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">classes</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">UnmodifiableClassException</span><span class="o">;</span>
     
     <span class="cm">/**
      * 获取一个对象的大小
      */</span>
-    <span class="kt">long</span> <span class="nf">getObjectSize</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objectToSize</span><span class="o">);</span>
+    <span class="kt">long</span> <span class="nf">getObjectSize</span><span class="o">(</span><span class="n">Object</span> <span class="n">objectToSize</span><span class="o">);</span>
     
     <span class="cm">/**
      * 将一个jar加入到bootstrap classloader的 classpath里
      */</span>
-    <span class="kt">void</span> <span class="nf">appendToBootstrapClassLoaderSearch</span><span class="o">(</span><span class="nc">JarFile</span> <span class="n">jarfile</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">appendToBootstrapClassLoaderSearch</span><span class="o">(</span><span class="n">JarFile</span> <span class="n">jarfile</span><span class="o">);</span>
     
     <span class="cm">/**
      * 获取当前被JVM加载的所有类对象
      */</span>
-    <span class="nc">Class</span><span class="o">[]</span> <span class="nf">getAllLoadedClasses</span><span class="o">();</span>
+    <span class="n">Class</span><span class="o">[]</span> <span class="nf">getAllLoadedClasses</span><span class="o">();</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
@@ -302,40 +438,40 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
  * 以vm参数的形式载入，在程序main方法执行之前执行
  * 其jar包的manifest需要配置属性Premain-Class
  */</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="nc">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="nc">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="n">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="n">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
 <span class="cm">/**
  * 以Attach的方式载入，在Java程序启动后执行
  * 其jar包的manifest需要配置属性Agent-Class
  */</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">agentmain</span><span class="o">(</span><span class="nc">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="nc">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">agentmain</span><span class="o">(</span><span class="n">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="n">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
 </code></pre></div></div>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">InstrumentationExample</span> <span class="o">{</span>
     <span class="c1">// Java agent指定的premain方法，会在main方法之前被调用</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">,</span> <span class="nc">Instrumentation</span> <span class="n">inst</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">,</span> <span class="n">Instrumentation</span> <span class="n">inst</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">// Instrumentation提供的addTransformer方法，在类加载时会回调ClassFileTransformer接口</span>
-        <span class="n">inst</span><span class="o">.</span><span class="na">addTransformer</span><span class="o">(</span><span class="k">new</span> <span class="nc">ClassFileTransformer</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">inst</span><span class="o">.</span><span class="na">addTransformer</span><span class="o">(</span><span class="k">new</span> <span class="n">ClassFileTransformer</span><span class="o">()</span> <span class="o">{</span>
             <span class="nd">@Override</span>
-            <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">transform</span><span class="o">(</span><span class="nc">ClassLoader</span> <span class="n">loader</span><span class="o">,</span> <span class="nc">String</span> <span class="n">className</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">classBeingRedefined</span><span class="o">,</span>
-                                    <span class="nc">ProtectionDomain</span> <span class="n">protectionDomain</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">classfileBuffer</span><span class="o">)</span>
-                                    <span class="kd">throws</span> <span class="nc">IllegalClassFormatException</span> <span class="o">{</span>
+            <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">transform</span><span class="o">(</span><span class="n">ClassLoader</span> <span class="n">loader</span><span class="o">,</span> <span class="n">String</span> <span class="n">className</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">classBeingRedefined</span><span class="o">,</span>
+                                    <span class="n">ProtectionDomain</span> <span class="n">protectionDomain</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">classfileBuffer</span><span class="o">)</span>
+                                    <span class="kd">throws</span> <span class="n">IllegalClassFormatException</span> <span class="o">{</span>
                 <span class="k">if</span> <span class="o">(!</span><span class="s">"com/test/TestClass"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">className</span><span class="o">))</span> <span class="o">{</span>
                     <span class="c1">// 只修改指定的Class</span>
                     <span class="k">return</span> <span class="n">classfileBuffer</span><span class="o">;</span>
                 <span class="o">}</span>
         
                 <span class="kt">byte</span><span class="o">[]</span> <span class="n">transformed</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-                <span class="nc">CtClass</span> <span class="n">cl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                <span class="n">CtClass</span> <span class="n">cl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
                 <span class="k">try</span> <span class="o">{</span>
                     <span class="c1">// CtClass、ClassPool、CtMethod、ExprEditor都是javassist提供的字节码操作的类</span>
-                    <span class="nc">ClassPool</span> <span class="n">pool</span> <span class="o">=</span> <span class="nc">ClassPool</span><span class="o">.</span><span class="na">getDefault</span><span class="o">();</span>
-                    <span class="n">cl</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="na">makeClass</span><span class="o">(</span><span class="k">new</span> <span class="nc">ByteArrayInputStream</span><span class="o">(</span><span class="n">classfileBuffer</span><span class="o">));</span>
-                    <span class="nc">CtMethod</span><span class="o">[]</span> <span class="n">methods</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">getDeclaredMethods</span><span class="o">();</span>
+                    <span class="n">ClassPool</span> <span class="n">pool</span> <span class="o">=</span> <span class="n">ClassPool</span><span class="o">.</span><span class="na">getDefault</span><span class="o">();</span>
+                    <span class="n">cl</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="na">makeClass</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">classfileBuffer</span><span class="o">));</span>
+                    <span class="n">CtMethod</span><span class="o">[]</span> <span class="n">methods</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">getDeclaredMethods</span><span class="o">();</span>
                     <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">methods</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-                        <span class="n">methods</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">instrument</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExprEditor</span><span class="o">()</span> <span class="o">{</span>
+                        <span class="n">methods</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">instrument</span><span class="o">(</span><span class="k">new</span> <span class="n">ExprEditor</span><span class="o">()</span> <span class="o">{</span>
         
                             <span class="nd">@Override</span>
-                            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">edit</span><span class="o">(</span><span class="nc">MethodCall</span> <span class="n">m</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">CannotCompileException</span> <span class="o">{</span>
+                            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">edit</span><span class="o">(</span><span class="n">MethodCall</span> <span class="n">m</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CannotCompileException</span> <span class="o">{</span>
                                 <span class="c1">// 把方法体直接替换掉，其中 $proceed($$);是javassist的语法，用来表示原方法体的调用</span>
                                 <span class="n">m</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="s">"{ long stime = System.currentTimeMillis();"</span> <span class="o">+</span> <span class="s">" $_ = $proceed($$);"</span>
                                           <span class="o">+</span> <span class="s">"System.out.println(\""</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="na">getClassName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"."</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="na">getMethodName</span><span class="o">()</span>
@@ -345,7 +481,7 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
                     <span class="o">}</span>
                     <span class="c1">// javassist会把输入的Java代码再编译成字节码byte[]</span>
                     <span class="n">transformed</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">toBytecode</span><span class="o">();</span>
-                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                     <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
                 <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
                     <span class="k">if</span> <span class="o">(</span><span class="n">cl</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
@@ -370,9 +506,9 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
 <h4 id="asm--cglib">ASM &amp; CGlib</h4>
 <p><img src="/img/AOP.jpg" width="600px" /></p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckClassAdapter</span> <span class="kd">extends</span> <span class="nc">ClassAdapter</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckClassAdapter</span> <span class="kd">extends</span> <span class="n">ClassAdapter</span> <span class="o">{</span>
  
-    <span class="kd">public</span> <span class="nf">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="nc">ClassVisitor</span> <span class="n">cv</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="n">ClassVisitor</span> <span class="n">cv</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">//Responsechain 的下一个 ClassVisitor，这里我们将传入 ClassWriter，</span>
         <span class="c1">// 负责改写后代码的输出</span>
         <span class="kd">super</span><span class="o">(</span><span class="n">cv</span><span class="o">);</span> 
@@ -380,29 +516,29 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
      
     <span class="c1">// 重写 visitMethod，访问到 "operation" 方法时，</span>
     <span class="c1">// 给出自定义 MethodVisitor，实际改写方法内容</span>
-    <span class="kd">public</span> <span class="nc">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
-        <span class="kd">final</span> <span class="nc">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="nc">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span><span class="n">exceptions</span><span class="o">);</span>
-        <span class="nc">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
+    <span class="kd">public</span> <span class="n">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
+        <span class="kd">final</span> <span class="n">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="n">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span><span class="n">exceptions</span><span class="o">);</span>
+        <span class="n">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
         <span class="k">if</span> <span class="o">(</span><span class="n">mv</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> 
             <span class="c1">// 对于 "operation" 方法</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"operation"</span><span class="o">))</span> <span class="o">{</span> 
                 <span class="c1">// 使用自定义 MethodVisitor，实际改写方法内容</span>
-                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
+                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
             <span class="o">}</span> 
         <span class="o">}</span> 
         <span class="k">return</span> <span class="n">wrappedMv</span><span class="o">;</span> 
     <span class="o">}</span> 
 
-    <span class="kd">public</span> <span class="nc">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
-        <span class="kd">final</span> <span class="nc">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="nc">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span> <span class="n">exceptions</span><span class="o">);</span> 
-        <span class="nc">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
+    <span class="kd">public</span> <span class="n">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
+        <span class="kd">final</span> <span class="n">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="n">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span> <span class="n">exceptions</span><span class="o">);</span> 
+        <span class="n">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
         <span class="k">if</span> <span class="o">(</span><span class="n">mv</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> 
             <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"operation"</span><span class="o">))</span> <span class="o">{</span> 
-                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
+                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
             <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"&lt;init&gt;"</span><span class="o">))</span> <span class="o">{</span> 
-                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">,</span> 
+                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">,</span> 
                     <span class="n">enhancedSuperName</span><span class="o">);</span> 
             <span class="o">}</span> 
         <span class="o">}</span> 
@@ -410,10 +546,10 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
     <span class="o">}</span>
 
     
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visit</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">version</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
-            <span class="kd">final</span> <span class="nc">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">superName</span><span class="o">,</span> 
-            <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">interfaces</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="nc">String</span> <span class="n">enhancedName</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"$EnhancedByASM"</span><span class="o">;</span>  <span class="c1">// 改变类命名</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visit</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">version</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
+            <span class="kd">final</span> <span class="n">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">superName</span><span class="o">,</span> 
+            <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">interfaces</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="n">String</span> <span class="n">enhancedName</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"$EnhancedByASM"</span><span class="o">;</span>  <span class="c1">// 改变类命名</span>
         <span class="n">enhancedSuperName</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span> <span class="c1">// 改变父类，这里是”Account”</span>
         <span class="kd">super</span><span class="o">.</span><span class="na">visit</span><span class="o">(</span><span class="n">version</span><span class="o">,</span> <span class="n">access</span><span class="o">,</span> <span class="n">enhancedName</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span> 
         <span class="n">enhancedSuperName</span><span class="o">,</span> <span class="n">interfaces</span><span class="o">);</span> 
@@ -422,31 +558,31 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
 <span class="o">}</span>
 </code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckMethodAdapter</span> <span class="kd">extends</span> <span class="nc">MethodAdapter</span> <span class="o">{</span> 
-    <span class="kd">public</span> <span class="nf">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="nc">MethodVisitor</span> <span class="n">mv</span><span class="o">)</span> <span class="o">{</span> 
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckMethodAdapter</span> <span class="kd">extends</span> <span class="n">MethodAdapter</span> <span class="o">{</span> 
+    <span class="kd">public</span> <span class="nf">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">MethodVisitor</span> <span class="n">mv</span><span class="o">)</span> <span class="o">{</span> 
         <span class="kd">super</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
     <span class="o">}</span> 
  
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitCode</span><span class="o">()</span> <span class="o">{</span> 
-        <span class="n">visitMethodInsn</span><span class="o">(</span><span class="nc">Opcodes</span><span class="o">.</span><span class="na">INVOKESTATIC</span><span class="o">,</span> <span class="s">"SecurityChecker"</span><span class="o">,</span> 
+        <span class="n">visitMethodInsn</span><span class="o">(</span><span class="n">Opcodes</span><span class="o">.</span><span class="na">INVOKESTATIC</span><span class="o">,</span> <span class="s">"SecurityChecker"</span><span class="o">,</span> 
            <span class="s">"checkSecurity"</span><span class="o">,</span> <span class="s">"()V"</span><span class="o">);</span> 
     <span class="o">}</span> 
 <span class="o">}</span>
 </code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">ChangeToChildConstructorMethodAdapter</span> <span class="kd">extends</span> <span class="nc">MethodAdapter</span> <span class="o">{</span> 
-    <span class="kd">private</span> <span class="nc">String</span> <span class="n">superClassName</span><span class="o">;</span> 
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">ChangeToChildConstructorMethodAdapter</span> <span class="kd">extends</span> <span class="n">MethodAdapter</span> <span class="o">{</span> 
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">superClassName</span><span class="o">;</span> 
  
-    <span class="kd">public</span> <span class="nf">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="nc">MethodVisitor</span> <span class="n">mv</span><span class="o">,</span> 
-        <span class="nc">String</span> <span class="n">superClassName</span><span class="o">)</span> <span class="o">{</span> 
+    <span class="kd">public</span> <span class="nf">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="n">MethodVisitor</span> <span class="n">mv</span><span class="o">,</span> 
+        <span class="n">String</span> <span class="n">superClassName</span><span class="o">)</span> <span class="o">{</span> 
         <span class="kd">super</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
         <span class="k">this</span><span class="o">.</span><span class="na">superClassName</span> <span class="o">=</span> <span class="n">superClassName</span><span class="o">;</span> 
     <span class="o">}</span> 
  
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitMethodInsn</span><span class="o">(</span><span class="kt">int</span> <span class="n">opcode</span><span class="o">,</span> <span class="nc">String</span> <span class="n">owner</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
-        <span class="nc">String</span> <span class="n">desc</span><span class="o">)</span> <span class="o">{</span> 
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitMethodInsn</span><span class="o">(</span><span class="kt">int</span> <span class="n">opcode</span><span class="o">,</span> <span class="n">String</span> <span class="n">owner</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
+        <span class="n">String</span> <span class="n">desc</span><span class="o">)</span> <span class="o">{</span> 
         <span class="c1">// 调用父类的构造函数时</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">opcode</span> <span class="o">==</span> <span class="nc">Opcodes</span><span class="o">.</span><span class="na">INVOKESPECIAL</span> <span class="o">&amp;&amp;</span> <span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"&lt;init&gt;"</span><span class="o">))</span> <span class="o">{</span> 
+        <span class="k">if</span> <span class="o">(</span><span class="n">opcode</span> <span class="o">==</span> <span class="n">Opcodes</span><span class="o">.</span><span class="na">INVOKESPECIAL</span> <span class="o">&amp;&amp;</span> <span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"&lt;init&gt;"</span><span class="o">))</span> <span class="o">{</span> 
             <span class="n">owner</span> <span class="o">=</span> <span class="n">superClassName</span><span class="o">;</span> 
         <span class="o">}</span> 
         <span class="kd">super</span><span class="o">.</span><span class="na">visitMethodInsn</span><span class="o">(</span><span class="n">opcode</span><span class="o">,</span> <span class="n">owner</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">);</span><span class="c1">// 改写父类为 superClassName </span>
@@ -456,28 +592,28 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SecureAccountGenerator</span> <span class="o">{</span> 
  
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">AccountGeneratorClassLoader</span> <span class="n">classLoader</span> <span class="o">=</span> 
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">AccountGeneratorClassLoader</span> <span class="n">classLoader</span> <span class="o">=</span> 
         <span class="k">new</span> <span class="nf">AccountGeneratorClassLoade</span><span class="o">();</span> 
      
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Class</span> <span class="n">secureAccountClass</span><span class="o">;</span> 
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Class</span> <span class="n">secureAccountClass</span><span class="o">;</span> 
      
-    <span class="kd">public</span> <span class="nc">Account</span> <span class="nf">generateSecureAccount</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">ClassFormatError</span><span class="o">,</span> 
-        <span class="nc">InstantiationException</span><span class="o">,</span> <span class="nc">IllegalAccessException</span> <span class="o">{</span> 
+    <span class="kd">public</span> <span class="n">Account</span> <span class="nf">generateSecureAccount</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">ClassFormatError</span><span class="o">,</span> 
+        <span class="n">InstantiationException</span><span class="o">,</span> <span class="n">IllegalAccessException</span> <span class="o">{</span> 
         <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">secureAccountClass</span><span class="o">)</span> <span class="o">{</span>            
-            <span class="nc">ClassReader</span> <span class="n">cr</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassReader</span><span class="o">(</span><span class="s">"Account"</span><span class="o">);</span> 
-            <span class="nc">ClassWriter</span> <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassWriter</span><span class="o">(</span><span class="nc">ClassWriter</span><span class="o">.</span><span class="na">COMPUTE_MAXS</span><span class="o">);</span> 
-            <span class="nc">ClassAdapter</span> <span class="n">classAdapter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="n">cw</span><span class="o">);</span>
-            <span class="n">cr</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">classAdapter</span><span class="o">,</span> <span class="nc">ClassReader</span><span class="o">.</span><span class="na">SKIP_DEBUG</span><span class="o">);</span> 
+            <span class="n">ClassReader</span> <span class="n">cr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassReader</span><span class="o">(</span><span class="s">"Account"</span><span class="o">);</span> 
+            <span class="n">ClassWriter</span> <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassWriter</span><span class="o">(</span><span class="n">ClassWriter</span><span class="o">.</span><span class="na">COMPUTE_MAXS</span><span class="o">);</span> 
+            <span class="n">ClassAdapter</span> <span class="n">classAdapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="n">cw</span><span class="o">);</span>
+            <span class="n">cr</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">classAdapter</span><span class="o">,</span> <span class="n">ClassReader</span><span class="o">.</span><span class="na">SKIP_DEBUG</span><span class="o">);</span> 
             <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span> 
             <span class="n">secureAccountClass</span> <span class="o">=</span> <span class="n">classLoader</span><span class="o">.</span><span class="na">defineClassFromClassFile</span><span class="o">(</span> 
                <span class="s">"Account$EnhancedByASM"</span><span class="o">,</span><span class="n">data</span><span class="o">);</span> 
         <span class="o">}</span> 
-        <span class="k">return</span> <span class="o">(</span><span class="nc">Account</span><span class="o">)</span> <span class="n">secureAccountClass</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span> 
+        <span class="k">return</span> <span class="o">(</span><span class="n">Account</span><span class="o">)</span> <span class="n">secureAccountClass</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span> 
     <span class="o">}</span> 
      
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">AccountGeneratorClassLoader</span> <span class="kd">extends</span> <span class="nc">ClassLoader</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="nc">Class</span> <span class="nf">defineClassFromClassFile</span><span class="o">(</span><span class="nc">String</span> <span class="n">className</span><span class="o">,</span> 
-            <span class="kt">byte</span><span class="o">[]</span> <span class="n">classFile</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">ClassFormatError</span> <span class="o">{</span> 
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">AccountGeneratorClassLoader</span> <span class="kd">extends</span> <span class="n">ClassLoader</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="n">Class</span> <span class="nf">defineClassFromClassFile</span><span class="o">(</span><span class="n">String</span> <span class="n">className</span><span class="o">,</span> 
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">classFile</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ClassFormatError</span> <span class="o">{</span> 
             <span class="k">return</span> <span class="nf">defineClass</span><span class="o">(</span><span class="s">"Account$EnhancedByASM"</span><span class="o">,</span> <span class="n">classFile</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> 
             <span class="n">classFile</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
         <span class="o">}</span> 
@@ -501,127 +637,6 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2020/06/27/JavaAgent-Instrument.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2020/06/25/MckinseyMethodology.html">麦肯锡方法</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 25, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2020/06/25/MckinseyMethodology.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>方法论</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="专业主义">专业主义</h4>
-<ul>
-  <li>结构化的思维，清晰的语言，具有责任心同时又敢于发表不同意见的知识精英以及专业化的目标，
-  这都是会让一个组织及其人员发挥其最大的潜力。</li>
-</ul>
-
-<h4 id="主要方法论">主要方法论</h4>
-<ul>
-  <li>以事实为基础</li>
-  <li>严格的结构化（MESE原则，相互独立完全穷尽）</li>
-  <li>以假设为导向，寻找关键路径。（错误的路径某种程度上会促使你发现正确路径）</li>
-</ul>
-
-<h4 id="作用力量分析框架">作用力量分析框架</h4>
-<ul>
-  <li>客户的供应商</li>
-  <li>顾客</li>
-  <li>竞争对手</li>
-  <li>可能的替代产品</li>
-</ul>
-
-<h4 id="重要原则">重要原则</h4>
-<ul>
-  <li>80/20原则</li>
-  <li>电梯测试</li>
-  <li>界定你的前提，这是把你由问题引向解决方案的路线图</li>
-  <li>为你的情况说明”预先布线”以确保成功的秘密</li>
-  <li>为什么问题不会永远是问题？
-    <ul>
-      <li>不要去重新发明轮子，尽可能寻找现有的或类似的解决方案</li>
-      <li>每个客户都是独一无二的，不存在一刀切的解决办法</li>
-      <li>不要让事实去适应你的解决办法</li>
-      <li>确保你的解决办法适合你的客户</li>
-      <li>有时候你必须让解决方案来找你。（收集事实，描述清楚问题，解决方案就会自己找上门来）</li>
-      <li>遇到”不可能解决”的难题怎么办？
-        <ul>
-          <li>重新定义问题</li>
-          <li>锲而不舍实施看似不是最优方案的方案，最终有可能就是最优</li>
-          <li>解决政治问题</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>成功地进行收集信息的谈话的7个要诀
-    <ul>
-      <li>让被访者的上司安排会面</li>
-      <li>两个人一起进行走访</li>
-      <li>倾听，不要指导</li>
-      <li>复述、复述、复述</li>
-      <li>采用旁敲侧击的方式</li>
-      <li>不要问太多</li>
-      <li>采用考伦波的策略。（电梯间提问，此时大家都放松了，可能能得到意想不到的答案）</li>
-    </ul>
-  </li>
-  <li>高效沟通的3个构成要素
-    <ul>
-      <li>简洁、完整、结构</li>
-    </ul>
-  </li>
-  <li>如何应付”讨债鬼”似的团队成员或难以打交道的同事。
-    <ul>
-      <li>清除或转化</li>
-    </ul>
-  </li>
-  <li>如何让整个企业接受你的方案。
-    <ul>
-      <li>让客户参与，并从上到下的沟通实施</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="如何保持团队士气">如何保持团队士气</h4>
-<ul>
-  <li>把握团队温度</li>
-  <li>掌握稳定的过程</li>
-  <li>让团队明白为什么他们要干正在干的事情</li>
-  <li>以尊重对待你的团队</li>
-  <li>把队友当成人来了解</li>
-  <li>耐心坚持</li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E9%9A%8F%E8%AE%B0/2020/06/25/MckinseyMethodology.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/24/O2O%E6%B4%BE%E5%8D%95.html">O2O派单</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 24, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/24/O2O%E6%B4%BE%E5%8D%95.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>策略</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>滴滴派单
-https://mp.weixin.qq.com/s/mbzr55b-0KrNXdrBTMcYcg
-https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/24/O2O%E6%B4%BE%E5%8D%95.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -855,7 +870,7 @@ https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
       
       
       <a  href="/tag/用户">
-      <span class="label label-default">用户 ( 1 )</span>
+      <span class="label label-default">用户 ( 3 )</span>
       </a><br />
 
       

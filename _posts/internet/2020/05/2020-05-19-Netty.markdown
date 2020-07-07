@@ -134,8 +134,6 @@ public class CIMServer {
 1. a. 采用了独特的编码方式，如 Varint、Zigzag 编码方式等等
 2. b. 采用 T - L - V 的数据存储方式:减少了分隔符的使用 & 数据存储得紧凑
 
-<<<<<<< HEAD
-=======
 #### TCP 粘包/分包的原因:
 - 应用程序写入的字节大小大于套接字发送缓冲区的大小，会发生拆包现象，而应用程序写入 数据小于套接字缓冲区大小，网卡将应用多次写入的数据发送到网络上，这将会发生粘包现 象;
 - 进行 MSS 大小的 TCP 分段，当 TCP 报文长度-TCP 头部长度>MSS 的时候将发生拆包 以太网帧的 payload(净荷)大于 MTU(1500 字节)进行 ip 分片。
@@ -151,7 +149,6 @@ ch.pipeline().addLast(new FixeLengthFrameDecoder(31))
 - 通俗易懂 <http://www.52im.net/forum.php?mod=viewthread&tid=2768&highlight=netty>
 - 基于Netty实现海量接入的推送服务技术要点 <http://www.52im.net/forum.php?mod=viewthread&tid=166&highlight=netty>
 
->>>>>>> gogogo
 #### BIO,NIO,AIO 有什么区别?
 - BIO：Block IO 同步阻塞式 IO，就是我们平常使用的传统 IO，它的特点是模式简单使用方便，并发处理能力低。
 - NIO：Non IO 同步非阻塞 IO，是传统 IO 的升级，客户端和服务器端通过 Channel（通道）通讯，实现了多路复用。
@@ -471,6 +468,14 @@ bootstrap.handler(
         }
 );
 ```
+
+#### Netty & WebSocket
+https://baijiahao.baidu.com/s?id=1654057194889667404&wfr=spider&for=pc
+
+#### Netty 分布式部署
+- 接入层同时拥有 Connect 及 Transfer作用
+- Transfer可以通过Mq方式订阅所有消息
+- 也可以通过Tranfer之间通过rpc调用或者直接发起另一组长连接
 
 #### 再说Netty 的零拷⻉
 ##### 传统意义的拷⻉

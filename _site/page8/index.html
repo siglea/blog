@@ -54,6 +54,380 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html">多路复用select poll epoll</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="再次总结">再次总结</h3>
+<h4 id="历史">历史</h4>
+<ul>
+  <li>select出现是1984年在BSD里面实现的(为了减少数据拷贝带来的性能损坏，内核对被监控的fd_set集合大小做了限制，并且这个是通过宏控制的，大小不可改变(限制为1024))</li>
+  <li>14年之后也就是1997年才实现了poll，其实拖那么久也不是效率问题， 而是那个时代的硬件实在太弱，一台服务器处理1千多个链接简直就是神一样的存在了，select很长段时间已经满足需求</li>
+  <li>2002, 大神 Davide Libenzi 实现了epoll</li>
+</ul>
+
+<h4 id="区别">区别</h4>
+<ul>
+  <li>操作方式：select/poll依靠遍历，而epll靠回调</li>
+  <li>IO效率：由于操作方式，select/poll时间复杂度是O(n)，epoll是O(1)</li>
+  <li>数据结构：select(数组)、poll(链表)、epoll(哈希表)</li>
+  <li>最大连接数：由于数据结构的原因，poll/epoll突破了数量的限制，而select只支持1024(2048)</li>
+  <li>fd拷贝：select/poll都需要把fd集合从用户态拷贝到内核态，epoll没有描述符个数限制，使用一个文件描述符管理多个描述符，将用户关心的文件描述符的事件存放到内核的一个事件表中，这样在用户空间和内核空间的copy只需一次。</li>
+  <li>epoll是通过内核于用户空间mmap同一块内存实现了节省拷贝的动作。</li>
+</ul>
+
+<h4 id="源代码">源代码</h4>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// select</span>
+<span class="kt">int</span> <span class="nf">select</span><span class="o">(</span><span class="kt">int</span> <span class="n">maxfdp1</span><span class="o">,</span><span class="n">fd_set</span> <span class="o">*</span><span class="n">readset</span><span class="o">,</span><span class="n">fd_set</span> <span class="o">*</span><span class="n">writeset</span><span class="o">,</span><span class="n">fd_set</span> <span class="o">*</span><span class="n">exceptset</span><span class="o">,</span><span class="kd">const</span> <span class="n">struct</span> <span class="n">timeval</span> <span class="o">*</span><span class="n">timeout</span><span class="o">);</span>
+<span class="c1">// 主要问题在于在用户态创建fd_set然后拷贝到内核态，再由内核态装配数据后，在用户态中进行遍历</span>
+<span class="c1">// 并且每次都需要重新初始化fd_set</span>
+
+<span class="c1">// poll</span>
+<span class="kt">int</span> <span class="nf">poll</span><span class="o">(</span><span class="n">struct</span> <span class="n">pollfd</span> <span class="o">*</span><span class="n">fds</span><span class="o">,</span> <span class="n">nfds_t</span> <span class="n">nfds</span><span class="o">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="o">);</span>
+<span class="n">typedef</span> <span class="n">struct</span> <span class="n">pollfd</span> <span class="o">{</span>        
+<span class="kt">int</span> <span class="n">fd</span><span class="o">;</span>                         <span class="c1">// 需要被检测或选择的文件描述符        </span>
+<span class="kt">short</span> <span class="n">events</span><span class="o">;</span>                   <span class="c1">// 对文件描述符fd上感兴趣的事件        </span>
+<span class="kt">short</span> <span class="n">revents</span><span class="o">;</span>                  <span class="c1">// 文件描述符fd上当前实际发生的事件</span>
+<span class="o">}</span> 
+
+
+<span class="c1">// epoll</span>
+<span class="kt">int</span> <span class="nf">epoll_create</span><span class="o">(</span><span class="kt">int</span> <span class="n">size</span><span class="o">);</span> <span class="c1">//  函数创建一个epoll句柄，参数size表明内核要监听的描述符数量。调用成功时返回一个epoll句柄描述符，失败时返回-1。</span>
+<span class="kt">int</span> <span class="nf">epoll_ctl</span><span class="o">(</span><span class="kt">int</span> <span class="n">epfd</span><span class="o">,</span> <span class="kt">int</span> <span class="n">op</span><span class="o">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="o">,</span> <span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">*</span><span class="n">event</span><span class="o">);</span>
+    <span class="c1">// epfd 表示epoll句柄</span>
+    <span class="c1">// op 表示fd操作类型，有如下3种</span>
+        <span class="c1">// EPOLL_CTL_ADD   注册新的fd到epfd中</span>
+        <span class="c1">// EPOLL_CTL_MOD 修改已注册的fd的监听事件</span>
+        <span class="c1">// EPOLL_CTL_DEL 从epfd中删除一个fd</span>
+    <span class="c1">// fd 是要监听的描述符</span>
+    <span class="c1">// event 表示要监听的事件</span>
+<span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">{</span>
+    <span class="n">__uint32_t</span> <span class="n">events</span><span class="o">;</span>  <span class="cm">/* Epoll events */</span>    
+   <span class="n">epoll_data_t</span> <span class="n">data</span><span class="o">;</span>  <span class="cm">/* User data variable */</span>
+<span class="o">};</span>
+<span class="n">typedef</span> <span class="n">union</span> <span class="n">epoll_data</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="o">;</span>    <span class="kt">int</span> <span class="n">fd</span><span class="o">;</span>
+    <span class="n">__uint32_t</span> <span class="n">u32</span><span class="o">;</span>
+    <span class="n">__uint64_t</span> <span class="n">u64</span><span class="o">;</span>
+<span class="o">}</span> <span class="n">epoll_data_t</span><span class="o">;</span>
+<span class="kt">int</span> <span class="nf">epoll_wait</span><span class="o">(</span><span class="kt">int</span> <span class="n">epfd</span><span class="o">,</span> <span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">*</span> <span class="n">events</span><span class="o">,</span> <span class="kt">int</span> <span class="n">maxevents</span><span class="o">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="o">);</span>
+    <span class="c1">// epfd 是epoll句柄</span>
+    <span class="c1">// events 表示从内核得到的就绪事件集合</span>
+    <span class="c1">// maxevents 告诉内核events的大小</span>
+    <span class="c1">// timeout 表示等待的超时事件</span>
+</code></pre></div></div>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>IO多路复用的三种机制Select，Poll，Epoll <a href="https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA">https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA</a></li>
+  <li>IO模型及select、poll、epoll和kqueue的区别 <a href="https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A">https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A</a></li>
+  <li>Select，Poll，Epoll详解 <a href="https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg">https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg</a></li>
+  <li>大量代码 深入分析select&amp;poll&amp;epoll原理 <a href="https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g">https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g</a></li>
+</ul>
+
+<h3 id="简单总结三者区别">简单总结三者区别</h3>
+<ul>
+  <li>一切都与历史有关，都是历史发展造成差异</li>
+  <li>select最早出现（1983年在BSD里实现），由以下几个特点
+    <ol>
+      <li>无论效率如何确实实现了多路复用</li>
+      <li>原理也就是内核态监听最多1024个链接，任意一个链接有数据了，通知用户态去遍历所有链接获取数据</li>
+      <li>由于编程的原因把1024写在了linux的头文件FD_SETSIZE中</li>
+      <li>由于编程的原因数据直接写到了参数的地址上，导致需要每次需要重置参数</li>
+    </ol>
+  </li>
+  <li>poll 在1997年推出，修复select的两个问题（也是历史原因，当时机器硬件性能不高没有必要修复）
+    <ol>
+      <li>最大监听连接数修改为在 /proc/sys/fs/file-max 获取</li>
+      <li>内核通过修改pollfd.revents反馈其中的就绪时间</li>
+      <li>仍然需要遍历，效率仍然低，时间复杂度O(n)</li>
+    </ol>
+  </li>
+  <li>epoll，革新以上两种方式，内核只返回就绪的那一个链接，不需要遍历，所以效率提升了
+    <ol>
+      <li>epoll其实也需要调用epoll_wait不断轮询就绪链表，期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。</li>
+      <li>epoll对文件描述符的操作有两种模式：LT（level trigger）和ET（edge trigger）。LT模式是默认模式，LT模式与ET模式的区别如下：
+        <ul>
+          <li>LT模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。</li>
+          <li>ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。</li>
+          <li>LT模式，LT(level triggered)是缺省的工作方式，并且同时支持block和no-block socket。在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，内核还是会继续通知你的。</li>
+          <li>ET模式，ET(edge-triggered)是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知，直到你做了某些操作导致那个文件描述符不再为就绪状态了(比如，你在发送，接收或者接收请求，或者发送接收的数据少于一定量时导致了一个EWOULDBLOCK 错误）。但是请注意，如果一直不对这个fd作IO操作(从而导致它再次变成未就绪)，内核不会发送更多的通知(only once)。ET模式在很大程度上减少了epoll事件被重复触发的次数，因此效率要比LT模式高。epoll工作在ET模式的时候，必须使用非阻塞套接口，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。</li>
+          <li>在select/poll中，进程只有在调用一定的方法后，内核才对所有监视的文件描述符进行扫描，而epoll事先通过epoll_ctl()来注册一个文件描述符，一旦基于某个文件描述符就绪时，内核会采用类似callback的回调机制，迅速激活这个文件描述符，当进程调用epoll_wait()时便得到通知。(此处去掉了遍历文件描述符，而是通过监听回调的的机制。这正是epoll的魅力所在。)</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="参考资料">参考资料</h4>
+<ul>
+  <li><a href="https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A">https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA">https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA">https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A">https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A</a></li>
+  <li>C10K到C10M <a href="http://www.52im.net/thread-561-1-1.html">http://www.52im.net/thread-561-1-1.html</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html">NIO-BIO-AIO</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="写在前面">写在前面</h4>
+<ul>
+  <li>即便是NIO，本地文件IO依然是Block操作的，NIO主要是解决网络IO的问题。</li>
+  <li>本质都是需要操作系统层次的支持。</li>
+</ul>
+
+<h4 id="bionioaio区别">BIO、NIO、AIO区别</h4>
+<ul>
+  <li>BIO 就是传统的 java.io 包，它是基于流模型实现的，交互的方式是同步、阻塞方式，也就是说在读入输入流或者输出流时，在读写动作完成之前，线程会一直阻塞在那里，它们之间的调用时可靠的线性顺序。它的有点就是代码比较简单、直观；缺点就是 IO 的效率和扩展性很低，容易成为应用性能瓶颈。</li>
+  <li>NIO 是 Java 1.4 引入的 java.nio 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。</li>
+  <li>AIO 是 Java 1.7 之后引入的包，是 NIO 的升级版本，提供了异步非堵塞的 IO 操作方式，所以人们叫它 AIO（Asynchronous IO），异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。</li>
+  <li>深入理解BIO、NIO、AIO <a href="https://zhuanlan.zhihu.com/p/51453522">https://zhuanlan.zhihu.com/p/51453522</a></li>
+</ul>
+
+<h4 id="结合selectpollepoll看nio">结合select/poll/epoll看NIO</h4>
+<p><a href="https://www.jianshu.com/p/ef418ccf2f7d">https://www.jianshu.com/p/ef418ccf2f7d</a></p>
+
+<h4 id="streambio-与-channel-nio">Stream（BIO) 与 Channel (NIO)</h4>
+<ul>
+  <li>Stream不支持异步</li>
+  <li>Channel同时支持读写</li>
+  <li>NIO流是以数据块为单位来处理，缓冲区就是用于读写的数据块。缓冲区的IO操作是由底层操作系统实现的，效率很快。</li>
+  <li>各种Channel Demo <a href="https://blog.csdn.net/dd864140130/article/details/50327649">https://blog.csdn.net/dd864140130/article/details/50327649</a></li>
+  <li>Channel &amp; Buffer的使用<a href="https://www.cnblogs.com/fwnboke/p/8529604.html">https://www.cnblogs.com/fwnboke/p/8529604.html</a>
+    <h4 id="buffer的读取与写入">Buffer的读取与写入</h4>
+  </li>
+  <li>Buffer相当于，操作系统与程序之间共同开辟了一份缓冲区共同读写，效率更高</li>
+  <li>本质上Buffer支持读写，又共用同一个缓冲区，在读写切换时确实需要进行相关操作</li>
+  <li>3个重要的属性</li>
+  <li>position:读的时候表示可以从哪里开始读，写的时候表示现在可以从哪里开始写。</li>
+  <li>limit:读的时候表示可以最大可读位置，写的时候表示最大可写的位置。</li>
+  <li>capacity：容量</li>
+  <li>flip() &amp; clear()，不论读写position都要从0开始
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Buffer</span><span class="o">{</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="n">Buffer</span> <span class="nf">flip</span><span class="o">()</span> <span class="o">{</span>
+      <span class="n">limit</span> <span class="o">=</span> <span class="n">position</span><span class="o">;</span>
+      <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+      <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+<span class="o">}</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="n">Buffer</span> <span class="nf">clear</span><span class="o">()</span> <span class="o">{</span>
+      <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+      <span class="n">limit</span> <span class="o">=</span> <span class="n">capacity</span><span class="o">;</span>
+      <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>参考
+    <ul>
+      <li><a href="https://www.cnblogs.com/yaowen/p/9173443.html">https://www.cnblogs.com/yaowen/p/9173443.html</a></li>
+      <li><a href="https://blog.csdn.net/u013096088/article/details/78638245">https://blog.csdn.net/u013096088/article/details/78638245</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="java-nioscatter-与-gather">Java NIO：Scatter 与 Gather</h4>
+<ul>
+  <li>Scatter 是指允许将一个channel中的数据分散的依次写入多个buffer中存储</li>
+  <li>Gather 是指允许将多个buffer中的数据按某种顺序写入一个channel中</li>
+  <li><a href="https://blog.csdn.net/lemon89/article/details/47152635">https://blog.csdn.net/lemon89/article/details/47152635</a></li>
+</ul>
+
+<h4 id="allocatedirect直接缓冲区">allocateDirect直接缓冲区</h4>
+<ul>
+  <li>“IO与NIO ”重点概念整理<a href="https://www.jianshu.com/p/c0e7462f9e1d">https://www.jianshu.com/p/c0e7462f9e1d</a></li>
+</ul>
+
+<h4 id="asynchronousserversocketchannel">AsynchronousServerSocketChannel</h4>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.nio.ByteBuffer</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.nio.channels.AsynchronousServerSocketChannel</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.nio.channels.AsynchronousSocketChannel</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.Future</span><span class="o">;</span>
+ 
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Server</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">try</span> <span class="o">{</span>
+			<span class="n">Server</span> <span class="n">server</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Server</span><span class="o">();</span>
+		<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+ 
+	<span class="kd">public</span> <span class="nf">Server</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+		<span class="n">AsynchronousServerSocketChannel</span> <span class="n">serverSocketChannel</span> <span class="o">=</span> <span class="n">AsynchronousServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+		<span class="n">InetSocketAddress</span> <span class="n">inetSocketAddress</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="s">"localhost"</span><span class="o">,</span> <span class="mi">80</span><span class="o">);</span>
+		<span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">inetSocketAddress</span><span class="o">);</span>
+ 
+		<span class="n">Future</span><span class="o">&lt;</span><span class="n">AsynchronousSocketChannel</span><span class="o">&gt;</span> <span class="n">accept</span><span class="o">;</span>
+ 
+		<span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">// accept()不会阻塞。</span>
+			<span class="n">accept</span> <span class="o">=</span> <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
+ 
+			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"================="</span><span class="o">);</span>
+			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器等待连接..."</span><span class="o">);</span>
+			<span class="n">AsynchronousSocketChannel</span> <span class="n">socketChannel</span> <span class="o">=</span> <span class="n">accept</span><span class="o">.</span><span class="na">get</span><span class="o">();</span><span class="c1">// get()方法将阻塞。</span>
+ 
+			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器接受连接"</span><span class="o">);</span>
+			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器与"</span> <span class="o">+</span> <span class="n">socketChannel</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">()</span> <span class="o">+</span> <span class="s">"建立连接"</span><span class="o">);</span>
+ 
+			<span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span><span class="s">"demo"</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+			<span class="n">Future</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">write</span><span class="o">=</span><span class="n">socketChannel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+			
+			<span class="k">while</span><span class="o">(!</span><span class="n">write</span><span class="o">.</span><span class="na">isDone</span><span class="o">())</span> <span class="o">{</span>
+				<span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+			<span class="o">}</span>
+			
+			<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务器发送数据完毕."</span><span class="o">);</span>
+			<span class="n">socketChannel</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<h4 id="serversocketchannelselector实现多路复用io">ServerSocketChannel+Selector实现多路复用io</h4>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.Inet4Address</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.ServerSocket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.SocketAddress</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.nio.ByteBuffer</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.nio.channels.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Iterator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Set</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SelectorServer</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">LISTEN_PORT</span> <span class="o">=</span> <span class="mi">5300</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+         <span class="cm">/*
+        ServerSocketChannel
+        ServerSocket
+        SocketChannel
+        Selector
+        SelectionKey
+         */</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">ServerSocketChannel</span> <span class="n">ssc</span> <span class="o">=</span> <span class="n">buildServerSocketChannel</span><span class="o">();</span>
+ 
+            <span class="n">Selector</span> <span class="n">selector</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+            <span class="n">SelectionKey</span> <span class="n">skey</span> <span class="o">=</span> <span class="n">ssc</span><span class="o">.</span><span class="na">register</span><span class="o">(</span> <span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span> <span class="o">);</span>
+ 
+            <span class="n">ByteBuffer</span> <span class="n">echoBuffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">128</span><span class="o">);</span>
+            <span class="n">printSelectorKeys</span><span class="o">(</span><span class="n">selector</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channel 准备就绪！"</span><span class="o">);</span>
+            <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+                <span class="kt">int</span> <span class="n">num</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">select</span><span class="o">();</span><span class="c1">//获取通道内是否有选择器的关心事件</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">num</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">Set</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectedKeys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span><span class="c1">//获取通道内关心事件的集合</span>
+                <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">selectedKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+                <span class="k">while</span> <span class="o">(</span><span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+                    <span class="c1">//遍历每个key</span>
+                    <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                    <span class="n">it</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
+                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"key hashCode="</span> <span class="o">+</span> <span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">());</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isAcceptable</span><span class="o">())</span> <span class="o">{</span>
+                        <span class="c1">// 有新的socket链接进来</span>
+                        <span class="n">ServerSocketChannel</span> <span class="n">serverChanel</span> <span class="o">=</span> <span class="o">(</span><span class="n">ServerSocketChannel</span><span class="o">)</span><span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                        <span class="n">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="n">serverChanel</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
+                        <span class="n">sc</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span> <span class="kc">false</span> <span class="o">);</span>
+                        <span class="n">SelectionKey</span> <span class="n">newKey</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">register</span><span class="o">(</span> <span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span> <span class="o">);</span>
+                        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="s">"Got connection from "</span><span class="o">+</span><span class="n">sc</span> <span class="o">);</span>
+                        <span class="n">printSelectorKeys</span><span class="o">(</span><span class="n">selector</span><span class="o">);</span>
+                    <span class="o">}</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">())</span> <span class="o">{</span>
+                        <span class="c1">// 有请求进来</span>
+                        <span class="n">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="n">SocketChannel</span><span class="o">)</span><span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"address:"</span> <span class="o">+</span> <span class="n">sc</span><span class="o">.</span><span class="na">socket</span><span class="o">().</span><span class="na">getPort</span><span class="o">());</span>
+                        <span class="kt">int</span> <span class="n">bytesEchoed</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+                        <span class="k">while</span><span class="o">((</span><span class="n">bytesEchoed</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">echoBuffer</span><span class="o">))&gt;</span> <span class="mi">0</span><span class="o">){</span>
+                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"bytesEchoed:"</span><span class="o">+</span><span class="n">bytesEchoed</span><span class="o">);</span>
+                        <span class="o">}</span>
+                        <span class="n">echoBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">bytesEchoed</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"connect finish!over!"</span><span class="o">);</span>
+                            <span class="n">sc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                            <span class="n">printSelectorKeys</span><span class="o">(</span><span class="n">selector</span><span class="o">);</span>
+                            <span class="k">break</span><span class="o">;</span>
+                        <span class="o">}</span>
+                        <span class="kt">byte</span> <span class="o">[]</span> <span class="n">content</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">echoBuffer</span><span class="o">.</span><span class="na">limit</span><span class="o">()];</span>
+                        <span class="n">echoBuffer</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">content</span><span class="o">);</span>
+                        <span class="n">String</span> <span class="n">result</span><span class="o">=</span><span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">content</span><span class="o">,</span> <span class="s">"utf-8"</span><span class="o">);</span>
+                        <span class="n">doPost</span><span class="o">(</span><span class="n">result</span><span class="o">,</span><span class="n">sc</span><span class="o">);</span>
+                        <span class="n">echoBuffer</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+ 
+    <span class="o">}</span>
+ 
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">printSelectorKeys</span><span class="o">(</span><span class="n">Selector</span> <span class="n">selector</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Set</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">keys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">keys</span><span class="o">();</span>
+        <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">iterator</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">iterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"all:selectKey hashCode="</span> <span class="o">+</span> <span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">());</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+ 
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">doPost</span><span class="o">(</span><span class="n">String</span> <span class="n">result</span><span class="o">,</span> <span class="n">SocketChannel</span> <span class="n">sc</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+    <span class="o">}</span>
+ 
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">ServerSocketChannel</span> <span class="nf">buildServerSocketChannel</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="n">ServerSocketChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+        <span class="n">channel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span> <span class="kc">false</span> <span class="o">);</span><span class="c1">//使通道为非阻塞</span>
+        <span class="n">ServerSocket</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">socket</span><span class="o">();</span><span class="c1">//创建基于NIO通道的socket连接</span>
+        <span class="n">ss</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">LISTEN_PORT</span><span class="o">));</span><span class="c1">//新建socket通道的端口</span>
+        <span class="c1">//将NIO通道选绑定到择器,当然绑定后分配的主键为skey</span>
+        <span class="k">return</span> <span class="n">channel</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">register</span><span class="o">(</span><span class="n">ServerSocketChannel</span> <span class="n">ssc</span><span class="o">,</span> <span class="n">Selector</span> <span class="n">selector</span><span class="o">,</span> <span class="kt">int</span> <span class="n">ops</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ClosedChannelException</span> <span class="o">{</span>
+        <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">ssc</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">ops</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"selectKey hashCode="</span> <span class="o">+</span> <span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html">Java Concurrent</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
@@ -289,18 +663,18 @@ java 中的悲观锁就是 Synchronized,AQS 框架下的锁则是先尝试 cas �
 </ul>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KillThread</span><span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[]){</span>
-        <span class="nc">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyThread</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[]){</span>
+        <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyThread</span><span class="o">();</span>
         <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
         <span class="c1">//此处仅仅是修改状态,通常需要再run方法内部判断来决定是否终止线程</span>
         <span class="n">t</span><span class="o">.</span><span class="na">interrupt</span><span class="o">();</span>
     <span class="o">}</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="nc">Thread</span><span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyThread</span> <span class="kd">extends</span> <span class="n">Thread</span><span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(){</span>
             <span class="k">while</span> <span class="o">(!</span><span class="n">isInterrupted</span><span class="o">())</span> <span class="o">{</span>  <span class="c1">//非阻塞过程中通过判断中断标志来退出</span>
                 <span class="k">try</span> <span class="o">{</span>
-                    <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
-                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>  <span class="c1">// 阻塞过程捕获中断异常来退出</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                     <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
                     <span class="k">break</span><span class="o">;</span>  <span class="c1">// 捕获到异常之后，执行 break 跳出循环</span>
                 <span class="o">}</span>
@@ -908,10 +1282,10 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
 <span class="k">describe</span> <span class="n">tables</span><span class="p">;</span> <span class="c1">-- 查看已有表</span>
 <span class="k">describe</span> <span class="k">table</span> <span class="k">table_name</span> <span class="c1">-- 查看表结构</span>
 <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="p">(</span>
-  <span class="n">user_id</span> <span class="nb">text</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-  <span class="n">first_name</span> <span class="nb">text</span><span class="p">,</span>
-  <span class="n">last_name</span> <span class="nb">text</span><span class="p">,</span>
-  <span class="n">emails</span> <span class="k">set</span><span class="o">&lt;</span><span class="nb">text</span><span class="o">&gt;</span> <span class="c1">-- 集合 Cassandra特有处理方式</span>
+  <span class="n">user_id</span> <span class="n">text</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">first_name</span> <span class="n">text</span><span class="p">,</span>
+  <span class="n">last_name</span> <span class="n">text</span><span class="p">,</span>
+  <span class="n">emails</span> <span class="k">set</span><span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span> <span class="c1">-- 集合 Cassandra特有处理方式</span>
 <span class="p">);</span>
 <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">users</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">emails</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">'frodo'</span><span class="p">,</span> <span class="s1">'Frodo'</span><span class="p">,</span> <span class="s1">'Baggins'</span><span class="p">,</span> <span class="err">{</span><span class="s1">'f@baggins.com'</span><span class="p">,</span> <span class="s1">'baggins@gmail.com'</span><span class="err">}</span><span class="p">);</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">emails</span> <span class="o">=</span> <span class="n">emails</span> <span class="o">+</span> <span class="err">{</span><span class="s1">'fb@friendsofmordor.org'</span><span class="err">}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
@@ -922,12 +1296,12 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">emails</span> <span class="o">=</span> <span class="err">{}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
 <span class="k">DELETE</span> <span class="n">emails</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
 
-<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">top_places</span> <span class="n">list</span><span class="o">&lt;</span><span class="nb">text</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">-- 向users表添加一个list列</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">top_places</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">-- 向users表添加一个list列</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">'rivendell'</span><span class="p">,</span> <span class="s1">'rohan'</span> <span class="p">]</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 使用UPDATA命令向list插入值</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">'the shire'</span> <span class="p">]</span> <span class="o">+</span> <span class="n">top_places</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 在list前面插入值 </span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">top_places</span> <span class="o">=</span> <span class="n">top_places</span> <span class="o">+</span> <span class="p">[</span> <span class="s1">'mordor'</span> <span class="p">]</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span> <span class="c1">-- 在list后面插入值 </span>
 
-<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">todo</span> <span class="k">map</span><span class="o">&lt;</span><span class="nb">timestamp</span><span class="p">,</span> <span class="nb">text</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="k">ADD</span> <span class="n">todo</span> <span class="k">map</span><span class="o">&lt;</span><span class="k">timestamp</span><span class="p">,</span> <span class="n">text</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="k">UPDATE</span> <span class="n">users</span> <span class="k">SET</span> <span class="n">todo</span> <span class="o">=</span> <span class="err">{</span> <span class="s1">'2012-9-24'</span> <span class="p">:</span> <span class="s1">'enter mordor'</span><span class="p">,</span> <span class="s1">'2014-10-2 12:00'</span> <span class="p">:</span> <span class="s1">'throw ring into mount doom'</span> <span class="err">}</span> <span class="k">WHERE</span> <span class="n">user_id</span> <span class="o">=</span> <span class="s1">'frodo'</span><span class="p">;</span>
 
 <span class="c1">-- 使用TTL</span>
@@ -1152,204 +1526,6 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html">DB-distributed-transacion</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>从一笔金币充值去思考分布式事务，五种方案详解！
-<a href="https://mp.weixin.qq.com/s/dbQsfBdJSs5Ol70hCYCZMw">https://mp.weixin.qq.com/s/dbQsfBdJSs5Ol70hCYCZMw</a></p>
-
-<h3 id="数据库本地事务简述">数据库本地事务简述</h3>
-<ul>
-  <li>ACID原则
-    <ol>
-      <li>原子性(Atomicity)</li>
-      <li>一致性(Consistency)</li>
-      <li>隔离性(Isolation)</li>
-      <li>持久性(Durability)</li>
-    </ol>
-  </li>
-  <li>以Mysql的InnoDB为例，事务的ACID是通过InnoDB日志和锁来保证
-    <ol>
-      <li>事务的隔离性是通过数据库锁的机制实现的</li>
-      <li>持久性通过Redo Log（重做日志）来实现，在事务提交前，只要将 Redo Log 持久化即可，不需要将数据持久化。</li>
-      <li>原子性和一致性通过 Undo Log 来实现。（数据数据操作前的数据备份 Undo Log）</li>
-    </ol>
-  </li>
-  <li>本质都是通过一个本地事务资源管理器来统一协调调度</li>
-</ul>
-
-<h3 id="分布式事务">分布式事务</h3>
-
-<h4 id="分布式事务产生的原因">分布式事务产生的原因</h4>
-<ul>
-  <li>Service多节点部署（比如公司内的用户、账户等各种微服务)</li>
-  <li>Resource 多节点 (每个人的数据部署再不同节点的数据库里)</li>
-</ul>
-
-<h4 id="分布式系统之cap定理">分布式系统之CAP定理</h4>
-<ul>
-  <li>CAP 定理，又被叫作布鲁尔定理。对于设计分布式系统(不仅仅是分布式事务)的架构师来说，CAP 就是你的入门理论。</li>
-  <li>C (一致性)：对某个指定的客户端来说，读操作能返回一致的写操作。
-对于数据分布在不同节点上的数据来说，如果在某个节点更新了数据，那么在其他节点如果都能读取到这个***的数据，那么就称为强一致，如果有某个节点没有读取到，那就是分布式不一致。</li>
-  <li>A (可用性)：非故障的节点在合理的时间内返回合理的响应(不是错误和超时的响应)。可用性的两个关键一个是合理的时间，一个是合理的响应。
-合理的时间指的是请求不能被阻塞，应该在合理的时间给出返回。合理的响应指的是系统应该明确返回结果并且结果是正确的，这里的正确指的是比如应该返回 50，而不是返回 40。</li>
-  <li>
-    <p>P (分区容错性)：当出现网络分区后，系统能够继续工作。打个比方，这里集群有多台机器，有台机器网络出现了问题，但是这个集群仍然可以正常工作。</p>
-  </li>
-  <li>熟悉 CAP 的人都知道，三者不能共有，如果感兴趣可以搜索 CAP 的证明，在分布式系统中，网络无法 100% 可靠，分区其实是一个必然现象
-  如果我们选择了 CA 而放弃了 P，那么当发生分区现象时，为了保证一致性，这个时候必须拒绝请求，但是 A 又不允许，所以分布式系统理论上不可能选择 CA 架构，只能选择 CP 或者 AP 架构。
-  对于 CP 来说，放弃可用性，追求一致性和分区容错性，我们的 ZooKeeper 其实就是追求的强一致。
-  对于 AP 来说，放弃一致性(这里说的一致性是强一致性)，追求分区容错性和可用性，这是很多分布式系统设计时的选择，后面的 BASE 也是根据 AP 来扩展。
-  顺便一提，CAP 理论中是忽略网络延迟，也就是当事务提交时，从节点 A 复制到节点 B 没有延迟，但是在现实中这个是明显不可能的，所以总会有一定的时间是不一致。
-  同时 CAP 中选择两个，比如你选择了 CP，并不是叫你放弃 A。因为 P 出现的概率实在是太小了，大部分的时间你仍然需要保证 CA。
-  就算分区出现了你也要为后来的 A 做准备，比如通过一些日志的手段，是其他机器回复至可用。</li>
-</ul>
-
-<h4 id="分布式系统之base定理">分布式系统之BASE定理</h4>
-<ul>
-  <li>BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩写，是对 CAP 中 AP 的一个扩展。</li>
-  <li>基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用。</li>
-  <li>软状态：允许系统中存在中间状态，这个状态不影响系统可用性，这里指的是 CAP 中的不一致。</li>
-  <li>最终一致：最终一致是指经过一段时间后，所有节点数据都将会达到一致。</li>
-  <li>BASE 解决了 CAP 中理论没有网络延迟，在 BASE 中用软状态和最终一致，保证了延迟后的一致性。</li>
-  <li>BASE 和 ACID 是相反的，它完全不同于 ACID 的强一致性模型，而是通过牺牲强一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态</li>
-</ul>
-
-<h4 id="常用分布式事务框架">常用分布式事务框架</h4>
-<ul>
-  <li>基于XA的 2PC、3PC
-   本质相当于本地事务的加强版，强一致性，引入中间事务协调者，依赖数据库，属于数据库资源层方案</li>
-  <li>Saga
-  引入补偿机制（最终一致性）</li>
-  <li>TCC
-  Try、Commit、Cancel</li>
-  <li>本地消息表</li>
-  <li>RocketMQ(阿里开源)</li>
-  <li>Seata</li>
-</ul>
-
-<h5 id="参考资料">参考资料</h5>
-<ul>
-  <li><a href="https://developer.51cto.com/art/201808/581174.htm">分布式事务概述</a></li>
-  <li><a href="https://www.jianshu.com/p/917cb4bdaa03">由Seata看分布式事务取舍</a></li>
-  <li><a href="https://cloud.tencent.com/developer/article/1401904">常用分布式事务框架</a></li>
-  <li><a href="https://zhuanlan.zhihu.com/p/75843832">蚂蚁金服分布式事务实战</a></li>
-  <li><a href="https://www.infoq.cn/article/8bu33kuSyJ6P-wAAoELT">分布式事务选型的取舍infoq</a></li>
-  <li><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a></li>
-  <li><a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></li>
-  <li><a href="http://seata.io/zh-cn/">Seata官网</a></li>
-  <li><a href="https://www.cnblogs.com/firstdream/p/6585923.html">FLP不可能原理</a></li>
-  <li><a href="http://www.sohu.com/a/290897501_684445">分布式事务：深入理解什么是2PC、3PC及TCC协议 </a></li>
-  <li><a href="https://juejin.im/post/5dd0ff1af265da0c075d0af7">如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？</a></li>
-  <li><a href="http://www.ruanyifeng.com/blog/2018/07/cap.html">CAP定理</a></li>
-  <li><a href="https://blog.csdn.net/m0_38110132/article/details/76994165">分布式事务的解决方案CSDN</a></li>
-  <li><a href="https://www.bbsmax.com/A/obzb24Y0zE/">Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较</a></li>
-  <li><a href="https://blog.csdn.net/qq_27384769/category_7453176_1.html">分布式CSDN博客</a></li>
-  <li><a href="https://www.itcodemonkey.com/article/13548.html">基于RocketMQ的最终一致性</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html">DB Shard</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="主键避重问题">主键避重问题</h4>
-<ul>
-  <li>ID生成器
-    <ul>
-      <li>Twitter Snowflake</li>
-      <li>美团 LeftUid</li>
-      <li>百度 Uid-genarator</li>
-    </ul>
-  </li>
-  <li>散表规则
-    <ul>
-      <li>按照ID范围，要求ID自增</li>
-      <li>简单Hash(取模)</li>
-      <li>Hash一致性算法</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="分页查询问题">分页查询问题</h4>
-<ul>
-  <li>分表查，应用程序合并</li>
-</ul>
-
-<h4 id="关联查询问题">关联查询问题</h4>
-<ul>
-  <li>避免join操作，改造为多次查询，由应用程序合并</li>
-  <li>使用现成的中间件</li>
-  <li>实际业务中可能会结合Redis/Es等解决方案</li>
-</ul>
-
-<h4 id="公共表问题">公共表问题</h4>
-<ul>
-  <li>公共表多库冗余，多库同步</li>
-</ul>
-
-<h4 id="事务一致性">事务一致性</h4>
-<p><a href="http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383">分布式事务</a>
-<a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></p>
-<h5 id="jtaxa">JTA*XA</h5>
-
-<h4 id="比较常见的中间件cobartddlatlassharding-jdbcmycat">比较常见的中间件cobar、TDDL、atlas、sharding-jdbc、mycat</h4>
-<ul>
-  <li>cobar：阿里b2b团队开发和开源的，属于proxy层方案。早些年还可以用，但是最近几年都没更新了，基本没啥人用，差不多算是被抛弃的状态吧。而且不支持读写分离、存储过程、跨库join和分页等操作。</li>
-  <li>TDDL：淘宝团队开发的，属于client层方案。不支持join、多表查询等语法，就是基本的crud语法是ok，但是支持读写分离。目前使用的也不多，因为还依赖淘宝的diamond配置管理系统。</li>
-  <li>atlas：360开源的，属于proxy层方案，以前是有一些公司在用的，但是确实有一个很大的问题就是社区最新的维护都在5年前了。所以，现在用的公司基本也很少了。</li>
-  <li>sharding-jdbc：当当开源的，属于client层方案。确实之前用的还比较多一些，因为SQL语法支持也比较多，没有太多限制，而且目前推出到了2.0版本，支持分库分表、读写分离、分布式id生成、柔性事务（最大努力送达型事务、TCC事务）。而且确实之前使用的公司会比较多一些（这个在官网有登记使用的公司，可以看到从2017年一直到现在，是不少公司在用的），目前社区也还一直在开发和维护，还算是比较活跃，个人认为算是一个现在也可以选择的方案。</li>
-  <li>
-    <p>mycat：基于cobar改造的，属于proxy层方案，支持的功能非常完善，而且目前应该是非常火的而且不断流行的数据库中间件，社区很活跃，也有一些公司开始在用了。但是确实相比于sharding jdbc来说，年轻一些，经历的锤炼少一些。</p>
-
-    <p>所以综上所述，现在其实建议考量的，就是sharding-jdbc和mycat，这两个都可以去考虑使用。
-  sharding-jdbc这种client层方案的优点在于不用部署，运维成本低，不需要代理层的二次转发请求，性能很高，但是如果遇到升级啥的需要各个系统都重新升级版本再发布，各个系统都需要耦合sharding-jdbc的依赖；
-  mycat这种proxy层方案的缺点在于需要部署，自己及运维一套中间件，运维成本高，但是好处在于对于各个项目是透明的，如果遇到升级之类的都是自己中间件那里搞就行了。
-  通常来说，这两个方案其实都可以选用，但是我个人建议中小型公司选用sharding-jdbc，client层方案轻便，而且维护成本低，不需要额外增派人手，而且中小型公司系统复杂度会低一些，项目也没那么多；
-  但是中大型公司最好还是选用mycat这类proxy层方案，因为可能大公司系统和项目非常多，团队很大，人员充足，那么最好是专门弄个人来研究和维护mycat，然后大量项目直接透明使用即可。</p>
-  </li>
-</ul>
-
-<h4 id="主从同步">主从同步</h4>
-<ul>
-  <li>半同步复制，semi-sync复制，指的就是主库写入binlog日志之后，就会将强制此时立即将数据同步到从库，从库将日志写入自己本地的relay log之后，接着会返回一个ack给主库，主库接收到至少一个从库的ack之后才会认为写操作完成了。</li>
-  <li>并行复制，指的是从库开启多个线程，并行读取relay log中不同库的日志，然后并行重放不同库的日志，这是库级别的并行。</li>
-</ul>
-
-<h4 id="其他">其他</h4>
-<p><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651960212&amp;idx=1&amp;sn=ab4c52ab0309f7380f7e0207fa357128&amp;pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS">58用户系统分库分表实战</a></p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -1585,7 +1761,7 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
       
       
       <a  href="/tag/用户">
-      <span class="label label-default">用户 ( 1 )</span>
+      <span class="label label-default">用户 ( 3 )</span>
       </a><br />
 
       
