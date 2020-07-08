@@ -54,6 +54,350 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html">2PC 3PC</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="先来案例">先来案例</h4>
+<ul>
+  <li>移动流量充值中心案例 <a href="https://mp.weixin.qq.com/s/MbsPqEfqvMahMk51LNC6_g">https://mp.weixin.qq.com/s/MbsPqEfqvMahMk51LNC6_g</a></li>
+  <li>龙果支付系统（roncoo-pay）是国内首款开源的互联网支付系统 <a href="https://gitee.com/roncoocom/roncoo-pay">https://gitee.com/roncoocom/roncoo-pay</a></li>
+  <li>Seata实战-分布式事务简介及demo <a href="https://blog.csdn.net/hosaos/article/details/89136666">https://blog.csdn.net/hosaos/article/details/89136666</a></li>
+  <li>Seata解决分布式事务案例 <a href="https://blog.csdn.net/Delicious_Life/article/details/107005466">https://blog.csdn.net/Delicious_Life/article/details/107005466</a></li>
+  <li>分布式事务系列 <a href="https://my.oschina.net/pingpangkuangmo/blog/413518?spm=a2c4e.10696291.0.0.73f319a4HnPsoM">https://my.oschina.net/pingpangkuangmo/blog/413518?spm=a2c4e.10696291.0.0.73f319a4HnPsoM</a></li>
+  <li>Spring Boot 集成 Seata 解决分布式事务问题 <a href="https://springboot.io/t/topic/1658">https://springboot.io/t/topic/1658</a></li>
+  <li>分布式事务终极解决方案汇总 <a href="https://mp.weixin.qq.com/s/L63t_ZwQapaEAUQ68kXx1A">https://mp.weixin.qq.com/s/L63t_ZwQapaEAUQ68kXx1A</a></li>
+  <li>分布式 实战（干货） <a href="https://blog.csdn.net/qq_27384769/article/details/79439782">https://blog.csdn.net/qq_27384769/article/details/79439782</a></li>
+</ul>
+
+<h4 id="分布式事务精华">分布式事务精华</h4>
+<ol>
+  <li>X/Open DTP模型体系 Distribution Transaction Process
+    <ul>
+      <li>XA模式 eXtend Architecture</li>
+    </ul>
+  </li>
+  <li>Seata体系 Simple Extensible Autonomous Transaction Architecture
+    <ul>
+      <li>AT模式，AT模式基于本地事务的特性，通过拦截并解析 SQL 的方式，记录自定义的回滚日志，从而打破 XA 协议阻塞性的制约，在一致性、性能、易用性三个方面取得一定的平衡：在达到确定一致性（非最终一致）的前提下，即保障一定的性能，又能完全不侵入业务。在很多应用场景下，Seata的AT模式都能很好地发挥作用，把应用的分布式事务支持成本降到极低的水平。</li>
+      <li>TCC模式，先扣下资源，又业务方编写commit或cancel代码，对业务侵入性强，要求幂等。由于是预扣机制，因此需要有补偿方案。长事务解决方案。</li>
+      <li>Saga模式，长事务解决方案，有补偿机制，其理论基础在于，其假设所有事件按照顺序推进，总能达到系统的最终一致性，因此 Saga需要服务分别定义提交接口以及补偿接口，当某个事务分支失败时，调用其它的分支的补偿接口来进行回滚。
+        <ul>
+          <li>Saga模式所具备的优势有：一阶段提交本地数据库事务，无锁，高性能；参与者可以采用事务驱动异步执行，高吞吐；补偿服务即正向服务的“反向”，易于理解、易于实现；不过，Saga 模式由于一阶段已经提交本地数据库事务，且没有进行“预留”动作，所以不能保证隔离性。</li>
+          <li>由于Saga不保证隔离性，所以我们在业务设计的时候需要做到“宁可长款，不可短款”的原则，长款是指在出现差错的时候站在我方的角度钱多了的情况，钱少了则是短款，因为如果长款可以给客户退款，而短款则可能钱追不回来了，也就是说在业务设计的时候，一定是先扣客户帐再入帐，如果因为隔离性问题造成覆盖更新，也不会出现钱少了的情况。</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>本地消息表，eBay方案，事务发起方，以消息表的方式记录后续业务方处理方的处理状态，然后发送消息出去，消费者执行完毕回传结果，如果长时间没有结果发起方就轮训本地消息表。超时转人工。</li>
+  <li>消息事务，采用本地消息表方案和采用RocketMQ事务消息方案的对比，其实，我们不难发现RocketMQ的这种事务方案就是对本地消息表的封装，其MQ内部实现了本地消息表的功能，其他方面的协议基本与本地消息表一致。</li>
+  <li>最大努力通知型（Best-effort Delivery），支付宝、微信方案，用于跨系统的调用。多次推送+查询接口。</li>
+  <li>各种区别
+    <ul>
+      <li>TCC模型中的主业务服务相当于DTP模型中AP，从业务服务相当于DTP模型中的RM，两者也都有一个事务管理器；TCC模型中从业务服务器所提供的Try/Commit/Cancel接口相当于DTP模型中RM提供的Prepare/Commit/Rollback接口。</li>
+      <li>XA 方案的 RM 是放在数据库层的，它依赖了数据库的 XA 驱动程序。而上图（右），Seata 的 RM 实际上是已中间件的形式放在应用层，不用依赖数据库对协议的支持，完全剥离了分布式事务方案对数据库在协议支持上的要求。</li>
+      <li>TCC分布式事务模型相对于 XA 等传统模型，其特征在于它不依赖资源管理器（RM）对分布式事务的支持，而是通过对业务逻辑的分解来实现分布式事务。</li>
+      <li>XA两阶段提交是资源层面的，而TCC实际上把资源层面二阶段提交上提到了业务层面来实现，有效了的避免了XA两阶段提交占用资源锁时间过长导致的性能低下问题。TCC也没有AT模式中的全局行锁，所以性能也会比AT模式高很多。不过，TCC模式对业务代码有很大的侵入性，主业务服务和从业务服务都需要进行改造，从业务方改造成本更高。</li>
+      <li>Saga（易用、高性能）；AT（易用、隔离性）；TCC（性能、隔离性）</li>
+      <li>基于本地消息表的分布式事务方案就介绍到这里了，本地消息表的方案的优点是建设成本比较低，其虽然实现了可靠消息的传递确保了分布式事务的最终一致性，其实它也有一些缺陷：
+本地消息表与业务耦合在一起，难以做成通用性，不可独立伸缩。本地消息表是基于数据库来做的，而数据库是要读写磁盘IO的，因此在高并发下是有性能瓶颈的。</li>
+      <li>MQ在本地消息表或者消息事务方案中起到了协调者的作用，Transaction Coordinator（TC）：事务协调器</li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="mysql实现事务acid特性的方式总结如下">MySQL实现事务ACID特性的方式总结如下：</h4>
+<ul>
+  <li>原子性：使用 undo log来实现，如果事务执行过程中出错或者用户执行了rollback，系统通过undo log日志返回事务开始的状态。</li>
+  <li>持久性：使用 redo log来实现，只要redo log日志持久化了，当系统崩溃，即可通过redo log把数据恢复。</li>
+  <li>隔离性：通过锁以及MVCC来实现。</li>
+  <li>一致性：通过回滚、恢复以及并发情况下的隔离性，从而实现一致性。</li>
+</ul>
+
+<h4 id="在分布式服务中经常出现直接或间接调用数据库此时的事务保证如何进行">在分布式服务中，经常出现直接或间接调用数据库，此时的事务保证如何进行？</h4>
+<ul>
+  <li>解决此问题，唯一的方法就是引入”中间人”事务管理器（Transaction Manager，简称 TM，也被称之为“协调者”）</li>
+  <li>无论哪种方案，都需要制定”协议”，由各个数据库配合实现（资源管理器 Resource Manager，简称 RM，也被称之为“参与者”）</li>
+  <li>无论是 2PC 还是 3PC 都不能保证分布式系统中的数据 100% 一致，只能尽可能的做到</li>
+</ul>
+
+<h4 id="2pc3pc">2PC、3PC</h4>
+<ul>
+  <li>二阶段提交（Two-phase Commit，简称2PC）
+    <ul>
+      <li>步骤：Prepare（实际上是3PC的PreCommit）、Commit（DoCommit）</li>
+    </ul>
+  </li>
+  <li>三阶段提交（Three-phase Commit，简称3PC）
+    <ul>
+      <li>步骤：CanCommit(新增机制，尝试获取锁)、PreCommit、DoCommit</li>
+    </ul>
+  </li>
+  <li>区别
+    <ol>
+      <li>超时机制
+        <ul>
+          <li>2PC由于RM没有超时机制会产生各种阻塞问题，导致即使失败了RM的事务也不能回滚</li>
+          <li>3PC引入RM超时机制，在第二阶段PreCommit超时回滚，第三阶段DoCommit超时提交</li>
+        </ul>
+      </li>
+      <li>相较于2PC而言，3PC多设置了一个缓冲阶段尽可能保证了在最后提交阶段之前各参与节点的状态是一致的。</li>
+      <li>由于多个参与者最终Commit提交发生的意外(网络或者协调者故障)，还是会产生不一致，无法彻底解决</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="常用分布式事务框架">常用分布式事务框架</h4>
+<ul>
+  <li>X/Open DTP(Distributed Transaction Process)模型与XA(eXtended Architecture)
+    <ul>
+      <li>DTP模型里面定义了XA接口，TM 和 RM 通过XA接口进行双向通信（这也是XA的主要作用， 除此之外，XA还对两阶段提交协议进行了部分优化），例如：TM通知RM提交事务或者回滚事务，RM把提交结果通知给TM。XA 的全称是eXtended Architecture，它是一个分布式事务协议，它通过二阶段提交协议保证强一致性。</li>
+      <li>基于XA协议实现的分布式事务是强一致性的分布式事务，典型应用场景如JAVA中有关分布式事务的规范如JTA（Java Transaction API）和JTS（Java Transaction Service）中就涉及到了XA。</li>
+    </ul>
+  </li>
+  <li>Seata（Simple Extensible Autonomous Transaction Architecture，一站式分布式事务解决方案）是2019年1月份蚂蚁金服和阿里巴巴共同开源的分布式事务解决方案。 Seata 会有 4 种分布式事务解决方案，分别是 AT 模式、TCC(Try、Commit、Cancel) 模式、Saga 模式和 XA 模式。
+    <ul>
+      <li>AT（Automatic Transaction）模式是基于XA事务演进而来，核心是对业务无侵入，是一种改进后的两阶段提交，需要数据库支持。
+解析SQL，提取元数据，保存before image，执行SQL，保存after image，生成行锁。需要回滚就比对数据版本号，一直就自动回滚，不一致人工处理。</li>
+      <li>TCC(Try、Commit、Cancel) 模式
+        <ul>
+          <li>锁定，提交/回滚。业务实现回滚代码也就是cancel回调实现。</li>
+          <li>XA两阶段提交是资源层面的，而TCC实际上把资源层面二阶段提交上提到了业务层面来实现，有效了的避免了XA两阶段提交占用资源锁时间过长导致的性能低下问题。TCC也没有AT模式中的全局行锁，所以性能也会比AT模式高很多。不过，TCC模式对业务代码有很大的侵入性，主业务服务和从业务服务都需要进行改造，从业务方改造成本更高。</li>
+        </ul>
+      </li>
+      <li>Saga 算法（https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf）于 1987 年提出，是一种异步的分布式事务解决方案。其理论基础在于，其假设所有事件按照顺序推进，总能达到系统的最终一致性，因此 Saga需要服务分别定义提交接口以及补偿接口，当某个事务分支失败时，调用其它的分支的补偿接口来进行回滚。
+在Saga模式下，分布式事务内有多个参与者，每一个参与者都是一个冲正补偿服务，需要用户根据业务场景实现其正向操作和逆向回滚操作。</li>
+      <li>XA 模式</li>
+      <li>参考 <a href="https://mp.weixin.qq.com/s/67NvEVljnU-0-6rb7MWpGw">https://mp.weixin.qq.com/s/67NvEVljnU-0-6rb7MWpGw</a></li>
+      <li>Seata实战入门 <a href="https://mp.weixin.qq.com/s/-iEAfrhuObMd9W5SpHXDtg">https://mp.weixin.qq.com/s/-iEAfrhuObMd9W5SpHXDtg</a></li>
+      <li>官网文档 <a href="https://seata.io/zh-cn/docs/overview/what-is-seata.html">https://seata.io/zh-cn/docs/overview/what-is-seata.html</a></li>
+    </ul>
+  </li>
+  <li>本地消息表</li>
+  <li>消息事务 RocketMQ(阿里开源)</li>
+  <li>最大努力通知型（Best-effort Delivery）</li>
+</ul>
+
+<h4 id="tcc异常控制">TCC异常控制</h4>
+<ul>
+  <li>在有了一套完备的 TCC 接口之后，是不是就真的高枕无忧了呢？答案是否定的。在微服务架构下，很有可能出现网络超时、重发，机器宕机等一系列的异常情况。一旦遇到这些 情况，就会导致我们的分布式事务执行过程出现异常，最常见的主要是空回滚、幂等、悬挂。因此，在TCC接口设计中还需要处理好这三个问题。
+Cancel接口设计时需要允许空回滚。在Try接口因为丢包时没有收到，事务管理器会触发回滚，这时会触发Cancel接口，这时Cancel执行时发现没有对应的事务 XID或主键时，需要返回回滚成功。让事务服务管理器认为已回滚，否则会不断重试，而Cancel又没有对应的业务数据可以进行回滚。</li>
+  <li>幂等性的意思是对同一个系统使用同样的条件，一次请求和重复的多次请求对系统资源的影响是一致的。因为网络抖动或拥堵可能会超时，事务管理器会对资源进行重试操作，所以很可能一个业务操作会被重复调用，为了不因为重复调用而多次占用资源，需要对服务设计时进行幂等控制，通常我们可以用事务XID或业务主键判重来控制。</li>
+  <li>悬挂的意思是Cancel比Try接口先执行，出现的原因是Try由于网络拥堵而超时，事务管理器生成回滚，触发Cancel接口，而最终又收到了Try接口调用，但是Cancel比Try先到。按照前面允许空回滚的逻辑，回滚会返回成功，事务管理器认为事务已回滚成功，则此时的Try接口不应该执行，否则会产生数据不一致，所以我们在Cancel空回滚返回成功之前先记录该条事务 XID或业务主键，标识这条记录已经回滚过，Try接口先检查这条事务XID或业务主键如果已经标记为回滚成功过，则不执行Try的业务操作。</li>
+</ul>
+
+<h4 id="分布式事务的取舍">分布式事务的取舍</h4>
+<ul>
+  <li>严格的ACID事务对隔离性的要求很高，在事务执行中必须将所有的资源锁定，对于长事务来说，整个事务期间对数据的独占，将严重影响系统并发性能。因此，在高并发场景中，对ACID的部分特性进行放松从而提高性能，这便产生了BASE柔性事务。柔性事务的理念则是通过业务逻辑将互斥锁操作从资源层面上移至业务层面。通过放宽对强一致性要求，来换取系统吞吐量的提升。另外提供自动的异常恢复机制，可以在发生异常后也能确保事务的最终一致。</li>
+  <li>柔性事务需要应用层进行参与，因此这类分布式事务框架一个首要的功能就是怎么最大程度降低业务改造成本，然后就是尽可能提高性能（响应时间、吞吐），最好是保证隔离性。</li>
+  <li>当然如果我们要自己设计一个分布式事务框架，还需要考虑很多其它特性，在明确目标场景偏好后进行权衡取舍，这些特性包括但不限于以下：
+    <ul>
+      <li>业务侵入性（基于注解、XML，补偿逻辑）；</li>
+      <li>隔离性（写隔离/读隔离/读未提交，业务隔离/技术隔离）；</li>
+      <li>TM/TC部署形态（单独部署、与应用部署一起）；</li>
+      <li>错误恢复（自动恢复、手动恢复）；</li>
+      <li>性能（回滚的概率、付出的代价,响应时间、吞吐）；</li>
+      <li>高可用（注册中心、数据库）；</li>
+      <li>持久化（数据库、文件、多副本一致算法）；</li>
+      <li>同步/异步（2PC执行方式）；</li>
+      <li>日志清理(自动、手动)；</li>
+      <li>……</li>
+    </ul>
+  </li>
+  <li>分布式事务一直是业界难题，难在于CAP定理，在于分布式系统8大错误假设 ，在于FLP不可能原理 ，在于我们习惯于单机事务ACID做对比。无论是数据库领域XA，还是微服务下AT、TCC、Saga、本地消息表、事务消息、最大努力通知等方案，都没有完美解决分布式事务问题，它们不过是各自在性能、一致性、可用性等方面做取舍，寻求某些场景偏好下的权衡。</li>
+</ul>
+
+<h4 id="flp-impossibilityflp不可能性-fischer-lynch-and-patterson">FLP Impossibility（FLP不可能性 Fischer, Lynch and Patterson）</h4>
+<p>在异步通信场景，即使只有一个进程失败，也没有任何算法能保证非失败进程达到一致性！
+<a href="https://www.cnblogs.com/firstdream/p/6585923.html">https://www.cnblogs.com/firstdream/p/6585923.html</a></p>
+
+<h4 id="分布式系统的8个谬误">分布式系统的8个谬误</h4>
+<p><a href="http://www.360doc.com/content/18/0715/15/11935121_770570455.shtml">http://www.360doc.com/content/18/0715/15/11935121_770570455.shtml</a></p>
+<ul>
+  <li>网络可靠</li>
+  <li>延迟为零。</li>
+  <li>带宽是无限的。</li>
+  <li>网络是安全的。</li>
+  <li>拓扑不会改变。</li>
+  <li>“无所不能”的管理员。</li>
+  <li>传输成本为零。</li>
+  <li>网络是同构的。</li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>2PC和3PC原理 <a href="https://zhuanlan.zhihu.com/p/91263461">https://zhuanlan.zhihu.com/p/91263461</a></li>
+  <li>分布式事务科普 上<a href="https://mp.weixin.qq.com/s/ek3ycMJ1qbMXtMRAvTQDZg">https://mp.weixin.qq.com/s/ek3ycMJ1qbMXtMRAvTQDZg</a></li>
+  <li>分布式事务科普 下 ☆☆☆<a href="https://mp.weixin.qq.com/s/As8QpwpJvwAViZ2otiZnPg">https://mp.weixin.qq.com/s/As8QpwpJvwAViZ2otiZnPg</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/2PC-3PC.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html"> Jvm内存模型、垃圾回收机制与调优 </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="垃圾回收器组合-7种">垃圾回收器组合 7种</h4>
+<ul>
+  <li>Parallel Old &amp; Parallel Scavenge New 高吞吐量 （1种）</li>
+  <li>G1 （1种）</li>
+  <li>Serial Old （5种）
+    <ul>
+      <li>
+        <table>
+          <tbody>
+            <tr>
+              <td>&amp; CMS Old &amp; (Serial</td>
+              <td> </td>
+              <td>ParNew 2种)</td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+      <li>&amp; Serial</li>
+      <li>&amp; ParNew</li>
+      <li>&amp; Parallel Scavenge New</li>
+    </ul>
+  </li>
+  <li>CMS短停顿 与 Scavenge 高吞吐不可一组</li>
+</ul>
+
+<h4 id="垃圾回收器">垃圾回收器</h4>
+<ul>
+  <li>Serial收集器（复制算法): 新生代单线程收集器，标记和清理都是单线程，优点是简单高效；</li>
+  <li>ParNew收集器 (复制算法): 新生代收并行集器，实际上是Serial收集器的多线程版本，在多核CPU环境下有着比Serial更好的表现；</li>
+  <li>Parallel Scavenge收集器 (复制算法): 新生代并行收集器，追求高吞吐量，高效利用 CPU。吞吐量 = 用户线程时间/(用户线程时间+GC线程时间)，高吞吐量可以高效率的利用CPU时间，尽快完成程序的运算任务，适合后台应用等对交互相应要求不高的场景；</li>
+  <li>Serial Old收集器 (标记-整理算法): 老年代单线程收集器，Serial收集器的老年代版本；</li>
+  <li>Parallel Old收集器 (标记-整理算法)： 老年代并行收集器，吞吐量优先，Parallel Scavenge收集器的老年代版本；</li>
+  <li>CMS(Concurrent Mark Sweep)收集器（标记-清除算法）： 老年代并行收集器，以获取最短回收停顿时间为目标的收集器，具有高并发、低停顿的特点，追求最短GC回收停顿时间。</li>
+  <li>G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。</li>
+</ul>
+
+<h4 id="jvm">JVM</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-Xms2g</span>：初始化推大小为 2g；
+<span class="nt">-Xmx2g</span>：堆最大内存为 2g；
+<span class="nt">-XX</span>:NewRatio<span class="o">=</span>4：设置年轻的和老年代的内存比例为 1:4；
+<span class="nt">-XX</span>:SurvivorRatio<span class="o">=</span>8：设置新生代 Eden 和 Survivor 比例为 8:2；
+–XX:+UseParNewGC：指定使用 ParNew + Serial Old 垃圾回收器组合；
+<span class="nt">-XX</span>:+UseParallelOldGC：指定使用 ParNew + ParNew Old 垃圾回收器组合；
+<span class="nt">-XX</span>:+UseConcMarkSweepGC：指定使用 CMS + Serial Old 垃圾回收器组合；
+<span class="nt">-XX</span>:+PrintGC：开启打印 gc 信息；
+<span class="nt">-XX</span>:+PrintGCDetails：打印 gc 详细信息。
+</code></pre></div></div>
+
+<h4 id="分代垃圾回收器是怎么工作的">分代垃圾回收器是怎么工作的？</h4>
+<ul>
+  <li>分代回收器有两个分区：老生代和新生代，新生代默认的空间占比总空间的 1/3，老生代的默认占比是 2/3。</li>
+  <li>新生代使用的是复制算法，新生代里有 3 个分区：Eden、To Survivor、From Survivor，它们的默认占比是  8:1:1，它的执行流程如下：</li>
+  <li>把 Eden + From Survivor 存活的对象放入 To Survivor 区；
+清空 Eden 和 From Survivor 分区；
+From Survivor 和 To Survivor 分区交换，From Survivor 变 To Survivor，To Survivor 变 From Survivor。
+每次在 From Survivor 到 To Survivor 移动时都存活的对象，年龄就 +1，当年龄到达 15（默认配置是 15）时，升级为老生代。大对象也会直接进入老生代。</li>
+  <li>老生代当空间占用到达某个值之后就会触发全局垃圾收回，一般使用标记整理的执行算法。以上这些循环往复就构成了整个分代垃圾回收的整体执行流程。</li>
+</ul>
+
+<h4 id="gc的收集算法实战中是集中算法组合使用">GC的收集算法（实战中是集中算法组合使用）</h4>
+<ul>
+  <li>标记-复制：复制到新区域，回收老区域
+  Serial New、Parallel New、Parallel Scavenge New、G1</li>
+  <li>标记-清除
+  CMS (产生碎片，默认选择Serial配合最后整理)</li>
+  <li>标记-整理：移动到一侧，找边界然后清理边界外的所有空间
+  Serial Old、Parallel Old、G1</li>
+</ul>
+
+<h4 id="分代为了更高效的区别回收g1的分区region也是为了发挥多核并发优势">分代（为了更高效的区别回收，G1的分区region也是为了发挥多核并发优势）</h4>
+<ul>
+  <li>Young Generation
+  Eden 伊甸园
+  Survivor 幸存者（from/to，S0/S1)</li>
+  <li>Tenured/Old Generation</li>
+  <li>Permanent Generation (Java8之前）</li>
+  <li>Metaspace (Java8之后）</li>
+</ul>
+
+<h5 id="参考">参考</h5>
+<p>JVM的4种垃圾回收算法、垃圾回收机制与总结 <a href="https://zhuanlan.zhihu.com/p/54851319">https://zhuanlan.zhihu.com/p/54851319</a></p>
+
+<h4 id="gc收集器">GC收集器</h4>
+<ul>
+  <li>Serial（串行）收集器
+  新生代、老生代</li>
+  <li>Parallel（并行）收集器
+  新生代、老生代</li>
+  <li>Parallel Scavenge New （GC自适应的调节策略GC Ergonomics）
+  新生代、通过调整相关参数，比如新生代的大小，达到以合适的时间和耗时，达到高吞吐量
+  吞吐量 = 运行用户代码时间 /（运行用户代码时间 + 垃圾收集时间）</li>
+  <li>CMS（Concurrent Mark Sweep 并发）收集器 （并发低停顿收集器 Concurrent Low Pause Collector）
+  老生代</li>
+  <li>G1（并发）收集器（优先回收价值最大的Region（这也就是Garbage-First名称的来由）
+  新生代、老生代</li>
+  <li>JDK11的ZGC <a href="https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw">https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw</a></li>
+</ul>
+
+<h5 id="参考-1">参考</h5>
+<ul>
+  <li>7种JVM垃圾收集器特点，优劣势、及使用场景 <a href="https://zhuanlan.zhihu.com/p/58896728">https://zhuanlan.zhihu.com/p/58896728</a></li>
+  <li>深入理解JVM，7种垃圾收集器 <a href="http://blog.itpub.net/69917606/viewspace-2656882">http://blog.itpub.net/69917606/viewspace-2656882</a></li>
+  <li>深入详解JVM内存模型与JVM参数详细配置 <a href="https://zhuanlan.zhihu.com/p/58896619">https://zhuanlan.zhihu.com/p/58896619</a>
+    <ul>
+      <li>堆内存（Heap）此内存区域的唯一目的就是存放对象实例（new的对象），几乎所有的对象实例都在这里分配内存。</li>
+      <li>方法区（Method Area）方法区也称”永久代“，它用于存储虚拟机加载的类信息、常量、静态变量、是各个线程共享的内存区域。</li>
+      <li>虚拟机栈(JVM Stack) Java虚拟机栈是线程私有，生命周期与线程相同。创建线程的时候就会创建一个java虚拟机栈。
+虚拟机执行java程序的时候，每个方法都会创建一个栈帧，栈帧存放在java虚拟机栈中，通过压栈出栈的方式进行方法调用。
+栈帧又分为一下几个区域：局部变量表、操作数栈、动态连接、方法出口等。</li>
+      <li>本地方法栈(Native Stack) 本地方法栈（Native Method Stacks）与虚拟机栈所发挥的作用是非常相似的，其区别不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的Native方法服务。</li>
+      <li>程序计数器（PC Register）
+程序计数器就是记录当前线程执行程序的位置，改变计数器的值来确定执行的下一条指令，比如循环、分支、方法跳转、异常处理，线程恢复都是依赖程序计数器来完成。
+Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间的方式实现的。为了线程切换能恢复到正确的位置，每条线程都需要一个独立的程序计数器，所以它是线程私有的。</li>
+      <li>直接内存
+直接内存并不是虚拟机内存的一部分，也不是Java虚拟机规范中定义的内存区域。jdk1.4中新加入的NIO，引入了通道与缓冲区的IO方式，它可以调用Native方法直接分配堆外内存，这个堆外内存就是本机内存，不会影响到堆内存的大小。</li>
+    </ul>
+  </li>
+  <li>JVM性能调优的6大步骤，及关键调优参数详解 <a href="https://zhuanlan.zhihu.com/p/58897189">https://zhuanlan.zhihu.com/p/58897189</a></li>
+  <li>深入剖析JVM：G1收集器+回收流程+推荐用例 <a href="https://zhuanlan.zhihu.com/p/59861022">https://zhuanlan.zhihu.com/p/59861022</a></li>
+</ul>
+
+<h4 id="java-参数">java 参数</h4>
+<ul>
+  <li>查看JVM使用的默认的垃圾收集器 <a href="https://www.cnblogs.com/grey-wolf/p/9217497.html">https://www.cnblogs.com/grey-wolf/p/9217497.html</a></li>
+  <li>JVM 参数 <a href="https://blog.csdn.net/liyongbing1122/article/details/88716400">https://blog.csdn.net/liyongbing1122/article/details/88716400</a></li>
+</ul>
+
+<p>逃逸分析</p>
+<ul>
+  <li><a href="https://blog.csdn.net/w372426096/article/details/80333657">https://blog.csdn.net/w372426096/article/details/80333657</a></li>
+  <li><a href="https://blog.csdn.net/hollis_chuang/article/details/80922794">https://blog.csdn.net/hollis_chuang/article/details/80922794</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Linux-cmd.html"> Linux  Cmd </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
@@ -881,46 +1225,6 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/05/29/youxiudemianyang.html">优秀的绵羊</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2019/05/29/youxiudemianyang.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>读书笔记</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="优秀的绵羊">优秀的绵羊</h3>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E9%9A%8F%E8%AE%B0/2019/05/29/youxiudemianyang.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html">商业</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html#disqus_thread"></a></span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="商业">商业</h3>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -982,6 +1286,10 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       <a href="/page13" class="button page-button">13</a>
       
       
+      
+      <a href="/page14" class="button page-button">14</a>
+      
+      
 
       
       <a href="/page11" class="button page-button">&raquo;</a>
@@ -1026,7 +1334,7 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       
       <a  href="/tag/网络">
-      <span class="label label-default">网络 ( 7 )</span>
+      <span class="label label-default">网络 ( 8 )</span>
       </a><br />
 
       
@@ -1174,6 +1482,13 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       <a  href="/tag/方法论">
       <span class="label label-default">方法论 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/java">
+      <span class="label label-default">java ( 2 )</span>
       </a><br />
 
       

@@ -54,6 +54,413 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html">HTTP-HTTPS</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 29, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="linux版本">Linux版本</h4>
+<ul>
+  <li>0.00  1991.2-4 两个进程分别显示AAA BBB</li>
+  <li>0.01  1991.9 第一个正式向外公布的Linux内核版本</li>
+  <li>0.02  1991.10.5 Linus Torvalds将当时最初的0.02内核版本发布到了Minix新闻组，很快就得到了反应。Linus Torvalds在这种简单的任务切换机制上进行扩展，并在很多热心支持者的帮助下开发和推出了Linux的第一个稳定的工作版本。</li>
+  <li>0.03  1991.10.5</li>
+  <li>0.10  1991.10 Linux0.10版本内核发布，0.11版本随后在1991年12月推出，当时它被发布在Internet上，供人们免费使用。</li>
+  <li>0.11  1991.12.8 基本可以正常运行的内核版本</li>
+  <li>0.12  1992.1.15 主要加入对数学协处理器的软件模拟程序</li>
+  <li>0.95（0.13） 1992.3.8 开始加入虚拟文件系统思想的内核版本</li>
+  <li>0.96  1992.5.12 开始加入网络支持和虚拟文件系统</li>
+  <li>0.97  1992.8.1</li>
+  <li>0.98  1992.9.29</li>
+  <li>0.99  1992.12.13</li>
+  <li>1.0   1994.3.14 Linux1.0版本内核发布，使用它的用户越来越多，而且Linux系统的核心开发队伍也建起来了。</li>
+  <li>1.2   1995.3.7</li>
+  <li>2.0   1996.2.9</li>
+  <li>2.2   1999.1.26</li>
+  <li>2.4   2001.1.4 Linux2.4.0版本内核发布。</li>
+  <li>2.6.x 2003-12 2011-05</li>
+  <li>3.x   2011-06 2015-02</li>
+  <li>4.x   2015-04 2018-12</li>
+  <li>5.x   2019-03</li>
+</ul>
+
+<h4 id="http版本差异">HTTP版本差异</h4>
+<ul>
+  <li>HTTP/0.9 (1991)
+    <ul>
+      <li>只支持GET、无协议头、无图片的HTML</li>
+      <li>连接用完立即关闭、无错误码</li>
+    </ul>
+  </li>
+  <li>HTTP/1.0 (1992-1996)
+    <ul>
+      <li>请求与响应支持头域</li>
+      <li>响应对象以一个响应状态行开始</li>
+      <li>响应对象不只限于超文本</li>
+      <li>开始支持客户端通过POST方法向Web服务器提交数据，支持GET、HEAD、POST方法</li>
+      <li>支持长连接（但默认还是使用短连接），缓存机制，以及身份认证</li>
+    </ul>
+  </li>
+  <li>HTTP/1.1 (1997-1999)
+    <ul>
+      <li>keepalive连接</li>
+      <li>chunked编码传输</li>
+      <li>字节范围请求，断点续传</li>
+      <li>请求流水线，同时交叉请求</li>
+      <li>请求消息和响应消息都应支持Host头域</li>
+      <li>增加了OPTIONS,PUT, DELETE, TRACE, CONNECT方法</li>
+      <li>HTTP/1.1在1.0的基础上加入了一些cache的新特性，引入了实体标签，一般被称为e-tags，新增更为强大的Cache-Control头。</li>
+    </ul>
+  </li>
+  <li>HTTP/2.0 (2012-2014)
+    <ul>
+      <li>多路复用（二进制分帧）</li>
+      <li>头部压缩</li>
+      <li>随时复位</li>
+      <li>Server PUSH</li>
+      <li>优先权依赖</li>
+    </ul>
+  </li>
+  <li>SPDY 协议
+    <ul>
+      <li>2009年，谷歌公开了自行研发的 SPDY 协议，主要解决 HTTP/1.1 效率不高的问题。
+这个协议在Chrome浏览器上证明可行以后，就被当作 HTTP/2 的基础，主要特性都在 HTTP/2 之中得到继承。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="ssltls历史">SSL/TLS历史</h4>
+<ul>
+  <li>1994年，NetScape公司设计了SSL协议（Secure Sockets Layer）的1.0版，但是未发布。</li>
+  <li>1995年，NetScape公司发布SSL 2.0版，很快发现有严重漏洞。</li>
+  <li>1996年，SSL 3.0版问世，得到大规模应用。</li>
+  <li>1999年，互联网标准化组织ISOC接替NetScape公司，发布了SSL的升级版TLS 1.0版。</li>
+  <li>2006年和2008年，TLS进行了两次升级，分别为TLS 1.1版和TLS 1.2版。最新的变动是2011年TLS 1.2的修订版。</li>
+  <li>目前，应用最广泛的是TLS 1.0，接下来是SSL 3.0。但是，主流浏览器都已经实现了TLS 1.2的支持。
+TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
+</ul>
+
+<h4 id="ssltls简介">SSL/TLS简介</h4>
+<ul>
+  <li>SSL：（Secure Socket Layer，安全套接字层），位于可靠的面向连接的网络层协议和应用层协议之间的一种协议层。SSL通过互相认证、使用数字签名确保完整性、使用加密确保私密性，以实现客户端和服务器之间的安全通讯。该协议由两层组成：SSL记录协议和SSL握手协议。</li>
+  <li>TLS：(Transport Layer Security，传输层安全协议)，用于两个应用程序之间提供保密性和数据完整性。该协议由两层组成：TLS记录协议和TLS握手协议。</li>
+  <li>SSL是Netscape开发的专门用户保护Web通讯的，目前版本为3.0。最新版本的TLS 1.0是IETF(工程任务组)制定的一种新的协议，它建立在SSL 3.0协议规范之上，是SSL 3.0的后续版本。两者差别极小，可以理解为SSL 3.1，它是写入了RFC的。</li>
+  <li><a href="https://kb.cnblogs.com/page/197396/">https://kb.cnblogs.com/page/197396/</a></li>
+</ul>
+
+<h4 id="mitm攻击">MITM攻击</h4>
+<ul>
+  <li>理解清楚中间人攻击（Man-in-the-MiddleAttack，简称“MITM攻击”）也就理解了HTTPS。</li>
+  <li>中间人攻击（MITM攻击）是指，黑客拦截并篡改网络中的通信数据。又分为被动MITM和主动MITM，被动MITM只窃取通信数据而不修改，而主动MITM不但能窃取数据，还会篡改通信数据。最常见的中间人攻击常常发生在公共wifi或者公共路由上。</li>
+</ul>
+
+<h4 id="https加密原理">HTTPS加密原理</h4>
+<ol>
+  <li>各个操作系统或浏览器提前内置或缓存了合法CA机构的公钥</li>
+  <li>服务器提交相关信息给CA机构</li>
+  <li>CA机构生成该服务器对应的私钥+证书（包含服务器公钥、数字签名等）</li>
+  <li>客户端发起请求到服务器，服务器返回CA机构生成的证书</li>
+  <li>客户端用提前内置的CA机构的公钥解密该证书，并验证该证书是否合法</li>
+  <li>验证证书合法后，从证书中提取服务器的公钥，开始SSL/TLS交互</li>
+  <li>其他方便理解的总结
+    <ul>
+      <li>引入CA之后，重点是有2个公钥：自己服务器的公钥、CA机构的公钥</li>
+      <li>当客户端收到证书之后，使用本地配置的权威机构的公钥对证书进行解密得到服务端的公钥和证书的数字签名，数字签名经过CA公钥解密得到证书信息摘要。</li>
+      <li>然后用证书签名的方法计算一下当前证书的信息摘要，与收到的信息摘要作对比，如果一样，表示证书一定是服务器下发的，没有被中间人篡改过。因为中间人虽然有权威机构的公钥，能够解析证书内容并篡改，但是篡改完成之后中间人需要将证书重新加密，但是中间人没有权威机构的私钥，无法加密，强行加密只会导致客户端无法解密，如果中间人强行乱修改证书，就会导致证书内容和证书签名不匹配。</li>
+      <li>客户端验证证书的合法性，包括：
+        <ul>
+          <li>证书是否过期</li>
+          <li>发行服务器证书的CA是否可靠</li>
+          <li>本地CA公钥是否能正确解开证书</li>
+          <li>服务器证书上的域名是否和服务器的实际域名相匹配</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="第三方攻击者能否让自己的证书显示出来的信息也是服务端呢">第三方攻击者能否让自己的证书显示出来的信息也是服务端呢？</h4>
+<p>-（伪装服务端一样的配置）显然这个是不行的，因为当第三方攻击者去CA那边寻求认证的时候CA会要求其提供例如域名的whois信息、域名管理邮箱等证明你是服务端域名的拥有者，而第三方攻击者是无法提供这些信息所以他就是无法骗CA他拥有属于服务端的域名</p>
+
+<h4 id="ios-面试题什么是中间人攻击如何避免">iOS 面试题·什么是中间人攻击？如何避免？</h4>
+<ul>
+  <li>客户端不要轻易信任证书</li>
+  <li>App可以提前预埋证书在本地</li>
+  <li><a href="https://www.jianshu.com/p/210c296eb836">https://www.jianshu.com/p/210c296eb836</a></li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>理解HTTPS <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1890&amp;highlight=https">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1890&amp;highlight=https</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/27/JavaAgent-Instrument.html">JavaAgent-Instrument</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 27, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/27/JavaAgent-Instrument.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="javaagent--instrumentation--jwmti-agent">JavaAgent &amp; Instrumentation &amp; JWMTI Agent</h4>
+<ul>
+  <li>定义：在JDK1.5以后，我们可以使用agent技术构建一个独立于应用程序的代理程序（即为Agent），用来协助监测、运行甚至替换其他JVM上的程序。使用它可以实现虚拟机级别的AOP功能。</li>
+  <li>我们日常应用的各种工具中，有很多都是基于他们实现的，例如常见的热部署（JRebel, spring-loaded）、各种线上诊断工具（btrace, Greys）、代码覆盖率工具（JaCoCo）等等。</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Instrumentation</span> <span class="o">{</span>
+    <span class="cm">/**
+     * 注册一个Transformer，从此之后的类加载都会被Transformer拦截。
+     * Transformer可以直接对类的字节码byte[]进行修改
+     */</span>
+    <span class="kt">void</span> <span class="nf">addTransformer</span><span class="o">(</span><span class="n">ClassFileTransformer</span> <span class="n">transformer</span><span class="o">);</span>
+    
+    <span class="cm">/**
+     * 对JVM已经加载的类重新触发类加载。使用的就是上面注册的Transformer。
+     * retransformation可以修改方法体，但是不能变更方法签名、增加和删除方法/类的成员属性
+     */</span>
+    <span class="kt">void</span> <span class="nf">retransformClasses</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">classes</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">UnmodifiableClassException</span><span class="o">;</span>
+    
+    <span class="cm">/**
+     * 获取一个对象的大小
+     */</span>
+    <span class="kt">long</span> <span class="nf">getObjectSize</span><span class="o">(</span><span class="n">Object</span> <span class="n">objectToSize</span><span class="o">);</span>
+    
+    <span class="cm">/**
+     * 将一个jar加入到bootstrap classloader的 classpath里
+     */</span>
+    <span class="kt">void</span> <span class="nf">appendToBootstrapClassLoaderSearch</span><span class="o">(</span><span class="n">JarFile</span> <span class="n">jarfile</span><span class="o">);</span>
+    
+    <span class="cm">/**
+     * 获取当前被JVM加载的所有类对象
+     */</span>
+    <span class="n">Class</span><span class="o">[]</span> <span class="nf">getAllLoadedClasses</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 以vm参数的形式载入，在程序main方法执行之前执行
+ * 其jar包的manifest需要配置属性Premain-Class
+ */</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="n">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="n">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
+<span class="cm">/**
+ * 以Attach的方式载入，在Java程序启动后执行
+ * 其jar包的manifest需要配置属性Agent-Class
+ */</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">agentmain</span><span class="o">(</span><span class="n">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="n">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">InstrumentationExample</span> <span class="o">{</span>
+    <span class="c1">// Java agent指定的premain方法，会在main方法之前被调用</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">,</span> <span class="n">Instrumentation</span> <span class="n">inst</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Instrumentation提供的addTransformer方法，在类加载时会回调ClassFileTransformer接口</span>
+        <span class="n">inst</span><span class="o">.</span><span class="na">addTransformer</span><span class="o">(</span><span class="k">new</span> <span class="n">ClassFileTransformer</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">transform</span><span class="o">(</span><span class="n">ClassLoader</span> <span class="n">loader</span><span class="o">,</span> <span class="n">String</span> <span class="n">className</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">classBeingRedefined</span><span class="o">,</span>
+                                    <span class="n">ProtectionDomain</span> <span class="n">protectionDomain</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">classfileBuffer</span><span class="o">)</span>
+                                    <span class="kd">throws</span> <span class="n">IllegalClassFormatException</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="s">"com/test/TestClass"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">className</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="c1">// 只修改指定的Class</span>
+                    <span class="k">return</span> <span class="n">classfileBuffer</span><span class="o">;</span>
+                <span class="o">}</span>
+        
+                <span class="kt">byte</span><span class="o">[]</span> <span class="n">transformed</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                <span class="n">CtClass</span> <span class="n">cl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="c1">// CtClass、ClassPool、CtMethod、ExprEditor都是javassist提供的字节码操作的类</span>
+                    <span class="n">ClassPool</span> <span class="n">pool</span> <span class="o">=</span> <span class="n">ClassPool</span><span class="o">.</span><span class="na">getDefault</span><span class="o">();</span>
+                    <span class="n">cl</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="na">makeClass</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">classfileBuffer</span><span class="o">));</span>
+                    <span class="n">CtMethod</span><span class="o">[]</span> <span class="n">methods</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">getDeclaredMethods</span><span class="o">();</span>
+                    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">methods</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                        <span class="n">methods</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">instrument</span><span class="o">(</span><span class="k">new</span> <span class="n">ExprEditor</span><span class="o">()</span> <span class="o">{</span>
+        
+                            <span class="nd">@Override</span>
+                            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">edit</span><span class="o">(</span><span class="n">MethodCall</span> <span class="n">m</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CannotCompileException</span> <span class="o">{</span>
+                                <span class="c1">// 把方法体直接替换掉，其中 $proceed($$);是javassist的语法，用来表示原方法体的调用</span>
+                                <span class="n">m</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="s">"{ long stime = System.currentTimeMillis();"</span> <span class="o">+</span> <span class="s">" $_ = $proceed($$);"</span>
+                                          <span class="o">+</span> <span class="s">"System.out.println(\""</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="na">getClassName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"."</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="na">getMethodName</span><span class="o">()</span>
+                                          <span class="o">+</span> <span class="s">" cost:\" + (System.currentTimeMillis() - stime) + \" ms\"); }"</span><span class="o">);</span>
+                            <span class="o">}</span>
+                        <span class="o">});</span>
+                    <span class="o">}</span>
+                    <span class="c1">// javassist会把输入的Java代码再编译成字节码byte[]</span>
+                    <span class="n">transformed</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">toBytecode</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">cl</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">cl</span><span class="o">.</span><span class="na">detach</span><span class="o">();</span><span class="c1">// ClassPool默认不会回收，需要手动清理</span>
+                    <span class="o">}</span>                           
+                <span class="o">}</span>
+                <span class="k">return</span> <span class="n">transformed</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+    
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/img/JavaAgent.jpg" width="600px" /></p>
+
+<ul>
+  <li><a href="https://www.jianshu.com/p/be68d66afb85">https://www.jianshu.com/p/be68d66afb85</a></li>
+  <li><a href="https://www.jianshu.com/p/b72f66da679f">https://www.jianshu.com/p/b72f66da679f</a></li>
+</ul>
+
+<h4 id="asm--cglib">ASM &amp; CGlib</h4>
+<p><img src="/img/AOP.jpg" width="600px" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckClassAdapter</span> <span class="kd">extends</span> <span class="n">ClassAdapter</span> <span class="o">{</span>
+ 
+    <span class="kd">public</span> <span class="nf">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="n">ClassVisitor</span> <span class="n">cv</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//Responsechain 的下一个 ClassVisitor，这里我们将传入 ClassWriter，</span>
+        <span class="c1">// 负责改写后代码的输出</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">cv</span><span class="o">);</span> 
+    <span class="o">}</span> 
+     
+    <span class="c1">// 重写 visitMethod，访问到 "operation" 方法时，</span>
+    <span class="c1">// 给出自定义 MethodVisitor，实际改写方法内容</span>
+    <span class="kd">public</span> <span class="n">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
+        <span class="kd">final</span> <span class="n">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="n">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span><span class="n">exceptions</span><span class="o">);</span>
+        <span class="n">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
+        <span class="k">if</span> <span class="o">(</span><span class="n">mv</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> 
+            <span class="c1">// 对于 "operation" 方法</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"operation"</span><span class="o">))</span> <span class="o">{</span> 
+                <span class="c1">// 使用自定义 MethodVisitor，实际改写方法内容</span>
+                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
+            <span class="o">}</span> 
+        <span class="o">}</span> 
+        <span class="k">return</span> <span class="n">wrappedMv</span><span class="o">;</span> 
+    <span class="o">}</span> 
+
+    <span class="kd">public</span> <span class="n">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
+        <span class="kd">final</span> <span class="n">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="n">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span> <span class="n">exceptions</span><span class="o">);</span> 
+        <span class="n">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
+        <span class="k">if</span> <span class="o">(</span><span class="n">mv</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> 
+            <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"operation"</span><span class="o">))</span> <span class="o">{</span> 
+                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
+            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"&lt;init&gt;"</span><span class="o">))</span> <span class="o">{</span> 
+                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">,</span> 
+                    <span class="n">enhancedSuperName</span><span class="o">);</span> 
+            <span class="o">}</span> 
+        <span class="o">}</span> 
+        <span class="k">return</span> <span class="n">wrappedMv</span><span class="o">;</span> 
+    <span class="o">}</span>
+
+    
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visit</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">version</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
+            <span class="kd">final</span> <span class="n">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">superName</span><span class="o">,</span> 
+            <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">interfaces</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="n">String</span> <span class="n">enhancedName</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"$EnhancedByASM"</span><span class="o">;</span>  <span class="c1">// 改变类命名</span>
+        <span class="n">enhancedSuperName</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span> <span class="c1">// 改变父类，这里是”Account”</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">visit</span><span class="o">(</span><span class="n">version</span><span class="o">,</span> <span class="n">access</span><span class="o">,</span> <span class="n">enhancedName</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span> 
+        <span class="n">enhancedSuperName</span><span class="o">,</span> <span class="n">interfaces</span><span class="o">);</span> 
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckMethodAdapter</span> <span class="kd">extends</span> <span class="n">MethodAdapter</span> <span class="o">{</span> 
+    <span class="kd">public</span> <span class="nf">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">MethodVisitor</span> <span class="n">mv</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="kd">super</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
+    <span class="o">}</span> 
+ 
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitCode</span><span class="o">()</span> <span class="o">{</span> 
+        <span class="n">visitMethodInsn</span><span class="o">(</span><span class="n">Opcodes</span><span class="o">.</span><span class="na">INVOKESTATIC</span><span class="o">,</span> <span class="s">"SecurityChecker"</span><span class="o">,</span> 
+           <span class="s">"checkSecurity"</span><span class="o">,</span> <span class="s">"()V"</span><span class="o">);</span> 
+    <span class="o">}</span> 
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">ChangeToChildConstructorMethodAdapter</span> <span class="kd">extends</span> <span class="n">MethodAdapter</span> <span class="o">{</span> 
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">superClassName</span><span class="o">;</span> 
+ 
+    <span class="kd">public</span> <span class="nf">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="n">MethodVisitor</span> <span class="n">mv</span><span class="o">,</span> 
+        <span class="n">String</span> <span class="n">superClassName</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="kd">super</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
+        <span class="k">this</span><span class="o">.</span><span class="na">superClassName</span> <span class="o">=</span> <span class="n">superClassName</span><span class="o">;</span> 
+    <span class="o">}</span> 
+ 
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitMethodInsn</span><span class="o">(</span><span class="kt">int</span> <span class="n">opcode</span><span class="o">,</span> <span class="n">String</span> <span class="n">owner</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> 
+        <span class="n">String</span> <span class="n">desc</span><span class="o">)</span> <span class="o">{</span> 
+        <span class="c1">// 调用父类的构造函数时</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">opcode</span> <span class="o">==</span> <span class="n">Opcodes</span><span class="o">.</span><span class="na">INVOKESPECIAL</span> <span class="o">&amp;&amp;</span> <span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"&lt;init&gt;"</span><span class="o">))</span> <span class="o">{</span> 
+            <span class="n">owner</span> <span class="o">=</span> <span class="n">superClassName</span><span class="o">;</span> 
+        <span class="o">}</span> 
+        <span class="kd">super</span><span class="o">.</span><span class="na">visitMethodInsn</span><span class="o">(</span><span class="n">opcode</span><span class="o">,</span> <span class="n">owner</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">);</span><span class="c1">// 改写父类为 superClassName </span>
+    <span class="o">}</span> 
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SecureAccountGenerator</span> <span class="o">{</span> 
+ 
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">AccountGeneratorClassLoader</span> <span class="n">classLoader</span> <span class="o">=</span> 
+        <span class="k">new</span> <span class="nf">AccountGeneratorClassLoade</span><span class="o">();</span> 
+     
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Class</span> <span class="n">secureAccountClass</span><span class="o">;</span> 
+     
+    <span class="kd">public</span> <span class="n">Account</span> <span class="nf">generateSecureAccount</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">ClassFormatError</span><span class="o">,</span> 
+        <span class="n">InstantiationException</span><span class="o">,</span> <span class="n">IllegalAccessException</span> <span class="o">{</span> 
+        <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">secureAccountClass</span><span class="o">)</span> <span class="o">{</span>            
+            <span class="n">ClassReader</span> <span class="n">cr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassReader</span><span class="o">(</span><span class="s">"Account"</span><span class="o">);</span> 
+            <span class="n">ClassWriter</span> <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassWriter</span><span class="o">(</span><span class="n">ClassWriter</span><span class="o">.</span><span class="na">COMPUTE_MAXS</span><span class="o">);</span> 
+            <span class="n">ClassAdapter</span> <span class="n">classAdapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="n">cw</span><span class="o">);</span>
+            <span class="n">cr</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">classAdapter</span><span class="o">,</span> <span class="n">ClassReader</span><span class="o">.</span><span class="na">SKIP_DEBUG</span><span class="o">);</span> 
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span> 
+            <span class="n">secureAccountClass</span> <span class="o">=</span> <span class="n">classLoader</span><span class="o">.</span><span class="na">defineClassFromClassFile</span><span class="o">(</span> 
+               <span class="s">"Account$EnhancedByASM"</span><span class="o">,</span><span class="n">data</span><span class="o">);</span> 
+        <span class="o">}</span> 
+        <span class="k">return</span> <span class="o">(</span><span class="n">Account</span><span class="o">)</span> <span class="n">secureAccountClass</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span> 
+    <span class="o">}</span> 
+     
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">AccountGeneratorClassLoader</span> <span class="kd">extends</span> <span class="n">ClassLoader</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="n">Class</span> <span class="nf">defineClassFromClassFile</span><span class="o">(</span><span class="n">String</span> <span class="n">className</span><span class="o">,</span> 
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">classFile</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ClassFormatError</span> <span class="o">{</span> 
+            <span class="k">return</span> <span class="nf">defineClass</span><span class="o">(</span><span class="s">"Account$EnhancedByASM"</span><span class="o">,</span> <span class="n">classFile</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> 
+            <span class="n">classFile</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+        <span class="o">}</span> 
+    <span class="o">}</span> 
+<span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li><a href="https://www.ibm.com/developerworks/cn/java/j-lo-asm30/">https://www.ibm.com/developerworks/cn/java/j-lo-asm30/</a></li>
+</ul>
+
+<h4 id="byte-buddyjavassist">Byte Buddy,Javassist</h4>
+<ul>
+  <li>Byte Buddy的作者是业界著名的Rafael Winterhalter。这个项目在2015年获得了Oracle的公爵选择奖，为了表彰它“对于Java技术创新作出的无与伦比的贡献”。说实话，这个评价实至名归。Byte Buddy确实是Java这个中规中矩略显死板的语言中不多的黑科技之一。</li>
+</ul>
+<p><a href="https://zhuanlan.zhihu.com/p/84514959">https://zhuanlan.zhihu.com/p/84514959</a></p>
+<ul>
+  <li>Javassist是一个开源的分析、编辑和创建Java字节码的类库。是由东京工业大学的数学和计算机科学系的 Shigeru Chiba （千叶 滋）所创建的。它已加入了开放源代码JBoss 应用服务器项目,通过使用Javassist对字节码操作为JBoss实现动态AOP框架。javassist是jboss的一个子项目，其主要的优点，在于简单，而且快速。直接使用java编码的形式，而不需要了解虚拟机指令，就能动态改变类的结构，或者动态生成类。</li>
+</ul>
+<p><a href="https://blog.csdn.net/ShuSheng0007/article/details/81269295">https://blog.csdn.net/ShuSheng0007/article/details/81269295</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/27/JavaAgent-Instrument.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2020/06/25/MckinseyMethodology.html">麦肯锡方法</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 25, 2020</span>
@@ -204,328 +611,6 @@ https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html">用户画像</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 22, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>用户</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="核心">核心</h4>
-<ul>
-  <li>用户画像体系，有这一篇就够了 <a href="https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q">https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q</a></li>
-  <li>用户画像原理、技术选型及架构实现 <a href="https://blog.csdn.net/SecondLieutenant/article/details/81153565">https://blog.csdn.net/SecondLieutenant/article/details/81153565</a></li>
-</ul>
-
-<h4 id="用户画像概述">用户画像概述</h4>
-<ul>
-  <li>用户画像根本目的就是寻找目标客户、优化产品设计，指导运营策略，分析业务场景和完善业务形态。</li>
-  <li>不同的企业做用户画像有不同的战略目的，广告公司做用户画像是为精准广告服务，电商做用户画像是为用户购买更多商品，内容平台做用户画像是推荐用户更感兴趣的内容提升流量再变现，金融行业做用户画像是为了寻找到目标客户的同时做好风险的控制。</li>
-</ul>
-
-<h4 id="画像维度">画像维度</h4>
-<ul>
-  <li>特征：
-    <ul>
-      <li>人口统计：性别、年龄、教育</li>
-      <li>社会属性：家庭、社交、职业</li>
-    </ul>
-  </li>
-  <li>行为：
-    <ul>
-      <li>使用行为：手机使用、电脑类型、套餐使用、套餐余额</li>
-      <li>消费行为：购买力、购买频次、购买渠道、额度、信用等级</li>
-    </ul>
-  </li>
-  <li>需求
-    <ul>
-      <li>偏好属性：兴趣爱好、品牌爱好、产品爱好、网购偏好、支付偏好、价格偏好</li>
-      <li>潜在需求：</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="指标体系">指标体系</h4>
-<ul>
-  <li>用户属性维度</li>
-  <li>用户行为维度</li>
-  <li>用户消费维度</li>
-  <li>风险控制维度</li>
-  <li>社交属性维度</li>
-</ul>
-
-<h4 id="画像之静态标签动态标签">画像之静态标签、动态标签</h4>
-<ul>
-  <li>静态画像：实时性弱、覆盖广、粒度粗</li>
-  <li>动态画像：
-    <ul>
-      <li>一般建立兴趣模型，更加实时并且动态</li>
-      <li>用户行为可疑结构为5W（What/Who/When/Where/Why)</li>
-      <li>时效性非常敏感</li>
-      <li>在空间上，不同应用领域侧重点不同，营销领域更侧重消费习惯，推荐领域更侧重喜好</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="画像之标签结构化程度">画像之标签结构化程度</h4>
-<ul>
-  <li>结构化标签体系，定向广告平台采用的结构化标签体系</li>
-  <li>半结构化标签体系，在用于效果广告时，标签设计的灵活性大大提高了。标签体系是不是规整，就不那么重要了，只要有效果就行。</li>
-  <li>非结构化标签体系，非结构化，就是各个标签就事论事，各自反应各自的用户兴趣，彼此之间并无层级关系，也很难组织成规整的树状结构。非结构化标签的典型例子，是搜索广告里用的关键词。还有Facebook用的用户兴趣词</li>
-  <li>例如
-    <ul>
-      <li>汽车行业的标签体系大体应该是：价格—&gt;车型—&gt;品牌</li>
-      <li>游戏行业：按照类别、游戏素材、游戏厂商等等。游戏的用户决策过程总体上令人难以捉摸，这是因为它有点儿电影、音乐一样的艺术性特质。而人们对艺术的喜爱，并不是理性的，也就难以总结规律。</li>
-      <li>电商行业的实际做法大家都看到了，基本上不依靠分类，完全以“单品+个性化推荐”的方法构建和使用标签体系。</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="画像之应用">画像之应用</h4>
-<ul>
-  <li>精准营销：根据历史用户特征，分析产品的潜在用户和用户的潜在需求，针对特定群体，利用短信、邮件等方式进行营销。</li>
-  <li>用户统计：根据用户的属性、行为特征对用户进行分类后，统计不同特征下的用户数量、分布；分析不同用户画像群体的分布特征。</li>
-  <li>数据挖掘：以用户画像为基础构建推荐系统、搜索引擎、广告投放系统，提升服务精准度。</li>
-  <li>服务产品：对产品进行用户画像，对产品进行受众分析，更透彻地理解用户使用产品的心理动机和行为习惯，完善产品运营，提升服务质量。</li>
-  <li>行业报告&amp;用户研究：通过用户画像分析可以了解行业动态，比如人群消费习惯、消费偏好分析、不同地域品类消费差异分析</li>
-</ul>
-
-<h4 id="画像之reachctr曲线">画像之reach/CTR曲线</h4>
-<ul>
-  <li>reach：该标签占总用户比例</li>
-  <li>CTR：点击率</li>
-  <li>reach越大，一般情况CTR会小</li>
-</ul>
-
-<h4 id="用户画像架构图">用户画像架构图</h4>
-<p><img src="/img/user_profile.jpg" width="600px" /></p>
-
-<h4 id="用户画像后台标签">用户画像后台标签</h4>
-<p><img src="/img/user_profile_admin.jpg" width="600px" /></p>
-
-<h4 id="用户业务标签">用户业务标签</h4>
-<p><img src="/img/user_profile_tags.jpg" width="600px" /></p>
-
-<h4 id="会员理论模型">会员理论模型</h4>
-<ul>
-  <li>会员体系模型：AIPL
-    <ul>
-      <li>Awareness潜客：内容运营、宣传吸引、新手任务、了解产品</li>
-      <li>Interest粉丝：社会新闻、热点话题、习惯养成、积分积累</li>
-      <li>Purchase会员：日常任务、促销活动、品牌影响力、共同利益</li>
-      <li>Loyalty超级会员：专属特权、心理诉求、社群活动、1V1维护</li>
-    </ul>
-  </li>
-  <li>会员体系模型：RFM
-    <ul>
-      <li>R(Recency)近度：距某节点最近的一次消费</li>
-      <li>F(Frequency)频度：消费频次</li>
-      <li>M (Monetary)额度：消费金额
-<img src="/img/RFM.jpg" width="600px" /></li>
-    </ul>
-  </li>
-  <li>会员体系模型：AARRR
-    <ul>
-      <li>Acquisition（获取用户）：关注PV、UV、CPC、点击转化率、注册量、注册率、获客成本CAC</li>
-      <li>Activation（提高活跃度）：关注登陆量、激活转化率、活跃度指标</li>
-      <li>Retention（提高留存率）：关注留存率、复购率、人均购买次数、召回率</li>
-      <li>Revenue（获取收入）：关注获客成本、顾客终身价值、营销ROI</li>
-      <li>Referral（传播）：关注邀请量、激活量、邀请激活率、传播系数</li>
-    </ul>
-  </li>
-  <li>鱼塘理论
-    <ul>
-      <li>养鱼、抓潜、成交、追销、形成自己的鱼塘</li>
-    </ul>
-  </li>
-  <li>《上瘾》Hook模型概念
-    <ul>
-      <li>触发Trigger：即诱发用户采取行动，进入系统的契机。这是上瘾模型的第一步，也是最关键一步，如果这步不能引起用户的兴趣，后续就无从谈起。</li>
-      <li>行动Action：按照斯坦福大学B.J.Fogg博士的Behavior Model理论，B=MAT，即行动（Behavior）=动机（Motivation）+能力（Ability）+触发器（Trigger）。</li>
-      <li>多变的酬赏Variable Reward：当行为被触发之后，接下来就需要给用户一些酬赏进行持续刺激，以培养对他们对产品的使用习惯。酬赏简单来说就是产品带给用户的满足感，但为什么要强调“多变”呢？
-  据行为学研究，人们对产品的满足感会随着时间的推移逐渐降低，即使现阶段用户因为产品解决了某方面问题而产生依赖，但市面上的新产品层出不穷，要想不被淘汰，“无穷的多变性”是保持产品神秘感和吸引力，维持用户长期兴趣的关键。</li>
-      <li>投入Investment：有研究表明，用户对某个产品投入时间精力的多寡与对这个产品的依赖程度成正比，就像免费东西你不会珍惜，而氪过金的游戏或服务反而会不断充值一样。已经享受酬赏的用户，想要他们对你的产品彻底“上瘾”，最后一步就是要让他们有所投入。
- <img src="/img/hook.jpg" width="600px" /></li>
-    </ul>
-    <p><a href="https://www.sohu.com/a/239048631_100180218">https://www.sohu.com/a/239048631_100180218</a></p>
-  </li>
-  <li>《疯传》STEPPS原则
-    <ul>
-      <li>社交货币（Social Currency）：我们会共享那些能让我们显得更优秀的事情</li>
-      <li>诱因（Triggers）：顶尖的记忆，风口浪尖的提醒</li>
-      <li>情绪（Emotion）：当我们关心时，我们回去分享</li>
-      <li>公共性（Public）：构建可视的、正面的事物</li>
-      <li>实用价值（Practical Value）：如果有用，人们会情不自禁地分享</li>
-      <li>故事（Stories）：好故事就意味着成功了一般，好故事都有翅膀</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="参考">参考</h4>
-<ul>
-  <li>用户研究：如何做用户画像分析 <a href="https://www.jianshu.com/p/440c30383bec">https://www.jianshu.com/p/440c30383bec</a></li>
-  <li>什么是用户画像和标签？ <a href="http://www.woshipm.com/user-research/1083807.html">http://www.woshipm.com/user-research/1083807.html</a></li>
-  <li>结构化标签、非结构化标签及reach/CTR曲线 <a href="http://www.woshipm.com/user-research/436269.html">http://www.woshipm.com/user-research/436269.html</a></li>
-  <li>电商案例、金融案例（用户画像标签体系——从零开始搭建实时用户画像） <a href="https://cloud.tencent.com/developer/column/79937">https://cloud.tencent.com/developer/column/79937</a></li>
-  <li>航空公司案例、证券案例、打车公司案例 <a href="https://www.zhihu.com/question/302695500">https://www.zhihu.com/question/302695500</a></li>
-  <li>从阿里会员解读会员体系建设 <a href="https://zhuanlan.zhihu.com/p/88738148">https://zhuanlan.zhihu.com/p/88738148</a></li>
-  <li>用户画像10大误区 <a href="https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA">https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA</a></li>
-  <li>1号店案例 <a href="https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg">https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg</a></li>
-  <li>Qunar用户画像构建策略及应用实践 <a href="https://blog.csdn.net/xiaoshunzi111/article/details/53170658">https://blog.csdn.net/xiaoshunzi111/article/details/53170658</a></li>
-  <li>
-    <table>
-      <tbody>
-        <tr>
-          <td>携程</td>
-          <td>手把手教你用大数据打造用户画像 <a href="https://blog.csdn.net/chenjunji123456/article/details/54966633">https://blog.csdn.net/chenjunji123456/article/details/54966633</a></td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
-  <li>《用户画像：方法论与工程化解决方案》<a href="https://www.jianshu.com/p/94dadecc162b">https://www.jianshu.com/p/94dadecc162b</a></li>
-  <li>汽车之家如何构建用户画像 <a href="https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw">https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html">Java基础</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 17, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="基础">基础</h4>
-<ol>
-  <li>Hotspot 的作者经过以往的研究发现大多数情况下锁不仅不存在多线程竞争，而且总是由同一线
-程多次获得。偏向锁的目的是在某个线程获得锁之后，消除这个线程锁重入(CAS)的开销，看起
-来让这个线程得到了偏护。引入偏向锁是为了在无多线程竞争的情况下尽量减少不必要的轻量级
-锁执行路径，因为轻量级锁的获取及释放依赖多次 CAS 原子指令，而偏向锁只需要在置换
-ThreadID 的时候依赖一次 CAS 原子指令(由于一旦出现多线程竞争的情况就必须撤销偏向锁，所
-以偏向锁的撤销操作的性能损耗必须小于节省下来的 CAS 原子指令的性能消耗)。上面说过，轻
-量级锁是为了在线程交替执行同步块时提高性能，而偏向锁则是在只有一个线程执行同步块时进
-一步提高性能。</li>
-  <li>很多情况下，主线程生成并启动了子线程，需要用到子线程返回的结果，也就是需要主线程需要
-在子线程结束后再结束，这时候就要用到 join() 方法。</li>
-</ol>
-
-<h4 id="java内存泄露">Java内存泄露</h4>
-<ul>
-  <li>非静态内部类引用了外部类，类似循环引用。使用静态内部类解决该问题。</li>
-</ul>
-
-<h4 id="分布式垃圾回收dgc">分布式垃圾回收DGC？</h4>
-<ul>
-  <li>分布式垃圾回收。RMI使用DGC来做自动垃圾回收，因为RMI包含了跨虚拟机的远程对象的引用，
-  垃圾回收是很困难的。DGC使用引用计数算法来给远程对象提供自动内存管理。</li>
-</ul>
-
-<h4 id="请对比下-volatile-对比-synchronized-的异同">请对比下 volatile 对比 Synchronized 的异同。</h4>
-<ul>
-  <li>Synchronized 既能保证可见性，又能保证原子性，而 volatile 只能保证可见性，无法保证原子性。</li>
-  <li>ThreadLocal 和 Synchonized 都用于解决多线程并发访问，防止任务在共享资源上产生冲突。但是Thread Local 与 Synchronized 有本质的区别。
-    <ul>
-      <li>Synchronized 用于实现同步机制，是利用锁的机制使变量或代码块在某一时该只能被一个线程访问，是一种“以时间换空间”的方式。</li>
-      <li>而ThreadLocal 为每一个线程都提供了变量的副本，使得每个线程在某一时间访问到的并不是同一个对象，根除了对变量的共享，是一种“以空间换时间”的方式。</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="请谈谈-threadlocal-是怎么解决并发安全的">请谈谈 ThreadLocal 是怎么解决并发安全的？</h4>
-<ul>
-  <li>ThreadLocal 这是Java提供的一种保存线程私有信息的机制，因为其在整个线程生命周期内有效，所以可以方便地在一个线程关联的不同业务模块之间传递信息，
-比如事务, Cookie等上下文相关信息。 ThreadLocal 为每一个线程维护变量的副本，把共享数据的可见范围限制在同一个线程之内，其实现原理是，在ThreadLocal 类中有一个Map ，用于存储每一个线程的变量的副本。
-ThreadLocal 注意需要自己remove，否则可能发生泄漏。</li>
-</ul>
-
-<h4 id="throwable-是-java-语言中所有错误或异常的超类下一层分为-error-和-exception">Throwable 是 Java 语言中所有错误或异常的超类。下一层分为 Error 和 Exception</h4>
-<ol>
-  <li>Error 类是指 java 运行时系统的内部错误和资源耗尽错误。应用程序不会抛出该类对象。如果出现了这样的错误，除了告知用户，剩下的就是尽力使程序安全的终止。</li>
-  <li>Exception 又有两个分支，一个是运行时异常 RuntimeException，一个是CheckedException。</li>
-</ol>
-
-<h4 id="序列化-id">序列化 ID</h4>
-<p>Java 平台允许我们在内存中创建可复用的 Java 对象，但一般情况下，只有当 JVM 处于运行时，
-这些对象才可能存在，即，这些对象的生命周期不会比 JVM 的生命周期更长。但在现实应用中，
-就可能要求在 JVM 停止运行之后能够保存(持久化)指定的对象，并在将来重新读取被保存的对象。
-Java 对象序列化就能够帮助我们实现该功能。
- 使用 Java 对象序列化，在保存对象时，会把其状态保存为一组字节，在未来，再将这些字节组装
- 成对象。必须注意地是，对象序列化保存的是对象的”状态”，即它的成员变量。由此可知，对
- 象序列化不会关注类中的静态变量。
- 除了在持久化对象时会用到对象序列化之外，当使用 RMI(远程方法调用)，或在网络中传递对象时，
- 都会用到对象序列化。Java 序列化 API 为处理对象序列化提供了一个标准机制，该 API 简单易用。
- 虚拟机是否允许反序列化，不仅取决于类路径和功能代码是否一致，一个非常重要的一点是两个
- 类的序列化 ID 是否一致(就是 private static final long serialVersionUID)</p>
-
-<h4 id="线程间共享">线程间共享</h4>
-<p>线程 A 与线程 B 之间如要通信的话，必须要经历下面 2 个步骤: 1. 首先，线程 A 把本地内存 A 中更新过的共享变量刷新到主内存中去。</p>
-<ol>
-  <li>然后，线程 B 到主内存中去读取线程 A 之前已更新过的共享变量。</li>
-</ol>
-
-<h4 id="iterater-和-listiterator-之间有什么区别">Iterater 和 ListIterator 之间有什么区别?</h4>
-<p>(1)我们可以使用 Iterator 来遍历 Set 和 List 集合，而 ListIterator 只能遍历 List。 (2)Iterator 只可以向前遍历，而 LIstIterator 可以双向遍历。
-(3)ListIterator 从 Iterator 接口继承，然后添加了一些额外的功能，比如添加一个元素、替 换一个元素、获取前面或后面元素的索引位置。</p>
-
-<h4 id="什么是-java-内存模型">什么是 Java 内存模型</h4>
-<ul>
-  <li>Java 内存模型定义了一种多线程访问 Java 内存的规范。Java 内存模型要完 整讲不是这里几句话能说清楚的，我简单总结一下 Java 内存模型的几部分内 容:</li>
-  <li>Java 内存模型将内存分为了主内存和工作内存。类的状态，也就是类之间 共享的变量，是存储在主内存中的，每次 Java 线程用到这些主内存中的变量 的时候，会读一次主内存中的变量，并让这些内存在自己的工作内存中有一份
- 拷贝，运行自己线程代码的时候，用到这些变量，操作的都是自己工作内存中 的那一份。在线程代码执行完毕之后，会将最新的值更新到主内存中去</li>
-  <li>定义了几个原子操作，用于操作主内存和工作内存中的变量</li>
-  <li>定义了 volatile 变量的使用规则</li>
-  <li>happens-before，即先行发生原则，定义了操作 A 必然先行发生于操作 B 的一些规则，比如在同一个线程内控制流前面的代码一定先行发生于控制流 后面的代码、一个释放锁 unlock 的动作一定先行发生于后面对于同一个锁进 行锁定 lock 的动作等等，只要符合这些规则，则不需要额外做同步措施，如 果某段代码不符合所有的 happens-before 规则，则这段代码一定是线程非 安全的</li>
-  <li>8种内存间操作
-    <ul>
-      <li>lock：把一个变量标志为一条线程独占的状态</li>
-      <li>
-        <p>unlock：把一个处于锁定状态的变量释放出来，释放之后的变量才能被其他线程锁定</p>
-      </li>
-      <li>read：把一个变量值从主内存传输到线程的工作内存，以便load</li>
-      <li>
-        <p>load：把read操作从主内存得到的变量值放入到工作内存的变量副本中</p>
-      </li>
-      <li>write：把store操作从工作内存得到的变量的值，放到主内存的变量中</li>
-      <li>
-        <p>store：把工作内存的变量值传到主内存，以便write</p>
-      </li>
-      <li>use：把工作内存变量值传递给执行引擎</li>
-      <li>assign：将执行引擎值传递给工作内存变量值</li>
-    </ul>
-  </li>
-</ul>
-
-<p>Pojo(plian ordinary普通的; 平常的; java object)</p>
-
-<h4 id="hashmap-为啥size是2的倍数18比17做了哪些优化">HashMap 为啥size是2的倍数，1.8比1.7做了哪些优化？</h4>
-<p>JDK1.7 VS JDK1.8 比较
-JDK1.8主要解决或优化了一下问题：
-resize 扩容优化
-引入了红黑树，目的是避免单条链表过长而影响查询效率，红黑树算法请参考
-解决了多线程死循环问题，但仍是非线程安全的，多线程时可能会造成数据丢失问题。</p>
-
-<h4 id="seata-的-demo">Seata 的 Demo</h4>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -587,6 +672,10 @@ resize 扩容优化
       <a href="/page13" class="button page-button">13</a>
       
       
+      
+      <a href="/page14" class="button page-button">14</a>
+      
+      
 
       
       <a href="/page3" class="button page-button">&raquo;</a>
@@ -631,7 +720,7 @@ resize 扩容优化
       
       
       <a  href="/tag/网络">
-      <span class="label label-default">网络 ( 7 )</span>
+      <span class="label label-default">网络 ( 8 )</span>
       </a><br />
 
       
@@ -779,6 +868,13 @@ resize 扩容优化
       
       <a  href="/tag/方法论">
       <span class="label label-default">方法论 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/java">
+      <span class="label label-default">java ( 2 )</span>
       </a><br />
 
       

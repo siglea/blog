@@ -1,0 +1,24 @@
+---
+layout: post
+title:  "DotDot"
+date:   2020-07-08 15:18:00 +0900
+comments: true
+tags:
+- java
+categories:
+- 技术
+---
+#### 蚂蚁金服
+- ArrayList的扩容方式和扩容时机
+    - 初始化
+        ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断
+        如果参数等于0，则将数组初始化为一个空数组，
+        如果不等于0，将数组初始化为一个容量为10的数组。
+    - 扩容时机
+        当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。
+    - 扩容方式
+       扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。
+- <https://www.cnblogs.com/silyvin/p/10223910.html>
+
+#### Netty
+- <https://www.cnblogs.com/xiaoyangjia/p/11526197.html>

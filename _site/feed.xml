@@ -5,9 +5,63 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 07 Jul 2020 23:52:25 +0800</pubDate>
-    <lastBuildDate>Tue, 07 Jul 2020 23:52:25 +0800</lastBuildDate>
-    <generator>Jekyll v4.0.0</generator>
+    <pubDate>Wed, 08 Jul 2020 19:27:46 +0800</pubDate>
+    <lastBuildDate>Wed, 08 Jul 2020 19:27:46 +0800</lastBuildDate>
+    <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>Netty In Action</title>
+        <description>&lt;p&gt;ChannelFuture 与 ChannelFutureListener相互结合，构成了Netty本身的关键构件之一
+EventLoop本身只由一个线程驱动，其处理了一个Channel的所有I/O事件，并且在该EventLoop的整个生命周期内都不会改变。
+Unpooled&lt;/p&gt;
+</description>
+        <pubDate>Wed, 08 Jul 2020 18:18:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html</guid>
+        
+        <category>java</category>
+        
+        <category>网络</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
+    
+      <item>
+        <title>DotDot</title>
+        <description>&lt;h4 id=&quot;蚂蚁金服&quot;&gt;蚂蚁金服&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;ArrayList的扩容方式和扩容时机
+    &lt;ul&gt;
+      &lt;li&gt;初始化
+  ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断
+  如果参数等于0，则将数组初始化为一个空数组，
+  如果不等于0，将数组初始化为一个容量为10的数组。&lt;/li&gt;
+      &lt;li&gt;扩容时机
+  当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。&lt;/li&gt;
+      &lt;li&gt;扩容方式
+ 扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/silyvin/p/10223910.html&quot;&gt;https://www.cnblogs.com/silyvin/p/10223910.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;netty&quot;&gt;Netty&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/xiaoyangjia/p/11526197.html&quot;&gt;https://www.cnblogs.com/xiaoyangjia/p/11526197.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Wed, 08 Jul 2020 14:18:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html</guid>
+        
+        <category>java</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
     
       <item>
         <title>用户画像之标签数据开发</title>
@@ -396,28 +450,28 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。&lt;/
      * 注册一个Transformer，从此之后的类加载都会被Transformer拦截。
      * Transformer可以直接对类的字节码byte[]进行修改
      */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;addTransformer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ClassFileTransformer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transformer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;addTransformer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ClassFileTransformer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transformer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
     
     &lt;span class=&quot;cm&quot;&gt;/**
      * 对JVM已经加载的类重新触发类加载。使用的就是上面注册的Transformer。
      * retransformation可以修改方法体，但是不能变更方法签名、增加和删除方法/类的成员属性
      */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;retransformClasses&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;UnmodifiableClassException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;retransformClasses&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;...&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UnmodifiableClassException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
     
     &lt;span class=&quot;cm&quot;&gt;/**
      * 获取一个对象的大小
      */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getObjectSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;objectToSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getObjectSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;objectToSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
     
     &lt;span class=&quot;cm&quot;&gt;/**
      * 将一个jar加入到bootstrap classloader的 classpath里
      */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;appendToBootstrapClassLoaderSearch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;JarFile&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jarfile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;appendToBootstrapClassLoaderSearch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;JarFile&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jarfile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
     
     &lt;span class=&quot;cm&quot;&gt;/**
      * 获取当前被JVM加载的所有类对象
      */&lt;/span&gt;
-    &lt;span class=&quot;nc&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getAllLoadedClasses&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getAllLoadedClasses&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
@@ -425,40 +479,40 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。&lt;/
  * 以vm参数的形式载入，在程序main方法执行之前执行
  * 其jar包的manifest需要配置属性Premain-Class
  */&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;premain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;agentArgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Instrumentation&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;premain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;agentArgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Instrumentation&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
 &lt;span class=&quot;cm&quot;&gt;/**
  * 以Attach的方式载入，在Java程序启动后执行
  * 其jar包的manifest需要配置属性Agent-Class
  */&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;agentmain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;agentArgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Instrumentation&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;agentmain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;agentArgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Instrumentation&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;InstrumentationExample&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;c1&quot;&gt;// Java agent指定的premain方法，会在main方法之前被调用&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;premain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Instrumentation&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;premain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Instrumentation&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
         &lt;span class=&quot;c1&quot;&gt;// Instrumentation提供的addTransformer方法，在类加载时会回调ClassFileTransformer接口&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;inst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addTransformer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClassFileTransformer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;inst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addTransformer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ClassFileTransformer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
             &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-            &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;transform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ClassLoader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;className&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classBeingRedefined&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-                                    &lt;span class=&quot;nc&quot;&gt;ProtectionDomain&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;protectionDomain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classfileBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-                                    &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;IllegalClassFormatException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;transform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ClassLoader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;className&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classBeingRedefined&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+                                    &lt;span class=&quot;n&quot;&gt;ProtectionDomain&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;protectionDomain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classfileBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+                                    &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IllegalClassFormatException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
                 &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(!&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;com/test/TestClass&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;className&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
                     &lt;span class=&quot;c1&quot;&gt;// 只修改指定的Class&lt;/span&gt;
                     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classfileBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
                 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
         
                 &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transformed&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-                &lt;span class=&quot;nc&quot;&gt;CtClass&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;CtClass&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
                 &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
                     &lt;span class=&quot;c1&quot;&gt;// CtClass、ClassPool、CtMethod、ExprEditor都是javassist提供的字节码操作的类&lt;/span&gt;
-                    &lt;span class=&quot;nc&quot;&gt;ClassPool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pool&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClassPool&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getDefault&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-                    &lt;span class=&quot;n&quot;&gt;cl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pool&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;makeClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ByteArrayInputStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;classfileBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-                    &lt;span class=&quot;nc&quot;&gt;CtMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methods&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getDeclaredMethods&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;ClassPool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pool&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ClassPool&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getDefault&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;cl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pool&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;makeClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ByteArrayInputStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;classfileBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;CtMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methods&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getDeclaredMethods&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
                     &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methods&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                        &lt;span class=&quot;n&quot;&gt;methods&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;instrument&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ExprEditor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                        &lt;span class=&quot;n&quot;&gt;methods&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;instrument&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ExprEditor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
         
                             &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-                            &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;edit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;MethodCall&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;CannotCompileException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                            &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;edit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MethodCall&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CannotCompileException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
                                 &lt;span class=&quot;c1&quot;&gt;// 把方法体直接替换掉，其中 $proceed($$);是javassist的语法，用来表示原方法体的调用&lt;/span&gt;
                                 &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;replace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{ long stime = System.currentTimeMillis();&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot; $_ = $proceed($$);&quot;&lt;/span&gt;
                                           &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;System.out.println(\&quot;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getClassName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;.&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getMethodName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
@@ -468,7 +522,7 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。&lt;/
                     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
                     &lt;span class=&quot;c1&quot;&gt;// javassist会把输入的Java代码再编译成字节码byte[]&lt;/span&gt;
                     &lt;span class=&quot;n&quot;&gt;transformed&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toBytecode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
                     &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
                 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;finally&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
                     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
@@ -493,9 +547,9 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。&lt;/
 &lt;h4 id=&quot;asm--cglib&quot;&gt;ASM &amp;amp; CGlib&lt;/h4&gt;
 &lt;p&gt;&lt;img src=&quot;/img/AOP.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddSecurityCheckClassAdapter&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClassAdapter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddSecurityCheckClassAdapter&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ClassAdapter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
  
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;AddSecurityCheckClassAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ClassVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;AddSecurityCheckClassAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ClassVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
         &lt;span class=&quot;c1&quot;&gt;//Responsechain 的下一个 ClassVisitor，这里我们将传入 ClassWriter，&lt;/span&gt;
         &lt;span class=&quot;c1&quot;&gt;// 负责改写后代码的输出&lt;/span&gt;
         &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
@@ -503,29 +557,29 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。&lt;/
      
     &lt;span class=&quot;c1&quot;&gt;// 重写 visitMethod，访问到 &quot;operation&quot; 方法时，&lt;/span&gt;
     &lt;span class=&quot;c1&quot;&gt;// 给出自定义 MethodVisitor，实际改写方法内容&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;visitMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
-        &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exceptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
-        &lt;span class=&quot;nc&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;visitMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exceptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wrappedMv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;visitMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
+        &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exceptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+        &lt;span class=&quot;n&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;visitMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exceptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wrappedMv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
         &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
             &lt;span class=&quot;c1&quot;&gt;// 对于 &quot;operation&quot; 方法&lt;/span&gt;
             &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;operation&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
                 &lt;span class=&quot;c1&quot;&gt;// 使用自定义 MethodVisitor，实际改写方法内容&lt;/span&gt;
-                &lt;span class=&quot;n&quot;&gt;wrappedMv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddSecurityCheckMethodAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
+                &lt;span class=&quot;n&quot;&gt;wrappedMv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AddSecurityCheckMethodAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
             &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
         &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wrappedMv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
 
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;visitMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
-        &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exceptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
-        &lt;span class=&quot;nc&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;visitMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exceptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
-        &lt;span class=&quot;nc&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wrappedMv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;visitMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
+        &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exceptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+        &lt;span class=&quot;n&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;visitMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exceptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
+        &lt;span class=&quot;n&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wrappedMv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
         &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
             &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;operation&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
-                &lt;span class=&quot;n&quot;&gt;wrappedMv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddSecurityCheckMethodAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
+                &lt;span class=&quot;n&quot;&gt;wrappedMv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AddSecurityCheckMethodAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
             &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&amp;lt;init&amp;gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
-                &lt;span class=&quot;n&quot;&gt;wrappedMv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ChangeToChildConstructorMethodAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
+                &lt;span class=&quot;n&quot;&gt;wrappedMv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ChangeToChildConstructorMethodAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
                     &lt;span class=&quot;n&quot;&gt;enhancedSuperName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
             &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
@@ -533,10 +587,10 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。&lt;/
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 
     
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;visit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
-            &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;superName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
-            &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;interfaces&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
-        &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;enhancedName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;$EnhancedByASM&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// 改变类命名&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;visit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
+            &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;superName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
+            &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;interfaces&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;enhancedName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;$EnhancedByASM&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// 改变类命名&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;enhancedSuperName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 改变父类，这里是”Account”&lt;/span&gt;
         &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;visit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;enhancedName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
         &lt;span class=&quot;n&quot;&gt;enhancedSuperName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;interfaces&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
@@ -545,31 +599,31 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。&lt;/
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddSecurityCheckMethodAdapter&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MethodAdapter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;AddSecurityCheckMethodAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddSecurityCheckMethodAdapter&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MethodAdapter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;AddSecurityCheckMethodAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
         &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
  
     &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;visitCode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
-        &lt;span class=&quot;n&quot;&gt;visitMethodInsn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Opcodes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;INVOKESTATIC&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;SecurityChecker&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
+        &lt;span class=&quot;n&quot;&gt;visitMethodInsn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Opcodes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;INVOKESTATIC&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;SecurityChecker&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
            &lt;span class=&quot;s&quot;&gt;&quot;checkSecurity&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;()V&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ChangeToChildConstructorMethodAdapter&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MethodAdapter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;superClassName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ChangeToChildConstructorMethodAdapter&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MethodAdapter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;superClassName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
  
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ChangeToChildConstructorMethodAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
-        &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;superClassName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ChangeToChildConstructorMethodAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MethodVisitor&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;superClassName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
         &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
         &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;superClassName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;superClassName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
  
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;visitMethodInsn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;opcode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;owner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
-        &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;visitMethodInsn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;opcode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;owner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
         &lt;span class=&quot;c1&quot;&gt;// 调用父类的构造函数时&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;opcode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Opcodes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;INVOKESPECIAL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&amp;lt;init&amp;gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;opcode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Opcodes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;INVOKESPECIAL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&amp;lt;init&amp;gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
             &lt;span class=&quot;n&quot;&gt;owner&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;superClassName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
         &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;visitMethodInsn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;opcode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;owner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 改写父类为 superClassName &lt;/span&gt;
@@ -579,28 +633,28 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。&lt;/
 
 &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SecureAccountGenerator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
  
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AccountGeneratorClassLoader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classLoader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AccountGeneratorClassLoader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classLoader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 
         &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;AccountGeneratorClassLoade&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt; 
      
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Class&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;secureAccountClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;secureAccountClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
      
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Account&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;generateSecureAccount&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClassFormatError&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
-        &lt;span class=&quot;nc&quot;&gt;InstantiationException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;IllegalAccessException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Account&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;generateSecureAccount&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ClassFormatError&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
+        &lt;span class=&quot;n&quot;&gt;InstantiationException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IllegalAccessException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
         &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;secureAccountClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;            
-            &lt;span class=&quot;nc&quot;&gt;ClassReader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClassReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Account&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
-            &lt;span class=&quot;nc&quot;&gt;ClassWriter&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClassWriter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ClassWriter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;COMPUTE_MAXS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
-            &lt;span class=&quot;nc&quot;&gt;ClassAdapter&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classAdapter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddSecurityCheckClassAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cw&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;cr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;accept&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;classAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClassReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;SKIP_DEBUG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
+            &lt;span class=&quot;n&quot;&gt;ClassReader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ClassReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Account&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
+            &lt;span class=&quot;n&quot;&gt;ClassWriter&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ClassWriter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ClassWriter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;COMPUTE_MAXS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
+            &lt;span class=&quot;n&quot;&gt;ClassAdapter&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classAdapter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AddSecurityCheckClassAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cw&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;cr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;accept&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;classAdapter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ClassReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;SKIP_DEBUG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
             &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cw&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toByteArray&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt; 
             &lt;span class=&quot;n&quot;&gt;secureAccountClass&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;defineClassFromClassFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; 
                &lt;span class=&quot;s&quot;&gt;&quot;Account$EnhancedByASM&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; 
         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Account&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;secureAccountClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;newInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt; 
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Account&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;secureAccountClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;newInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt; 
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
      
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AccountGeneratorClassLoader&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClassLoader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Class&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;defineClassFromClassFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;className&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
-            &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClassFormatError&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AccountGeneratorClassLoader&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ClassLoader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;defineClassFromClassFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;className&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
+            &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ClassFormatError&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;defineClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Account$EnhancedByASM&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;classFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; 
             &lt;span class=&quot;n&quot;&gt;classFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
         &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
@@ -766,318 +820,6 @@ https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng&lt;/p&gt;
         
         
         <category>产品商业</category>
-        
-      </item>
-    
-      <item>
-        <title>用户画像</title>
-        <description>&lt;h4 id=&quot;核心&quot;&gt;核心&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;用户画像体系，有这一篇就够了 &lt;a href=&quot;https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q&quot;&gt;https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;用户画像原理、技术选型及架构实现 &lt;a href=&quot;https://blog.csdn.net/SecondLieutenant/article/details/81153565&quot;&gt;https://blog.csdn.net/SecondLieutenant/article/details/81153565&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;用户画像概述&quot;&gt;用户画像概述&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;用户画像根本目的就是寻找目标客户、优化产品设计，指导运营策略，分析业务场景和完善业务形态。&lt;/li&gt;
-  &lt;li&gt;不同的企业做用户画像有不同的战略目的，广告公司做用户画像是为精准广告服务，电商做用户画像是为用户购买更多商品，内容平台做用户画像是推荐用户更感兴趣的内容提升流量再变现，金融行业做用户画像是为了寻找到目标客户的同时做好风险的控制。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;画像维度&quot;&gt;画像维度&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;特征：
-    &lt;ul&gt;
-      &lt;li&gt;人口统计：性别、年龄、教育&lt;/li&gt;
-      &lt;li&gt;社会属性：家庭、社交、职业&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;行为：
-    &lt;ul&gt;
-      &lt;li&gt;使用行为：手机使用、电脑类型、套餐使用、套餐余额&lt;/li&gt;
-      &lt;li&gt;消费行为：购买力、购买频次、购买渠道、额度、信用等级&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;需求
-    &lt;ul&gt;
-      &lt;li&gt;偏好属性：兴趣爱好、品牌爱好、产品爱好、网购偏好、支付偏好、价格偏好&lt;/li&gt;
-      &lt;li&gt;潜在需求：&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;指标体系&quot;&gt;指标体系&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;用户属性维度&lt;/li&gt;
-  &lt;li&gt;用户行为维度&lt;/li&gt;
-  &lt;li&gt;用户消费维度&lt;/li&gt;
-  &lt;li&gt;风险控制维度&lt;/li&gt;
-  &lt;li&gt;社交属性维度&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;画像之静态标签动态标签&quot;&gt;画像之静态标签、动态标签&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;静态画像：实时性弱、覆盖广、粒度粗&lt;/li&gt;
-  &lt;li&gt;动态画像：
-    &lt;ul&gt;
-      &lt;li&gt;一般建立兴趣模型，更加实时并且动态&lt;/li&gt;
-      &lt;li&gt;用户行为可疑结构为5W（What/Who/When/Where/Why)&lt;/li&gt;
-      &lt;li&gt;时效性非常敏感&lt;/li&gt;
-      &lt;li&gt;在空间上，不同应用领域侧重点不同，营销领域更侧重消费习惯，推荐领域更侧重喜好&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;画像之标签结构化程度&quot;&gt;画像之标签结构化程度&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;结构化标签体系，定向广告平台采用的结构化标签体系&lt;/li&gt;
-  &lt;li&gt;半结构化标签体系，在用于效果广告时，标签设计的灵活性大大提高了。标签体系是不是规整，就不那么重要了，只要有效果就行。&lt;/li&gt;
-  &lt;li&gt;非结构化标签体系，非结构化，就是各个标签就事论事，各自反应各自的用户兴趣，彼此之间并无层级关系，也很难组织成规整的树状结构。非结构化标签的典型例子，是搜索广告里用的关键词。还有Facebook用的用户兴趣词&lt;/li&gt;
-  &lt;li&gt;例如
-    &lt;ul&gt;
-      &lt;li&gt;汽车行业的标签体系大体应该是：价格—&amp;gt;车型—&amp;gt;品牌&lt;/li&gt;
-      &lt;li&gt;游戏行业：按照类别、游戏素材、游戏厂商等等。游戏的用户决策过程总体上令人难以捉摸，这是因为它有点儿电影、音乐一样的艺术性特质。而人们对艺术的喜爱，并不是理性的，也就难以总结规律。&lt;/li&gt;
-      &lt;li&gt;电商行业的实际做法大家都看到了，基本上不依靠分类，完全以“单品+个性化推荐”的方法构建和使用标签体系。&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;画像之应用&quot;&gt;画像之应用&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;精准营销：根据历史用户特征，分析产品的潜在用户和用户的潜在需求，针对特定群体，利用短信、邮件等方式进行营销。&lt;/li&gt;
-  &lt;li&gt;用户统计：根据用户的属性、行为特征对用户进行分类后，统计不同特征下的用户数量、分布；分析不同用户画像群体的分布特征。&lt;/li&gt;
-  &lt;li&gt;数据挖掘：以用户画像为基础构建推荐系统、搜索引擎、广告投放系统，提升服务精准度。&lt;/li&gt;
-  &lt;li&gt;服务产品：对产品进行用户画像，对产品进行受众分析，更透彻地理解用户使用产品的心理动机和行为习惯，完善产品运营，提升服务质量。&lt;/li&gt;
-  &lt;li&gt;行业报告&amp;amp;用户研究：通过用户画像分析可以了解行业动态，比如人群消费习惯、消费偏好分析、不同地域品类消费差异分析&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;画像之reachctr曲线&quot;&gt;画像之reach/CTR曲线&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;reach：该标签占总用户比例&lt;/li&gt;
-  &lt;li&gt;CTR：点击率&lt;/li&gt;
-  &lt;li&gt;reach越大，一般情况CTR会小&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;用户画像架构图&quot;&gt;用户画像架构图&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&quot;/img/user_profile.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;用户画像后台标签&quot;&gt;用户画像后台标签&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&quot;/img/user_profile_admin.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;用户业务标签&quot;&gt;用户业务标签&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&quot;/img/user_profile_tags.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;会员理论模型&quot;&gt;会员理论模型&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;会员体系模型：AIPL
-    &lt;ul&gt;
-      &lt;li&gt;Awareness潜客：内容运营、宣传吸引、新手任务、了解产品&lt;/li&gt;
-      &lt;li&gt;Interest粉丝：社会新闻、热点话题、习惯养成、积分积累&lt;/li&gt;
-      &lt;li&gt;Purchase会员：日常任务、促销活动、品牌影响力、共同利益&lt;/li&gt;
-      &lt;li&gt;Loyalty超级会员：专属特权、心理诉求、社群活动、1V1维护&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;会员体系模型：RFM
-    &lt;ul&gt;
-      &lt;li&gt;R(Recency)近度：距某节点最近的一次消费&lt;/li&gt;
-      &lt;li&gt;F(Frequency)频度：消费频次&lt;/li&gt;
-      &lt;li&gt;M (Monetary)额度：消费金额
-&lt;img src=&quot;/img/RFM.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;会员体系模型：AARRR
-    &lt;ul&gt;
-      &lt;li&gt;Acquisition（获取用户）：关注PV、UV、CPC、点击转化率、注册量、注册率、获客成本CAC&lt;/li&gt;
-      &lt;li&gt;Activation（提高活跃度）：关注登陆量、激活转化率、活跃度指标&lt;/li&gt;
-      &lt;li&gt;Retention（提高留存率）：关注留存率、复购率、人均购买次数、召回率&lt;/li&gt;
-      &lt;li&gt;Revenue（获取收入）：关注获客成本、顾客终身价值、营销ROI&lt;/li&gt;
-      &lt;li&gt;Referral（传播）：关注邀请量、激活量、邀请激活率、传播系数&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;鱼塘理论
-    &lt;ul&gt;
-      &lt;li&gt;养鱼、抓潜、成交、追销、形成自己的鱼塘&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;《上瘾》Hook模型概念
-    &lt;ul&gt;
-      &lt;li&gt;触发Trigger：即诱发用户采取行动，进入系统的契机。这是上瘾模型的第一步，也是最关键一步，如果这步不能引起用户的兴趣，后续就无从谈起。&lt;/li&gt;
-      &lt;li&gt;行动Action：按照斯坦福大学B.J.Fogg博士的Behavior Model理论，B=MAT，即行动（Behavior）=动机（Motivation）+能力（Ability）+触发器（Trigger）。&lt;/li&gt;
-      &lt;li&gt;多变的酬赏Variable Reward：当行为被触发之后，接下来就需要给用户一些酬赏进行持续刺激，以培养对他们对产品的使用习惯。酬赏简单来说就是产品带给用户的满足感，但为什么要强调“多变”呢？
-  据行为学研究，人们对产品的满足感会随着时间的推移逐渐降低，即使现阶段用户因为产品解决了某方面问题而产生依赖，但市面上的新产品层出不穷，要想不被淘汰，“无穷的多变性”是保持产品神秘感和吸引力，维持用户长期兴趣的关键。&lt;/li&gt;
-      &lt;li&gt;投入Investment：有研究表明，用户对某个产品投入时间精力的多寡与对这个产品的依赖程度成正比，就像免费东西你不会珍惜，而氪过金的游戏或服务反而会不断充值一样。已经享受酬赏的用户，想要他们对你的产品彻底“上瘾”，最后一步就是要让他们有所投入。
- &lt;img src=&quot;/img/hook.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-    &lt;p&gt;&lt;a href=&quot;https://www.sohu.com/a/239048631_100180218&quot;&gt;https://www.sohu.com/a/239048631_100180218&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;《疯传》STEPPS原则
-    &lt;ul&gt;
-      &lt;li&gt;社交货币（Social Currency）：我们会共享那些能让我们显得更优秀的事情&lt;/li&gt;
-      &lt;li&gt;诱因（Triggers）：顶尖的记忆，风口浪尖的提醒&lt;/li&gt;
-      &lt;li&gt;情绪（Emotion）：当我们关心时，我们回去分享&lt;/li&gt;
-      &lt;li&gt;公共性（Public）：构建可视的、正面的事物&lt;/li&gt;
-      &lt;li&gt;实用价值（Practical Value）：如果有用，人们会情不自禁地分享&lt;/li&gt;
-      &lt;li&gt;故事（Stories）：好故事就意味着成功了一般，好故事都有翅膀&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;参考&quot;&gt;参考&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;用户研究：如何做用户画像分析 &lt;a href=&quot;https://www.jianshu.com/p/440c30383bec&quot;&gt;https://www.jianshu.com/p/440c30383bec&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;什么是用户画像和标签？ &lt;a href=&quot;http://www.woshipm.com/user-research/1083807.html&quot;&gt;http://www.woshipm.com/user-research/1083807.html&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;结构化标签、非结构化标签及reach/CTR曲线 &lt;a href=&quot;http://www.woshipm.com/user-research/436269.html&quot;&gt;http://www.woshipm.com/user-research/436269.html&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;电商案例、金融案例（用户画像标签体系——从零开始搭建实时用户画像） &lt;a href=&quot;https://cloud.tencent.com/developer/column/79937&quot;&gt;https://cloud.tencent.com/developer/column/79937&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;航空公司案例、证券案例、打车公司案例 &lt;a href=&quot;https://www.zhihu.com/question/302695500&quot;&gt;https://www.zhihu.com/question/302695500&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;从阿里会员解读会员体系建设 &lt;a href=&quot;https://zhuanlan.zhihu.com/p/88738148&quot;&gt;https://zhuanlan.zhihu.com/p/88738148&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;用户画像10大误区 &lt;a href=&quot;https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA&quot;&gt;https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;1号店案例 &lt;a href=&quot;https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg&quot;&gt;https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Qunar用户画像构建策略及应用实践 &lt;a href=&quot;https://blog.csdn.net/xiaoshunzi111/article/details/53170658&quot;&gt;https://blog.csdn.net/xiaoshunzi111/article/details/53170658&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;
-    &lt;table&gt;
-      &lt;tbody&gt;
-        &lt;tr&gt;
-          &lt;td&gt;携程&lt;/td&gt;
-          &lt;td&gt;手把手教你用大数据打造用户画像 &lt;a href=&quot;https://blog.csdn.net/chenjunji123456/article/details/54966633&quot;&gt;https://blog.csdn.net/chenjunji123456/article/details/54966633&lt;/a&gt;&lt;/td&gt;
-        &lt;/tr&gt;
-      &lt;/tbody&gt;
-    &lt;/table&gt;
-  &lt;/li&gt;
-  &lt;li&gt;《用户画像：方法论与工程化解决方案》&lt;a href=&quot;https://www.jianshu.com/p/94dadecc162b&quot;&gt;https://www.jianshu.com/p/94dadecc162b&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;汽车之家如何构建用户画像 &lt;a href=&quot;https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw&quot;&gt;https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Mon, 22 Jun 2020 10:08:00 +0800</pubDate>
-        <link>http://localhost:4000/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html</guid>
-        
-        <category>用户</category>
-        
-        
-        <category>产品商业</category>
-        
-      </item>
-    
-      <item>
-        <title>Java基础</title>
-        <description>&lt;h4 id=&quot;基础&quot;&gt;基础&lt;/h4&gt;
-&lt;ol&gt;
-  &lt;li&gt;Hotspot 的作者经过以往的研究发现大多数情况下锁不仅不存在多线程竞争，而且总是由同一线
-程多次获得。偏向锁的目的是在某个线程获得锁之后，消除这个线程锁重入(CAS)的开销，看起
-来让这个线程得到了偏护。引入偏向锁是为了在无多线程竞争的情况下尽量减少不必要的轻量级
-锁执行路径，因为轻量级锁的获取及释放依赖多次 CAS 原子指令，而偏向锁只需要在置换
-ThreadID 的时候依赖一次 CAS 原子指令(由于一旦出现多线程竞争的情况就必须撤销偏向锁，所
-以偏向锁的撤销操作的性能损耗必须小于节省下来的 CAS 原子指令的性能消耗)。上面说过，轻
-量级锁是为了在线程交替执行同步块时提高性能，而偏向锁则是在只有一个线程执行同步块时进
-一步提高性能。&lt;/li&gt;
-  &lt;li&gt;很多情况下，主线程生成并启动了子线程，需要用到子线程返回的结果，也就是需要主线程需要
-在子线程结束后再结束，这时候就要用到 join() 方法。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4 id=&quot;java内存泄露&quot;&gt;Java内存泄露&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;非静态内部类引用了外部类，类似循环引用。使用静态内部类解决该问题。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;分布式垃圾回收dgc&quot;&gt;分布式垃圾回收DGC？&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;分布式垃圾回收。RMI使用DGC来做自动垃圾回收，因为RMI包含了跨虚拟机的远程对象的引用，
-  垃圾回收是很困难的。DGC使用引用计数算法来给远程对象提供自动内存管理。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;请对比下-volatile-对比-synchronized-的异同&quot;&gt;请对比下 volatile 对比 Synchronized 的异同。&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;Synchronized 既能保证可见性，又能保证原子性，而 volatile 只能保证可见性，无法保证原子性。&lt;/li&gt;
-  &lt;li&gt;ThreadLocal 和 Synchonized 都用于解决多线程并发访问，防止任务在共享资源上产生冲突。但是Thread Local 与 Synchronized 有本质的区别。
-    &lt;ul&gt;
-      &lt;li&gt;Synchronized 用于实现同步机制，是利用锁的机制使变量或代码块在某一时该只能被一个线程访问，是一种“以时间换空间”的方式。&lt;/li&gt;
-      &lt;li&gt;而ThreadLocal 为每一个线程都提供了变量的副本，使得每个线程在某一时间访问到的并不是同一个对象，根除了对变量的共享，是一种“以空间换时间”的方式。&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;请谈谈-threadlocal-是怎么解决并发安全的&quot;&gt;请谈谈 ThreadLocal 是怎么解决并发安全的？&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;ThreadLocal 这是Java提供的一种保存线程私有信息的机制，因为其在整个线程生命周期内有效，所以可以方便地在一个线程关联的不同业务模块之间传递信息，
-比如事务, Cookie等上下文相关信息。 ThreadLocal 为每一个线程维护变量的副本，把共享数据的可见范围限制在同一个线程之内，其实现原理是，在ThreadLocal 类中有一个Map ，用于存储每一个线程的变量的副本。
-ThreadLocal 注意需要自己remove，否则可能发生泄漏。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;throwable-是-java-语言中所有错误或异常的超类下一层分为-error-和-exception&quot;&gt;Throwable 是 Java 语言中所有错误或异常的超类。下一层分为 Error 和 Exception&lt;/h4&gt;
-&lt;ol&gt;
-  &lt;li&gt;Error 类是指 java 运行时系统的内部错误和资源耗尽错误。应用程序不会抛出该类对象。如果出现了这样的错误，除了告知用户，剩下的就是尽力使程序安全的终止。&lt;/li&gt;
-  &lt;li&gt;Exception 又有两个分支，一个是运行时异常 RuntimeException，一个是CheckedException。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4 id=&quot;序列化-id&quot;&gt;序列化 ID&lt;/h4&gt;
-&lt;p&gt;Java 平台允许我们在内存中创建可复用的 Java 对象，但一般情况下，只有当 JVM 处于运行时，
-这些对象才可能存在，即，这些对象的生命周期不会比 JVM 的生命周期更长。但在现实应用中，
-就可能要求在 JVM 停止运行之后能够保存(持久化)指定的对象，并在将来重新读取被保存的对象。
-Java 对象序列化就能够帮助我们实现该功能。
- 使用 Java 对象序列化，在保存对象时，会把其状态保存为一组字节，在未来，再将这些字节组装
- 成对象。必须注意地是，对象序列化保存的是对象的”状态”，即它的成员变量。由此可知，对
- 象序列化不会关注类中的静态变量。
- 除了在持久化对象时会用到对象序列化之外，当使用 RMI(远程方法调用)，或在网络中传递对象时，
- 都会用到对象序列化。Java 序列化 API 为处理对象序列化提供了一个标准机制，该 API 简单易用。
- 虚拟机是否允许反序列化，不仅取决于类路径和功能代码是否一致，一个非常重要的一点是两个
- 类的序列化 ID 是否一致(就是 private static final long serialVersionUID)&lt;/p&gt;
-
-&lt;h4 id=&quot;线程间共享&quot;&gt;线程间共享&lt;/h4&gt;
-&lt;p&gt;线程 A 与线程 B 之间如要通信的话，必须要经历下面 2 个步骤: 1. 首先，线程 A 把本地内存 A 中更新过的共享变量刷新到主内存中去。&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;然后，线程 B 到主内存中去读取线程 A 之前已更新过的共享变量。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4 id=&quot;iterater-和-listiterator-之间有什么区别&quot;&gt;Iterater 和 ListIterator 之间有什么区别?&lt;/h4&gt;
-&lt;p&gt;(1)我们可以使用 Iterator 来遍历 Set 和 List 集合，而 ListIterator 只能遍历 List。 (2)Iterator 只可以向前遍历，而 LIstIterator 可以双向遍历。
-(3)ListIterator 从 Iterator 接口继承，然后添加了一些额外的功能，比如添加一个元素、替 换一个元素、获取前面或后面元素的索引位置。&lt;/p&gt;
-
-&lt;h4 id=&quot;什么是-java-内存模型&quot;&gt;什么是 Java 内存模型&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;Java 内存模型定义了一种多线程访问 Java 内存的规范。Java 内存模型要完 整讲不是这里几句话能说清楚的，我简单总结一下 Java 内存模型的几部分内 容:&lt;/li&gt;
-  &lt;li&gt;Java 内存模型将内存分为了主内存和工作内存。类的状态，也就是类之间 共享的变量，是存储在主内存中的，每次 Java 线程用到这些主内存中的变量 的时候，会读一次主内存中的变量，并让这些内存在自己的工作内存中有一份
- 拷贝，运行自己线程代码的时候，用到这些变量，操作的都是自己工作内存中 的那一份。在线程代码执行完毕之后，会将最新的值更新到主内存中去&lt;/li&gt;
-  &lt;li&gt;定义了几个原子操作，用于操作主内存和工作内存中的变量&lt;/li&gt;
-  &lt;li&gt;定义了 volatile 变量的使用规则&lt;/li&gt;
-  &lt;li&gt;happens-before，即先行发生原则，定义了操作 A 必然先行发生于操作 B 的一些规则，比如在同一个线程内控制流前面的代码一定先行发生于控制流 后面的代码、一个释放锁 unlock 的动作一定先行发生于后面对于同一个锁进 行锁定 lock 的动作等等，只要符合这些规则，则不需要额外做同步措施，如 果某段代码不符合所有的 happens-before 规则，则这段代码一定是线程非 安全的&lt;/li&gt;
-  &lt;li&gt;8种内存间操作
-    &lt;ul&gt;
-      &lt;li&gt;lock：把一个变量标志为一条线程独占的状态&lt;/li&gt;
-      &lt;li&gt;
-        &lt;p&gt;unlock：把一个处于锁定状态的变量释放出来，释放之后的变量才能被其他线程锁定&lt;/p&gt;
-      &lt;/li&gt;
-      &lt;li&gt;read：把一个变量值从主内存传输到线程的工作内存，以便load&lt;/li&gt;
-      &lt;li&gt;
-        &lt;p&gt;load：把read操作从主内存得到的变量值放入到工作内存的变量副本中&lt;/p&gt;
-      &lt;/li&gt;
-      &lt;li&gt;write：把store操作从工作内存得到的变量的值，放到主内存的变量中&lt;/li&gt;
-      &lt;li&gt;
-        &lt;p&gt;store：把工作内存的变量值传到主内存，以便write&lt;/p&gt;
-      &lt;/li&gt;
-      &lt;li&gt;use：把工作内存变量值传递给执行引擎&lt;/li&gt;
-      &lt;li&gt;assign：将执行引擎值传递给工作内存变量值&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Pojo(plian ordinary普通的; 平常的; java object)&lt;/p&gt;
-
-&lt;h4 id=&quot;hashmap-为啥size是2的倍数18比17做了哪些优化&quot;&gt;HashMap 为啥size是2的倍数，1.8比1.7做了哪些优化？&lt;/h4&gt;
-&lt;p&gt;JDK1.7 VS JDK1.8 比较
-JDK1.8主要解决或优化了一下问题：
-resize 扩容优化
-引入了红黑树，目的是避免单条链表过长而影响查询效率，红黑树算法请参考
-解决了多线程死循环问题，但仍是非线程安全的，多线程时可能会造成数据丢失问题。&lt;/p&gt;
-
-&lt;h4 id=&quot;seata-的-demo&quot;&gt;Seata 的 Demo&lt;/h4&gt;
-</description>
-        <pubDate>Wed, 17 Jun 2020 20:25:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html</guid>
-        
-        <category>Java</category>
-        
-        
-        <category>技术</category>
         
       </item>
     

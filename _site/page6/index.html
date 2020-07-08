@@ -54,6 +54,324 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html"> SpringCloud </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Spring</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="spring">Spring</h4>
+<ul>
+  <li>Eureka：服务治理组件，包括服务端的注册中心和客户端的服务发现机制；</li>
+  <li>Ribbon：负载均衡的服务调用组件，具有多种负载均衡调用策略；</li>
+  <li>Hystrix：服务容错组件，实现了断路器模式，为依赖服务的出错和延迟提供了容错能力；</li>
+  <li>Feign：基于Ribbon和Hystrix的声明式服务调用组件；</li>
+  <li>Zuul：API网关组件，对请求提供路由及过滤功能。</li>
+  <li>Spring Cloud Bus
+用于传播集群状态变化的消息总线，使用轻量级消息代理链接分布式系统中的节点，可以用来动态刷新集群中的服务配置。
+Spring Cloud Bus 提供了跨多个实例刷新配置的功能。因此，在上面的示例中，如果我们刷新 Employee Producer1，则会自动刷新所有其他必需的模块。如果我们有多个微服务启动并运行，这特别有用。这是通过将所有微服务连接到单个消息代理来实现的。无论何时刷新实例，此事件都会订阅到侦听此代理的所有微服务，并且它们也会刷新。可以通过使用端点/总线/刷新来实现对任何单个实例的刷新。</li>
+  <li>Spring Cloud Consul
+基于Hashicorp Consul的服务治理组件。</li>
+  <li>Spring Cloud Security
+安全工具包，对Zuul代理中的负载均衡OAuth2客户端及登录认证进行支持。</li>
+  <li>Spring Cloud Sleuth
+Spring Cloud应用程序的分布式请求链路跟踪，支持使用Zipkin、HTrace和基于日志（例如ELK）的跟踪。</li>
+  <li>Spring Cloud Stream
+轻量级事件驱动微服务框架，可以使用简单的声明式模型来发送及接收消息，主要实现为Apache Kafka及RabbitMQ。</li>
+  <li>Spring Cloud Task
+用于快速构建短暂、有限数据处理任务的微服务框架，用于向应用中添加功能性和非功能性的特性。</li>
+  <li>Spring Cloud Zookeeper
+基于Apache Zookeeper的服务治理组件。</li>
+  <li>Spring Cloud Gateway
+API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是Spring Cloud官方推出的第二代网关框架，取代Zuul网关。网关作为流量的，在微服务系统中有着非常作用，网关常见的功能有路由转发、权限校验、限流控制等作用。
+使用了一个RouteLocatorBuilder的bean去创建路由，除了创建路由RouteLocatorBuilder可以让你添加各种predicates和filters，predicates断言的意思，顾名思义就是根据具体的请求的规则，由具体的route去处理，filters是各种过滤器，用来对请求做各种判断和修改。</li>
+  <li>Spring Cloud OpenFeign
+基于Ribbon和Hystrix的声明式服务调用组件，可以动态创建基于Spring MVC注解的接口实现用于服务调用，在Spring Cloud 2.0中已经取代Feign成为了一等公民。</li>
+  <li>什么是Spring Cloud Config?
+在分布式系统中，由于服务数量巨多，为了方便服务配置文件统一管理，实时更新，所以需要分布式配置中心组件。在Spring Cloud中，有分布式配置中心组件spring cloud config ，它支持配置服务放在配置服务的内存中（即本地），也支持放在远程Git仓库中。在spring cloud config 组件中，分两个角色，一是config server，二是config client。
+使用：（1）添加pom依赖（2）配置文件添加相关配置（3）启动类添加注解@EnableConfigServer</li>
+  <li>Spring中使用@Autowired注解静态实例对象 <a href="https://blog.csdn.net/RogueFist/article/details/79575665">https://blog.csdn.net/RogueFist/article/details/79575665</a></li>
+  <li>多个ApplicationRunner，可以用@Order指定优先级串行执行的，如果优先级高的block了，后面的需要等着</li>
+</ul>
+
+<h3 id="关于微服务">关于微服务</h3>
+<ul>
+  <li>SOA(ESB)与微服务
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/30477325">https://zhuanlan.zhihu.com/p/30477325</a></li>
+      <li><a href="https://www.cnblogs.com/guanghe/p/10978349.html">https://www.cnblogs.com/guanghe/p/10978349.html</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA">https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA</a></li>
+    </ul>
+  </li>
+  <li>微服务哪些事
+    <ul>
+      <li><a href="https://windmt.com/2018/04/14/spring-cloud-0-microservices/">https://windmt.com/2018/04/14/spring-cloud-0-microservices/</a></li>
+      <li><a href="https://windmt.com/2018/04/14/spring-cloud-1-services-governance/">https://windmt.com/2018/04/14/spring-cloud-1-services-governance/</a></li>
+    </ul>
+  </li>
+  <li>SpringCloud &amp; Dubbo
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ">https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A">https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A</a></li>
+      <li><a href="http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html">阿里Dubbo与Spring Cloud</a></li>
+    </ul>
+  </li>
+  <li>RPC之thrift/gRPC
+    <ul>
+      <li><a href="https://blog.csdn.net/kesonyk/article/details/50924489">https://blog.csdn.net/kesonyk/article/details/50924489</a></li>
+      <li><a href="https://developer.51cto.com/art/201908/601617.htm">https://developer.51cto.com/art/201908/601617.htm</a></li>
+      <li><a href="https://segmentfault.com/a/1190000011478469">https://segmentfault.com/a/1190000011478469</a></li>
+      <li><a href="https://zhuanlan.zhihu.com/p/136112210">https://zhuanlan.zhihu.com/p/136112210</a></li>
+      <li>RPC与HTTP的关系 <a href="https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg">https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg</a></li>
+      <li>快速理解RPC技术——基本概念、原理和用途 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620</a></li>
+    </ul>
+  </li>
+  <li>WebService某种程度上也是一种RPC
+    <ul>
+      <li>WebService的历史 <a href="https://www.iteye.com/blog/andot-662787">https://www.iteye.com/blog/andot-662787</a></li>
+      <li>WebService的demo<a href="https://blog.csdn.net/weixin_42672054/article/details/81708464">https://blog.csdn.net/weixin_42672054/article/details/81708464</a></li>
+      <li>2000年左右出现xml，借此微软等联盟推出了基于XML的SOAP协议，实现各系统之间的通信</li>
+      <li>thrift/webservice等可以生成客户端代码，隐藏了底层通信细节，对象化了数据（否则需要自行解析）</li>
+      <li>thrift、dobbo等方式基于TCP实现，主要是性能方面的考虑吧</li>
+    </ul>
+  </li>
+  <li>hessian / sofa</li>
+</ul>
+
+<h3 id="just-do-springcloud">Just Do SpringCloud</h3>
+<ul>
+  <li>首选 <a href="https://windmt.com/tags/Spring-Cloud/">https://windmt.com/tags/Spring-Cloud/</a></li>
+  <li><a href="https://www.springcloud.cc/">springcloud.cc</a></li>
+  <li><a href="http://springcloud.fun">springcloud.fun</a></li>
+  <li><a href="https://www.zhihu.com/question/283286745/answer/763040709">大话SpringCloud</a></li>
+  <li><a href="https://www.geekdigging.com">https://www.geekdigging.com</a></li>
+</ul>
+
+<h3 id="常见组件">常见组件</h3>
+<ul>
+  <li>服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul、携程apollo
+    <ul>
+      <li><a href="https://www.jianshu.com/p/5c5753d2aeb0">Zookeeper保证的是CP，Eureka保证的是AP</a></li>
+    </ul>
+  </li>
+  <li>客户端负载均衡：Netflix Ribbon (提供云端负载均衡，有多种负载均衡策略可供选择，可配合服务发现和断路器使用。)
+    <ul>
+      <li>客户端负载均衡(Ribbon)服务实例的清单在客户端，客户端进行负载均衡算法分配。(从上面的知识我们已经知道了：客户端可以从Eureka Server中得到一份服务清单，在发送请求时通过负载均衡算法，在多个服务器之间选择一个进行访问)
+Zuul路由的业务，对业务进行了归类，并交给了对应的微服务。</li>
+      <li>服务端负载均衡(Nginx)服务实例的清单在服务端，服务器进行负载均衡算法分配,
+Nginx路由请求的压力，对请求进行平均后，交给了服务器处理。</li>
+      <li><a href="https://www.cnblogs.com/kongxianghai/p/8477781.html">撸一撸Spring Cloud Ribbon的原理-负载均衡策略</a></li>
+      <li>可以使用Ribbon + resetTemplate 或者直接使用 Feign（已经内置Ribbon）来实现客户端侧的负载均衡</li>
+    </ul>
+  </li>
+  <li>熔断器：Netflix Hystrix（Envoy)</li>
+  <li>Spring Cloud Feign：它基于 Netflix Feign 实现，整合了 Spring Cloud Ribbon 与 Spring Cloud Hystrix, 除了整合这两者的强大功能之外，它还提 供了声明式的服务调用(不再通过RestTemplate)。
+  生产环境一般使用restTemplate + ribbon</li>
+  <li>服务网关: Netflix Zuul  、 Spring Cloud GateWay
+    <ul>
+      <li>Zuul相当于一个分布式的大Servlet+Filter入口可进行路由及过滤等</li>
+      <li>Zuul也可以近似的理解为是SOA里的ESB，统一入口调用</li>
+      <li>Zuul也默认集成了Hystrix与Ribbon</li>
+    </ul>
+  </li>
+  <li>分布式配置：Spring Cloud Config (Chef)</li>
+  <li>时间消息总线：Spring Cloud Bus</li>
+  <li>链路追踪：Spring Cloud Sleuth 与 Twitter Zipkin</li>
+  <li>数据流：Spring Cloud Stream (数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。)</li>
+  <li>服务监控：Zabbix、Nagios、Metrics、Spectator</li>
+</ul>
+
+<h3 id="相关组件">相关组件</h3>
+<h4 id="zookeeper">zookeeper</h4>
+<ul>
+  <li>简单理解，zk就是一套简单的文件系统结构，本目录(节点)可以设置value及subNode,
+并且该节点可以设置不同的权限（默认/用户名+密码/ip/秘钥，这4种)</li>
+  <li>zk集群简单理解就是，基于ZAB一致性算法的变种keep alived集群</li>
+  <li>zk集群是CP模型，强一致性的，也就是说数据出现了不一致性（通常是节点挂了），整个服务集群就会Hold住等待数据一致，
+所以，这个缺点导致zk并不是最佳的注册中心，因为服务注册中心AP模型最好，部分服务有问题并不表示所有服务不可用。</li>
+  <li>zookeeper 命令 <a href="https://blog.csdn.net/feixiang2039/article/details/79810102">https://blog.csdn.net/feixiang2039/article/details/79810102</a></li>
+  <li>Curator实现的zk分布式锁 <a href="https://www.sohu.com/a/341386202_315839">https://www.sohu.com/a/341386202_315839</a></li>
+</ul>
+
+<h3 id="基于springcloud的开源项目">基于SpringCloud的开源项目</h3>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html"> Nginx </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="location-优先级从高到低">location 优先级从高到低</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. location <span class="o">=</span>    <span class="c"># 精准匹配</span>
+2. location ^~   <span class="c"># 带参前缀匹配</span>
+3. location ~    <span class="c"># 正则匹配（区分大小写）</span>
+4. location ~<span class="k">*</span>   <span class="c"># 正则匹配（不区分大小写）</span>
+5. location /a   <span class="c"># 普通前缀匹配，优先级低于带参数前缀匹配。</span>
+6. location /    <span class="c"># 任何没有匹配成功的，都会匹配这里处理</span>
+</code></pre></div></div>
+<h4 id="location-示例">location 示例</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+location  <span class="o">=</span> / <span class="o">{</span>
+    <span class="c"># 只精准匹配 / 的查询.</span>
+  <span class="o">[</span> configuration A <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 匹配成功： / </span>
+
+location / <span class="o">{</span>
+    <span class="c"># 匹配任何请求，因为所有请求都是以”/“开始</span>
+    <span class="c"># 但是更长字符匹配或者正则表达式匹配会优先匹配</span>
+  <span class="o">[</span> configuration B <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c">#匹配成功：/index.html</span>
+
+location /documents <span class="o">{</span>
+    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
+    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
+  <span class="o">[</span> configuration C <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 匹配成功：/documents/document.html</span>
+<span class="c"># 匹配成功：/documents/abc</span>
+
+location ~ /documents/ABC <span class="o">{</span>
+    <span class="c"># 区分大小写的正则匹配</span>
+    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
+    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
+  <span class="o">[</span> configuration CC <span class="o">]</span> 
+<span class="o">}</span>
+
+location ^~ /images/ <span class="o">{</span>
+    <span class="c"># 匹配任何以 /images/ 开头的地址，匹配符合以后，立即停止往下搜索正则，采用这一条。/</span>
+  <span class="o">[</span> configuration D <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 成功匹配：/images/a.gif</span>
+
+location ~<span class="k">*</span> <span class="se">\.</span><span class="o">(</span>gif|jpg|jpeg<span class="o">)</span><span class="nv">$ </span><span class="o">{</span>
+    <span class="c"># 匹配所有以 .gif、.jpg 或 .jpeg 结尾的请求，不区分大小写</span>
+    <span class="c"># 然而，所有请求 /images/ 下的图片会被 [ config D ]  处理，因为 ^~ 到达不了这一条正则/</span>
+    <span class="o">[</span> configuration E <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 成功匹配：/documents/a.jpg</span>
+
+location /images/ <span class="o">{</span>
+    <span class="c"># 字符匹配到 /images/，继续往下，会发现 ^~ 存在/</span>
+  <span class="o">[</span> configuration F <span class="o">]</span> 
+<span class="o">}</span>
+
+location /images/abc <span class="o">{</span>
+    <span class="c"># 最长字符匹配到 /images/abc，继续往下，会发现 ^~ 存在/</span>
+    <span class="c"># F与G的放置顺序是没有关系的/</span>
+  <span class="o">[</span> configuration G <span class="o">]</span> 
+<span class="o">}</span>
+
+location ~ /images/abc/ <span class="o">{</span>
+    <span class="c"># 只有去掉 [ config D ] 才有效：先最长匹配 [ config G ] 开头的地址，继续往下搜索，匹配到这一条正则，采用/</span>
+    <span class="o">[</span> configuration H <span class="o">]</span> 
+<span class="o">}</span>
+</code></pre></div></div>
+<h4 id="命名-location">命名 location</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>location / <span class="o">{</span>
+    try_files <span class="nv">$uri</span> <span class="nv">$uri</span>/ @custom
+<span class="o">}</span>
+location @custom <span class="o">{</span>
+    <span class="c"># ...do something</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<h4 id="全局变量">全局变量</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$args</span> ： <span class="c">#这个变量等于请求行中的参数，同$query_string</span>
+<span class="nv">$content_length</span> ： 请求头中的Content-length字段。
+<span class="nv">$content_type</span> ： 请求头中的Content-Type字段。
+<span class="nv">$document_root</span> ： 当前请求在root指令中指定的值。
+<span class="nv">$host</span> ： 请求主机头字段，否则为服务器名称。
+<span class="nv">$http_user_agent</span> ： 客户端agent信息
+<span class="nv">$http_cookie</span> ： 客户端cookie信息
+<span class="nv">$limit_rate</span> ： 这个变量可以限制连接速率。
+<span class="nv">$request_method</span> ： 客户端请求的动作，通常为GET或POST。
+<span class="nv">$remote_addr</span> ： 客户端的IP地址。
+<span class="nv">$remote_port</span> ： 客户端的端口。
+<span class="nv">$remote_user</span> ： 已经经过Auth Basic Module验证的用户名。
+<span class="nv">$request_filename</span> ： 当前请求的文件路径，由root或alias指令与URI请求生成。
+<span class="nv">$scheme</span> ： HTTP方法（如http，https）。
+<span class="nv">$server_protocol</span> ： 请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
+<span class="nv">$server_addr</span> ： 服务器地址，在完成一次系统调用后可以确定这个值。
+<span class="nv">$server_name</span> ： 服务器名称。
+<span class="nv">$server_port</span> ： 请求到达服务器的端口号。
+<span class="nv">$request_uri</span> ： 包含请求参数的原始URI，不包含主机名，如：”/foo/bar.php?arg<span class="o">=</span>baz”。
+<span class="nv">$uri</span> ： 不带请求参数的当前URI，<span class="nv">$uri</span>不包含主机名，如”/foo/bar.html”。
+<span class="nv">$document_uri</span> ： 与<span class="nv">$uri</span>相同。
+</code></pre></div></div>
+<h4 id="rewrite规则">Rewrite规则</h4>
+<ul>
+  <li>rewrite功能就是，使用nginx提供的全局变量或自己设置的变量，结合正则表达式和标志位实现url重写以及重定向。rewrite只能放在server{},location{},if{}中，并且只能对域名后边的除去传递的参数外的字符串起作用，例如 http://seanlook.com/a/we/index.php?id=1&amp;u=str 只对/a/we/index.php重写。语法rewrite regex replacement [flag];</li>
+  <li>如果相对域名或参数字符串起作用，可以使用全局变量匹配，也可以使用proxy_pass反向代理。</li>
+  <li>表明看rewrite和location功能有点像，都能实现跳转，主要区别在于rewrite是在同一域名内更改获取资源的路径，而location是对一类路径做控制访问或反向代理，可以proxy_pass到其他机器。很多情况下rewrite也会写在location里，它们的执行顺序是：
+    <ul>
+      <li>执行server块的rewrite指令</li>
+      <li>执行location匹配</li>
+      <li>执行选定的location中的rewrite指令</li>
+    </ul>
+  </li>
+  <li>如果其中某步URI被重写，则重新循环执行1-3，直到找到真实存在的文件；循环超过10次，则返回500 Internal Server Error错误。</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>执行搜索
+这个规则的目的是为了执行搜索，搜索URL中包含的关键字。
+请求的URL //hqidi.com/search/some-search-keywords
+重写后URL //hqidi.com/search.php?p<span class="o">=</span>some-search-keywords
+重写规则         rewrite ^/search/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/search.php?p<span class="o">=</span><span class="nv">$1</span>?<span class="p">;</span>
+
+用户个人资料页面
+大多数运行访问者注册的动态网站都提供一个可以查看个人资料的页面，这个页面的URL包含用户的UID和用户名
+请求的URL //hqidi.com/user/47/dige
+重写后URL //hqidi.com/user.php?id<span class="o">=</span>47&amp;name<span class="o">=</span>dige
+重写规则         rewrite ^/user/<span class="o">([</span>0-9]+<span class="o">)</span>/<span class="o">(</span>.+<span class="o">)</span><span class="nv">$ </span>/user.php?id<span class="o">=</span><span class="nv">$1</span>&amp;name<span class="o">=</span><span class="nv">$2</span>?<span class="p">;</span>
+
+多个参数
+有些网站对字符串参数使用不同的语法，例如 通过斜线“/”来分隔非命名参数
+请求的URL //hqidi.com/index.php/param1/param2/param3
+重写后URL //hqidi.com/index.php?p1<span class="o">=</span>param1&amp;p2<span class="o">=</span>param2&amp;p3<span class="o">=</span>param3
+重写规则         rewrite ^/index.php/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/index.php?p1<span class="o">=</span><span class="nv">$1</span>&amp;p2<span class="o">=</span><span class="nv">$2</span>&amp;p3<span class="o">=</span><span class="nv">$3</span>?<span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>location 配置一 <a href="https://segmentfault.com/a/1190000022315733">https://segmentfault.com/a/1190000022315733</a></li>
+  <li>location 配置二 <a href="https://segmentfault.com/a/1190000022407797">https://segmentfault.com/a/1190000022407797</a></li>
+  <li>Nginx 架构原理科普 <a href="https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ">https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ</a></li>
+  <li>OpenResty 概要及原理科普 <a href="https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw">https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw</a></li>
+  <li>微服务网关 Kong 科普 <a href="https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g">https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html"> Java ClassLoader </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
@@ -124,36 +442,36 @@
 <h4 id="springboot启动原理-">SpringBoot启动原理 ☆☆☆</h4>
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">boot</span><span class="o">;</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SpringApplication</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="nf">SpringApplication</span><span class="o">(</span><span class="nc">ResourceLoader</span> <span class="n">resourceLoader</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">primarySources</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">SpringApplication</span><span class="o">(</span><span class="n">ResourceLoader</span> <span class="n">resourceLoader</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">primarySources</span><span class="o">)</span> <span class="o">{</span>
             <span class="c1">// ... 省略代码</span>
             <span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span> <span class="o">=</span> <span class="n">resourceLoader</span><span class="o">;</span>
-            <span class="nc">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">primarySources</span><span class="o">,</span> <span class="s">"PrimarySources must not be null"</span><span class="o">);</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">primarySources</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashSet</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">primarySources</span><span class="o">));</span>
+            <span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">primarySources</span><span class="o">,</span> <span class="s">"PrimarySources must not be null"</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">primarySources</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashSet</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">primarySources</span><span class="o">));</span>
             <span class="c1">// 1. 推测ApplicationType</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">webApplicationType</span> <span class="o">=</span> <span class="nc">WebApplicationType</span><span class="o">.</span><span class="na">deduceFromClasspath</span><span class="o">();</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">webApplicationType</span> <span class="o">=</span> <span class="n">WebApplicationType</span><span class="o">.</span><span class="na">deduceFromClasspath</span><span class="o">();</span>
             <span class="c1">// 2. 根据spring.factories初始化ApplicationContextInitializer 与 ApplicationListener</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">setInitializers</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="nc">ApplicationContextInitializer</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">setListeners</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="nc">ApplicationListener</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">setInitializers</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">ApplicationContextInitializer</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">setListeners</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">ApplicationListener</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
             <span class="c1">// 3. 推测 Main入口</span>
             <span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">deduceMainApplicationClass</span><span class="o">();</span>
     <span class="o">}</span>
-    <span class="kd">public</span> <span class="nc">ConfigurableApplicationContext</span> <span class="nf">run</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">ConfigurableApplicationContext</span> <span class="nf">run</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">// ... 省略代码</span>
-        <span class="nc">ConfigurableApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="nc">Collection</span><span class="o">&lt;</span><span class="nc">SpringBootExceptionReporter</span><span class="o">&gt;</span> <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">();</span>
+        <span class="n">ConfigurableApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="n">Collection</span><span class="o">&lt;</span><span class="n">SpringBootExceptionReporter</span><span class="o">&gt;</span> <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">();</span>
         <span class="k">this</span><span class="o">.</span><span class="na">configureHeadlessProperty</span><span class="o">();</span>
-        <span class="nc">SpringApplicationRunListeners</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getRunListeners</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+        <span class="n">SpringApplicationRunListeners</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getRunListeners</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
         <span class="c1">// 4. SpringApplicationRunListeners生命周期之started()</span>
         <span class="n">listeners</span><span class="o">.</span><span class="na">starting</span><span class="o">();</span>
         <span class="c1">// ... 省略代码</span>
-       <span class="nc">Collection</span> <span class="n">exceptionReporters</span><span class="o">;</span>
-       <span class="nc">ApplicationArguments</span> <span class="n">applicationArguments</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultApplicationArguments</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+       <span class="n">Collection</span> <span class="n">exceptionReporters</span><span class="o">;</span>
+       <span class="n">ApplicationArguments</span> <span class="n">applicationArguments</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultApplicationArguments</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
        <span class="c1">// 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared()</span>
-       <span class="nc">ConfigurableEnvironment</span> <span class="n">environment</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">prepareEnvironment</span><span class="o">(</span><span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
+       <span class="n">ConfigurableEnvironment</span> <span class="n">environment</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">prepareEnvironment</span><span class="o">(</span><span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
        <span class="k">this</span><span class="o">.</span><span class="na">configureIgnoreBeanInfo</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
-       <span class="nc">Banner</span> <span class="n">printedBanner</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">printBanner</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
+       <span class="n">Banner</span> <span class="n">printedBanner</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">printBanner</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
        <span class="n">context</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">createApplicationContext</span><span class="o">();</span>
-       <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="nc">SpringBootExceptionReporter</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Class</span><span class="o">[]{</span><span class="nc">ConfigurableApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="n">context</span><span class="o">);</span>
+       <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">SpringBootExceptionReporter</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">ConfigurableApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="n">context</span><span class="o">);</span>
        <span class="c1">// 6. 初始化类加载器、bean产生器、资源加载器等，打印banner</span>
        <span class="k">this</span><span class="o">.</span><span class="na">prepareContext</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">environment</span><span class="o">,</span> <span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">,</span> <span class="n">printedBanner</span><span class="o">);</span>
        <span class="c1">// 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等</span>
@@ -162,7 +480,7 @@
        <span class="k">this</span><span class="o">.</span><span class="na">afterRefresh</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
        <span class="n">stopWatch</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">logStartupInfo</span><span class="o">)</span> <span class="o">{</span>
-           <span class="o">(</span><span class="k">new</span> <span class="nc">StartupInfoLogger</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span><span class="o">)).</span><span class="na">logStarted</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getApplicationLog</span><span class="o">(),</span> <span class="n">stopWatch</span><span class="o">);</span>
+           <span class="o">(</span><span class="k">new</span> <span class="n">StartupInfoLogger</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span><span class="o">)).</span><span class="na">logStarted</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getApplicationLog</span><span class="o">(),</span> <span class="n">stopWatch</span><span class="o">);</span>
        <span class="o">}</span>
        <span class="n">listeners</span><span class="o">.</span><span class="na">started</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
        <span class="k">this</span><span class="o">.</span><span class="na">callRunners</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
@@ -206,9 +524,9 @@ Realm: Realm 充当了 Shiro 与应用安全数据间的“桥梁”或者“连
 <span class="c1">// 因此在pom中引入spring-boot-starter-jdbc后，即可触发加载操作</span>
 <span class="c1">// 接下来就是根据spring.datasource相关配置初始化PooledDataSource 或者 直接使用EmbeddedDatabase</span>
 <span class="nd">@Configuration</span>
-<span class="nd">@ConditionalOnClass</span><span class="o">({</span><span class="nc">DataSource</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">EmbeddedDatabaseType</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
-<span class="nd">@EnableConfigurationProperties</span><span class="o">({</span><span class="nc">DataSourceProperties</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
-<span class="nd">@Import</span><span class="o">({</span><span class="nc">DataSourcePoolMetadataProvidersConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">DataSourceInitializationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="nd">@ConditionalOnClass</span><span class="o">({</span><span class="n">DataSource</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">EmbeddedDatabaseType</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="nd">@EnableConfigurationProperties</span><span class="o">({</span><span class="n">DataSourceProperties</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="nd">@Import</span><span class="o">({</span><span class="n">DataSourcePoolMetadataProvidersConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">DataSourceInitializationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataSourceAutoConfiguration</span> <span class="o">{</span>
 <span class="o">}</span>
 <span class="c1">// </span>
@@ -324,19 +642,19 @@ Realm: Realm 充当了 Shiro 与应用安全数据间的“桥梁”或者“连
 <span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogTraceInterceptor</span> <span class="kd">extends</span> <span class="nc">HandlerInterceptorAdapter</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogTraceInterceptor</span> <span class="kd">extends</span> <span class="n">HandlerInterceptorAdapter</span> <span class="o">{</span>
 
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">preHandle</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">handler</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="no">MDC</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">,</span> <span class="nc">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">+</span><span class="s">":"</span><span class="o">+</span><span class="nc">RandomHelper</span><span class="o">.</span><span class="na">generateNonceNumStr</span><span class="o">(</span><span class="mi">8</span><span class="o">));</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">preHandle</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">MDC</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">,</span> <span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">+</span><span class="s">":"</span><span class="o">+</span><span class="n">RandomHelper</span><span class="o">.</span><span class="na">generateNonceNumStr</span><span class="o">(</span><span class="mi">8</span><span class="o">));</span>
         <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">preHandle</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">postHandle</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="nc">ModelAndView</span> <span class="n">modelAndView</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">postHandle</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="n">ModelAndView</span> <span class="n">modelAndView</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">.</span><span class="na">postHandle</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">,</span> <span class="n">modelAndView</span><span class="o">);</span>
-        <span class="no">MDC</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="nc">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">);</span>
+        <span class="n">MDC</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
@@ -623,198 +941,6 @@ Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html">Docker</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 12, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>容器</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="docker原理-">Docker原理 ☆☆☆</h4>
-<ul>
-  <li>cgroups (2006年 linux推出)</li>
-  <li>namespace</li>
-</ul>
-
-<h4 id="docker-hello-world">Docker Hello World!</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run hello-world
-docker run ubuntu:15.10 /bin/echo <span class="s2">"Hello world"</span>
-</code></pre></div></div>
-<h4 id="docker-pull-image">Docker pull Image</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull library/hello-world
-</code></pre></div></div>
-<h4 id="docker-run-nginx">docker run nginx</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">--name</span> my_nginx_v1 <span class="nt">-p</span> 8080:80 <span class="nt">-d</span> nginx:v1
-<span class="c">## --name nginx-test：容器名称。</span>
-<span class="c">## -p 8080:80： 端口进行映射，将本地 8080 端口映射到容器内部的 80 端口。</span>
-<span class="c">## -d nginx： 设置容器在在后台一直运行。</span>
-</code></pre></div></div>
-<p><a href="https://www.runoob.com/docker/docker-install-nginx.html">https://www.runoob.com/docker/docker-install-nginx.html</a></p>
-
-<h4 id="docker-run-springboot">docker run springboot</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-p</span> 8080:8080 <span class="nt">-t</span> springboot/spring-boot-docker
-</code></pre></div></div>
-<p><a href="http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html">http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html</a></p>
-<h4 id="查看运行的容器">查看运行的容器</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker ps
-docker ps <span class="nt">-a</span>
-<span class="c"># 输出详情介绍：</span>
-<span class="c">## CONTAINER ID: 容器 ID。</span>
-<span class="c">## IMAGE: 使用的镜像。</span>
-<span class="c">## COMMAND: 启动容器时运行的命令。</span>
-<span class="c">## CREATED: 容器的创建时间。</span>
-
-<span class="c">## STATUS: 容器状态。</span>
-<span class="c">## 状态有7种：</span>
-<span class="c">### created（已创建）</span>
-<span class="c">### restarting（重启中）</span>
-<span class="c">### running（运行中）</span>
-<span class="c">### removing（迁移中）</span>
-<span class="c">### paused（暂停）</span>
-<span class="c">### exited（停止）</span>
-<span class="c">### dead（死亡）</span>
-
-<span class="c">## PORTS: 容器的端口信息和使用的连接类型（tcp\udp）。</span>
-<span class="c">## NAMES: 自动分配的容器名称。</span>
-</code></pre></div></div>
-<h4 id="查看容器内的标准输出日志">查看容器内的标准输出日志</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker logs 2b1b7a428627
-</code></pre></div></div>
-<h4 id="启动重启停止容器">启动/重启/停止容器</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start/restart amazing_cori
-docker stop 2b1b7a428627
-</code></pre></div></div>
-<h4 id="删除容器镜像">删除容器/镜像</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">rm </span>20ca2a70ee13
-docker rmi ec49dbd13cf5
-</code></pre></div></div>
-<h4 id="compose-machine-swarm">Compose Machine Swarm</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-</code></pre></div></div>
-<p><a href="http://www.ityouknow.com/docker/2018/03/22/docker-compose.html">http://www.ityouknow.com/docker/2018/03/22/docker-compose.html</a></p>
-<h4 id="docker中run和start的区别">docker中run和start的区别</h4>
-<ul>
-  <li>docker run 后面指定的是一个镜像</li>
-  <li>而docker start指定的是一个容器</li>
-  <li>docker run是利用镜像生成容器，并启动容器，而docker start是启动一个之前生成过的容器</li>
-</ul>
-
-<h4 id="dockerfile-命令详解">Dockerfile 命令详解</h4>
-<p><a href="http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html">http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html</a></p>
-
-<p><a href="http://www.ityouknow.com/docker.html">http://www.ityouknow.com/docker.html</a></p>
-
-<h4 id="cloud-foundry和-kubernetes-的区别">Cloud Foundry和 Kubernetes 的区别</h4>
-<p><a href="https://blog.csdn.net/qq_30154571/article/details/84955097">https://blog.csdn.net/qq_30154571/article/details/84955097</a></p>
-
-<h4 id="cloud-foundry-与kubernetes-cfk8s结合简史">Cloud Foundry 与Kubernetes: CF/K8s结合简史</h4>
-<p><a href="https://blog.csdn.net/zhanggongsw/article/details/79948420">https://blog.csdn.net/zhanggongsw/article/details/79948420</a></p>
-
-<h4 id="阿里飞天云apsara-stack和openstack">阿里飞天云Apsara Stack和OpenStack</h4>
-<ul>
-  <li><a href="https://blog.csdn.net/liuxiao723846/article/details/82630926">https://blog.csdn.net/liuxiao723846/article/details/82630926</a></li>
-  <li><a href="https://www.csdn.net/gather_21/MtTaYg1sNTY5Mi1ibG9n.html">https://www.csdn.net/gather_21/MtTaYg1sNTY5Mi1ibG9n.html</a></li>
-</ul>
-
-<h4 id="kubernetes-vs-openstack">Kubernetes vs OpenStack</h4>
-<ul>
-  <li><a href="https://blog.csdn.net/luanpeng825485697/article/details/86706131">https://blog.csdn.net/luanpeng825485697/article/details/86706131</a></li>
-  <li><a href="https://blog.csdn.net/dualvencsdn/article/details/79207281">https://blog.csdn.net/dualvencsdn/article/details/79207281</a></li>
-  <li><a href="https://www.kubernetes.org.cn/2121.html">https://www.kubernetes.org.cn/2121.html</a></li>
-  <li><a href="https://www.cnblogs.com/goldsunshine/p/9872142.html">https://www.cnblogs.com/goldsunshine/p/9872142.html</a></li>
-</ul>
-
-<h4 id="google-kubernetes--docker-swarm--mesos-marathon">Google Kubernetes &amp; Docker Swarm &amp; Mesos Marathon</h4>
-<ul>
-  <li><a href="https://www.kubernetes.org.cn/757.html">https://www.kubernetes.org.cn/757.html</a></li>
-  <li><a href="https://www.zhihu.com/question/55391506">https://www.zhihu.com/question/55391506</a></li>
-  <li><a href="https://www.cnblogs.com/wzj4858/p/7910883.html">https://www.cnblogs.com/wzj4858/p/7910883.html</a></li>
-  <li><a href="http://dockone.io/article/823">http://dockone.io/article/823</a></li>
-  <li><a href="https://zhuanlan.zhihu.com/p/28301108">https://zhuanlan.zhihu.com/p/28301108</a></li>
-</ul>
-
-<h4 id="国内外paas服务一览">国内外PaaS服务一览</h4>
-<p><a href="https://www.jianshu.com/p/a4b9be650fa4">https://www.jianshu.com/p/a4b9be650fa4</a></p>
-
-<p><a href="https://mp.weixin.qq.com/s/_m_ZV9LdbQQqFbshxIgWrA">https://mp.weixin.qq.com/s/_m_ZV9LdbQQqFbshxIgWrA</a>
-<a href="https://mp.weixin.qq.com/s/u0LRq_NNkCtU3wkdMdYlUA">https://mp.weixin.qq.com/s/u0LRq_NNkCtU3wkdMdYlUA</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html"> 主流互联网公司系统概况及指标 </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jan 3, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>架构</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="微信">微信</h4>
-
-<h4 id="淘宝">淘宝</h4>
-<ul>
-  <li>2018年双11 交易创建30万QPS</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw">https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw</a></p>
-
-<ul>
-  <li>2019年双11 交易峰值54.5万笔/秒</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ">https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ</a></p>
-
-<ul>
-  <li>阿里巴巴双11千万级实时监控系统技术揭秘</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q">https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q</a></p>
-
-<ul>
-  <li>2019双11，支付宝有哪些“秘密武器”</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g">https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g</a></p>
-
-<ul>
-  <li>诺亚 (Noah) 自适应流控</li>
-</ul>
-<p><a href="https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6">https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6</a></p>
-
-<h4 id="12306">12306</h4>
-<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22</a></p>
-
-<h4 id="微博">微博</h4>
-<p><a href="https://www.cnblogs.com/shanyou/p/5048099.html">https://www.cnblogs.com/shanyou/p/5048099.html</a></p>
-
-<h4 id="唯品会">唯品会</h4>
-<p>唯品会OSP 微服务架构
-用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力
-<a href="https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ">https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ</a></p>
-
-<h4 id="达达">达达</h4>
-<p><a href="https://www.jianshu.com/p/67b710267d10">https://www.jianshu.com/p/67b710267d10</a></p>
-
-<h4 id="指标概述">指标概述</h4>
-<p>https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA</p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -876,6 +1002,10 @@ docker rmi ec49dbd13cf5
       <a href="/page13" class="button page-button">13</a>
       
       
+      
+      <a href="/page14" class="button page-button">14</a>
+      
+      
 
       
       <a href="/page7" class="button page-button">&raquo;</a>
@@ -920,7 +1050,7 @@ docker rmi ec49dbd13cf5
       
       
       <a  href="/tag/网络">
-      <span class="label label-default">网络 ( 7 )</span>
+      <span class="label label-default">网络 ( 8 )</span>
       </a><br />
 
       
@@ -1068,6 +1198,13 @@ docker rmi ec49dbd13cf5
       
       <a  href="/tag/方法论">
       <span class="label label-default">方法论 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/java">
+      <span class="label label-default">java ( 2 )</span>
       </a><br />
 
       

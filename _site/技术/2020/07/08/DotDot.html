@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title> Java SPI </title>
-  <meta name="description" content="SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和...">
+  <title>DotDot</title>
+  <meta name="description" content="蚂蚁金服  ArrayList的扩容方式和扩容时机          初始化  ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断  如果参数等于0，则将数组初始化为一个空数组，  如果不等于0，将数组初始化为一个容量为10的数组。      ...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -55,31 +55,32 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline"> Java SPI </h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-05-01T19:25:00+08:00" itemprop="datePublished">May 1, 2020</time></p>
+    <h1 class="post-title" itemprop="name headline">DotDot</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-07-08T14:18:00+08:00" itemprop="datePublished">Jul 8, 2020</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <p>SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。
-Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。
-在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。</p>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
-    <span class="kd">implements</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
-<span class="o">{</span>
+    <h4 id="蚂蚁金服">蚂蚁金服</h4>
+<ul>
+  <li>ArrayList的扩容方式和扩容时机
+    <ul>
+      <li>初始化
+  ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断
+  如果参数等于0，则将数组初始化为一个空数组，
+  如果不等于0，将数组初始化为一个容量为10的数组。</li>
+      <li>扩容时机
+  当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。</li>
+      <li>扩容方式
+ 扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。</li>
+    </ul>
+  </li>
+  <li><a href="https://www.cnblogs.com/silyvin/p/10223910.html">https://www.cnblogs.com/silyvin/p/10223910.html</a></li>
+</ul>
 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
-            <span class="k">return</span> <span class="n">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<p><a href="https://blog.csdn.net/sweatOtt/article/details/83055191">https://blog.csdn.net/sweatOtt/article/details/83055191</a></p>
-
-<p><a href="https://juejin.im/post/5af952fdf265da0b9e652de3">https://juejin.im/post/5af952fdf265da0b9e652de3</a></p>
-
-<p><a href="https://www.jianshu.com/p/46b42f7f593c">https://www.jianshu.com/p/46b42f7f593c</a></p>
+<h4 id="netty">Netty</h4>
+<ul>
+  <li><a href="https://www.cnblogs.com/xiaoyangjia/p/11526197.html">https://www.cnblogs.com/xiaoyangjia/p/11526197.html</a></li>
+</ul>
 
   </div>
 </article>

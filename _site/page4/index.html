@@ -54,6 +54,144 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html">大数据常用算法概述</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>BigData</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="决策树算法">决策树算法</h4>
+<h4 id="回归算法">回归算法</h4>
+<h4 id="朴素贝叶斯分类算法">朴素贝叶斯分类算法</h4>
+<h4 id="聚类-knn算法">聚类-KNN算法</h4>
+<h4 id="svm支持向量机分类">SVM支持向量机分类</h4>
+<h4 id="推荐算法">推荐算法</h4>
+
+<h4 id="tf-idf">TF-IDF</h4>
+<ul>
+  <li>TF-IDF（term frequency–inverse document frequency，词频-逆向文件频率）是一种用于信息检索（information retrieval）与文本挖掘（text mining）的常用加权技术。</li>
+  <li>TF-IDF是一种统计方法，用以评估一字词对于一个文件集或一个语料库中的其中一份文件的重要程度。字词的重要性随着它在文件中出现的次数成正比增加，但同时会随着它在语料库中出现的频率成反比下降。</li>
+  <li>TF-IDF的主要思想是：如果某个单词在一篇文章中出现的频率TF高，并且在其他文章中很少出现，则认为此词或者短语具有很好的类别区分能力，适合用来分类。</li>
+</ul>
+
+<h4 id="tf-idf算法实现简单快速但是仍有许多不足之处">TF-IDF算法实现简单快速，但是仍有许多不足之处：</h4>
+<ul>
+  <li>没有考虑特征词的位置因素对文本的区分度，词条出现在文档的不同位置时，对区分度的贡献大小是不一样的。</li>
+  <li>按照传统TF-IDF，往往一些生僻词的IDF(反文档频率)会比较高、因此这些生僻词常会被误认为是文档关键词。</li>
+  <li>传统TF-IDF中的IDF部分只考虑了特征词与它出现的文本数之间的关系，而忽略了特征项在一个类别中不同的类别间的分布情况。</li>
+  <li>对于文档中出现次数较少的重要人名、地名信息提取效果不佳。</li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html">ZooKeeper</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 6, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="散点">散点</h4>
+<ul>
+  <li>临时节点不允许有子节点，Ephemeral Node</li>
+  <li>没给节点大小不超过1MB</li>
+</ul>
+
+<h4 id="使用场景">使用场景</h4>
+<ul>
+  <li>注册中心</li>
+  <li>配置中心</li>
+  <li>HBase之MetaData存储</li>
+  <li>分布式锁</li>
+</ul>
+
+<h4 id="常用命令">常用命令</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./zkServer.sh start | stop 
+./zkServer.sh status
+./zkCli.sh 
+
+<span class="nb">ls</span> /
+<span class="nb">stat</span> /
+ls2 /
+
+create /node1 /node1-content
+create <span class="nt">-e</span> /node1-temp /node1-content-temp
+</code></pre></div></div>
+<p><a href="https://blog.csdn.net/dandandeshangni/article/details/80558383">https://blog.csdn.net/dandandeshangni/article/details/80558383</a></p>
+
+<h4 id="阿里为什么不用-zookeeper-做服务发现">阿里为什么不用 ZooKeeper 做服务发现？</h4>
+<ul>
+  <li>基于CP而非AP</li>
+  <li>自身仅仅是主从的集群，而非分布式集群</li>
+  <li>The King Of Coordination for Big Data</li>
+</ul>
+
+<h4 id="zookeeper的observer">ZooKeeper的observer</h4>
+<p>当ZooKeeper集群中follower的数量很多时，投票过程会成为一个性能瓶颈，为了解决投票造成的压力，于是出现了observer角色。
+observer角色不参与投票，它只是投票结果的”听众”，除此之外，它和follower完全一样，例如能接受读、写请求。就这一个特点，让整个ZooKeeper集群性能大大改善。
+和follower一样，当observer收到客户端的读请求时，会直接从内存数据库中取出数据返回给客户端。
+对于写请求，当写请求发送到某server上后，无论这个节点是follower还是observer，都会将它发送给leader。然后leader组织投票过程，所有server都收到这个proposal(包括observer，因为proposal是广播出去的)，但是leader和follower以及observer通过配置文件，都知道自己是不是observer以及谁是observer。自己是observer的server不参与投票。当leader收集完投票后，将那些observer的server去掉，在剩下的server中计算大多数，如果投票结果达到了大多数，这次写事务就成功，于是leader通知所有的节点(包括observer)，让它们将事务写入事务日志，并提交。</p>
+
+<h4 id="使用-redis-如何设计分布式锁说一下实现思路使用-zk-可以吗如何实现这两种有什-么区别">使用 redis 如何设计分布式锁?说一下实现思路?使用 zk 可以吗?如何实现?这两种有什 么区别?</h4>
+<ul>
+  <li>redis:
+    <ol>
+      <li>线程 A setnx(上锁的对象,超时时的时间戳 t1)，如果返回 true，获得锁。</li>
+      <li>线程 B 用 get 获取 t1,与当前时间戳比较,判断是是否超时,没超时 false,若超时执行第 3 步;</li>
+      <li>计算新的超时时间 t2,使用 getset 命令返回 t3(该值可能其他线程已经修改过),如果 t1==t3，获得锁，如果 t1!=t3 说明锁被其他线程获取了。</li>
+      <li>获取锁后，处理完业务逻辑，再去判断锁是否超时，如果没超时删除锁，如果已超时， 不用处理(防止删除其他线程的锁)。</li>
+    </ol>
+  </li>
+  <li>zk:
+    <ol>
+      <li>客户端对某个方法加锁时，在 zk 上的与该方法对应的指定节点的目录下，生成一个唯一 的瞬时有序节点 node1;</li>
+      <li>客户端获取该路径下所有已经创建的子节点，如果发现自己创建的 node1 的序号是最小 的，就认为这个客户端获得了锁。</li>
+      <li>如果发现 node1 不是最小的，则监听比自己创建节点序号小的最大的节点，进入等待。</li>
+      <li>获取锁后，处理完逻辑，删除自己创建的 node1 即可。 区别:zk 性能差一些，开销大，实现简单。</li>
+    </ol>
+  </li>
+</ul>
+
+<p><a href="https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg">https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg</a></p>
+
+<h4 id="zookeeper队列管理文件系统通知机制">Zookeeper队列管理(文件系统、通知机制)</h4>
+<ul>
+  <li>两种类型的队列:
+    <ul>
+      <li>同步队列，当一个队列的成员都聚⻬时，这个队列才可用，否则一直等待所有成员到达。</li>
+      <li>队列按照 FIFO 方式进行入队和出队操作。</li>
+    </ul>
+  </li>
+  <li>第一类，在约定目录下创建临时目录节点，监听节点数目是否是我们要求的数目。</li>
+  <li>第二类，和分布式锁服务中的控制时序场景基本原理一致，入列有编号，出列按编号。在特定的目录下创建 PERSISTENT_SEQUENTIAL节点，创建成功时Watcher通知等待的队列，队列删除序列号最小的节点用以消费。</li>
+  <li>此场景下Zookeeper的znode用于消息存储，znode存储的数据就是消息队列中的消息内容，SEQUENTIAL序列号就是消息的编 号，按序取出即可。由于创建的节点是持久化的，所以不必担心队列消息的丢失问题。</li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html">'图'相关算法</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 6, 2020</span>
@@ -250,19 +388,143 @@
 <pre>
 选中一个基准元素X，小于X放在左侧，大于X放在右侧，分而治之，不断重复
 </pre>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">QuickSort</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">arr</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span><span class="mi">4</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">1</span><span class="o">};</span>
+        <span class="n">quickSort</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">arr</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">arr</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">quickSort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">arr</span><span class="o">,</span> <span class="kt">int</span> <span class="n">startIndex</span><span class="o">,</span> <span class="kt">int</span> <span class="n">endIndex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 递归结束条件：startIndex大等于endIndex的时候</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">startIndex</span> <span class="o">&gt;=</span> <span class="n">endIndex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">// 得到基准元素位置</span>
+        <span class="kt">int</span> <span class="n">pivotIndex</span> <span class="o">=</span> <span class="n">partition</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span> <span class="n">startIndex</span><span class="o">,</span> <span class="n">endIndex</span><span class="o">);</span>
+        <span class="c1">// 用分治法递归数列的两部分</span>
+        <span class="n">quickSort</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span> <span class="n">startIndex</span><span class="o">,</span> <span class="n">pivotIndex</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+        <span class="n">quickSort</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span> <span class="n">pivotIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">endIndex</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">partition</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">arr</span><span class="o">,</span> <span class="kt">int</span> <span class="n">startIndex</span><span class="o">,</span> <span class="kt">int</span> <span class="n">endIndex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 取第一个位置的元素作为基准元素</span>
+        <span class="kt">int</span> <span class="n">pivot</span> <span class="o">=</span> <span class="n">arr</span><span class="o">[</span><span class="n">startIndex</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">left</span> <span class="o">=</span> <span class="n">startIndex</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="n">endIndex</span><span class="o">;</span>
+        <span class="c1">// 坑的位置，初始等于pivot的位置</span>
+        <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">startIndex</span><span class="o">;</span>
+        <span class="c1">//大循环在左右指针重合或者交错时结束</span>
+        <span class="k">while</span> <span class="o">(</span> <span class="n">right</span> <span class="o">&gt;=</span> <span class="n">left</span>  <span class="o">){</span>
+            <span class="c1">//right指针从右向左进行比较</span>
+            <span class="k">while</span> <span class="o">(</span> <span class="n">right</span> <span class="o">&gt;=</span> <span class="n">left</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">arr</span><span class="o">[</span><span class="n">right</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">pivot</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">]</span> <span class="o">=</span> <span class="n">arr</span><span class="o">[</span><span class="n">right</span><span class="o">];</span>
+                    <span class="n">index</span> <span class="o">=</span> <span class="n">right</span><span class="o">;</span>
+                    <span class="n">left</span><span class="o">++;</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">right</span><span class="o">--;</span>
+            <span class="o">}</span>
+            <span class="c1">//left指针从左向右进行比较</span>
+            <span class="k">while</span> <span class="o">(</span> <span class="n">right</span> <span class="o">&gt;=</span> <span class="n">left</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">pivot</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">arr</span><span class="o">[</span><span class="n">right</span><span class="o">]</span> <span class="o">=</span> <span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">];</span>
+                    <span class="n">index</span> <span class="o">=</span> <span class="n">left</span><span class="o">;</span>
+                    <span class="n">right</span><span class="o">--;</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">left</span><span class="o">++;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="n">arr</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">pivot</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">index</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    
+<span class="o">}</span>
+</code></pre></div></div>
 <h4 id="插入排序">插入排序</h4>
 <pre>
 从左侧开始设定一个有序区，从第二个元素开始去有序找自己的位置插入进去
 </pre>
 <h4 id="希尔排序">希尔排序</h4>
 <pre>
-两两分组，跨度交换，左小右大，逐渐缩小跨度为1，即完成</pre>
+按照跨度分成若干"小数组"，进行插入排序
+逐渐缩小跨度为1，即完成
+</pre>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ShellSort</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="kt">int</span> <span class="o">[]</span> <span class="n">array</span><span class="o">){</span>
+        <span class="c1">//希尔排序的增量</span>
+        <span class="kt">int</span> <span class="n">d</span><span class="o">=</span><span class="n">array</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">d</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">//使用希尔增量的方式，即每次折半</span>
+            <span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="o">;</span>
+            <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">x</span><span class="o">&lt;</span><span class="n">d</span><span class="o">;</span><span class="n">x</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="c1">//开始跨度内的插入排序</span>
+                <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="n">x</span><span class="o">+</span><span class="n">d</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">array</span><span class="o">.</span><span class="na">length</span><span class="o">;</span><span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="kt">int</span> <span class="n">temp</span><span class="o">=</span><span class="n">array</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+                    <span class="kt">int</span> <span class="n">j</span><span class="o">;</span>
+                    <span class="k">for</span><span class="o">(</span><span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="n">d</span><span class="o">;</span><span class="n">j</span><span class="o">&gt;=</span><span class="mi">0</span><span class="o">&amp;&amp;</span><span class="n">array</span><span class="o">[</span><span class="n">j</span><span class="o">]&gt;</span><span class="n">temp</span><span class="o">;</span><span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="o">-</span><span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">array</span><span class="o">[</span><span class="n">j</span><span class="o">+</span><span class="n">d</span><span class="o">]=</span><span class="n">array</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+                    <span class="o">}</span>
+                    <span class="n">array</span><span class="o">[</span><span class="n">j</span><span class="o">+</span><span class="n">d</span><span class="o">]=</span><span class="n">temp</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">array</span> <span class="o">=</span> <span class="o">{</span><span class="mi">5</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">9</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">11</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">10</span><span class="o">};</span>
+        <span class="n">sort</span><span class="o">(</span><span class="n">array</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">array</span><span class="o">));</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
 <h4 id="归并排序比武排序">归并排序(比武排序)</h4>
 <pre>
 由一组数字分为两组，逐渐分为只包含2个元素的小组
 开始比较大小，左小右大
 比较完毕之后，开始合并，合并的时候按照小大顺序把2个小组合并成1个有序大组，直到最后1个最大有序组
 </pre>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MergeSort</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">array</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">9</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">7</span> <span class="o">};</span>
+        <span class="n">mergeSort</span><span class="o">(</span><span class="n">array</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">array</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">array</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="kd">static</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">mergeSort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">array</span><span class="o">,</span> <span class="kt">int</span> <span class="n">start</span><span class="o">,</span> <span class="kt">int</span> <span class="n">end</span><span class="o">){</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">end</span><span class="o">){</span>
+            <span class="c1">//折半成两个小集合，分别进行递归</span>
+            <span class="kt">int</span> <span class="n">mid</span><span class="o">=(</span><span class="n">start</span><span class="o">+</span><span class="n">end</span><span class="o">)/</span><span class="mi">2</span><span class="o">;</span>
+            <span class="n">mergeSort</span><span class="o">(</span><span class="n">array</span><span class="o">,</span> <span class="n">start</span><span class="o">,</span> <span class="n">mid</span><span class="o">);</span>
+            <span class="n">mergeSort</span><span class="o">(</span><span class="n">array</span><span class="o">,</span> <span class="n">mid</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">end</span><span class="o">);</span>
+            <span class="c1">//把两个有序小集合，归并成一个大集合</span>
+            <span class="n">merge</span><span class="o">(</span><span class="n">array</span><span class="o">,</span> <span class="n">start</span><span class="o">,</span> <span class="n">mid</span><span class="o">,</span> <span class="n">end</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="kd">static</span> <span class="kd">private</span> <span class="kt">void</span> <span class="nf">merge</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">array</span><span class="o">,</span> <span class="kt">int</span> <span class="n">start</span><span class="o">,</span> <span class="kt">int</span> <span class="n">mid</span><span class="o">,</span> <span class="kt">int</span> <span class="n">end</span><span class="o">){</span>
+        <span class="c1">//开辟额外大集合，设置指针</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">tempArray</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="o">+</span><span class="mi">1</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">p1</span><span class="o">=</span><span class="n">start</span><span class="o">,</span> <span class="n">p2</span><span class="o">=</span><span class="n">mid</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span>
+        <span class="c1">//比较两个小集合的元素，依次放入大集合</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">p1</span><span class="o">&lt;=</span><span class="n">mid</span> <span class="o">&amp;&amp;</span> <span class="n">p2</span><span class="o">&lt;=</span><span class="n">end</span><span class="o">){</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">array</span><span class="o">[</span><span class="n">p1</span><span class="o">]&lt;=</span><span class="n">array</span><span class="o">[</span><span class="n">p2</span><span class="o">])</span>
+                <span class="n">tempArray</span><span class="o">[</span><span class="n">p</span><span class="o">++]=</span><span class="n">array</span><span class="o">[</span><span class="n">p1</span><span class="o">++];</span>
+            <span class="k">else</span>
+                <span class="n">tempArray</span><span class="o">[</span><span class="n">p</span><span class="o">++]=</span><span class="n">array</span><span class="o">[</span><span class="n">p2</span><span class="o">++];</span>
+        <span class="o">}</span>
+        <span class="c1">//左侧小集合还有剩余，依次放入大集合尾部</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">p1</span><span class="o">&lt;=</span><span class="n">mid</span><span class="o">)</span>
+            <span class="n">tempArray</span><span class="o">[</span><span class="n">p</span><span class="o">++]=</span><span class="n">array</span><span class="o">[</span><span class="n">p1</span><span class="o">++];</span>
+        <span class="c1">//右侧小集合还有剩余，依次放入大集合尾部</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">p2</span><span class="o">&lt;=</span><span class="n">end</span><span class="o">)</span>
+            <span class="n">tempArray</span><span class="o">[</span><span class="n">p</span><span class="o">++]=</span><span class="n">array</span><span class="o">[</span><span class="n">p2</span><span class="o">++];</span>
+        <span class="c1">//把大集合的元素复制回原数组</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">tempArray</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+            <span class="n">array</span><span class="o">[</span><span class="n">i</span><span class="o">+</span><span class="n">start</span><span class="o">]=</span><span class="n">tempArray</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
 <h4 id="计数排序">计数排序</h4>
 <pre>
 建立【元素都为0】的空数组，开始遍历待排序数组
@@ -294,996 +556,13 @@
   <li><a href="https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg">https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg</a></li>
 </ul>
 
+<p><img src="/img/sort.jpg" width="600px" /></p>
+
 <h4 id="参考-httpsmpweixinqqcomsteogqlslb6ap4aqrx7ttza">参考 <a href="https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA">https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA</a></h4>
 
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html"> kafka activeMQ RabbitMq RocketMQ </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 22, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>MQ</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>### MOM(Message Oriented Middleware)
-<img src="/img/mq.jpg" width="600px" /></p>
-
-<p>17 个方面，综合对比 Kafka、RabbitMQ、RocketMQ、ActiveMQ
-<a href="https://mp.weixin.qq.com/s/u7pyzEQgqmux9qUI_SPaNw">https://mp.weixin.qq.com/s/u7pyzEQgqmux9qUI_SPaNw</a></p>
-
-<h3 id="amqp即advanced-message-queuing-protocolactivemqrabbitmq都支持">AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）</h3>
-<ul>
-  <li>高级消息队列协议，是应用层协议的一个开放标准，为面向消息的中间件设计。消息中间件主要用于组件之间的解耦，消息的发送者无需知道消息使用者的存在，反之亦然。</li>
-  <li>AMQP的主要特征是面向消息、队列、路由（包括点对点和发布/订阅）、可靠性、安全。RabbitMQ是一个开源的AMQP实现，服务器端用Erlang语言编写，支持多种客户端，如：Python、Ruby、.NET、Java、JMS、C、PHP、ActionScript、XMPP、STOMP等，支持AJAX。用于在分布式系统中存储转发消息，在易用性、扩展性、高可用性等方面表现不俗。</li>
-</ul>
-
-<h4 id="两种消息模型">两种消息模型：</h4>
-<ul>
-  <li>点对点（单播），当采用点对点模型时，消息将发送到一个队列，该队列的消息只能被一个消费者消费。</li>
-  <li>publish-subscribe（发布订阅、广播）模型。而采用发布订阅模型时，消息可以被多个消费者消费。
-在发布订阅模型中，生产者和消费者完全独立，不需要感知对方的存在。
-例如，在用户登录后，各个其他模板更加登录进行不同的处理</li>
-</ul>
-
-<h4 id="如何保证可用性">如何保证可用性</h4>
-<ul>
-  <li>主从架构（ActiveMQ、RabbitMQ）</li>
-  <li>分布式架构（kafka、RocketMQ）</li>
-</ul>
-
-<h4 id="推拉模式">推拉模式</h4>
-<p>消费模式分为推（push）模式和拉（pull）模式。推模式是指由 Broker 主动推送消息至消费端，实时性较好，不过需要一定的流制机制来确保服务端推送过来的消息不会压垮消费端。而拉模式是指消费端主动向 Broker 端请求拉取（一般是定时或者定量）消息，实时性较推模式差，但是可以根据自身的处理能力而控制拉取的消息量。</p>
-
-<h3 id="activemq">ActiveMQ</h3>
-
-<h4 id="activemq-服务器宕机怎么办">ActiveMQ 服务器宕机怎么办？</h4>
-<p>这得从 ActiveMQ 的储存机制说起。在通常的情况下，非持久化消息是存储在内存中的，持久化消息是存储在文件中的，它们的最大限制在配置文件的节点中配置。但是，在非持久化消息堆积到一定程度，内存告急的时候，ActiveMQ 会将内存中的非持久化消息写入临时文件中，以腾出内存。虽然都保存到了文件里，但它和持久化消息的区别是，重启后持久化消息会从文件中恢复，非持久化的临时文件会直接删除。
-那如果文件增大到达了配置中的最大限制的时候会发生什么？我做了以下实验：
-设置 2G 左右的持久化文件限制，大量生产持久化消息直到文件达到最大限制，此时生产者阻塞，但消费者可正常连接并消费消息，等消息消费掉一部分，文件删除又腾出空间之后，生产者又可继续发送消息， 服务自动恢复正常。
-设置 2G 左右的临时文件限制，大量生产非持久化消息并写入临时文件，在达到最大限制时，生产者阻塞，消费者可正常连接但不能消费消息，或者原本慢速消费的消费者，消费突然停止。整个系统可连接， 但是无法提供服务，就这样挂了。</p>
-
-<h4 id="activemq-消息的不均匀消费">ActiveMQ 消息的不均匀消费。</h4>
-<p>有时在发送一些消息之后，开启 2 个消费者去处理消息。会发现一个消费者处理了所有的消息，另一个消费者根本没收到消息。原因在于 ActiveMQ 的 prefetch 机制。当消费者去获取消息时，不会一条一条去获取，而是一次性获取一批，默认是 1000 条。这些预获取的消息，在还没确认消费之前，在管理控制台还是可以看见这些消息的，但是不会再分配给其他消费者，此时这些消息的状态应该算作“已分配未消 费”，如果消息最后被消费，则会在服务器端被删除，如果消费者崩溃，则这些消息会被重新分配给新的消费者。但是如果消费者既不消费确认，又不崩溃，那这些消息就永远躺在消费者的缓存区里无法处理。更通常的情况是，消费这些消息非常耗时，你开了 10 个消费者去处理，结果发现只有一台机器吭哧吭哧处理，另外 9 台啥事不干。
-解决方案：将 prefetch 设为 1，每次处理 1 条消息，处理完再去取，这样也慢不了多少。</p>
-
-<h4 id="activemq-死信队列">ActiveMQ 死信队列。</h4>
-<p>如果你想在消息处理失败后，不被服务器删除，还能被其他消费者处理或重试，可以关闭AUTO_ACKNOWLEDGE，将 ack 交由程序自己处理。那如果使用了 AUTO_ACKNOWLEDGE，消息是什么时候被确认的，还有没有阻止消息确认的方法？有！
-消费消息有 2 种方法：</p>
-<ul>
-  <li>一种是调用 consumer.receive()方法，该方法将阻塞直到获得并返回一条消息。这种情况下，消息返回给方法调用者之后就自动被确认了。</li>
-  <li>一种方法是采用 listener 回调函数，在有消息到达时，会调用 listener 接口的 onMessage 方法。在这种情况下，在 onMessage 方法执行完毕后， 消息才会被确认，此时只要在方法中抛出异常，该消息就不会被确认。
-那么问题来了，如果一条消息不能被处理，会被退回服务器重新分配，如果只有一个消费者，该消息又会重新被获取，重新抛异常。就算有多个消费者，往往在一个服务器上不能处理的消息，在另外的服务器上依然不能被处理。难道就这么退回–获取–报错死循环了吗？</li>
-  <li>在重试 6 次后，ActiveMQ 认为这条消息是“有毒”的，将会把消息丢到死信队列里。如果你的消息不见了，去 ActiveMQ.DLQ 里找找，说不定就躺在那里。</li>
-</ul>
-
-<h3 id="rabbitmq">RabbitMq</h3>
-<ul>
-  <li>Exchange：消息交换机，生产者不是直接将消息投递到Queue中的，实际上是生产者将消息发送到Exchange（交换器，下图中的X），由Exchange将消息路由到一个或多个Queue中（或者丢弃）。</li>
-  <li>Exchange Types RabbitMQ常用的Exchange Type有fanout、direct、topic、headers这四种（AMQP规范里还提到两种Exchange Type，分别为system与自定义，这里不予以描述），之后会分别进行介绍。</li>
-  <li>Queue：消息队列载体，每个消息都会被投入到一个或多个队列。</li>
-  <li>Binding：绑定，它的作用就是把exchange和queue按照路由规则绑定起来，这样RabbitMQ就知道如何正确地将消息路由到指定的Queue了。</li>
-  <li>Routing Key：路由关键字，生产者在将消息发送给Exchange的时候，一般会指定一个routing key，来指定这个消息的路由规则，而这个routing key需要与Exchange Type及binding key联合使用才能最终生效。</li>
-</ul>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rabbitmq-server start
-service rabbitmq-server restart
-rabbitmqctl status
-rabbitmq-plugins <span class="nb">enable </span>rabbitmq_management
-rabbitmqctl add_user rabbitmq 123456
-rabbitmqctl set_user_tags rabbitmq administrator
-rabbitmqctl set_permissions <span class="nt">-p</span> / rabbitmq <span class="s2">".*"</span> <span class="s2">".*"</span> <span class="s2">".*"</span>
-</code></pre></div></div>
-
-<h4 id="rabbitmq可以通过三种方法来部署分布式集群系统">RabbitMQ可以通过三种方法来部署分布式集群系统</h4>
-<ul>
-  <li>cluster:不支持跨网段，用于同一个网段内的局域网。可以随意的动态增加或者减少。节点之间需要运行相同版本的RabbitMQ和Erlang。
-    <ul>
-      <li>普通模式：默认的集群模式，slave只保存Queue相关的元数据。</li>
-      <li>镜像模式：把需要的队列做成镜像队列，存在于多个节点（至少1个镜像节点、多个Slave节点），属于RabbitMQ的HA方案</li>
-    </ul>
-  </li>
-  <li>federation:应用于广域网，允许单台服务器上的交换机或队列接收发布到另一台服务器上交换机或队列的消息，可以是单独机器或集群。federation队列类似于单向点对点连接，消息会在联盟队列之间转发任意次，直到被消费者接受。通常使用federation来连接internet上的中间服务器，用作订阅分发消息或工作队列。</li>
-  <li>shovel:连接方式与federation的连接方式类似，但它工作在更低层次。可以应用于广域网</li>
-</ul>
-
-<h4 id="rabbitmq-节点类型">RabbitMQ 节点类型</h4>
-<ul>
-  <li>RAM node:内存节点将所有的队列、交换机、绑定、用户、权限和vhost的元数据定义存储在内存中，好处是可以使得像交换机和队列声明等操作更加的快速。
-    <ul>
-      <li>RabbitMQ要求在集群中至少有一个磁盘节点，所有其他节点可以是内存节点，当节点加入或者离开集群时，必须要将该变更通知到至少一个磁盘节点。</li>
-      <li>如果集群中唯一的一个磁盘节点崩溃的话，集群仍然可以保持运行，但是无法进行其他操作(包括创建队列、交换器、绑定，添加用户、更改权限、添加和删除集群结点)，直到节点恢复。</li>
-      <li>解决方案：设置两个磁盘节点，至少有一个是可用的，可以保存元数据的更改。</li>
-    </ul>
-  </li>
-  <li>Disk node:将元数据存储在磁盘中，单节点系统只允许磁盘类型的节点，防止重启RabbitMQ的时候，丢失系统的配置信息。</li>
-</ul>
-
-<h4 id="consumer-cancellation-notification-机制用于什么场景">Consumer Cancellation Notification 机制用于什么场景？</h4>
-<ul>
-  <li>用于保证当镜像 queue 中 master 挂掉时，连接到 slave 上的 consumer 可以收到自身 consume 被取消的通知，进而可以重新执行 consume 动作从新选出的 master 出获得消息。若不采用该机制，连接到 slave 上的 consumer 将不会感知 master 挂掉这个事情，导致后续无法再收到新 master 广播出来的 message 。另外，因为在镜像 queue 模式下，存在将 message 进行 requeue 的可能，所以实现 consumer 的逻辑时需要能够正确处理出现重复 message 的情况。</li>
-</ul>
-
-<h4 id="dead-letterqueue-的用途">“dead letter”queue 的用途？</h4>
-<ul>
-  <li>当消息被 RabbitMQ server 投递到 consumer 后，但 consumer 却通过 Basic.Reject 进行了拒绝时（同时设置 requeue=false），那么该消息会被放入“dead letter”queue 中。该 queue 可用于排查 message 被 reject 或 undeliver 的原因。</li>
-</ul>
-
-<h4 id="什么情况下会出现-blackholed-问题">什么情况下会出现 blackholed 问题？</h4>
-<ul>
-  <li>blackholed 问题是指，向 exchange 投递了 message ，而由于各种原因导致该message 丢失，但发送者却不知道。可导致 blackholed 的情况：1.向未绑定 queue 的exchange 发送 message；2.exchange 以 binding_key key_A 绑定了 queue queue_A，但向该 exchange 发送 message 使用的 routing_key 却是 key_B。</li>
-</ul>
-
-<h4 id="如何防止出现-blackholed-问题">如何防止出现 blackholed 问题？</h4>
-<ul>
-  <li>没有特别好的办法，只能在具体实践中通过各种方式保证相关 fabric 的存在。另外， 如果在执行 Basic.Publish 时设置 mandatory=true ，则在遇到可能出现 blackholed 情况时，服务器会通过返回 Basic.Return 告之当前 message 无法被正确投递（内含原因 312 NO_ROUTE）。</li>
-</ul>
-
-<h4 id="rabbitmq之qos-prefetchcount">RabbitMQ之Qos prefetchCount</h4>
-<ul>
-  <li>实际使用RabbitMQ过程中，如果完全不配置QoS，这样Rabbit会尽可能快速地发送队列中的所有消息到client端。
-  因为consumer在本地缓存所有的message，从而极有可能导致OOM或者导致服务器内存不足影响其它进程的正常运行。
-  所以我们需要通过设置Qos的prefetch count来控制consumer的流量。同时设置得当也会提高consumer的吞吐量。</li>
-</ul>
-
-<h4 id="master是最终读写保存的地方slave中转">Master是最终读写保存的地方，Slave中转</h4>
-<p>除发送消息（Basic.Publish）外的所有动作都只会向 master 发送，然后再由master 将命令执行的结果广播给各个 slave。
-如果消费者与 slave 建立连接并进行订阅消费，其实质都是从 master 上获取消息，只不过看似是从 slave 上消费而已。比如消费者与 slave 建立了 TCP 连接之后执行一个 Basic.Get 操作，那么首先是由 slave 将Basic.Get 请求发往 master，再由 master 准备好数据返回给 slave，最后由 slave 投递给消费者。</p>
-
-<h4 id="rabbitmq参考">RabbitMq参考</h4>
-<ul>
-  <li>RabbitMQ <a href="https://www.jianshu.com/p/78847c203b76">https://www.jianshu.com/p/78847c203b76</a></li>
-  <li>RabbitMQ镜像队列 <a href="https://www.jianshu.com/p/fcc35573567c">https://www.jianshu.com/p/fcc35573567c</a></li>
-  <li>RabbitMQ原理、集群、基本操作及常见故障处理 <a href="https://mp.weixin.qq.com/s/J-4INNmU_vM_Xs__KFEqIQ">https://mp.weixin.qq.com/s/J-4INNmU_vM_Xs__KFEqIQ</a></li>
-</ul>
-
-<h4 id="如何保证消息不被重复消费">如何保证消息不被重复消费？</h4>
-<ul>
-  <li>分析:这个问题其实换一种问法就是，如何保证消息队列的幂等性?这个问题可以认为是消息队列领域的基本问题。换句话来说，是在考察你的设计能力，这个问题的回答可以根据具体的业务场景来答，没有固定的答案。</li>
-  <li>回答:先来说一下为什么会造成重复消费?其实无论是那种消息队列，造成重复消费原因其实都是类似的。
-    <ul>
-      <li>正常情况下，消费者在消费消息时候，消费完毕后，会发送一个确认信息给消息队列，消息队列就知道该消息被消费了，就会将该消息从消息队列中删除。只是不同的消息队列发送的确认信息形式不同,例如RabbitMQ是发送一个ACK确认消息，RocketMQ是返回一个CONSUME_SUCCESS成功标志，kafka实际上有个offset的概念，简单说一下(如果还不懂，出门找一个kafka入门到精通教程),就是每一个消息都有一个offset，kafka消费过消息后，需要提交offset，让消息队列知道自己已经消费过了。那造成重复消费的原因?，就是因为网络传输等等故障，确认信息没有传送到消息队列，导致消息队列不知道自己已经消费过该消息了，再次将该消息分发给其他的消费者。如何解决?这个问题针对业务场景来答分以下几点</li>
-      <li>比如，你拿到这个消息做数据库的insert操作。那就容易了，给这个消息做一个唯一主键，那么就算出现重复消费的情况，就会导致主键冲突，避免数据库出现脏数据。</li>
-      <li>再比如，你拿到这个消息做redis的set的操作，那就容易了，不用解决，因为你无论set几次结果都是一样的，set操作本来就算幂等操作。</li>
-      <li>如果上面两种情况还不行，上大招。准备一个第三方介质,来做消费记录。以redis为例，给消息分配一个全局id，只要消费过该消息，将&lt;id,message&gt;以K-V形式写入redis。那消费者开始消费前，先去redis中查询有没消费记录即可。</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="消费者消费失败如何处理">消费者消费失败，如何处理？</h4>
-<ul>
-  <li>消费成功时，手动ack，这样队列会再次推送或者再次pull</li>
-  <li>用redis对立的”伪消费队列”最大的问题就是在于消费后没有ACK，发生意外会有很多脏数据</li>
-  <li>也可以用幂等的方式消费者保存业务的进展，用单独程序做补偿消费</li>
-  <li>如果消费者处理一个消息失败了，消息系统一般会把这个消息放回队列，这样其他消费者可以继续处理</li>
-</ul>
-
-<h4 id="如何保证消费的可靠性传输">如何保证消费的可靠性传输?</h4>
-<ul>
-  <li>RabbitMQ
-    <ul>
-      <li>生产者丢数据，可以用事务方式来保证发送成功或回滚，也可以队列接受后异步返回ack或nack来实现</li>
-      <li>消息队列丢数据，可以持久化队列并且配置自动重复参数</li>
-      <li>消费者丢数据，手动ack</li>
-    </ul>
-  </li>
-  <li>kafka
-    <ul>
-      <li>(1)生产者丢数据
-在kafka生产中，基本都有一个leader和多个follwer。follwer会去同步leader的信息。因此，为了避免生产者丢数据，做如下两点配置
-        <ol>
-          <li>第一个配置要在producer端设置acks=all。这个配置保证了，follwer同步完成后，才认为消息发送成功。</li>
-          <li>在producer端设置retries=MAX，一旦写入失败，这无限重试</li>
-        </ol>
-      </li>
-      <li>消息队列丢数据
-针对消息队列丢数据的情况，无外乎就是，数据还没同步，leader就挂了，这时zookpeer会将其他的follwer切换为leader,那数据就丢失了。针对这种情况，应该做两个配置。
-        <ol>
-          <li>replication.factor参数，这个值必须大于1，即要求每个partition必须有至少2个副本</li>
-          <li>min.insync.replicas参数，这个值必须大于1，这个是要求一个leader至少感知到有至少一个follower还跟自己保持联系
-这两个配置加上上面生产者的配置联合起来用，基本可确保kafka不丢数据</li>
-        </ol>
-      </li>
-      <li>消费者丢数据
-这种情况一般是自动提交了offset，然后你处理程序过程中挂了。kafka以为你处理好了。再强调一次offset是干嘛的
-offset：指的是kafka的topic中的每个消费组消费的下标。简单的来说就是一条消息对应一个offset下标，每次消费数据的时候如果提交offset，那么下次消费就会从提交的offset加一那里开始消费。</li>
-    </ul>
-  </li>
-</ul>
-
-<h3 id="kafka">Kafka</h3>
-<h4 id="写操作都发生在leader-broker其他broker会告诉clientleader在哪里">写操作都发生在leader broker，其他broker会告诉client，leader在哪里</h4>
-<p>producer是否直接将数据发送到broker的leader(主节点
-producer直接将数据发送到broker的leader(主节点)，不需要在多个节点
-逬行分发，为了帮助producer做到这点，所有的Kafka节点都可以及时
-的告知:哪些节点是活动的，目标topic目标分区的leader在哪。这样
-producer就可以直接将消息发送到目的地了</p>
-
-<h4 id="kafka-数据传输的事物定义有哪三种">Kafka 数据传输的事物定义有哪三种?</h4>
-<p>数据传输的事务定义通常有以下三种级别:</p>
-<ol>
-  <li>最多一次: 消息不会被重复发送，最多被传输一次，但也有可能一次不传输</li>
-  <li>最少一次: 消息不会被漏发送，最少被传输一次，但也有可能被重复传输.</li>
-  <li>精确的一次(Exactly once): 不会漏传输也不会重复传输,每个消息都传输被一次而且 仅仅被传输一次，这是大家所期望的</li>
-</ol>
-
-<h4 id="kafka-收到消息的-ack-机制">kafka 收到消息的 ack 机制</h4>
-<ul>
-  <li>request.required.acks 有三个值 0 1 -1</li>
-  <li>0:生产者不会等待 broker 的 ack，这个延迟最低但是存储的保证最弱当 server 挂掉的时候就 会丢数据</li>
-  <li>1:服务端会等待 ack 值 leader 副本确认接收到消息后发送 ack 但是如果 leader 挂掉后他不 确保是否复制完成新 leader 也会导致数据丢失</li>
-  <li>-1:同样在 1 的基础上 服务端会等所有的 follower 的副本受到数据后才会受到 leader 发出 的 ack，这样数据不会丢失</li>
-</ul>
-
-<h4 id="kafka-more">Kafka More</h4>
-<p>15.消费者负载均衡策略 ，一个消费者组中的一个分片对应一个消费者成员，他能保证每个消费者成员都能访问，如果 组中成员太多会有空闲的成员
-16.数据有序 ，一个消费者组里它的内部是有序的 消费者组与消费者组之间是无序的
-17.kafaka ，生产数据时数据的分组策略 生产者决定数据产生到集群的哪个 partition 中 每一条消息都是以(key，value)格式Key 是由生产者发送数据传入</p>
-
-<h4 id="关于kafka">关于kafka</h4>
-<ul>
-  <li>Apache Kafka不是消息中间件的一种实现。相反，它只是一种分布式流式系统。
-不同于基于队列和交换器的RabbitMQ，Kafka的存储层是使用分区事务日志来实现的。</li>
-  <li>过期日志会根据时间或大小，进行清除</li>
-  <li>极好的总结 <a href="https://segmentfault.com/a/1190000021138998">https://segmentfault.com/a/1190000021138998</a></li>
-  <li>zookeeper在kafka中的作用 <a href="https://www.jianshu.com/p/a036405f989c">https://www.jianshu.com/p/a036405f989c</a></li>
-  <li>一次事故 <a href="https://www.jianshu.com/p/72a54f835b6b">https://www.jianshu.com/p/72a54f835b6b</a>
-    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#启动zk</span>
-bin/zookeeper-server-start.sh config/zookeeper.properties &amp;
-<span class="c">#启动kafka</span>
-bin/kafka-server-start.sh config/server.properties
-<span class="c"># kafka默认只支持本地访问，如果需要外网访问，需要用hostname.com的方式配置</span>
-<span class="c"># hostname.com可以是任意自定义的，不需要备案，只是起到"代名词"作用</span>
-<span class="c">#1、</span>
-config/server.properties
-<span class="nv">listeners</span><span class="o">=</span>PLAINTEXT://hostname.com:9092
-<span class="c">#2、</span>
-<span class="c">#kafka broker机器配置hosts</span>
-broker机器的内网ip  hostname.com
-<span class="c">#3、</span>
-<span class="c">#调用端也是是kafka的Client端 的机器配置hosts</span>
-broker机器的外网ip  hostname.com
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h4 id="kafka数据存储">kafka数据存储</h4>
-<ul>
-  <li>Kafka和RocketMQ存储区别 <a href="https://mp.weixin.qq.com/s/_hJcEqTMASpeDkavcdtDsw">https://mp.weixin.qq.com/s/_hJcEqTMASpeDkavcdtDsw</a>
-    <ul>
-      <li>partition升级为ConsumerQueue，并且只存储消息的地址，由单独的commitLog记录消息文件</li>
-      <li>consumerQueue消息格式大小固定（20字节），写入pagecache之后被触发刷盘频率相对较低。就是因为每次写入的消息小，造成他占用的pagecache少，主要占用方一旦被清理，那么他就可以不用清理了。</li>
-      <li>kafka中多partition会存在随机写的可能性，partition之间刷盘的冲撞率会高，但是rocketmq中commitLog都是顺序写。</li>
-    </ul>
-  </li>
-  <li>partition：topic 的分区，一个 topic 可以包含多个 partition，topic 消息保存在各个partition 上
-    <ul>
-      <li>每个partition是一个有序的队列也是一个目录。</li>
-      <li>partition 内消息是有序的，Consumer 通过 pull 方式消费消息。Kafka 不删除已消费的消息.。对于 partition，顺序读写磁盘数据，以时间复杂度 O(1)方式提供消息持久化能力。</li>
-      <li>每个partition(目录)相当于一个巨型文件被平均分配到多个大小相等segment(段)数据文件中。但每个段segment file消息数量不一定相等，这种特性方便old segment file快速被删除。</li>
-    </ul>
-  </li>
-  <li>segment：partition物理上由多个segment文件组成，每个segment大小相等，顺序读写。
-    <ul>
-      <li>每个 segment 数据文件以该段中最小的 offset 命名，文件扩展名为.log。这样在查找指定 offset 的 Message 的 时候，用二分查找就可以定位到该 Message 在哪个 segment 数据文件中。</li>
-      <li>segment file组成：由2大部分组成，分别为index file和data file，此2个文件一一对应，成对出现，后缀”.index”和“.log”分别表示为segment索引文件、数据文件。</li>
-    </ul>
-  </li>
-  <li>Kafka 为每个分段后的数据文件建立了索引文件，文件名与数据文件的名字是一样的，只是文件扩 展名为.index。index 文件中并没有为数据文件中的每条 Message 建立索引，而是采用了稀疏存 储的方式，每隔一定字节的数据建立一条索引。这样避免了索引文件占用过多的空间，从而可以 将索引文件保留在内存中。</li>
-  <li>由于消息 topic 由多个 partition 组成，且 partition 会均衡分布到不同 broker 上，因此，为了有 效利用 broker 集群的性能，提高消息的吞吐量，producer 可以通过随机或者 hash 等方式，将消 息平均发送到多个 partition 上，以实现负载均衡。</li>
-  <li>是提高消息吞吐量重要的方式，Producer 端可以在内存中合并多条消息后，以一次请求的方式发 送了批量的消息给 broker，从而大大减少 broker 存储消息的 IO 操作次数。但也一定程度上影响 了消息的实时性，相当于以时延代价，换取更好的吞吐量。</li>
-  <li>Producer 端可以通过 GZIP 或 Snappy 格式对消息集合进行压缩。Producer 端进行压缩之后，在 Consumer 端需进行解压。压缩的好处就是减少传输的数据量，减轻对网络传输的压力，在对大 数据处理上，瓶颈往往体现在网络上而不是 CPU(压缩和解压会耗掉部分 CPU 资源)。</li>
-  <li>Current Offset是针对Consumer的poll过程的，它可以保证每次poll都返回不重复的消息；而Committed Offset是用于Consumer Rebalance过程的，它能够保证新的Consumer能够从正确的位置开始消费一个partition，从而避免重复消费。</li>
-  <li>Zookeeper：保存着集群 broker、topic、partition 等 meta 数据;另外，还负责 broker 故障发现，partition leader 选举，负载均衡等功能。</li>
-  <li>auto.offset.reset表示如果Kafka中没有存储对应的offset信息的话（有可能offset信息被删除），消费者从何处开始消费消息。它拥有三个可选值：earliest：从最早的offset开始消费、latest：从最后的offset开始消费、none：直接抛出exception给consumer</li>
-</ul>
-
-<h3 id="rocketmq">rocketmq</h3>
-
-<p><img src="/img/RocketMq.jpg" width="600px" /></p>
-
-<h4 id="rocketmq优点">RocketMq优点</h4>
-<ul>
-  <li>支持分布式：原生支持分布式,ActiveMQ原生存在单点</li>
-  <li>严格的消息顺序：保证严格的消息顺序，ActiveMQ无法保证</li>
-  <li>海量消息低延迟：RocketMQ支持亿级消息堆积能力，并可以保证亿级消息写入时达到低延迟</li>
-  <li>消息拉取模式
-    <ol>
-      <li>PUSH：消费者端设置Listener</li>
-      <li>PULL：应用可主动从Broker获取消息，主动拉取会存在消费记录位置问题（如果不记录位置，会出现重复消费）</li>
-    </ol>
-  </li>
-  <li>分布式协调：Metaq1.x/2.x版本，分布式协调采用Zookeeper，RocketMQ通过自己实现NameServer达到分布式协调，更轻量，由于自主实现，更贴近框架，性能更好</li>
-  <li>分布式事务机制：依赖于等待执行的消息类型，生产者预提交事务，Rocket在收到明确事务或者查询到明确事务之后，发送下游的事务流程。</li>
-  <li>其它：消费重试机制、高效订阅者水平扩展功能、API（多语言）等！</li>
-</ul>
-
-<h4 id="rocketmq顺序消息">RocketMq顺序消息</h4>
-<ul>
-  <li>发送时同个orderId路由到相同分区</li>
-  <li>消费时由同一个消费者消费同一个订单</li>
-  <li><a href="https://www.cnblogs.com/hzmark/p/orderly_message.html">https://www.cnblogs.com/hzmark/p/orderly_message.html</a></li>
-</ul>
-
-<h4 id="rocketmq的部署结构有以下特点">RocketMQ的部署结构有以下特点：</h4>
-<ul>
-  <li>Name Server是一个几乎无状态节点，可集群部署，节点之间无任何信息同步。</li>
-  <li>Broker部署相对复杂，Broker分为Master与Slave，一个Master可以对应多个Slave，但是一个Slave只能对应一个Master，Master与Slave的对应关系通过指定相同的BrokerName，不同的BrokerId来定义，BrokerId为0表示Master，非0表示Slave。Master也可以部署多个。每个Broker与Name Server集群中的所有节点建立长连接，定时注册Topic信息到所有Name Server。</li>
-  <li>Producer与Name Server集群中的其中一个节点（随机选择）建立长连接，定期从Name Server取Topic路由信息，并向提供Topic服务的Master建立长连接，且定时向Master发送心跳。Producer完全无状态，可集群部署。</li>
-  <li>Consumer与Name Server集群中的其中一个节点（随机选择）建立长连接，定期从Name Server取Topic路由信息，并向提供Topic服务的Master、Slave建立长连接，且定时向Master、Slave发送心跳。Consumer既可以从Master订阅消息，也可以从Slave订阅消息，订阅规则由Broker配置决定。</li>
-</ul>
-
-<h4 id="rocketmq核心点">RocketMq核心点</h4>
-<ul>
-  <li>Broker上存Topic信息，Topic由多个队列组成，队列会平均分散在多个Broker上。Producer的发送机制保证消息尽量平均分布到 所有队列中，最终效果就是所有消息都平均落在每个Broker上。</li>
-  <li>RocketMQ的消息的存储是由ConsumeQueue和CommitLog配合来完成的，ConsumeQueue中只存储很少的数据，消息主体都是通过CommitLog来进行读写。 如果某个消息只在CommitLog中有数据，而ConsumeQueue中没有，则消费者无法消费，RocketMQ的事务消息实现就利用了这一点。
-    <ul>
-      <li>CommitLog：是消息主体以及元数据的存储主体，对CommitLog建立一个ConsumeQueue，每个ConsumeQueue对应一个（概念模型中的）MessageQueue，所以只要有 CommitLog在，ConsumeQueue即使数据丢失，仍然可以恢复出来。</li>
-      <li>ConsumeQueue：是一个消息的逻辑队列，存储了这个Queue在CommitLog中的起始offset，log大小和MessageTag的hashCode。每个Topic下的每个Queue都有一个对应的 ConsumeQueue文件，例如Topic中有三个队列，每个队列中的消息索引都会有一个编号，编号从0开始，往上递增。并由此一个位点offset的概念，有了这个概念，就可以对 Consumer端的消费情况进行队列定义。</li>
-    </ul>
-  </li>
-  <li>RocketMQ的高性能在于顺序写盘(CommitLog)、零拷贝和跳跃读(尽量命中PageCache)，高可靠性在于刷盘和Master/Slave，另外NameServer 全部挂掉不影响已经运行的Broker,Producer,Consumer。</li>
-  <li>发送消息负载均衡，且发送消息线程安全(可满足多个实例死循环发消息)，集群消费模式下消费者端负载均衡，这些特性加上上述的高性能读写， 共同造就了RocketMQ的高并发读写能力。</li>
-  <li>刷盘和主从同步均为异步(默认)时，broker进程挂掉(例如重启)，消息依然不会丢失，因为broker shutdown时会执行persist。 当物理机器宕机时，才有消息丢失的风险。另外，master挂掉后，消费者从slave消费消息，但slave不能写消息。</li>
-  <li>RocketMQ具有很好动态伸缩能力(非顺序消息)，伸缩性体现在Topic和Broker两个维度。
-    <ul>
-      <li>Topic维度：假如一个Topic的消息量特别大，但集群水位压力还是很低，就可以扩大该Topic的队列数，Topic的队列数跟发送、消费速度成正比。</li>
-      <li>Broker维度：如果集群水位很高了，需要扩容，直接加机器部署Broker就可以。Broker起来后向Namesrv注册，Producer、Consumer通过Namesrv 发现新Broker，立即跟该Broker直连，收发消息。</li>
-    </ul>
-  </li>
-  <li>Producer: 失败默认重试2次；sync/async；ProducerGroup，在事务消息机制中，如果发送消息的producer在还未commit/rollback前挂掉了，broker会在一段时间后回查ProducerGroup里的其他实例，确认消息应该commit/rollback</li>
-  <li>Consumer: DefaultPushConsumer/DefaultPullConsumer，push也是用pull实现的，采用的是长轮询方式；CLUSTERING模式下，一条消息只会被ConsumerGroup里的一个实例消费，但可以被多个不同的ConsumerGroup消费，BROADCASTING模式下，一条消息会被ConsumerGroup里的所有实例消费。</li>
-  <li>DefaultPushConsumer: Broker收到新消息请求后，如果队列里没有新消息，并不急于返回，通过一个循环不断查看状态，每次waitForRunning一段时间(5s)，然后在check。当一直没有新消息，第三次check时，等待时间超过suspendMaxTimeMills(15s)，就返回空结果。在等待的过程中，Broker收到了新的消息后会直接调用notifyMessageArriving返回请求结果。“长轮询”的核心是，Broker端Hold住(挂起)客户端客户端过来的请求一小段时间，在这个时间内有新消息到达，就利用现有的连接立刻返回消息给Consumer。“长轮询”的主动权还是掌握在Consumer手中，Broker即使有大量消息积压，也不会主动推送给Consumer。长轮询方式的局限性，是在Hold住Consumer请求的时候需要占用资源，它适合用在消息队列这种客户端连接数可控的场景中。</li>
-  <li>DefaultPullConsumer: 需要用户自己处理遍历MessageQueue、保存Offset，所以PullConsumer有更多的自主性和灵活性。</li>
-  <li>对于集群模式的非顺序消息，消费失败默认重试16次，延迟等级为3~18。(messageDelayLevel = “1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h”)</li>
-  <li>MQClientInstance是客户端各种类型的Consumer和Producer的底层类，由它与NameServer和Broker打交道。如果创建Consumer或Producer 类型的时候不手动指定instanceName，进程中只会有一个MQClientInstance对象，即当一个Java程序需要连接多个MQ集群时，必须手动指定不同的instanceName。需要一提的是，当消费者(不同jvm实例)都在同一台物理机上时，若指定instanceName，消费负载均衡将失效(每个实例都将消费所有消息)。另外，在一个jvm里模拟集群消费时，必须指定不同的instanceName，否则启动时会提示ConsumerGroup已存在。</li>
-</ul>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># install rocketmq</span>
-unzip rocketmq-all-4.7.0-source-release.zip
-<span class="nb">cd </span>rocketmq-all-4.7.0/
-mvn <span class="nt">-Prelease-all</span> <span class="nt">-DskipTests</span> clean <span class="nb">install</span> <span class="nt">-U</span>
-<span class="nb">cd </span>distribution/target/rocketmq-4.7.0/rocketmq-4.7.0
-
-<span class="c"># config JAVA_HOME</span>
-vim ~/.bashrc
-<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/lib/jvm/jdk-13
-<span class="nb">export </span><span class="nv">JRE_HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/jre
-<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/lib:<span class="k">${</span><span class="nv">JRE_HOME</span><span class="k">}</span>/lib
-<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin:<span class="nv">$PATH</span>
-
-<span class="c">#Start Name Server</span>
-<span class="nb">nohup </span>sh bin/mqnamesrv &amp;
-<span class="nb">tail</span> <span class="nt">-f</span> ~/logs/rocketmqlogs/namesrv.log
-<span class="c">#The Name Server boot success...</span>
-
-<span class="c">#Start Broker</span>
-<span class="nb">nohup </span>sh bin/mqbroker <span class="nt">-n</span> localhost:9876 &amp;
-<span class="c">#The broker[%s, 172.30.30.233:10911] boot success...</span>
-
-<span class="c"># 外网访问 配置 /etc/hosts</span>
-<span class="c"># 相关报错 RemotingTooMuchRequestException: sendDefaultImpl call timeout；</span>
-broker机器的内网ip  hostname.com
-<span class="c"># 配置conf/broker.conf </span>
-<span class="nv">brokerIP1</span><span class="o">=</span>hostname.com
-./mqbroker <span class="nt">-n</span> localhost:9876 <span class="nt">-c</span> ../conf/broker.conf &amp;
-
-<span class="c"># 相关报错 No route info of this topic</span>
-<span class="c"># 保持客户端rocketmq版本号与服务器一致</span>
-<span class="c"># 设置该属性 autoCreateTopicEnable=true </span>
-./mqadmin topicList <span class="nt">-n</span> localhost:9876
-
-</code></pre></div></div>
-<ul>
-  <li>rocketmq为什么使用nameserver而不使用ZooKeeper？<a href="https://blog.csdn.net/earthhour/article/details/78718064">https://blog.csdn.net/earthhour/article/details/78718064</a></li>
-  <li>点赞削峰 <a href="https://mp.weixin.qq.com/s/w6aCc-ueYHjkNeEZYcmAhw">https://mp.weixin.qq.com/s/w6aCc-ueYHjkNeEZYcmAhw</a></li>
-  <li>RocketMQ吐血总结 <a href="https://blog.csdn.net/javahongxi/article/details/84931747">https://blog.csdn.net/javahongxi/article/details/84931747</a></li>
-  <li>从Mq到RocketMq <a href="http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/">http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/</a></li>
-  <li>Rocketmq、Kafka、RabbitMq对比<a href="https://www.jianshu.com/p/2838890f3284">https://www.jianshu.com/p/2838890f3284</a></li>
-  <li>RocketMq事务消息 <a href="https://www.jianshu.com/p/cc5c10221aa1">https://www.jianshu.com/p/cc5c10221aa1</a>
-    <h4 id="参考">参考</h4>
-  </li>
-  <li>消息队列常见问题
-    <ul>
-      <li><a href="https://www.cnblogs.com/williamjie/p/9481780.html">https://www.cnblogs.com/williamjie/p/9481780.html</a></li>
-    </ul>
-  </li>
-  <li>优知学院消息队列
-    <ul>
-      <li><a href="https://zhuanlan.zhihu.com/p/60288173">https://zhuanlan.zhihu.com/p/60288173</a></li>
-      <li><a href="https://zhuanlan.zhihu.com/p/60288391">https://zhuanlan.zhihu.com/p/60288391</a></li>
-    </ul>
-  </li>
-  <li>IM系统的MQ消息中间件选型：Kafka还是RabbitMQ？
-    <ul>
-      <li><a href="https://zhuanlan.zhihu.com/p/37993013">https://zhuanlan.zhihu.com/p/37993013</a></li>
-    </ul>
-  </li>
-  <li>MQ消息队列的12点核心原理总结
-    <ul>
-      <li><a href="https://zhuanlan.zhihu.com/p/60289322">https://zhuanlan.zhihu.com/p/60289322</a></li>
-    </ul>
-  </li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty.html">Netty</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 18, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="netty-要点">Netty 要点</h4>
-<ul>
-  <li>NioEventLoopGroup、EventLoop都是集成或者实现 ScheduledExecutorService、ExecutorService，因此本质都是线程池</li>
-</ul>
-<p><a href="https://www.jianshu.com/p/da4398743b5a">https://www.jianshu.com/p/da4398743b5a</a></p>
-<ul>
-  <li>NioEventLoopGroup还提供了setIoRatio()和rebuildSelectors()两个方法，一个用来设置I/O任务和非I/O任务的执行时间比，一个用来重建线程中的selector来规避JDK的epoll 100% CPU Bug。其实现也是依次设置各线程的状态，故不再列出。</li>
-  <li>Java NIO支持HeapByteBuffer与DirectByteBuffer，Netty使用DirectByteBuffer实现零拷贝
-    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ByteBuffer buffer <span class="o">=</span> ByteBuffer.allocate<span class="o">(</span>int capacity<span class="o">)</span><span class="p">;</span>
-ByteBuffer buffer <span class="o">=</span> ByteBuffer.allocateDirect<span class="o">(</span>int capacity<span class="o">)</span><span class="p">;</span>
-</code></pre></div>    </div>
-  </li>
-  <li>OioServerSocketChannel 是同步阻塞 IO 的服务端实现，它接受新的客户端连接，并为它们创建 OioSocketChannel。</li>
-  <li>BIO  Stream单向 与 NIO Channel双向
-ChannelInboundHandler SimpleChannelInboundHandler</li>
-</ul>
-
-<h4 id="netty-reactor多种模式-reactor模式又有别名dispatcher或者notifier">Netty Reactor多种模式, Reactor模式又有别名“Dispatcher”或者“Notifier”</h4>
-<ul>
-  <li>Reactor 是反应堆的意思，Reactor 模型是指通过一个或多个输入同时传递给服务处理器的服务请求的事件驱动处理模式。
-服务端程序处理传入多路请求，并将它们同步分派给请求对应的处理线程，Reactor 模式也叫 Dispatcher 模式，即 I/O 多了复用统一监听事件，收到事件后分发(Dispatch 给某进程)，是编写高性能网络服务器的必备技术之一。</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">crossoverjie</span><span class="o">.</span><span class="na">cim</span><span class="o">.</span><span class="na">server</span><span class="o">.</span><span class="na">server</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">com.crossoverjie.cim.common.constant.Constants</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.crossoverjie.cim.common.protocol.CIMRequestProto</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.crossoverjie.cim.server.init.CIMServerInitializer</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.crossoverjie.cim.server.util.SessionSocketHolder</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.crossoverjie.cim.server.vo.req.SendMsgReqVO</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.bootstrap.ServerBootstrap</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelFuture</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelFutureListener</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelOption</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.EventLoopGroup</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.nio.NioEventLoopGroup</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.socket.nio.NioServerSocketChannel</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.socket.nio.NioSocketChannel</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.slf4j.Logger</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.slf4j.LoggerFactory</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">javax.annotation.PostConstruct</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.annotation.PreDestroy</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
-
-<span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CIMServer</span> <span class="o">{</span>
-
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
-        <span class="c1">// 单线程Reactor配置</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">singleEventLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">singleEventLoop</span> <span class="o">=</span> <span class="n">singleEventLoopGroup</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
-        <span class="nc">ServerBootstrap</span> <span class="n">bootstrapSingle</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">singleEventLoop</span><span class="o">,</span> <span class="n">singleEventLoop</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
-                <span class="c1">//保持长连接</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
-                <span class="c1">// Nagle拆包算法禁用</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">TCP_NODELAY</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
-                <span class="c1">// sync-recv个数，防止sync-blood攻击</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">CIMServerInitializer</span><span class="o">());</span>
-
-        <span class="c1">// 单Boss线程，多Worker线程，Reactor配置</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">eventLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">bossEventLoop</span> <span class="o">=</span> <span class="n">eventLoopGroup</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">workLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-        <span class="nc">ServerBootstrap</span> <span class="n">bootstrapSingle2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">bossEventLoop</span><span class="o">,</span> <span class="n">workLoopGroup</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">CIMServerInitializer</span><span class="o">());</span>
-
-        <span class="c1">// 多Boss线程，多Worker线程，Reactor配置</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">boss</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-        <span class="nc">ServerBootstrap</span> <span class="n">bootstrap</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">boss</span><span class="o">,</span> <span class="n">work</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">CIMServerInitializer</span><span class="o">());</span>
-
-        <span class="nc">ChannelFuture</span> <span class="n">future</span> <span class="o">=</span> <span class="n">bootstrap</span><span class="o">.</span><span class="na">bind</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">future</span><span class="o">.</span><span class="na">isSuccess</span><span class="o">())</span> <span class="o">{</span>
-            <span class="no">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"启动 cim server 成功"</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<ul>
-  <li><a href="https://mp.weixin.qq.com/s/66TxgxynqlQ1978_qMFSwQ">https://mp.weixin.qq.com/s/66TxgxynqlQ1978_qMFSwQ</a></li>
-  <li><a href="https://github.com/code4craft/netty-learning/blob/master/posts/ch4-reactor.md">https://github.com/code4craft/netty-learning/blob/master/posts/ch4-reactor.md</a></li>
-  <li><a href="https://mp.weixin.qq.com/s/csslzxEGTRX1WnK5Qp8jWQ">https://mp.weixin.qq.com/s/csslzxEGTRX1WnK5Qp8jWQ</a></li>
-  <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2043&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2043&amp;highlight=netty</a></li>
-</ul>
-
-<h4 id="netty的零拷贝数据最终只有一份在kernel-buffer">Netty的零拷贝，数据最终只有一份在kernel buffer</h4>
-<pre>
-1. ReadBuffer copyTo AppBuffer
-2. AppBuffer  copyTo SocketBuffer
-3. SocketBuffer  copyTo  NIC Buffer
-通过transferTo()，减少了从内核态copyTo用户态，演变为
-1. ReadBuffer copyTo SocketBuffer
-3. SocketBuffer  copyTo  NIC Buffer
-通过sendfile，去除了SocketBuffer，演变为 (Linux 2.1)
-1. ReadBuffer copyTo  NIC Buffer
-根据socket buffer中的位置和偏移量直接将kernel buffer的数据copy到网卡设备（protocol engine）中，演变为 (Linux 2.4)
-1. 根据位置和偏移量，   NIC Buffer，直接从ReadBuffer读取
-</pre>
-
-<ul>
-  <li>DMA(Direct Memory Access，直接存储器访问)</li>
-  <li><a href="https://www.jianshu.com/p/017f193663a0">https://www.jianshu.com/p/017f193663a0</a></li>
-</ul>
-
-<h4 id="protocol-buffer-的序列化--反序列化简单--速度快的原因是">Protocol Buffer 的序列化 &amp; 反序列化简单 &amp; 速度快的原因是:</h4>
-<ol>
-  <li>编码 / 解码 方式简单(只需要简单的数学运算 = 位移等等)</li>
-  <li>采用 Protocol Buffer 自身的框架代码 和 编译器 共同完成</li>
-</ol>
-
-<h4 id="protocol-buffer-的数据压缩效果好即序列化后的数据量体积小的原因是">Protocol Buffer 的数据压缩效果好(即序列化后的数据量体积小)的原因是:</h4>
-<ol>
-  <li>a. 采用了独特的编码方式，如 Varint、Zigzag 编码方式等等</li>
-  <li>b. 采用 T - L - V 的数据存储方式:减少了分隔符的使用 &amp; 数据存储得紧凑</li>
-</ol>
-
-<h4 id="tcp-粘包分包的原因">TCP 粘包/分包的原因:</h4>
-<ul>
-  <li>应用程序写入的字节大小大于套接字发送缓冲区的大小，会发生拆包现象，而应用程序写入 数据小于套接字缓冲区大小，网卡将应用多次写入的数据发送到网络上，这将会发生粘包现 象;</li>
-  <li>进行 MSS 大小的 TCP 分段，当 TCP 报文长度-TCP 头部长度&gt;MSS 的时候将发生拆包 以太网帧的 payload(净荷)大于 MTU(1500 字节)进行 ip 分片。</li>
-  <li>解决方案
-    <ul>
-      <li>FixedLengthFrameDecoder 客户端在发送数据包的时候，每个包都固定长度，比如1024个字节大小，如果客户端发送的数据长度不足1024个字节，则通过补充空格的方式补全到指定长度；</li>
-      <li>LineBasedFrameDecoder/DelimiterBasedFrameDecoder 客户端在每个包的末尾使用固定的分隔符，例如\r\n，如果一个包被拆分了，则等待下一个包发送过来之后找到其中的\r\n，然后对其拆分后的头部部分与前一个包的剩余部分进行合并，这样就得到了一个完整的包；</li>
-      <li>LengthFieldBasedFrameDecoder 将消息分为头部和消息体，在头部中保存有当前整个消息的长度，只有在读取到足够长度的消息之后才算是读到了一个完整的消息；
-        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ch.pipeline<span class="o">()</span>.addLast<span class="o">(</span>new FixeLengthFrameDecoder<span class="o">(</span>31<span class="o">))</span>
-</code></pre></div>        </div>
-      </li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="从零开发一个im服务端">从零开发一个IM服务端</h4>
-<ul>
-  <li>通俗易懂 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty</a></li>
-  <li>基于Netty实现海量接入的推送服务技术要点 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty</a></li>
-</ul>
-
-<h4 id="bionioaio-有什么区别">BIO,NIO,AIO 有什么区别?</h4>
-<ul>
-  <li>BIO：Block IO 同步阻塞式 IO，就是我们平常使用的传统 IO，它的特点是模式简单使用方便，并发处理能力低。</li>
-  <li>NIO：Non IO 同步非阻塞 IO，是传统 IO 的升级，客户端和服务器端通过 Channel（通道）通讯，实现了多路复用。</li>
-  <li>
-    <p>AIO：Asynchronous IO 是 NIO 的升级，也叫 NIO2，实现了异步非堵塞 IO ，异步 IO 的操作基于事件和回调机制。</p>
-  </li>
-  <li>BIO (Blocking I/O): 同步阻塞I/O模式，数据的读取写入必须阻塞在一个线程内等待其完成。在活动连接数不是特别高（小于单机1000）的情况下，这种模型是比较不错的，可以让每一个连接专注于自己的 I/O 并且编程模型简单，也不用过多考虑系统的过载、限流等问题。线程池本身就是一个天然的漏斗，可以缓冲一些系统处理不了的连接或请求。但是，当面对十万甚至百万级连接的时候，传统的 BIO 模型是无能为力的。因此，我们需要一种更高效的 I/O 处理模型来应对更高的并发量。</li>
-  <li>NIO (New I/O): NIO是一种同步非阻塞的I/O模型，在Java 1.4 中引入了NIO框架，对应 java.nio 包，提供了 Channel , Selector，Buffer等抽象。NIO中的N可以理解为Non-blocking，不单纯是New。它支持面向缓冲的，基于通道的I/O操作方法。 NIO提供了与传统BIO模型中的 Socket 和 ServerSocket 相对应的 SocketChannel 和 ServerSocketChannel 两种不同的套接字通道实现,两种通道都支持阻塞和非阻塞两种模式。阻塞模式使用就像传统中的支持一样，比较简单，但是性能和可靠性都不好；非阻塞模式正好与之相反。对于低负载、低并发的应用程序，可以使用同步阻塞I/O来提升开发速率和更好的维护性；对于高负载、高并发的（网络）应用，应使用 NIO 的非阻塞模式来开发</li>
-  <li>AIO (Asynchronous I/O): AIO 也就是 NIO 2。在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的IO模型。异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。AIO 是异步IO的缩写，虽然 NIO 在网络操作中，提供了非阻塞的方法，但是 NIO 的 IO 行为还是同步的。对于 NIO 来说，我们的业务线程是在 IO 操作准备好时，得到通知，接着就由这个线程自行进行 IO 操作，IO操作本身是同步的。查阅网上相关资料，我发现就目前来说 AIO 的应用还不是很广泛，Netty 之前也尝试使用过 AIO，不过又放弃了。</li>
-</ul>
-
-<h4 id="必读有关为何选择netty的11个疑问及解答">必读有关“为何选择Netty”的11个疑问及解答</h4>
-<ul>
-  <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=163&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=163&amp;highlight=netty</a></li>
-</ul>
-
-<h4 id="tcp网关">TCP网关</h4>
-<p>HAProxy nginx LVS</p>
-<ul>
-  <li>生产环境大部分还是采用通过rest方式获取IpList，然后有客户端直接发起长连接的方式</li>
-  <li>京东京麦的生产级TCP网关技术实践总结 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1243&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1243&amp;highlight=netty</a></li>
-  <li>一套海量在线用户的移动端IM架构设计实践 <a href="http://www.52im.net/thread-812-1-1.html">http://www.52im.net/thread-812-1-1.html</a></li>
-</ul>
-
-<h4 id="why-nettyjdk-原生-nio-程序的问题">Why Netty?JDK 原生 NIO 程序的问题</h4>
-<ul>
-  <li>JDK 原生也有一套网络应用程序 API，但是存在一系列问题，主要如下：
-    <ol>
-      <li>NIO 的类库和 API 繁杂，使用麻烦：你需要熟练掌握 Selector、ServerSocketChannel、SocketChannel、ByteBuffer 等。</li>
-      <li>需要具备其他的额外技能做铺垫：例如熟悉 Java 多线程编程，因为 NIO 编程涉及到 Reactor 模式，你必须对多线程和网路编程非常熟悉，才能编写出高质量的 NIO 程序。</li>
-      <li>可靠性能力补齐，开发工作量和难度都非常大：例如客户端面临断连重连、网络闪断、半包读写、失败缓存、网络拥塞和异常码流的处理等等。NIO 编程的特点是功能开发相对容易，但是可靠性能力补齐工作量和难度都非常大。</li>
-      <li>JDK NIO 的 Bug：例如臭名昭著的 Epoll Bug，它会导致 Selector 空轮询，最终导致 CPU 100%。官方声称在 JDK 1.6 版本的 update 18 修复了该问题，但是直到 JDK 1.7 版本该问题仍旧存在，只不过该 Bug 发生概率降低了一些而已，它并没有被根本解决。</li>
-    </ol>
-  </li>
-</ul>
-
-<h4 id="java-nio-epoll-bug-以及-netty-的解决之道">Java NIO epoll bug 以及 Netty 的解决之道</h4>
-<ul>
-  <li>epoll 空轮询导致 CPU 利用率 100% <a href="http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/">http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/</a></li>
-</ul>
-
-<h4 id="netty中的epoll实现">netty中的epoll实现</h4>
-<ul>
-  <li>在java中，IO多路复用的功能通过nio中的Selector提供，在不同的操作系统下jdk会通过spi的方式加载不同的实现，
-比如在macos下是KQueueSelectorProvider，KQueueSelectorProvider底层使用了kqueue来进行IO多路复用；
-在linux 2.6以后的版本则是EPollSelectorProvider，EPollSelectorProvider底层使用的是epoll。
-虽然jdk自身提供了selector的epoll实现，netty仍实现了自己的epoll版本，根据netty开发者在StackOverflow的回答，主要原因有两个：
-    <ul>
-      <li>支持更多socket option，比如TCP_CORK和SO_REUSEPORT</li>
-      <li>使用了边缘触发（ET）模式</li>
-    </ul>
-  </li>
-  <li><a href="https://juejin.im/post/5d46ce64f265da03e05af722">https://juejin.im/post/5d46ce64f265da03e05af722</a></li>
-  <li>ET和LT的区别在于触发事件的条件不同，LT比较符合编程思维（有满足条件的就触发），ET触发的条件更苛刻一些（仅在发生变化时才触发），对使用者的要求也更高，理论效率更高</li>
-  <li>边缘触发和水平触发<a href="https://juejin.im/post/5cdaa67f518825691b4a5cc0">https://juejin.im/post/5cdaa67f518825691b4a5cc0</a></li>
-</ul>
-
-<h4 id="netty-coding">Netty Coding</h4>
-
-<ul>
-  <li>EchoServer</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">siglea</span><span class="o">.</span><span class="na">bobo</span><span class="o">.</span><span class="na">imserver</span><span class="o">.</span><span class="na">service</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">io.netty.bootstrap.ServerBootstrap</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelFuture</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelInitializer</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.EventLoopGroup</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.nio.NioEventLoopGroup</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.socket.SocketChannel</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.socket.nio.NioServerSocketChannel</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
-
-<span class="nd">@Service</span><span class="o">(</span><span class="s">"EchoServer"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServer</span>
-<span class="o">{</span>
-    <span class="c1">// 服务器端口</span>
-    <span class="nd">@Value</span><span class="o">(</span><span class="s">"${server.port}"</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>
-    <span class="c1">// 通过nio方式来接收连接和处理连接</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">EventLoopGroup</span> <span class="n">boss</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">EventLoopGroup</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-
-    <span class="c1">// 启动引导器</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">ServerBootstrap</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">();</span>
-    <span class="nd">@Autowired</span>
-    <span class="kd">private</span> <span class="nc">EchoServerHandler</span> <span class="n">echoServerHandler</span><span class="o">;</span>
-
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span>
-    <span class="o">{</span>
-        <span class="k">try</span>
-        <span class="o">{</span>
-            <span class="n">b</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">boss</span><span class="o">,</span> <span class="n">work</span><span class="o">);</span>
-            <span class="c1">// 设置nio类型的channel</span>
-            <span class="n">b</span><span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-            <span class="c1">// 设置监听端口</span>
-            <span class="n">b</span><span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">port</span><span class="o">));</span>
-            <span class="c1">// 设置通道初始化</span>
-            <span class="n">b</span><span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">ChannelInitializer</span><span class="o">&lt;</span><span class="nc">SocketChannel</span><span class="o">&gt;()</span>
-            <span class="o">{</span>
-                <span class="c1">//有连接到达时会创建一个channel</span>
-                <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
-                <span class="o">{</span>
-                    <span class="c1">// pipeline管理channel中的Handler</span>
-                    <span class="c1">// 在channel队列中添加一个handler来处理业务</span>
-                    <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="s">"echoServerHandler"</span><span class="o">,</span><span class="n">echoServerHandler</span><span class="o">);</span>
-                <span class="o">}</span>
-            <span class="o">});</span>
-            <span class="c1">// 配置完成，开始绑定server</span>
-            <span class="c1">// 通过调用sync同步方法阻塞直到绑定成功</span>
-
-            <span class="nc">ChannelFuture</span> <span class="n">f</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="na">bind</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">EchoServer</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span>
-                    <span class="s">" started and listen on "</span> <span class="o">+</span> <span class="n">f</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">localAddress</span><span class="o">());</span>
-
-            <span class="c1">// 监听服务器关闭事件</span>
-            <span class="c1">// 应用程序会一直等待，直到channel关闭</span>
-            <span class="n">f</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">closeFuture</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span>
-        <span class="o">{</span>
-            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">finally</span>
-        <span class="o">{</span>
-            <span class="c1">// 关闭EventLoopGroup，释放掉所有资源包括创建的线程</span>
-            <span class="n">work</span><span class="o">.</span><span class="na">shutdownGracefully</span><span class="o">();</span>
-            <span class="n">boss</span><span class="o">.</span><span class="na">shutdownGracefully</span><span class="o">();</span>
-        <span class="o">}</span>
-
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<ul>
-  <li>EchoServerHandler</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">siglea</span><span class="o">.</span><span class="na">bobo</span><span class="o">.</span><span class="na">imserver</span><span class="o">.</span><span class="na">service</span><span class="o">;</span>
-
-
-<span class="kn">import</span> <span class="nn">io.netty.buffer.Unpooled</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelFutureListener</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelHandlerContext</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelInboundHandlerAdapter</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.util.CharsetUtil</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.util.ReferenceCountUtil</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
-
-<span class="nd">@Service</span><span class="o">(</span><span class="s">"echoServerHandler"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
-<span class="o">{</span>
-
-    <span class="cm">/**
-     * 建立连接时，发送一条消息
-     */</span>
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
-    <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
-        <span class="kd">super</span><span class="o">.</span><span class="na">channelActive</span><span class="o">(</span><span class="n">ctx</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span>
-    <span class="o">{</span>
-        <span class="k">try</span>
-        <span class="o">{</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
-<span class="c1">//            ctx.write(msg);//写回数据，</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
-            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
-    <span class="o">{</span>
-        <span class="c1">//flush掉所有写回的数据</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="nc">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
-    <span class="o">{</span>
-        <span class="c1">//捕捉异常信息</span>
-        <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="c1">//出现异常时关闭channel</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<ul>
-  <li>EchoClient</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">siglea</span><span class="o">.</span><span class="na">bobo</span><span class="o">.</span><span class="na">imserver</span><span class="o">.</span><span class="na">service</span><span class="o">;</span>
-
-
-<span class="kn">import</span> <span class="nn">io.netty.buffer.Unpooled</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelFutureListener</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelHandlerContext</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelInboundHandlerAdapter</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.util.CharsetUtil</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.util.ReferenceCountUtil</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
-
-<span class="nd">@Service</span><span class="o">(</span><span class="s">"echoServerHandler"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
-<span class="o">{</span>
-
-    <span class="cm">/**
-     * 建立连接时，发送一条消息
-     */</span>
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
-    <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
-        <span class="kd">super</span><span class="o">.</span><span class="na">channelActive</span><span class="o">(</span><span class="n">ctx</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span>
-    <span class="o">{</span>
-        <span class="k">try</span>
-        <span class="o">{</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
-<span class="c1">//            ctx.write(msg);//写回数据，</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
-            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
-    <span class="o">{</span>
-        <span class="c1">//flush掉所有写回的数据</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="nc">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
-    <span class="o">{</span>
-        <span class="c1">//捕捉异常信息</span>
-        <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="c1">//出现异常时关闭channel</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<ul>
-  <li>EchoClientHandler</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">siglea</span><span class="o">.</span><span class="na">bobo</span><span class="o">.</span><span class="na">imclient</span><span class="o">.</span><span class="na">service</span><span class="o">;</span>
-
-
-<span class="kn">import</span> <span class="nn">io.netty.buffer.ByteBuf</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.buffer.ByteBufUtil</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.buffer.Unpooled</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelHandlerContext</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelInboundHandlerAdapter</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.util.CharsetUtil</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.netty.util.ReferenceCountUtil</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
-
-<span class="nd">@Service</span><span class="o">(</span><span class="s">"echoClientHandler"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoClientHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
-<span class="o">{</span>
-    <span class="cm">/**
-     * 此方法会在连接到服务器后被调用
-     */</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
-    <span class="o">{</span>
-
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelActive"</span><span class="o">);</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"Netty rocks!"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-     * 业务逻辑处理
-     */</span>
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
-    <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelRead"</span><span class="o">);</span>
-        <span class="c1">// 如果不是protobuf类型的数据</span>
-        <span class="k">if</span> <span class="o">(!(</span><span class="n">msg</span> <span class="k">instanceof</span> <span class="nc">ByteBuf</span><span class="o">))</span>
-        <span class="o">{</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"未知数据!"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
-            <span class="k">return</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">try</span>
-        <span class="o">{</span>
-            <span class="nc">ByteBuf</span> <span class="n">in</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ByteBuf</span><span class="o">)</span> <span class="n">msg</span><span class="o">;</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Client received: "</span> <span class="o">+</span>
-                    <span class="nc">ByteBufUtil</span><span class="o">.</span><span class="na">hexDump</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">())));</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span>
-        <span class="o">{</span>
-            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">finally</span>
-        <span class="o">{</span>
-            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-    <span class="cm">/**
-     * 捕捉到异常
-     */</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
-    <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"exceptionCaught"</span><span class="o">);</span>
-        <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<h4 id="netty--protobuf">Netty &amp; Protobuf</h4>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bootstrap</span><span class="o">.</span><span class="na">handler</span><span class="o">(</span>
-        <span class="k">new</span> <span class="nc">ChannelInitializer</span><span class="o">&lt;</span><span class="nc">SocketChannel</span><span class="o">&gt;()</span>
-        <span class="o">{</span>
-            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
-            <span class="o">{</span>
-                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="nc">ProtobufDecoder</span><span class="o">());</span>
-                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="nc">ProtobufEncoder</span><span class="o">());</span>
-                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="n">chatClientHandler</span><span class="o">);</span>
-<span class="err">​</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-<span class="o">);</span>
-</code></pre></div></div>
-
-<h4 id="netty--websocket">Netty &amp; WebSocket</h4>
-<p>https://baijiahao.baidu.com/s?id=1654057194889667404&amp;wfr=spider&amp;for=pc</p>
-
-<h4 id="netty-分布式部署">Netty 分布式部署</h4>
-<ul>
-  <li>接入层同时拥有 Connect 及 Transfer作用</li>
-  <li>Transfer可以通过Mq方式订阅所有消息</li>
-  <li>也可以通过Tranfer之间通过rpc调用或者直接发起另一组长连接</li>
-</ul>
-
-<h4 id="再说netty-的零拷">再说Netty 的零拷⻉</h4>
-<h5 id="传统意义的拷">传统意义的拷⻉</h5>
-<p>是在发送数据的时候，传统的实现方式是:</p>
-<ol>
-  <li><code class="highlighter-rouge">File.read(bytes)</code></li>
-  <li><code class="highlighter-rouge">Socket.send(bytes)</code> 这种方式需要四次数据拷⻉和四次上下文切换: 1. 数据从磁盘读取到内核的read buffer</li>
-  <li>数据从内核缓冲区拷⻉到用戶缓冲区</li>
-  <li>数据从用戶缓冲区拷⻉到内核的socket buffer</li>
-  <li>数据从内核的socket buffer拷⻉到网卡接口(硬件)的缓冲区
-    <h5 id="零拷的概念">零拷⻉的概念</h5>
-    <p>明显上面的第二步和第三步是没有必要的，通过java的FileChannel.transferTo方法，可以避免上面两次多余的拷⻉(当然这需要底层操作 系统支持)</p>
-  </li>
-  <li>调用transferTo,数据从文件由DMA引擎拷⻉到内核read buffer 2. 接着DMA从内核read buffer将数据拷⻉到网卡接口buffer 上面的两次操作都不需要CPU参与，所以就达到了零拷⻉。 3、Netty中的零拷⻉
-主要体现在三个方面:
-1、bytebuffer
-Netty发送和接收消息主要使用bytebuffer，bytebuffer使用对外内存(DirectMemory)直接进行Socket读写。
-原因:如果使用传统的堆内存进行Socket读写，JVM会将堆内存buffer拷⻉一份到直接内存中然后再写入socket，多了一次缓冲区的内存拷 ⻉。DirectMemory中可以直接通过DMA发送到网卡接口
-    <h5 id="composite-buffers">Composite Buffers</h5>
-    <p>传统的ByteBuffer，如果需要将两个ByteBuffer中的数据组合到一起，我们需要首先创建一个size=size1+size2大小的新的数组，然后将两 个数组中的数据拷⻉到新的数组中。但是使用Netty提供的组合ByteBuf，就可以避免这样的操作，因为CompositeByteBuf并没有真正将多 个Buffer组合起来，而是保存了它们的引用，从而避免了数据的拷⻉，实现了零拷⻉。</p>
-    <h5 id="对于filechanneltransferto的使用">对于FileChannel.transferTo的使用</h5>
-    <p>Netty中使用了FileChannel的transferTo方法，该方法依赖于操作系统实现零拷⻉。</p>
-  </li>
-</ol>
-
-<h4 id="看一看">看一看</h4>
-<ul>
-  <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty</a></li>
-  <li><a href="http://www.52im.net/thread-2775-1-1.html">http://www.52im.net/thread-2775-1-1.html</a></li>
-  <li>Netty精粹之JAVA NIO开发需要知道的 <a href="https://my.oschina.net/andylucc/blog/614295">https://my.oschina.net/andylucc/blog/614295</a></li>
-  <li>通俗易懂 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty</a></li>
-  <li>基于Netty实现海量接入的推送服务技术要点 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty</a></li>
-  <li>游戏服务 <a href="https://www.jianshu.com/p/82212eb7d76c">https://www.jianshu.com/p/82212eb7d76c</a></li>
-  <li>Netty整合SpringBoot并使用Protobuf进行数据传输 <a href="https://juejin.im/post/5bb596196fb9a05d0f16f006">https://juejin.im/post/5bb596196fb9a05d0f16f006</a></li>
-</ul>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -1349,6 +628,10 @@ Netty发送和接收消息主要使用bytebuffer，bytebuffer使用对外内存(
       <a href="/page13" class="button page-button">13</a>
       
       
+      
+      <a href="/page14" class="button page-button">14</a>
+      
+      
 
       
       <a href="/page5" class="button page-button">&raquo;</a>
@@ -1393,7 +676,7 @@ Netty发送和接收消息主要使用bytebuffer，bytebuffer使用对外内存(
       
       
       <a  href="/tag/网络">
-      <span class="label label-default">网络 ( 7 )</span>
+      <span class="label label-default">网络 ( 8 )</span>
       </a><br />
 
       
@@ -1541,6 +824,13 @@ Netty发送和接收消息主要使用bytebuffer，bytebuffer使用对外内存(
       
       <a  href="/tag/方法论">
       <span class="label label-default">方法论 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/java">
+      <span class="label label-default">java ( 2 )</span>
       </a><br />
 
       

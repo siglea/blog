@@ -497,6 +497,66 @@ Netty发送和接收消息主要使用bytebuffer，bytebuffer使用对外内存(
 ##### 对于FileChannel.transferTo的使用 
 Netty中使用了FileChannel的transferTo方法，该方法依赖于操作系统实现零拷⻉。
 
+#### Netty 报文加密
+- AESencoder/AESdecoder
+```java
+public class MyProtobufEncoder extends MessageToMessageEncoder<ByteBuf> {
+ 
+    @Override
+    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+        byte [] bytes = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(bytes);
+        byte [] encoded = AESTest.encode(bytes);
+        ByteBuf buf = Unpooled.wrappedBuffer(encoded);
+        list.add(buf);
+ 
+    }
+}
+```
+```java
+public class MyProtobufDecoder extends MessageToMessageDecoder<ByteBuf> {
+ 
+    @Override
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+        byte [] bytes = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(bytes);
+        byte [] encoded = AESTest.decode(bytes);
+        ByteBuf buf = Unpooled.wrappedBuffer(encoded);
+        list.add(buf);
+    }
+}
+```
+-  RSAencoder/RSAdecoder
+```java
+public class MyProtobufClientEncoder extends MessageToMessageEncoder<ByteBuf> {
+ 
+    @Override
+    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+        byte [] bytes = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(bytes);
+        byte [] encoded = RSACoder.encryptByPublicKey(bytes);
+        ByteBuf buf = Unpooled.wrappedBuffer(encoded);
+        list.add(buf);
+ 
+    }
+}
+```
+```java
+public class MyProtobufServerDecoder extends MessageToMessageDecoder<ByteBuf> {
+ 
+    @Override
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+        byte [] bytes = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(bytes);
+        byte [] encoded = RSACoder.decryptByPrivateKey(bytes);
+        ByteBuf buf = Unpooled.wrappedBuffer(encoded);
+        list.add(buf);
+    }
+}
+```
+- <https://www.cnblogs.com/silyvin/articles/11827030.html>
+
+
 #### 看一看
 - <http://www.52im.net/forum.php?mod=viewthread&tid=2768&highlight=netty>
 - <http://www.52im.net/thread-2775-1-1.html>
@@ -505,4 +565,4 @@ Netty中使用了FileChannel的transferTo方法，该方法依赖于操作系统
 - 基于Netty实现海量接入的推送服务技术要点 <http://www.52im.net/forum.php?mod=viewthread&tid=166&highlight=netty>
 - 游戏服务 <https://www.jianshu.com/p/82212eb7d76c>
 - Netty整合SpringBoot并使用Protobuf进行数据传输 <https://juejin.im/post/5bb596196fb9a05d0f16f006>
-
+- Netty随笔<https://www.cnblogs.com/silyvin/category/1294168.html>

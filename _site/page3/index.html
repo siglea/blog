@@ -54,6 +54,328 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html">用户画像</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 22, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>用户</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="核心">核心</h4>
+<ul>
+  <li>用户画像体系，有这一篇就够了 <a href="https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q">https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q</a></li>
+  <li>用户画像原理、技术选型及架构实现 <a href="https://blog.csdn.net/SecondLieutenant/article/details/81153565">https://blog.csdn.net/SecondLieutenant/article/details/81153565</a></li>
+</ul>
+
+<h4 id="用户画像概述">用户画像概述</h4>
+<ul>
+  <li>用户画像根本目的就是寻找目标客户、优化产品设计，指导运营策略，分析业务场景和完善业务形态。</li>
+  <li>不同的企业做用户画像有不同的战略目的，广告公司做用户画像是为精准广告服务，电商做用户画像是为用户购买更多商品，内容平台做用户画像是推荐用户更感兴趣的内容提升流量再变现，金融行业做用户画像是为了寻找到目标客户的同时做好风险的控制。</li>
+</ul>
+
+<h4 id="画像维度">画像维度</h4>
+<ul>
+  <li>特征：
+    <ul>
+      <li>人口统计：性别、年龄、教育</li>
+      <li>社会属性：家庭、社交、职业</li>
+    </ul>
+  </li>
+  <li>行为：
+    <ul>
+      <li>使用行为：手机使用、电脑类型、套餐使用、套餐余额</li>
+      <li>消费行为：购买力、购买频次、购买渠道、额度、信用等级</li>
+    </ul>
+  </li>
+  <li>需求
+    <ul>
+      <li>偏好属性：兴趣爱好、品牌爱好、产品爱好、网购偏好、支付偏好、价格偏好</li>
+      <li>潜在需求：</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="指标体系">指标体系</h4>
+<ul>
+  <li>用户属性维度</li>
+  <li>用户行为维度</li>
+  <li>用户消费维度</li>
+  <li>风险控制维度</li>
+  <li>社交属性维度</li>
+</ul>
+
+<h4 id="画像之静态标签动态标签">画像之静态标签、动态标签</h4>
+<ul>
+  <li>静态画像：实时性弱、覆盖广、粒度粗</li>
+  <li>动态画像：
+    <ul>
+      <li>一般建立兴趣模型，更加实时并且动态</li>
+      <li>用户行为可疑结构为5W（What/Who/When/Where/Why)</li>
+      <li>时效性非常敏感</li>
+      <li>在空间上，不同应用领域侧重点不同，营销领域更侧重消费习惯，推荐领域更侧重喜好</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="画像之标签结构化程度">画像之标签结构化程度</h4>
+<ul>
+  <li>结构化标签体系，定向广告平台采用的结构化标签体系</li>
+  <li>半结构化标签体系，在用于效果广告时，标签设计的灵活性大大提高了。标签体系是不是规整，就不那么重要了，只要有效果就行。</li>
+  <li>非结构化标签体系，非结构化，就是各个标签就事论事，各自反应各自的用户兴趣，彼此之间并无层级关系，也很难组织成规整的树状结构。非结构化标签的典型例子，是搜索广告里用的关键词。还有Facebook用的用户兴趣词</li>
+  <li>例如
+    <ul>
+      <li>汽车行业的标签体系大体应该是：价格—&gt;车型—&gt;品牌</li>
+      <li>游戏行业：按照类别、游戏素材、游戏厂商等等。游戏的用户决策过程总体上令人难以捉摸，这是因为它有点儿电影、音乐一样的艺术性特质。而人们对艺术的喜爱，并不是理性的，也就难以总结规律。</li>
+      <li>电商行业的实际做法大家都看到了，基本上不依靠分类，完全以“单品+个性化推荐”的方法构建和使用标签体系。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="画像之应用">画像之应用</h4>
+<ul>
+  <li>精准营销：根据历史用户特征，分析产品的潜在用户和用户的潜在需求，针对特定群体，利用短信、邮件等方式进行营销。</li>
+  <li>用户统计：根据用户的属性、行为特征对用户进行分类后，统计不同特征下的用户数量、分布；分析不同用户画像群体的分布特征。</li>
+  <li>数据挖掘：以用户画像为基础构建推荐系统、搜索引擎、广告投放系统，提升服务精准度。</li>
+  <li>服务产品：对产品进行用户画像，对产品进行受众分析，更透彻地理解用户使用产品的心理动机和行为习惯，完善产品运营，提升服务质量。</li>
+  <li>行业报告&amp;用户研究：通过用户画像分析可以了解行业动态，比如人群消费习惯、消费偏好分析、不同地域品类消费差异分析</li>
+</ul>
+
+<h4 id="画像之reachctr曲线">画像之reach/CTR曲线</h4>
+<ul>
+  <li>reach：该标签占总用户比例</li>
+  <li>CTR：点击率</li>
+  <li>reach越大，一般情况CTR会小</li>
+</ul>
+
+<h4 id="用户画像架构图">用户画像架构图</h4>
+<p><img src="/img/user_profile.jpg" width="600px" /></p>
+
+<h4 id="用户画像后台标签">用户画像后台标签</h4>
+<p><img src="/img/user_profile_admin.jpg" width="600px" /></p>
+
+<h4 id="用户业务标签">用户业务标签</h4>
+<p><img src="/img/user_profile_tags.jpg" width="600px" /></p>
+
+<h4 id="会员理论模型">会员理论模型</h4>
+<ul>
+  <li>会员体系模型：AIPL
+    <ul>
+      <li>Awareness潜客：内容运营、宣传吸引、新手任务、了解产品</li>
+      <li>Interest粉丝：社会新闻、热点话题、习惯养成、积分积累</li>
+      <li>Purchase会员：日常任务、促销活动、品牌影响力、共同利益</li>
+      <li>Loyalty超级会员：专属特权、心理诉求、社群活动、1V1维护</li>
+    </ul>
+  </li>
+  <li>会员体系模型：RFM
+    <ul>
+      <li>R(Recency)近度：距某节点最近的一次消费</li>
+      <li>F(Frequency)频度：消费频次</li>
+      <li>M (Monetary)额度：消费金额
+<img src="/img/RFM.jpg" width="600px" /></li>
+    </ul>
+  </li>
+  <li>会员体系模型：AARRR
+    <ul>
+      <li>Acquisition（获取用户）：关注PV、UV、CPC、点击转化率、注册量、注册率、获客成本CAC</li>
+      <li>Activation（提高活跃度）：关注登陆量、激活转化率、活跃度指标</li>
+      <li>Retention（提高留存率）：关注留存率、复购率、人均购买次数、召回率</li>
+      <li>Revenue（获取收入）：关注获客成本、顾客终身价值、营销ROI</li>
+      <li>Referral（传播）：关注邀请量、激活量、邀请激活率、传播系数</li>
+    </ul>
+  </li>
+  <li>鱼塘理论
+    <ul>
+      <li>养鱼、抓潜、成交、追销、形成自己的鱼塘</li>
+    </ul>
+  </li>
+  <li>《上瘾》Hook模型概念
+    <ul>
+      <li>触发Trigger：即诱发用户采取行动，进入系统的契机。这是上瘾模型的第一步，也是最关键一步，如果这步不能引起用户的兴趣，后续就无从谈起。</li>
+      <li>行动Action：按照斯坦福大学B.J.Fogg博士的Behavior Model理论，B=MAT，即行动（Behavior）=动机（Motivation）+能力（Ability）+触发器（Trigger）。</li>
+      <li>多变的酬赏Variable Reward：当行为被触发之后，接下来就需要给用户一些酬赏进行持续刺激，以培养对他们对产品的使用习惯。酬赏简单来说就是产品带给用户的满足感，但为什么要强调“多变”呢？
+  据行为学研究，人们对产品的满足感会随着时间的推移逐渐降低，即使现阶段用户因为产品解决了某方面问题而产生依赖，但市面上的新产品层出不穷，要想不被淘汰，“无穷的多变性”是保持产品神秘感和吸引力，维持用户长期兴趣的关键。</li>
+      <li>投入Investment：有研究表明，用户对某个产品投入时间精力的多寡与对这个产品的依赖程度成正比，就像免费东西你不会珍惜，而氪过金的游戏或服务反而会不断充值一样。已经享受酬赏的用户，想要他们对你的产品彻底“上瘾”，最后一步就是要让他们有所投入。
+ <img src="/img/hook.jpg" width="600px" /></li>
+    </ul>
+    <p><a href="https://www.sohu.com/a/239048631_100180218">https://www.sohu.com/a/239048631_100180218</a></p>
+  </li>
+  <li>《疯传》STEPPS原则
+    <ul>
+      <li>社交货币（Social Currency）：我们会共享那些能让我们显得更优秀的事情</li>
+      <li>诱因（Triggers）：顶尖的记忆，风口浪尖的提醒</li>
+      <li>情绪（Emotion）：当我们关心时，我们回去分享</li>
+      <li>公共性（Public）：构建可视的、正面的事物</li>
+      <li>实用价值（Practical Value）：如果有用，人们会情不自禁地分享</li>
+      <li>故事（Stories）：好故事就意味着成功了一般，好故事都有翅膀</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>用户研究：如何做用户画像分析 <a href="https://www.jianshu.com/p/440c30383bec">https://www.jianshu.com/p/440c30383bec</a></li>
+  <li>什么是用户画像和标签？ <a href="http://www.woshipm.com/user-research/1083807.html">http://www.woshipm.com/user-research/1083807.html</a></li>
+  <li>结构化标签、非结构化标签及reach/CTR曲线 <a href="http://www.woshipm.com/user-research/436269.html">http://www.woshipm.com/user-research/436269.html</a></li>
+  <li>电商案例、金融案例（用户画像标签体系——从零开始搭建实时用户画像） <a href="https://cloud.tencent.com/developer/column/79937">https://cloud.tencent.com/developer/column/79937</a></li>
+  <li>航空公司案例、证券案例、打车公司案例 <a href="https://www.zhihu.com/question/302695500">https://www.zhihu.com/question/302695500</a></li>
+  <li>从阿里会员解读会员体系建设 <a href="https://zhuanlan.zhihu.com/p/88738148">https://zhuanlan.zhihu.com/p/88738148</a></li>
+  <li>用户画像10大误区 <a href="https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA">https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA</a></li>
+  <li>1号店案例 <a href="https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg">https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg</a></li>
+  <li>Qunar用户画像构建策略及应用实践 <a href="https://blog.csdn.net/xiaoshunzi111/article/details/53170658">https://blog.csdn.net/xiaoshunzi111/article/details/53170658</a></li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>携程</td>
+          <td>手把手教你用大数据打造用户画像 <a href="https://blog.csdn.net/chenjunji123456/article/details/54966633">https://blog.csdn.net/chenjunji123456/article/details/54966633</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>《用户画像：方法论与工程化解决方案》<a href="https://www.jianshu.com/p/94dadecc162b">https://www.jianshu.com/p/94dadecc162b</a></li>
+  <li>汽车之家如何构建用户画像 <a href="https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw">https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html">Java基础</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 17, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="基础">基础</h4>
+<ol>
+  <li>Hotspot 的作者经过以往的研究发现大多数情况下锁不仅不存在多线程竞争，而且总是由同一线
+程多次获得。偏向锁的目的是在某个线程获得锁之后，消除这个线程锁重入(CAS)的开销，看起
+来让这个线程得到了偏护。引入偏向锁是为了在无多线程竞争的情况下尽量减少不必要的轻量级
+锁执行路径，因为轻量级锁的获取及释放依赖多次 CAS 原子指令，而偏向锁只需要在置换
+ThreadID 的时候依赖一次 CAS 原子指令(由于一旦出现多线程竞争的情况就必须撤销偏向锁，所
+以偏向锁的撤销操作的性能损耗必须小于节省下来的 CAS 原子指令的性能消耗)。上面说过，轻
+量级锁是为了在线程交替执行同步块时提高性能，而偏向锁则是在只有一个线程执行同步块时进
+一步提高性能。</li>
+  <li>很多情况下，主线程生成并启动了子线程，需要用到子线程返回的结果，也就是需要主线程需要
+在子线程结束后再结束，这时候就要用到 join() 方法。</li>
+</ol>
+
+<h4 id="java内存泄露">Java内存泄露</h4>
+<ul>
+  <li>非静态内部类引用了外部类，类似循环引用。使用静态内部类解决该问题。</li>
+</ul>
+
+<h4 id="分布式垃圾回收dgc">分布式垃圾回收DGC？</h4>
+<ul>
+  <li>分布式垃圾回收。RMI使用DGC来做自动垃圾回收，因为RMI包含了跨虚拟机的远程对象的引用，
+  垃圾回收是很困难的。DGC使用引用计数算法来给远程对象提供自动内存管理。</li>
+</ul>
+
+<h4 id="请对比下-volatile-对比-synchronized-的异同">请对比下 volatile 对比 Synchronized 的异同。</h4>
+<ul>
+  <li>Synchronized 既能保证可见性，又能保证原子性，而 volatile 只能保证可见性，无法保证原子性。</li>
+  <li>ThreadLocal 和 Synchonized 都用于解决多线程并发访问，防止任务在共享资源上产生冲突。但是Thread Local 与 Synchronized 有本质的区别。
+    <ul>
+      <li>Synchronized 用于实现同步机制，是利用锁的机制使变量或代码块在某一时该只能被一个线程访问，是一种“以时间换空间”的方式。</li>
+      <li>而ThreadLocal 为每一个线程都提供了变量的副本，使得每个线程在某一时间访问到的并不是同一个对象，根除了对变量的共享，是一种“以空间换时间”的方式。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="请谈谈-threadlocal-是怎么解决并发安全的">请谈谈 ThreadLocal 是怎么解决并发安全的？</h4>
+<ul>
+  <li>ThreadLocal 这是Java提供的一种保存线程私有信息的机制，因为其在整个线程生命周期内有效，所以可以方便地在一个线程关联的不同业务模块之间传递信息，
+比如事务, Cookie等上下文相关信息。 ThreadLocal 为每一个线程维护变量的副本，把共享数据的可见范围限制在同一个线程之内，其实现原理是，在ThreadLocal 类中有一个Map ，用于存储每一个线程的变量的副本。
+ThreadLocal 注意需要自己remove，否则可能发生泄漏。</li>
+</ul>
+
+<h4 id="throwable-是-java-语言中所有错误或异常的超类下一层分为-error-和-exception">Throwable 是 Java 语言中所有错误或异常的超类。下一层分为 Error 和 Exception</h4>
+<ol>
+  <li>Error 类是指 java 运行时系统的内部错误和资源耗尽错误。应用程序不会抛出该类对象。如果出现了这样的错误，除了告知用户，剩下的就是尽力使程序安全的终止。</li>
+  <li>Exception 又有两个分支，一个是运行时异常 RuntimeException，一个是CheckedException。</li>
+</ol>
+
+<h4 id="序列化-id">序列化 ID</h4>
+<p>Java 平台允许我们在内存中创建可复用的 Java 对象，但一般情况下，只有当 JVM 处于运行时，
+这些对象才可能存在，即，这些对象的生命周期不会比 JVM 的生命周期更长。但在现实应用中，
+就可能要求在 JVM 停止运行之后能够保存(持久化)指定的对象，并在将来重新读取被保存的对象。
+Java 对象序列化就能够帮助我们实现该功能。
+ 使用 Java 对象序列化，在保存对象时，会把其状态保存为一组字节，在未来，再将这些字节组装
+ 成对象。必须注意地是，对象序列化保存的是对象的”状态”，即它的成员变量。由此可知，对
+ 象序列化不会关注类中的静态变量。
+ 除了在持久化对象时会用到对象序列化之外，当使用 RMI(远程方法调用)，或在网络中传递对象时，
+ 都会用到对象序列化。Java 序列化 API 为处理对象序列化提供了一个标准机制，该 API 简单易用。
+ 虚拟机是否允许反序列化，不仅取决于类路径和功能代码是否一致，一个非常重要的一点是两个
+ 类的序列化 ID 是否一致(就是 private static final long serialVersionUID)</p>
+
+<h4 id="线程间共享">线程间共享</h4>
+<p>线程 A 与线程 B 之间如要通信的话，必须要经历下面 2 个步骤: 1. 首先，线程 A 把本地内存 A 中更新过的共享变量刷新到主内存中去。</p>
+<ol>
+  <li>然后，线程 B 到主内存中去读取线程 A 之前已更新过的共享变量。</li>
+</ol>
+
+<h4 id="iterater-和-listiterator-之间有什么区别">Iterater 和 ListIterator 之间有什么区别?</h4>
+<p>(1)我们可以使用 Iterator 来遍历 Set 和 List 集合，而 ListIterator 只能遍历 List。 (2)Iterator 只可以向前遍历，而 LIstIterator 可以双向遍历。
+(3)ListIterator 从 Iterator 接口继承，然后添加了一些额外的功能，比如添加一个元素、替 换一个元素、获取前面或后面元素的索引位置。</p>
+
+<h4 id="什么是-java-内存模型">什么是 Java 内存模型</h4>
+<ul>
+  <li>Java 内存模型定义了一种多线程访问 Java 内存的规范。Java 内存模型要完 整讲不是这里几句话能说清楚的，我简单总结一下 Java 内存模型的几部分内 容:</li>
+  <li>Java 内存模型将内存分为了主内存和工作内存。类的状态，也就是类之间 共享的变量，是存储在主内存中的，每次 Java 线程用到这些主内存中的变量 的时候，会读一次主内存中的变量，并让这些内存在自己的工作内存中有一份
+ 拷贝，运行自己线程代码的时候，用到这些变量，操作的都是自己工作内存中 的那一份。在线程代码执行完毕之后，会将最新的值更新到主内存中去</li>
+  <li>定义了几个原子操作，用于操作主内存和工作内存中的变量</li>
+  <li>定义了 volatile 变量的使用规则</li>
+  <li>happens-before，即先行发生原则，定义了操作 A 必然先行发生于操作 B 的一些规则，比如在同一个线程内控制流前面的代码一定先行发生于控制流 后面的代码、一个释放锁 unlock 的动作一定先行发生于后面对于同一个锁进 行锁定 lock 的动作等等，只要符合这些规则，则不需要额外做同步措施，如 果某段代码不符合所有的 happens-before 规则，则这段代码一定是线程非 安全的</li>
+  <li>8种内存间操作
+    <ul>
+      <li>lock：把一个变量标志为一条线程独占的状态</li>
+      <li>
+        <p>unlock：把一个处于锁定状态的变量释放出来，释放之后的变量才能被其他线程锁定</p>
+      </li>
+      <li>read：把一个变量值从主内存传输到线程的工作内存，以便load</li>
+      <li>
+        <p>load：把read操作从主内存得到的变量值放入到工作内存的变量副本中</p>
+      </li>
+      <li>write：把store操作从工作内存得到的变量的值，放到主内存的变量中</li>
+      <li>
+        <p>store：把工作内存的变量值传到主内存，以便write</p>
+      </li>
+      <li>use：把工作内存变量值传递给执行引擎</li>
+      <li>assign：将执行引擎值传递给工作内存变量值</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Pojo(plian ordinary普通的; 平常的; java object)</p>
+
+<h4 id="hashmap-为啥size是2的倍数18比17做了哪些优化">HashMap 为啥size是2的倍数，1.8比1.7做了哪些优化？</h4>
+<p>JDK1.7 VS JDK1.8 比较
+JDK1.8主要解决或优化了一下问题：
+resize 扩容优化
+引入了红黑树，目的是避免单条链表过长而影响查询效率，红黑树算法请参考
+解决了多线程死循环问题，但仍是非线程安全的，多线程时可能会造成数据丢失问题。</p>
+
+<h4 id="seata-的-demo">Seata 的 Demo</h4>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/HackSummary.html">各种攻击</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
@@ -206,144 +528,6 @@ F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<sp
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html">大数据常用算法概述</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>BigData</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="决策树算法">决策树算法</h4>
-<h4 id="回归算法">回归算法</h4>
-<h4 id="朴素贝叶斯分类算法">朴素贝叶斯分类算法</h4>
-<h4 id="聚类-knn算法">聚类-KNN算法</h4>
-<h4 id="svm支持向量机分类">SVM支持向量机分类</h4>
-<h4 id="推荐算法">推荐算法</h4>
-
-<h4 id="tf-idf">TF-IDF</h4>
-<ul>
-  <li>TF-IDF（term frequency–inverse document frequency，词频-逆向文件频率）是一种用于信息检索（information retrieval）与文本挖掘（text mining）的常用加权技术。</li>
-  <li>TF-IDF是一种统计方法，用以评估一字词对于一个文件集或一个语料库中的其中一份文件的重要程度。字词的重要性随着它在文件中出现的次数成正比增加，但同时会随着它在语料库中出现的频率成反比下降。</li>
-  <li>TF-IDF的主要思想是：如果某个单词在一篇文章中出现的频率TF高，并且在其他文章中很少出现，则认为此词或者短语具有很好的类别区分能力，适合用来分类。</li>
-</ul>
-
-<h4 id="tf-idf算法实现简单快速但是仍有许多不足之处">TF-IDF算法实现简单快速，但是仍有许多不足之处：</h4>
-<ul>
-  <li>没有考虑特征词的位置因素对文本的区分度，词条出现在文档的不同位置时，对区分度的贡献大小是不一样的。</li>
-  <li>按照传统TF-IDF，往往一些生僻词的IDF(反文档频率)会比较高、因此这些生僻词常会被误认为是文档关键词。</li>
-  <li>传统TF-IDF中的IDF部分只考虑了特征词与它出现的文本数之间的关系，而忽略了特征项在一个类别中不同的类别间的分布情况。</li>
-  <li>对于文档中出现次数较少的重要人名、地名信息提取效果不佳。</li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html">ZooKeeper</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 6, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="散点">散点</h4>
-<ul>
-  <li>临时节点不允许有子节点，Ephemeral Node</li>
-  <li>没给节点大小不超过1MB</li>
-</ul>
-
-<h4 id="使用场景">使用场景</h4>
-<ul>
-  <li>注册中心</li>
-  <li>配置中心</li>
-  <li>HBase之MetaData存储</li>
-  <li>分布式锁</li>
-</ul>
-
-<h4 id="常用命令">常用命令</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./zkServer.sh start | stop 
-./zkServer.sh status
-./zkCli.sh 
-
-<span class="nb">ls</span> /
-<span class="nb">stat</span> /
-ls2 /
-
-create /node1 /node1-content
-create <span class="nt">-e</span> /node1-temp /node1-content-temp
-</code></pre></div></div>
-<p><a href="https://blog.csdn.net/dandandeshangni/article/details/80558383">https://blog.csdn.net/dandandeshangni/article/details/80558383</a></p>
-
-<h4 id="阿里为什么不用-zookeeper-做服务发现">阿里为什么不用 ZooKeeper 做服务发现？</h4>
-<ul>
-  <li>基于CP而非AP</li>
-  <li>自身仅仅是主从的集群，而非分布式集群</li>
-  <li>The King Of Coordination for Big Data</li>
-</ul>
-
-<h4 id="zookeeper的observer">ZooKeeper的observer</h4>
-<p>当ZooKeeper集群中follower的数量很多时，投票过程会成为一个性能瓶颈，为了解决投票造成的压力，于是出现了observer角色。
-observer角色不参与投票，它只是投票结果的”听众”，除此之外，它和follower完全一样，例如能接受读、写请求。就这一个特点，让整个ZooKeeper集群性能大大改善。
-和follower一样，当observer收到客户端的读请求时，会直接从内存数据库中取出数据返回给客户端。
-对于写请求，当写请求发送到某server上后，无论这个节点是follower还是observer，都会将它发送给leader。然后leader组织投票过程，所有server都收到这个proposal(包括observer，因为proposal是广播出去的)，但是leader和follower以及observer通过配置文件，都知道自己是不是observer以及谁是observer。自己是observer的server不参与投票。当leader收集完投票后，将那些observer的server去掉，在剩下的server中计算大多数，如果投票结果达到了大多数，这次写事务就成功，于是leader通知所有的节点(包括observer)，让它们将事务写入事务日志，并提交。</p>
-
-<h4 id="使用-redis-如何设计分布式锁说一下实现思路使用-zk-可以吗如何实现这两种有什-么区别">使用 redis 如何设计分布式锁?说一下实现思路?使用 zk 可以吗?如何实现?这两种有什 么区别?</h4>
-<ul>
-  <li>redis:
-    <ol>
-      <li>线程 A setnx(上锁的对象,超时时的时间戳 t1)，如果返回 true，获得锁。</li>
-      <li>线程 B 用 get 获取 t1,与当前时间戳比较,判断是是否超时,没超时 false,若超时执行第 3 步;</li>
-      <li>计算新的超时时间 t2,使用 getset 命令返回 t3(该值可能其他线程已经修改过),如果 t1==t3，获得锁，如果 t1!=t3 说明锁被其他线程获取了。</li>
-      <li>获取锁后，处理完业务逻辑，再去判断锁是否超时，如果没超时删除锁，如果已超时， 不用处理(防止删除其他线程的锁)。</li>
-    </ol>
-  </li>
-  <li>zk:
-    <ol>
-      <li>客户端对某个方法加锁时，在 zk 上的与该方法对应的指定节点的目录下，生成一个唯一 的瞬时有序节点 node1;</li>
-      <li>客户端获取该路径下所有已经创建的子节点，如果发现自己创建的 node1 的序号是最小 的，就认为这个客户端获得了锁。</li>
-      <li>如果发现 node1 不是最小的，则监听比自己创建节点序号小的最大的节点，进入等待。</li>
-      <li>获取锁后，处理完逻辑，删除自己创建的 node1 即可。 区别:zk 性能差一些，开销大，实现简单。</li>
-    </ol>
-  </li>
-</ul>
-
-<p><a href="https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg">https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg</a></p>
-
-<h4 id="zookeeper队列管理文件系统通知机制">Zookeeper队列管理(文件系统、通知机制)</h4>
-<ul>
-  <li>两种类型的队列:
-    <ul>
-      <li>同步队列，当一个队列的成员都聚⻬时，这个队列才可用，否则一直等待所有成员到达。</li>
-      <li>队列按照 FIFO 方式进行入队和出队操作。</li>
-    </ul>
-  </li>
-  <li>第一类，在约定目录下创建临时目录节点，监听节点数目是否是我们要求的数目。</li>
-  <li>第二类，和分布式锁服务中的控制时序场景基本原理一致，入列有编号，出列按编号。在特定的目录下创建 PERSISTENT_SEQUENTIAL节点，创建成功时Watcher通知等待的队列，队列删除序列号最小的节点用以消费。</li>
-  <li>此场景下Zookeeper的znode用于消息存储，znode存储的数据就是消息队列中的消息内容，SEQUENTIAL序列号就是消息的编 号，按序取出即可。由于创建的节点是持久化的，所以不必担心队列消息的丢失问题。</li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -405,6 +589,10 @@ observer角色不参与投票，它只是投票结果的”听众”，除此之
       <a href="/page13" class="button page-button">13</a>
       
       
+      
+      <a href="/page14" class="button page-button">14</a>
+      
+      
 
       
       <a href="/page4" class="button page-button">&raquo;</a>
@@ -449,7 +637,7 @@ observer角色不参与投票，它只是投票结果的”听众”，除此之
       
       
       <a  href="/tag/网络">
-      <span class="label label-default">网络 ( 7 )</span>
+      <span class="label label-default">网络 ( 8 )</span>
       </a><br />
 
       
@@ -597,6 +785,13 @@ observer角色不参与投票，它只是投票结果的”听众”，除此之
       
       <a  href="/tag/方法论">
       <span class="label label-default">方法论 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/java">
+      <span class="label label-default">java ( 2 )</span>
       </a><br />
 
       
