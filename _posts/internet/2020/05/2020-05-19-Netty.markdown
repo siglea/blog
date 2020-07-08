@@ -109,7 +109,7 @@ public class CIMServer {
 - <https://mp.weixin.qq.com/s/csslzxEGTRX1WnK5Qp8jWQ>
 - <http://www.52im.net/forum.php?mod=viewthread&tid=2043&highlight=netty>
 
-#### Netty的零拷贝，数据最终只有一份在kernel buffer
+#### 操作系统Zero-Copy
 <pre>
 1. ReadBuffer copyTo AppBuffer
 2. AppBuffer  copyTo SocketBuffer
@@ -122,9 +122,15 @@ public class CIMServer {
 根据socket buffer中的位置和偏移量直接将kernel buffer的数据copy到网卡设备（protocol engine）中，演变为 (Linux 2.4)
 1. 根据位置和偏移量，   NIC Buffer，直接从ReadBuffer读取
 </pre>
-
-- DMA(Direct Memory Access，直接存储器访问)
 - <https://www.jianshu.com/p/017f193663a0>
+
+#### NIO本身支持DMA方式的Zero-Copy
+- DMA(Direct Memory Access，直接存储器访问)
+- <https://mp.weixin.qq.com/s/A8vc7exPDko1k1WaXuO0Og>
+
+#### Netty零拷贝终于讲清楚了 
+- 其实是靠CompositeByteBuf，把多个数组引用成同一个逻辑数组 <https://cloud.tencent.com/developer/article/1488088>
+- 深入探秘Netty、Kafka中的零拷贝技术！ <https://www.debug8.com/java/t_43617.html>
 
 #### Protocol Buffer 的序列化 & 反序列化简单 & 速度快的原因是:
 1. 编码 / 解码 方式简单(只需要简单的数学运算 = 位移等等)
