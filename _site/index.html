@@ -291,6 +291,173 @@ Sec-WebSocket-Version: 13
   <li><a href="https://www.cnblogs.com/silyvin/p/10223910.html">https://www.cnblogs.com/silyvin/p/10223910.html</a></li>
 </ul>
 
+<h4 id="volatile保证可见性禁止重排无法实现原子性">volatile（保证可见性、禁止重排、无法实现原子性）</h4>
+<ul>
+  <li>指令重排只会保证串行语义的执行一致性(单线程) 并不会关心多线程间的语义一致性</li>
+</ul>
+
+<h3 id="cas--unsafe">CAS &amp; Unsafe</h3>
+<ul>
+  <li>CAS的全称为Compare-And-Swap，它是一条CPU并发原语。它的功能是判断内存某个位置的值是否为预期值，如果是则更改为新的值，这个过程是原子的。</li>
+  <li>CAS并发原语体现在JAVA语言中就是sum.misc.Unsafe类中的各个方法。调用Unsafe类中的CAS方法，JVM会帮我们实现出CAS汇编指令。这是一种完全依赖于硬件的功能，通过它实现了原子操作。再次强调，由于CAS是一种系统原语，原语属于操作系统用语范畴，是由若干条指令组成的，用于完成某个功能的一个过程，并且原语的执行必须是连续的，在执行过程中不允许被中断，也就是说CAS是一条CPU的原子指令，不会造成所有的数据不一致问题。</li>
+  <li>CAS只能保证一个共享变量的原子性</li>
+  <li>CAS自旋</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 我们可以看到getAndAddInt方法执行时，有个do while</span>
+<span class="c"># unsafe.getAndAddInt</span>
+public final int getAndAddInt<span class="o">(</span>Object var1, long var2, int var4<span class="o">){</span>
+    int var5<span class="p">;</span>
+    <span class="k">do</span> <span class="o">{</span>
+        var5 <span class="o">=</span> this.getIntVolatile<span class="o">(</span>var1, var2<span class="o">)</span><span class="p">;</span>
+    <span class="o">}</span> <span class="k">while</span><span class="o">(!</span>this.compareAndSwapInt<span class="o">(</span>var1, var2, var5, var5 + var4<span class="o">))</span><span class="p">;</span>
+    <span class="k">return </span>var5<span class="p">;</span>
+<span class="o">}</span>
+
+<span class="c"># 如果CAS失败，会一直进行尝试。如果CAS长时间一直不成功，可能会能CPU带来很大的开锁。</span>
+</code></pre></div></div>
+
+<ul>
+  <li>CAS造成的ABA问题用版本号解决</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># （旧值，新值）</span>
+atomicReference.compareAndSet<span class="o">(</span>101, 100<span class="o">)</span><span class="p">;</span>
+
+<span class="c"># AtomicStampedReference 以时间戳做为版本号解决ABA的问题</span>
+public boolean compareAndSet<span class="o">(</span>V   expectedReference,
+                                 V   newReference,
+                                 int expectedStamp,
+                                 int newStamp<span class="o">)</span> <span class="o">{</span>
+</code></pre></div></div>
+
+<h4 id="exchanger">Exchanger</h4>
+<ul>
+  <li>允许在并发任务之间交换数据。具体来说，Exchanger类允许在两个线程之间定义同步点。当两个线程都到达同步点时，他们交换数据结构，因此第一个线程的数据结构进入到第二个线程中，第二个线程的数据结构进入到第一个线程中</li>
+  <li>例子模拟一个队列中数据的交换使用的场景：
+    <ul>
+      <li>线程A往队列中存入数据</li>
+      <li>线程B从队列中消耗数据</li>
+      <li>当线程A存满的时候</li>
+      <li>才交换给线程B</li>
+      <li>当线程B消耗完成之后才交换给线程A。</li>
+      <li>线程A、B的生产和消耗的速率有可能不同</li>
+      <li>对方线程调用exchange之前，另一个线程执行到exchange会阻塞</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="jvm-对-java-的原生锁做了哪些优化">JVM 对 Java 的原生锁做了哪些优化？</h4>
+<ul>
+  <li>
+    <p>一种优化是使用自旋锁，即在把线程进行阻塞操作之前先让线程自旋等待一段时间，可能在等待期间其他线程已经解锁，这时就无需再让线程执行阻塞操作，避免了用户态到内核态的切换。</p>
+  </li>
+  <li>现代 JDK 中还提供了三种不同的 Monitor 实现，也就是三种不同的锁：
+    <ul>
+      <li>偏向锁（Biased Locking）</li>
+      <li>轻量级锁</li>
+      <li>重量级锁,这三种锁使得 JDK 得以优化 Synchronized 的运行，当 JVM 检测到不同的竞争状况时，会自动切换到适合的锁实现，这就是锁的升级、降级。</li>
+    </ul>
+  </li>
+  <li>当没有竞争出现时，默认会使用偏向锁。
+    <ul>
+      <li>JVM 会利用 CAS 操作，在对象头上的 Mark Word 部分设置线程 ID，以表示这个对象偏向于当前线程，所以并不涉及真正的互斥锁，因为在很多应用场景中，大部分对象生命周期中最多会被一个线程锁定，使用偏斜锁可以降低无竞争开销。</li>
+    </ul>
+  </li>
+  <li>如果有另一线程试图锁定某个被偏斜过的对象，JVM 就撤销偏斜锁，切换到轻量级锁实现。</li>
+  <li>轻量级锁依赖 CAS 操作 Mark Word 来试图获取锁，如果重试成功，就使用普通的轻量级锁(自旋锁)；否则，进一步升级为重量级锁。</li>
+</ul>
+
+<h4 id="readwritelock">ReadWriteLock</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final boolean tryWriteLock<span class="o">()</span> <span class="o">{</span>
+            Thread current <span class="o">=</span> Thread.currentThread<span class="o">()</span><span class="p">;</span>
+            int c <span class="o">=</span> getState<span class="o">()</span><span class="p">;</span>
+            <span class="k">if</span> <span class="o">(</span>c <span class="o">!=</span> 0<span class="o">)</span> <span class="o">{</span>
+                int w <span class="o">=</span> exclusiveCount<span class="o">(</span>c<span class="o">)</span><span class="p">;</span>
+                <span class="k">if</span> <span class="o">(</span>w <span class="o">==</span> 0 <span class="o">||</span> current <span class="o">!=</span> getExclusiveOwnerThread<span class="o">())</span>
+                    <span class="k">return </span><span class="nb">false</span><span class="p">;</span>
+                <span class="k">if</span> <span class="o">(</span>w <span class="o">==</span> MAX_COUNT<span class="o">)</span>
+                    throw new Error<span class="o">(</span><span class="s2">"Maximum lock count exceeded"</span><span class="o">)</span><span class="p">;</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(!</span>compareAndSetState<span class="o">(</span>c, c + 1<span class="o">))</span>
+                <span class="k">return </span><span class="nb">false</span><span class="p">;</span>
+            setExclusiveOwnerThread<span class="o">(</span>current<span class="o">)</span><span class="p">;</span>
+            <span class="k">return </span><span class="nb">true</span><span class="p">;</span>
+        <span class="o">}</span>
+
+        /<span class="k">**</span>
+         <span class="k">*</span> Performs tryLock <span class="k">for </span><span class="nb">read</span>, enabling barging <span class="k">in </span>both modes.
+         <span class="k">*</span> This is identical <span class="k">in </span>effect to tryAcquireShared except <span class="k">for</span>
+         <span class="k">*</span> lack of calls to readerShouldBlock.
+         <span class="k">*</span>/
+        final boolean tryReadLock<span class="o">()</span> <span class="o">{</span>
+            Thread current <span class="o">=</span> Thread.currentThread<span class="o">()</span><span class="p">;</span>
+            <span class="k">for</span> <span class="o">(</span><span class="p">;;</span><span class="o">)</span> <span class="o">{</span>
+                int c <span class="o">=</span> getState<span class="o">()</span><span class="p">;</span>
+                <span class="k">if</span> <span class="o">(</span>exclusiveCount<span class="o">(</span>c<span class="o">)</span> <span class="o">!=</span> 0 <span class="o">&amp;&amp;</span>
+                    getExclusiveOwnerThread<span class="o">()</span> <span class="o">!=</span> current<span class="o">)</span>
+                    <span class="k">return </span><span class="nb">false</span><span class="p">;</span>
+                int r <span class="o">=</span> sharedCount<span class="o">(</span>c<span class="o">)</span><span class="p">;</span>
+                <span class="k">if</span> <span class="o">(</span>r <span class="o">==</span> MAX_COUNT<span class="o">)</span>
+                    throw new Error<span class="o">(</span><span class="s2">"Maximum lock count exceeded"</span><span class="o">)</span><span class="p">;</span>
+                <span class="k">if</span> <span class="o">(</span>compareAndSetState<span class="o">(</span>c, c + SHARED_UNIT<span class="o">))</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span>r <span class="o">==</span> 0<span class="o">)</span> <span class="o">{</span>
+                        firstReader <span class="o">=</span> current<span class="p">;</span>
+                        firstReaderHoldCount <span class="o">=</span> 1<span class="p">;</span>
+                    <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span>firstReader <span class="o">==</span> current<span class="o">)</span> <span class="o">{</span>
+                        firstReaderHoldCount++<span class="p">;</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        HoldCounter rh <span class="o">=</span> cachedHoldCounter<span class="p">;</span>
+                        <span class="k">if</span> <span class="o">(</span>rh <span class="o">==</span> null <span class="o">||</span> rh.tid <span class="o">!=</span> getThreadId<span class="o">(</span>current<span class="o">))</span>
+                            cachedHoldCounter <span class="o">=</span> rh <span class="o">=</span> readHolds.get<span class="o">()</span><span class="p">;</span>
+                        <span class="k">else if</span> <span class="o">(</span>rh.count <span class="o">==</span> 0<span class="o">)</span>
+                            readHolds.set<span class="o">(</span>rh<span class="o">)</span><span class="p">;</span>
+                        rh.count++<span class="p">;</span>
+                    <span class="o">}</span>
+                    <span class="k">return </span><span class="nb">true</span><span class="p">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+</code></pre></div></div>
+<h4 id="面向对象的五大基本原则solid">面向对象的五大基本原则(solid)</h4>
+<ul>
+  <li>S单一职责SRP:Single-Responsibility Principle
+   一个类,最好只做一件事,只有一个引起它的变化。单一职责原则可以看做是低耦合,高内聚在面向对象原则的引申,将职责定义为引起变化的原因,以提高内聚性减少引起变化的原因。</li>
+  <li>O开放封闭原则OCP:Open-Closed Principle
+   软件实体应该是可扩展的,而不是可修改的。对扩展开放,对修改封闭</li>
+  <li>L里氏替换原则LSP:Liskov-Substitution Principle
+   子类必须能够替换其基类。这一思想表现为对继承机制的约束规范,只有子类能够替换其基类时,才能够保证系统在运行期内识别子类,这是保证继承复用的基础。</li>
+  <li>I接口隔离原则ISP:Interface-Segregation Principle
+   使用多个小的接口,而不是一个大的总接口</li>
+  <li>D依赖倒置原则DIP:Dependency-Inversion Principle
+   依赖于抽象。具体而言就是高层模块不依赖于底层模块,二者共同依赖于抽象。抽象不依赖于具体,具体依赖于抽象。</li>
+</ul>
+
+<h4 id="类什么时候才被初始化">类什么时候才被初始化</h4>
+<ul>
+  <li>创建类的实例，也就是new一个对象</li>
+  <li>访问某个类或接口的静态变量，或者对该静态变量赋值</li>
+  <li>调用类的静态方法</li>
+  <li>反射（Class.forName(“com.lyj.load”)）</li>
+  <li>初始化一个类的子类（会首先初始化子类的父类）</li>
+  <li>JVM启动时标明的启动类，即文件名和类名相同的那个类</li>
+</ul>
+
+<h4 id="arraylist">ArrayList</h4>
+<p>ArrayList创建时的大小为0；当加入第一个元素时，进行第一次扩容时，默认容量大小为10。
+ArrayList每次扩容都以当前数组大小的1.5倍去扩容。
+Vector创建时的默认大小为10。
+Vector每次扩容都以当前数组大小的2倍去扩容。当指定了capacityIncrement之后，每次扩容仅在原先基础上增加capacityIncrement个单位空间。
+ArrayList和Vector的add、get、size方法的复杂度都为O(1)，remove方法的复杂度为O(n)。
+ArrayList是非线程安全的，Vector是线程安全的。</p>
+
+<h4 id="hashmap为什么初始容量是2的指数幂">hashmap为什么初始容量是2的指数幂</h4>
+<ol>
+  <li>hashmap在确定元素落在数组的位置的时候，计算方法是(n - 1) &amp; hash，n为数组长度也就是初始容量 ，这是因为“取模”运算的消耗还是比较大的，那么如何保证(n - 1) &amp; hash和hash%n的结果相同呢，当n为2的指数次幂时，会满足一个公式：(n - 1) &amp; hash = hash % n，这样就可以用(n - 1) &amp; hash的位运算来使计算更加高效。</li>
+  <li>如果初始容量是奇数，那么（n-1)就为偶数，偶数2进制的结尾都是0，经过hash值&amp;运算后末尾都是0，那么0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这样就会造成空间的浪费而且会增加hash冲突。</li>
+  <li>只有是2的指数次幂的数字经过n-1之后，二进制肯定是  …11111111  这样的格式，这种格式计算的位置的时候，完全是由产生的hash值类决定，而不受n-1 影响。这样会提高效率。比如要扩容了，2的幂次方*2，在二进制中比如4和8，代表2的2次方和3次方，他们的2进制结构相 似,比如 4和8   00000100    0000 1000   只是高位向前移了一位，这样扩容的时候，只需要判断高位hash,移动到之前位置的倍数就可以了，免去了重新计算位置的运算。并且这样可以保证(n - 1) &amp; hash得到的存储位置是在hashmap的length之内的,也就是n之内。因为最大也就是hash值也全是…1111111</li>
+</ol>
+
 <h4 id="netty">Netty</h4>
 <ul>
   <li><a href="https://www.cnblogs.com/xiaoyangjia/p/11526197.html">https://www.cnblogs.com/xiaoyangjia/p/11526197.html</a></li>

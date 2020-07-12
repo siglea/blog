@@ -381,7 +381,51 @@ location @custom <span class="o">{</span>
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="类加载器步骤">类加载器步骤</h4>
+	<h4 id="java类加载过程">Java类加载过程</h4>
+<ul>
+  <li>加载
+    <ul>
+      <li>加载是类加载的第一个过程，在这个阶段，将完成一下三件事情：
+        <ul>
+          <li>通过一个类的全限定名获取该类的二进制流。</li>
+          <li>将该二进制流中的静态存储结构转化为方法去运行时数据结构。</li>
+          <li>在内存中生成该类的 java.lang.Class 对象，作为该类的数据访问入口。</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>验证
+    <ul>
+      <li>验证的目的是为了确保 Class 文件的字节流中的信息不回危害到虚拟机.在该阶段主要完成以下四钟验证:
+        <ul>
+          <li>文件格式验证：验证字节流是否符合 Class 文件的规范，如主次版本号是否在当前虚拟机范围内，常量池中的常量是否有不被支持的类型。</li>
+          <li>元数据验证:对字节码描述的信息进行语义分析，如这个类是否有父类，是否集成了不被继承的类等。</li>
+          <li>字节码验证：是整个验证过程中最复杂的一个阶段，通过验证数据流和控制流的分析，确定程序语义是否正确，主要针对方法体的验证。如：方法中的类型转换是否正确，跳转指令是否正确等。</li>
+          <li>符号引用验证：这个动作在后面的解析过程中发生，主要是为了确保解析动作能正确执行。</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>准备
+    <ul>
+      <li>准备阶段是为类的静态变量分配内存并将其初始化为默认值，这些内存都将在方法区中进行分配。准备阶段不分配类中的实例变量的内存，实例变量将会在对象实例化时随着对象一起分配在 Java 堆中。</li>
+    </ul>
+  </li>
+  <li>解析
+    <ul>
+      <li>该阶段主要完成符号引用到直接引用的转换动作。解析动作并不一定在初始化动作完成之前，也有可能在初始化之后。</li>
+    </ul>
+  </li>
+  <li>初始化
+    <ul>
+      <li>初始化时类加载的最后一步，前面的类加载过程，除了在加载阶段用户应用程序可以通过自定义类加载器参与之外，其余动作完全由虚拟机主导和控制。到了初始化阶段，才真正开始执行类中定义的 Java 程序代码。</li>
+    </ul>
+  </li>
+  <li>使用</li>
+  <li>卸载</li>
+</ul>
+
+<h4 id="类加载器步骤">类加载器步骤</h4>
 <ol>
   <li>在特定目录找到.class文件，并读取</li>
   <li>Java是模板系语言，读取.class文件之后，被实例化为对应的Class的对象</li>
@@ -399,7 +443,11 @@ location @custom <span class="o">{</span>
 </ul>
 
 <h4 id="双亲委派模式">双亲委派模式</h4>
-<p>工作原理的是，如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器，如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式</p>
+<ul>
+  <li>工作原理的是，如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器，如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式</li>
+  <li>如果不想打破双亲委派模型，那么只需要重写findClass方法即可</li>
+  <li>如果想打破双亲委派模型，那么就重写整个loadClass方法</li>
+</ul>
 
 <h4 id="双亲委派模式优势">双亲委派模式优势</h4>
 <p>采用双亲委派模式的是好处是Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层级关可以避免类的重复加载，当父亲已经加载了该类时，就没有必要子ClassLoader再加载一次。其次是考虑到安全因素，java核心api中定义类型不会被随意替换，假设通过网络传递一个名为java.lang.Integer的类，通过双亲委托模式传递到启动类加载器，而启动类加载器在核心Java API发现这个名字的类，发现该类已被加载，并不会重新加载网络传递的过来的java.lang.Integer，而直接返回已加载过的Integer.class，这样便可以防止核心API库被随意篡改。可能你会想，如果我们在classpath路径下自定义一个名为java.lang.SingleInterge类(该类是胡编的)呢？该类并不存在java.lang中，经过双亲委托模式，传递到启动类加载器中，由于父类加载器路径下并没有该类，所以不会加载，将反向委托给子类加载器加载，最终会通过系统类加载器加载该类。但是这样做是不允许，因为java.lang是核心API包，需要访问权限，强制加载将会报出如下异常</p>
@@ -409,6 +457,7 @@ location @custom <span class="o">{</span>
   <li>不同的加载器加载了同个类，在Jvm中相当于两个不同的Class对象</li>
   <li>双亲委派模型的破坏者-线程上下文类加载器，在Java应用中存在着很多服务提供者接口（Service Provider Interface，SPI），这些接口允许第三方为它们提供实现，如常见的 SPI 有 JDBC、JNDI等，这些 SPI 的接口属于 Java 核心库，一般存在rt.jar包中，由Bootstrap类加载器加载，而 SPI 的第三方实现代码则是作为Java应用所依赖的 jar 包被存放在classpath路径下，由于SPI接口中的代码经常需要加载具体的第三方实现类并调用其相关方法，但SPI的核心接口类是由引导类加载器来加载的，而Bootstrap类加载器无法直接加载SPI的实现类，同时由于双亲委派模式的存在，Bootstrap类加载器也无法反向委托AppClassLoader加载器SPI的实现类。在这种情况下，我们就需要一种特殊的类加载器来加载第三方的类库，而线程上下文类加载器就是很好的选择。</li>
   <li>参考<a href="https://blog.csdn.net/javazejian/article/details/73413292">https://blog.csdn.net/javazejian/article/details/73413292</a></li>
+  <li><a href="https://www.jianshu.com/p/b86ec26c19a3">https://www.jianshu.com/p/b86ec26c19a3</a></li>
 </ul>
 
       </div>
@@ -442,36 +491,36 @@ location @custom <span class="o">{</span>
 <h4 id="springboot启动原理-">SpringBoot启动原理 ☆☆☆</h4>
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">boot</span><span class="o">;</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SpringApplication</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="nf">SpringApplication</span><span class="o">(</span><span class="n">ResourceLoader</span> <span class="n">resourceLoader</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">primarySources</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">SpringApplication</span><span class="o">(</span><span class="nc">ResourceLoader</span> <span class="n">resourceLoader</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">primarySources</span><span class="o">)</span> <span class="o">{</span>
             <span class="c1">// ... 省略代码</span>
             <span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span> <span class="o">=</span> <span class="n">resourceLoader</span><span class="o">;</span>
-            <span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">primarySources</span><span class="o">,</span> <span class="s">"PrimarySources must not be null"</span><span class="o">);</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">primarySources</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashSet</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">primarySources</span><span class="o">));</span>
+            <span class="nc">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">primarySources</span><span class="o">,</span> <span class="s">"PrimarySources must not be null"</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">primarySources</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashSet</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">primarySources</span><span class="o">));</span>
             <span class="c1">// 1. 推测ApplicationType</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">webApplicationType</span> <span class="o">=</span> <span class="n">WebApplicationType</span><span class="o">.</span><span class="na">deduceFromClasspath</span><span class="o">();</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">webApplicationType</span> <span class="o">=</span> <span class="nc">WebApplicationType</span><span class="o">.</span><span class="na">deduceFromClasspath</span><span class="o">();</span>
             <span class="c1">// 2. 根据spring.factories初始化ApplicationContextInitializer 与 ApplicationListener</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">setInitializers</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">ApplicationContextInitializer</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">setListeners</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">ApplicationListener</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">setInitializers</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="nc">ApplicationContextInitializer</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">setListeners</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="nc">ApplicationListener</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
             <span class="c1">// 3. 推测 Main入口</span>
             <span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">deduceMainApplicationClass</span><span class="o">();</span>
     <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">ConfigurableApplicationContext</span> <span class="nf">run</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">ConfigurableApplicationContext</span> <span class="nf">run</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">// ... 省略代码</span>
-        <span class="n">ConfigurableApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="n">Collection</span><span class="o">&lt;</span><span class="n">SpringBootExceptionReporter</span><span class="o">&gt;</span> <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">();</span>
+        <span class="nc">ConfigurableApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="nc">Collection</span><span class="o">&lt;</span><span class="nc">SpringBootExceptionReporter</span><span class="o">&gt;</span> <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">();</span>
         <span class="k">this</span><span class="o">.</span><span class="na">configureHeadlessProperty</span><span class="o">();</span>
-        <span class="n">SpringApplicationRunListeners</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getRunListeners</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+        <span class="nc">SpringApplicationRunListeners</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getRunListeners</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
         <span class="c1">// 4. SpringApplicationRunListeners生命周期之started()</span>
         <span class="n">listeners</span><span class="o">.</span><span class="na">starting</span><span class="o">();</span>
         <span class="c1">// ... 省略代码</span>
-       <span class="n">Collection</span> <span class="n">exceptionReporters</span><span class="o">;</span>
-       <span class="n">ApplicationArguments</span> <span class="n">applicationArguments</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultApplicationArguments</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+       <span class="nc">Collection</span> <span class="n">exceptionReporters</span><span class="o">;</span>
+       <span class="nc">ApplicationArguments</span> <span class="n">applicationArguments</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultApplicationArguments</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
        <span class="c1">// 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared()</span>
-       <span class="n">ConfigurableEnvironment</span> <span class="n">environment</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">prepareEnvironment</span><span class="o">(</span><span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
+       <span class="nc">ConfigurableEnvironment</span> <span class="n">environment</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">prepareEnvironment</span><span class="o">(</span><span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
        <span class="k">this</span><span class="o">.</span><span class="na">configureIgnoreBeanInfo</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
-       <span class="n">Banner</span> <span class="n">printedBanner</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">printBanner</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
+       <span class="nc">Banner</span> <span class="n">printedBanner</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">printBanner</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
        <span class="n">context</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">createApplicationContext</span><span class="o">();</span>
-       <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">SpringBootExceptionReporter</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">ConfigurableApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="n">context</span><span class="o">);</span>
+       <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="nc">SpringBootExceptionReporter</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Class</span><span class="o">[]{</span><span class="nc">ConfigurableApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="n">context</span><span class="o">);</span>
        <span class="c1">// 6. 初始化类加载器、bean产生器、资源加载器等，打印banner</span>
        <span class="k">this</span><span class="o">.</span><span class="na">prepareContext</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">environment</span><span class="o">,</span> <span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">,</span> <span class="n">printedBanner</span><span class="o">);</span>
        <span class="c1">// 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等</span>
@@ -480,7 +529,7 @@ location @custom <span class="o">{</span>
        <span class="k">this</span><span class="o">.</span><span class="na">afterRefresh</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
        <span class="n">stopWatch</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">logStartupInfo</span><span class="o">)</span> <span class="o">{</span>
-           <span class="o">(</span><span class="k">new</span> <span class="n">StartupInfoLogger</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span><span class="o">)).</span><span class="na">logStarted</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getApplicationLog</span><span class="o">(),</span> <span class="n">stopWatch</span><span class="o">);</span>
+           <span class="o">(</span><span class="k">new</span> <span class="nc">StartupInfoLogger</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span><span class="o">)).</span><span class="na">logStarted</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getApplicationLog</span><span class="o">(),</span> <span class="n">stopWatch</span><span class="o">);</span>
        <span class="o">}</span>
        <span class="n">listeners</span><span class="o">.</span><span class="na">started</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
        <span class="k">this</span><span class="o">.</span><span class="na">callRunners</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
@@ -524,9 +573,9 @@ Realm: Realm 充当了 Shiro 与应用安全数据间的“桥梁”或者“连
 <span class="c1">// 因此在pom中引入spring-boot-starter-jdbc后，即可触发加载操作</span>
 <span class="c1">// 接下来就是根据spring.datasource相关配置初始化PooledDataSource 或者 直接使用EmbeddedDatabase</span>
 <span class="nd">@Configuration</span>
-<span class="nd">@ConditionalOnClass</span><span class="o">({</span><span class="n">DataSource</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">EmbeddedDatabaseType</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
-<span class="nd">@EnableConfigurationProperties</span><span class="o">({</span><span class="n">DataSourceProperties</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
-<span class="nd">@Import</span><span class="o">({</span><span class="n">DataSourcePoolMetadataProvidersConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">DataSourceInitializationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="nd">@ConditionalOnClass</span><span class="o">({</span><span class="nc">DataSource</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">EmbeddedDatabaseType</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="nd">@EnableConfigurationProperties</span><span class="o">({</span><span class="nc">DataSourceProperties</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="nd">@Import</span><span class="o">({</span><span class="nc">DataSourcePoolMetadataProvidersConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">DataSourceInitializationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataSourceAutoConfiguration</span> <span class="o">{</span>
 <span class="o">}</span>
 <span class="c1">// </span>
@@ -642,19 +691,19 @@ Realm: Realm 充当了 Shiro 与应用安全数据间的“桥梁”或者“连
 <span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogTraceInterceptor</span> <span class="kd">extends</span> <span class="n">HandlerInterceptorAdapter</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogTraceInterceptor</span> <span class="kd">extends</span> <span class="nc">HandlerInterceptorAdapter</span> <span class="o">{</span>
 
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">preHandle</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="n">MDC</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">,</span> <span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">+</span><span class="s">":"</span><span class="o">+</span><span class="n">RandomHelper</span><span class="o">.</span><span class="na">generateNonceNumStr</span><span class="o">(</span><span class="mi">8</span><span class="o">));</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">preHandle</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">handler</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="no">MDC</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">,</span> <span class="nc">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">+</span><span class="s">":"</span><span class="o">+</span><span class="nc">RandomHelper</span><span class="o">.</span><span class="na">generateNonceNumStr</span><span class="o">(</span><span class="mi">8</span><span class="o">));</span>
         <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">preHandle</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">postHandle</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="n">ModelAndView</span> <span class="n">modelAndView</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">postHandle</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="nc">ModelAndView</span> <span class="n">modelAndView</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">.</span><span class="na">postHandle</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">,</span> <span class="n">modelAndView</span><span class="o">);</span>
-        <span class="n">MDC</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">);</span>
+        <span class="no">MDC</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="nc">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
