@@ -458,6 +458,49 @@ ArrayList是非线程安全的，Vector是线程安全的。</p>
   <li>只有是2的指数次幂的数字经过n-1之后，二进制肯定是  …11111111  这样的格式，这种格式计算的位置的时候，完全是由产生的hash值类决定，而不受n-1 影响。这样会提高效率。比如要扩容了，2的幂次方*2，在二进制中比如4和8，代表2的2次方和3次方，他们的2进制结构相 似,比如 4和8   00000100    0000 1000   只是高位向前移了一位，这样扩容的时候，只需要判断高位hash,移动到之前位置的倍数就可以了，免去了重新计算位置的运算。并且这样可以保证(n - 1) &amp; hash得到的存储位置是在hashmap的length之内的,也就是n之内。因为最大也就是hash值也全是…1111111</li>
 </ol>
 
+<h4 id="springboot-start">SpringBoot Start</h4>
+<ol>
+  <li>引入该Start相关依赖</li>
+  <li>查找resources/META-INF/spring.factories下对应的XXXAutoConfigure</li>
+  <li>根据Condition自己加装相关的Bean
+    <ul>
+      <li>@ConditionalOnBean:当容器中有指定的Bean的条件下</li>
+      <li>@ConditionalOnClass：当类路径下有指定的类的条件下</li>
+      <li>@ConditionalOnExpression:基于SpEL表达式作为判断条件</li>
+      <li>@ConditionalOnJava:基于JVM版本作为判断条件</li>
+      <li>@ConditionalOnJndi:在JNDI存在的条件下查找指定的位置</li>
+      <li>@ConditionalOnMissingBean:当容器中没有指定Bean的情况下</li>
+      <li>@ConditionalOnMissingClass:当类路径下没有指定的类的条件下</li>
+      <li>@ConditionalOnNotWebApplication:当前项目不是Web项目的条件下</li>
+      <li>@ConditionalOnProperty:指定的属性是否有指定的值</li>
+      <li>@ConditionalOnResource:类路径下是否有指定的资源</li>
+      <li>@ConditionalOnSingleCandidate:当指定的Bean在容器中只有一个，或者在有多个Bean的情况下，用来指定首选的Bean</li>
+      <li>@ConditionalOnWebApplication:当前项目是Web项目的条件下</li>
+    </ul>
+  </li>
+</ol>
+
+<p><a href="https://www.cnblogs.com/yuansc/p/9088212.html">https://www.cnblogs.com/yuansc/p/9088212.html</a></p>
+
+<h4 id="spring中解决循环依赖为什么要用三级缓存">Spring中解决循环依赖为什么要用三级缓存</h4>
+<ul>
+  <li>Bean创建有3步
+    <ol>
+      <li>初始化init,分配内存空间，此时在singletonFactories完成</li>
+      <li>注入各种属性，此时在earlySingletonObjects中</li>
+      <li>完美的bean最终会在singletonObjects中</li>
+    </ol>
+  </li>
+  <li>举例
+    <ul>
+      <li>A与B循环依赖，A初始化经过第1、2步，在第2步发现依赖B</li>
+      <li>此时，触发B的初始化进入第1步，如果再进入第2步，会发现依赖A了，所以此时B只能在第1步</li>
+      <li>把B的第1步，不完美的B注入给A，先完成A的注入，让A进入第3步</li>
+      <li>然后，再完成B的完美初始化</li>
+    </ul>
+  </li>
+</ul>
+
 <h4 id="netty">Netty</h4>
 <ul>
   <li><a href="https://www.cnblogs.com/xiaoyangjia/p/11526197.html">https://www.cnblogs.com/xiaoyangjia/p/11526197.html</a></li>

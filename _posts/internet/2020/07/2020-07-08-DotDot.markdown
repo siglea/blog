@@ -164,5 +164,36 @@ ArrayList是非线程安全的，Vector是线程安全的。
 2. 如果初始容量是奇数，那么（n-1)就为偶数，偶数2进制的结尾都是0，经过hash值&运算后末尾都是0，那么0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这样就会造成空间的浪费而且会增加hash冲突。
 3. 只有是2的指数次幂的数字经过n-1之后，二进制肯定是  ...11111111  这样的格式，这种格式计算的位置的时候，完全是由产生的hash值类决定，而不受n-1 影响。这样会提高效率。比如要扩容了，2的幂次方*2，在二进制中比如4和8，代表2的2次方和3次方，他们的2进制结构相 似,比如 4和8   00000100    0000 1000   只是高位向前移了一位，这样扩容的时候，只需要判断高位hash,移动到之前位置的倍数就可以了，免去了重新计算位置的运算。并且这样可以保证(n - 1) & hash得到的存储位置是在hashmap的length之内的,也就是n之内。因为最大也就是hash值也全是...1111111
 
+#### SpringBoot Start
+1. 引入该Start相关依赖
+2. 查找resources/META-INF/spring.factories下对应的XXXAutoConfigure
+3. 根据Condition自己加装相关的Bean
+    - @ConditionalOnBean:当容器中有指定的Bean的条件下  
+    - @ConditionalOnClass：当类路径下有指定的类的条件下  
+    - @ConditionalOnExpression:基于SpEL表达式作为判断条件  
+    - @ConditionalOnJava:基于JVM版本作为判断条件  
+    - @ConditionalOnJndi:在JNDI存在的条件下查找指定的位置  
+    - @ConditionalOnMissingBean:当容器中没有指定Bean的情况下  
+    - @ConditionalOnMissingClass:当类路径下没有指定的类的条件下  
+    - @ConditionalOnNotWebApplication:当前项目不是Web项目的条件下  
+    - @ConditionalOnProperty:指定的属性是否有指定的值  
+    - @ConditionalOnResource:类路径下是否有指定的资源  
+    - @ConditionalOnSingleCandidate:当指定的Bean在容器中只有一个，或者在有多个Bean的情况下，用来指定首选的Bean
+    - @ConditionalOnWebApplication:当前项目是Web项目的条件下  
+
+<https://www.cnblogs.com/yuansc/p/9088212.html>
+
+#### Spring中解决循环依赖为什么要用三级缓存
+- Bean创建有3步
+    1. 初始化init,分配内存空间，此时在singletonFactories完成
+    2. 注入各种属性，此时在earlySingletonObjects中
+    3. 完美的bean最终会在singletonObjects中
+- 举例
+    - A与B循环依赖，A初始化经过第1、2步，在第2步发现依赖B
+    - 此时，触发B的初始化进入第1步，如果再进入第2步，会发现依赖A了，所以此时B只能在第1步
+    - 把B的第1步，不完美的B注入给A，先完成A的注入，让A进入第3步
+    - 然后，再完成B的完美初始化
+
+
 #### Netty
 - <https://www.cnblogs.com/xiaoyangjia/p/11526197.html>
