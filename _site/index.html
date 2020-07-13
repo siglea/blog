@@ -54,6 +54,132 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html">Case of online system</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 13, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p><img src="/img/arch1.jpg" width="600px" /></p>
+
+<h4 id="电商秒杀系统">电商秒杀系统</h4>
+<ul>
+  <li>流量削峰前置
+    <ul>
+      <li>库存数量判断，直接走缓存，挡掉大部分请求（可以用lua在nginx层做）</li>
+      <li>只接受拥有合法token的等于库存数量的用户（需要考虑超时未支付的）</li>
+    </ul>
+  </li>
+  <li>异步化，轮询秒杀状态及下单</li>
+  <li>redis压力转移
+    <ul>
+      <li>本地应用服务器可以存储库存</li>
+      <li>商品id_分片的方式分开存储库存</li>
+    </ul>
+  </li>
+</ul>
+
+<p><a href="https://mp.weixin.qq.com/s/tx_ZfE3rqbED0pteYEkdkQ">https://mp.weixin.qq.com/s/tx_ZfE3rqbED0pteYEkdkQ</a></p>
+
+<h4 id="今日头条系统">今日头条系统</h4>
+<ul>
+  <li>业务数据：2015年 3000万日活、30亿PV、1亿VV、7000台机器</li>
+  <li>技术组件：Scribe、Flume、Kafka、Hadoop、Storm</li>
+  <li>在线存储-abase：QPS读360万、QPS写40万、延时avg 1ms、99%用户不会超过pct99 4ms</li>
+</ul>
+
+<p><a href="https://blog.csdn.net/mucaoyx/article/details/84498468">https://blog.csdn.net/mucaoyx/article/details/84498468</a></p>
+
+<h4 id="100亿次的挑战如何实现一个有把握的春晚摇一摇系统">100亿次的挑战：如何实现一个“有把握”的春晚摇一摇系统</h4>
+<ul>
+  <li>指标：QPS1400、全程110亿次、638台接入机器、支撑14.6亿同时在线</li>
+  <li>接入层能支撑200万同时在线</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/DLbaiSiH15QBkrB_i0imEw">https://mp.weixin.qq.com/s/DLbaiSiH15QBkrB_i0imEw</a></p>
+
+<h4 id="基于token的多平台身份认证架构设计">基于token的多平台身份认证架构设计</h4>
+<p><img src="/img/token.png" width="600px" /></p>
+
+<p><a href="https://www.cnblogs.com/beer/p/6029861.html">https://www.cnblogs.com/beer/p/6029861.html</a></p>
+
+<h4 id="框架图">框架图</h4>
+<ul>
+  <li>可视化架构设计-C4 <a href="https://www.jianshu.com/p/33c6a7ed126f">https://www.jianshu.com/p/33c6a7ed126f</a>
+    <ul>
+      <li>语境图、容器图、组件图、类图</li>
+      <li>系统景观图、部署图、动态图</li>
+    </ul>
+  </li>
+  <li>UML <a href="https://blog.csdn.net/qq_35495763/article/details/80764914">https://blog.csdn.net/qq_35495763/article/details/80764914</a>
+    <ul>
+      <li>用例图、活动图、序列图、类图、状态机</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="im系统存储设计">IM系统（存储设计）</h4>
+<ul>
+  <li>单聊、小群使用写扩散，也就是推模式
+    <ul>
+      <li>优点：
+        <ul>
+          <li>消除了拉模式（读扩散）的IO集中点，每个用户都读自己的数据，高并发下锁竞争少</li>
+          <li>拉取朋友圈feed流列表的业务流程异常简单，速度很快</li>
+          <li>拉取朋友圈feed流列表，不需要进行大量的内存计算，网络传输，性能很高</li>
+        </ul>
+      </li>
+      <li>缺点：
+        <ul>
+          <li>极大的消耗存储资源，feed数据会存储很多份，例如杨幂5KW粉丝，她每次一发博文，消息会冗余5KW份</li>
+          <li>新增关注，取消关注，发布feed的业务流会更复杂</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>群聊、大VFeed使用写读扩散，也就是拉模式（可以先拉有更新的索引，然后触发服务器推）
+    <ul>
+      <li>优点：
+        <ul>
+          <li>存储结构简单，数据存储量较小，关系数据与feed数据都只存一份</li>
+          <li>取消关注，发布feed的业务流程非常简单</li>
+          <li>存储结构，业务流程都比较容易理解，非常适合项目早期用户量、数据量、并发量不大时的快速实现</li>
+        </ul>
+      </li>
+      <li>缺点：
+        <ul>
+          <li>拉取朋友圈feed流列表的业务流程非常复杂</li>
+          <li>有多次数据访问，并且要进行大量的内存计算，大量数据的网络传输，性能较低</li>
+          <li>在拉模式中，系统的瓶颈容易出现在“用户所发布feed列表”的读取上，而每个用户发布feed的频率其实是很低的，此时，架构优化的核心是通过缓存降低数据存储磁盘IO。</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>现代IM系统中消息推送和存储架构的实现 <a href="https://developer.aliyun.com/article/253242">https://developer.aliyun.com/article/253242</a></li>
+  <li>IM群聊消息的已读回执功能该怎么实现 <a href="http://www.52im.net/thread-1611-1-1.html">http://www.52im.net/thread-1611-1-1.html</a></li>
+  <li>IM群聊消息的已读未读功能在存储空间方面的实现思路探讨 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=3054&amp;highlight=%B4%E6%B4%A2">http://www.52im.net/forum.php?mod=viewthread&amp;tid=3054&amp;highlight=%B4%E6%B4%A2</a></li>
+  <li>微信后台基于时间序的海量数据冷热分级架构设计实践 <a href="http://www.52im.net/thread-895-1-1.html">http://www.52im.net/thread-895-1-1.html</a></li>
+  <li>微信后台基于时间序的新一代海量数据存储架构的设计实践 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2970&amp;highlight=%B4%E6%B4%A2">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2970&amp;highlight=%B4%E6%B4%A2</a></li>
+</ul>
+
+<h4 id="kubernetes-和-istio-service-mesh-sidecar-">Kubernetes 和 Istio 、Service Mesh Sidecar ???</h4>
+<ul>
+  <li>微服务的缺点？分布式系统的复杂性;多服务运维难度,随着服务的增加,运维的压力也在增大;系统部署依赖;服务间通信成本;数 据一致性;系统集成测试;性能监控</li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html">Netty In Action</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 8, 2020</span>
@@ -501,10 +627,87 @@ ArrayList是非线程安全的，Vector是线程安全的。</p>
   </li>
 </ul>
 
+<h4 id="关于nio的-channel与bytebuffer">关于NIO的 Channel与ByteBuffer</h4>
+<ul>
+  <li>Buffer的使用，主要是减少copy实现零拷贝，流的读写方式还是基于用户态和内核态的拷贝</li>
+  <li>从使用NIO读写文件说起——拆解堆外内存分配过程  <a href="https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw">https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw</a></li>
+  <li>从操作系统看NIO <a href="https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA">https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA</a></li>
+</ul>
+
+<h4 id="关于nio的-空轮训的bug">关于NIO的 空轮训的bug</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="o">(</span><span class="nb">true</span><span class="o">)</span> <span class="o">{</span>
+    selector.select<span class="o">()</span><span class="p">;</span>  // <span class="k">select </span>可能在无就绪事件时异常返回！主要发生在linux系统
+
+    Set&lt;SelectionKey&gt; readyKeys <span class="o">=</span> selector.selectedKeys<span class="o">()</span><span class="p">;</span>
+    Iterator&lt;SelectionKey&gt; it <span class="o">=</span> readyKeys.iterator<span class="o">()</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="o">(</span>it.hasNext<span class="o">())</span> <span class="o">{</span>
+        SelectionKey key <span class="o">=</span> it.next<span class="o">()</span><span class="p">;</span>
+        ...  // 处理事件
+        it.remove<span class="o">()</span><span class="p">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li>selector.select() 应该 一直阻塞，直到有就绪事件到达，但很遗憾，由于 Java NIO 实现上存在 bug，select() 可能在 没有 任何就绪事件的情况下返回，从而导致 while(true) 被不断执行，最后导致某个 CPU 核心的利用率飙升到 100%，这就是臭名昭著的 Java NIO 的 epoll bug。</li>
+  <li>解决方法
+```shell
+selectCnt = 0;  // epoll 空轮询场景下 select 调用次数
+long currentTimeNanos = System.nanoTime();  // 每个 for 循环开始时的绝对时间</li>
+</ul>
+
+<p>for (;;) {
+    timeoutMillis = …  // 初始化超时参数</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int selectedKeys = selector.select(timeoutMillis);
+selectCnt++;
+
+long time = System.nanoTime();  // 记录执行到此处的绝对时间：
+
+// 检测逻辑
+if (time - currentTimeNanos &gt; timeoutMillis) {
+    selectCnt = 1;  // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1
+} else if (selectCnt &gt;= 重试次数阈值（默认 512）) {
+    selector = selectRebuildSelector(selectCnt);  // 解决 epoll bug 的实际逻辑
+    selectCnt = 1;  // 解决本次 epoll bug，重置 selectCnt
+    break;
+}
+
+currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &lt;http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/&gt;
+</code></pre></div></div>
+
+<h4 id="netty零拷贝总结的比较清楚了">Netty零拷贝总结的比较清楚了</h4>
+<ul>
+  <li>零拷贝
+    <ul>
+      <li>在传统的I/O操作中，每次都需要把内核空间的数据拷贝到用户空间中，这样挺浪费空间的，所以零拷贝的出现就是为了解决这个问题。</li>
+      <li>主要有两种方法：mmap+write 和 Sendfile</li>
+      <li>mmap+write</li>
+      <li>使用mmap+write方式替换原来的read+write方式，mmap是一种内存映射文件的方法，即将一个文件或者其他对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对应关系。
+  这样就可以省略掉原来内核Read缓冲区Copy数据到用户缓冲区，但是还是需要内核Read缓冲区将数据Copy到内核Socket缓冲区。</li>
+      <li>Sendfile</li>
+      <li>Sendfile是为了简化通过网络在两个通道内进行的数据传输过程。</li>
+      <li>它不仅减少了数据复制，还减少了上下文次数的切换。数据传送只发生在内核空间里，所以减少了一次上下文切换，但是还是存在一次Copy。
+  后来进行了改进，将Kernel Buffer中对应的数据描述信息（内存地址，偏移量）记录到相应的Socket缓冲区中，这样连内核空间中的一次CPU Copy也省掉了。</li>
+    </ul>
+  </li>
+  <li>Netty的零拷贝具体体现
+    <ul>
+      <li>Netty零拷贝主要体现在三个方面。</li>
+      <li>Netty的接收和发送ByteBuffer采用DirtectByteBuffer，使用堆外直接内存进行Socket读写，不需要进行字节缓冲区的二次拷贝。</li>
+      <li>Netty在操作多个Channel时，使用CompositeChannelBuffer，它并不会开辟新的内存并复制所有ChannelBuffer内容，而是直接保存了所有ChannelBuffer的引用，并在子ChannelBuffer里进行读写，实现了零拷贝。</li>
+      <li>Netty的文件传输采用了transferTo方法，它可以直接将文件缓冲区的数据发送到目标Channel。</li>
+    </ul>
+  </li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg">https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg</a></p>
+
 <h4 id="netty">Netty</h4>
 <ul>
   <li><a href="https://www.cnblogs.com/xiaoyangjia/p/11526197.html">https://www.cnblogs.com/xiaoyangjia/p/11526197.html</a></li>
 </ul>
+
+<h4 id="lvs之drnattun模式祥解">LVS之DR,NAT,TUN模式祥解</h4>
 
       </div>
       <div style="height:50px;">
@@ -708,52 +911,6 @@ ArrayList是非线程安全的，Vector是线程安全的。</p>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html">myBatis</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 30, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="mybatis-和的区别是什么">myBatis #{}和${}的区别是什么?</h4>
-<p>1)#{}是预编译处理，${}是字符串替换。
-2)Mybatis 在处理#{}时，会将 sql 中的#{}替换为?号，调用 PreparedStatement 的 set 方法来赋值;
-3)Mybatis 在处理${}时，就是把${}替换成变量的值。 4)使用#{}可以有效的防止 SQL 注入，提高系统安全性。</p>
-
-<h4 id="35ibatis-和-mybatis-区别">35、IBatis 和 MyBatis 区别</h4>
-<ul>
-  <li>IBatis 里面的核心处理类交 SqlMapClient,MyBatis 里面的核心处理类叫做 SqlSession。</li>
-  <li>在 sql 里面变量命名有原来的#变量# 变成了#{变量}</li>
-  <li>原来的$变量$变成了${变量}</li>
-  <li>原来在 sql 节点里面的 class 都换名字交 type</li>
-  <li>原来的 queryForObject queryForList 变成了 selectOne selectList5)原来的别名设置在映射 文件里面放在了核心配置文件里。</li>
-</ul>
-
-<h4 id="mybatis是否支持延迟加载如果支持它的实现原理是什么">Mybatis是否支持延迟加载?如果支持，它的实现原理是什么？</h4>
-<ol>
-  <li>Mybatis仅支持association关联对象和collection关联集合对象的延迟 
- 加载，association指的就是一对一，collection指的就是一对多查询。在 
- Mybatis配置文件中，可以配置是否启用延迟加载 
- lazyLoadingEnabled=true|false</li>
-  <li>它的原理是，使用CGLIB创建目标对象的代理对象，当调用目标方法 
- 时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke〇 
- 方法发现a.getB〇是null值，那么就会单独发送事先保存好的查询关联B 
- 对象的sql，把B查询上来，然后调用fsetB(b)l，于是a的对象b属 
- 性就有值了，接着完成|a.getB() .getNamet)]方法的调用。这就是延迟 
- 加载的基本原理。</li>
-</ol>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -861,7 +1018,7 @@ ArrayList是非线程安全的，Vector是线程安全的。</p>
       
       
       <a  href="/tag/网络">
-      <span class="label label-default">网络 ( 8 )</span>
+      <span class="label label-default">网络 ( 9 )</span>
       </a><br />
 
       
@@ -875,7 +1032,7 @@ ArrayList是非线程安全的，Vector是线程安全的。</p>
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 13 )</span>
+      <span class="label label-default">分布式 ( 14 )</span>
       </a><br />
 
       

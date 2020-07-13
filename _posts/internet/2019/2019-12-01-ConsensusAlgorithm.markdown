@@ -75,13 +75,15 @@ Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos
   在Raft中当接收到客户端的日志（事务请求）后先把该日志追加到本地的Log中，然后通过heartbeat把该Entry同步给其他Follower，Follower接收到日志后记录日志然后向Leader发送ACK，当Leader收到大多数（n/2+1）Follower的ACK信息后将该日志设置为已提交并追加到本地磁盘中，通知客户端并在下个heartbeat中Leader将通知所有的Follower将该日志存储在自己的本地磁盘中。
 <https://www.cnblogs.com/binyue/p/8647733.html>
 
-#### ZAB协议4阶段
-1. Leader election(选举阶段):节点在一开始都处于选举阶段，只要有一个节点得到超半数 节点的票数，它就可以当选准 leader。只有到达 广播阶段(broadcast) 准 leader 才会成 为真正的 leader。这一阶段的目的是就是为了选出一个准 leader，然后进入下一个阶段。
-2. Discovery(发现阶段-接受提议、生成 epoch、接受 epoch):在这个阶段，followers 跟准 leader 进行通信，同步 followers 最近接收的事务提议。这个一阶段的主要目的是发现当前大多数节点接收的最新提议，并且 准 leader 生成新的 epoch，让 followers 接受，更新它们的 accepted Epoch
-    一个 follower 只会连接一个 leader，如果有一个节点 f 认为另一个 follower p 是 leader，f 在尝试连接 p 时会被拒绝，f 被拒绝之后，就会进入重新选举阶段。
-3. Synchronization(同步阶段):同步阶段主要是利用 leader 前一阶段获得的最新提议历史， 同步集群中所有的副本。只有当 大多数节点都同步完成，准 leader 才会成为真正的 leader。 follower 只会接收 zxid 比自己的 lastZxid 大的提议。
-4. Broadcast(广播阶段-leader 消息广播) Broadcast(广播阶段):到了这个阶段，Zookeeper 集群才能正式对外提供事务服务，
-- 两大阶段：让大家投票，告诉大家投票结果
+#### ZAB协议 2阶段
+1. 消息广播阶段 （类似2PC）
+    - leader写本地之后，同步给follower，大多数follower写成功并且ACK给leader，就表示写成功
+    - 否则表示集群故障了，进入崩溃恢复阶段
+2. 崩溃恢复阶段 （发现阶段、同步阶段zxid不是最大）
+    - 自我投票，之后让其他follower投票给自己
+    - 投票比较策略：当其他节点的纪元比自身高投它，如果纪元epoch相同比较自身的zxid的大小，选举zxid大的节点，这里的zxid代表节点所提交事务最大的id，zxid越大代表该节点的数据越完整。
+        最后如果epoch和zxid都相等，则比较服务的serverId，这个Id是配置zookeeper集群所配置的，所以我们配置zookeeper集群的时候可以把服务性能更高的集群的serverId配置大些，让性能好的机器担任leader角色。
+    - leader产生后，当 Follower 链接上 Leader 之后，Leader 服务器会根据自己服务器上最后被提交的 ZXID 和 Follower 上的 ZXID 进行比对，比对结果要么回滚，要么和 Leader 同步。
 
 #### ZAB算法 Zookeeper atomic broadcast protocol
 - 基本与Raft相同，在一些名词叫起来是有区别的
@@ -91,18 +93,17 @@ Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos
 
 #### raft 协议和 zab 协议区别
 - 相同点
-    - 采用quorum来确定整个系统的一致性,这个quorum一般实现是集群中半数以上的服务器,  zookeeper里还提供了带权重的quorum实现.
+    - 都使用 timeout 来重新选择 leader
+    - 采用quorum来确定整个系统的一致性,这个quorum一般实现是集群中半数以上的服务器, zookeeper里还提供了带权重的quorum实现.
     - 都由leader来发起写操作.
     - 都采用心跳检测存活性
     - leader election都采用先到先得的投票方式 
+    - zookeeper 的 zab 实现里选主要求选出来的主拥有 quorum 里最新的历史，而 raft 的 follower 的选主投票根据 term 的大小+日志完成度来选择投票给谁，这点上来看是比较类似的
 - 不同点
     - zab用的是epoch和count的组合来唯一表示一个值,而raft用的是term和index
     - zab的follower在投票给一个leader之前必须和leader的日志达成一致,而raft的follower则简单地说是谁的 term 高就投票给谁
     - raft协议的心跳是从leader到follower,而zab协议则相反
-    - raft协议数据只有单向地从leader到follower(成为leader的条件之一就是拥有最新的log),
-        而 zab 协议在 discovery 阶段, 一个 prospective leader 需要将自己的 log 更新为 quorum 里面 最新的 log,然后才好在 synchronization 阶段将 quorum 里的其他机器的 log 都同步到一致.
-
-
+    - raft 协议数据只有单向地从 leader 到 follower（成为 leader 的条件之一就是拥有最新的 log），而 zab 的 zookeeper 实现中 ，一个 prospective leader (epoch最大但是zxid不是最大)需要将自己的 log 更新为 quorum 里面最新的 log，然后才好在 synchronization 阶段将 quorum 里的其他机器的 log 都同步到一致
 <https://www.cnblogs.com/think90/p/11443428.html>
 
 #### 一致性算法的实践

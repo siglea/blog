@@ -1,0 +1,75 @@
+---
+layout: post
+title:  "Case of online system"
+date:   2020-07-13 12:45:00 +0900
+comments: true
+tags:
+- 分布式
+- 网络
+categories:
+- 技术
+---
+<img src="/img/arch1.jpg" width="600px" />
+
+#### 电商秒杀系统
+- 流量削峰前置
+    - 库存数量判断，直接走缓存，挡掉大部分请求（可以用lua在nginx层做）
+    - 只接受拥有合法token的等于库存数量的用户（需要考虑超时未支付的）
+- 异步化，轮询秒杀状态及下单 
+- redis压力转移
+    - 本地应用服务器可以存储库存
+    - 商品id_分片的方式分开存储库存
+    
+<https://mp.weixin.qq.com/s/tx_ZfE3rqbED0pteYEkdkQ>
+
+#### 今日头条系统
+- 业务数据：2015年 3000万日活、30亿PV、1亿VV、7000台机器
+- 技术组件：Scribe、Flume、Kafka、Hadoop、Storm
+- 在线存储-abase：QPS读360万、QPS写40万、延时avg 1ms、99%用户不会超过pct99 4ms
+
+<https://blog.csdn.net/mucaoyx/article/details/84498468>
+
+#### 100亿次的挑战：如何实现一个“有把握”的春晚摇一摇系统
+- 指标：QPS1400、全程110亿次、638台接入机器、支撑14.6亿同时在线
+- 接入层能支撑200万同时在线
+<https://mp.weixin.qq.com/s/DLbaiSiH15QBkrB_i0imEw>
+
+####  基于token的多平台身份认证架构设计
+<img src="/img/token.png" width="600px" />
+
+<https://www.cnblogs.com/beer/p/6029861.html>
+
+#### 框架图
+- 可视化架构设计-C4 <https://www.jianshu.com/p/33c6a7ed126f>
+    - 语境图、容器图、组件图、类图
+    - 系统景观图、部署图、动态图
+- UML <https://blog.csdn.net/qq_35495763/article/details/80764914>
+    - 用例图、活动图、序列图、类图、状态机
+    
+#### IM系统（存储设计）
+- 单聊、小群使用写扩散，也就是推模式
+    - 优点：
+        - 消除了拉模式（读扩散）的IO集中点，每个用户都读自己的数据，高并发下锁竞争少
+        - 拉取朋友圈feed流列表的业务流程异常简单，速度很快
+        - 拉取朋友圈feed流列表，不需要进行大量的内存计算，网络传输，性能很高
+    - 缺点：
+        - 极大的消耗存储资源，feed数据会存储很多份，例如杨幂5KW粉丝，她每次一发博文，消息会冗余5KW份
+        - 新增关注，取消关注，发布feed的业务流会更复杂
+- 群聊、大VFeed使用写读扩散，也就是拉模式（可以先拉有更新的索引，然后触发服务器推）
+    - 优点：
+        - 存储结构简单，数据存储量较小，关系数据与feed数据都只存一份
+        - 取消关注，发布feed的业务流程非常简单
+        - 存储结构，业务流程都比较容易理解，非常适合项目早期用户量、数据量、并发量不大时的快速实现
+    - 缺点：
+        - 拉取朋友圈feed流列表的业务流程非常复杂
+        - 有多次数据访问，并且要进行大量的内存计算，大量数据的网络传输，性能较低
+        - 在拉模式中，系统的瓶颈容易出现在“用户所发布feed列表”的读取上，而每个用户发布feed的频率其实是很低的，此时，架构优化的核心是通过缓存降低数据存储磁盘IO。
+    
+- 现代IM系统中消息推送和存储架构的实现 <https://developer.aliyun.com/article/253242>
+- IM群聊消息的已读回执功能该怎么实现 <http://www.52im.net/thread-1611-1-1.html>
+- IM群聊消息的已读未读功能在存储空间方面的实现思路探讨 <http://www.52im.net/forum.php?mod=viewthread&tid=3054&highlight=%B4%E6%B4%A2>
+- 微信后台基于时间序的海量数据冷热分级架构设计实践 <http://www.52im.net/thread-895-1-1.html>
+- 微信后台基于时间序的新一代海量数据存储架构的设计实践 <http://www.52im.net/forum.php?mod=viewthread&tid=2970&highlight=%B4%E6%B4%A2>
+
+####  Kubernetes 和 Istio 、Service Mesh Sidecar ???
+- 微服务的缺点？分布式系统的复杂性;多服务运维难度,随着服务的增加,运维的压力也在增大;系统部署依赖;服务间通信成本;数 据一致性;系统集成测试;性能监控

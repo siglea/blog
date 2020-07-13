@@ -114,7 +114,10 @@ Dubbo 会在这个方法中调用 ServiceBean 父类 ServiceConfig 的 export �
     攻击者可以向网站发送POST请求，在请求里可以执行一个反序列化的操作，由于没有任何安全校验，这个反序列化过程可以执行任意代码。 
     <https://baijiahao.baidu.com/s?id=1658423152369425625&wfr=spider&for=pc>
 
-#### 降级容错熔断方式
+#### 限流降级熔断方式
+- 限流
+    - 漏桶
+    - 令牌桶
 - Dubbo服务之RPC扩展和本地Mock <https://www.cnblogs.com/hyry/p/12067497.html>
 - Dubbo Mock原理分析 <https://mp.weixin.qq.com/s/T-4xS2LruSaBRxR8LhcrjQ>
 - Dubbo与断路器 Hystrix 的集成 <https://blog.csdn.net/Geffin/article/details/105808745>
