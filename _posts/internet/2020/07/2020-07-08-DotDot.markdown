@@ -194,6 +194,71 @@ ArrayList是非线程安全的，Vector是线程安全的。
     - 把B的第1步，不完美的B注入给A，先完成A的注入，让A进入第3步
     - 然后，再完成B的完美初始化
 
+#### 关于NIO的 Channel与ByteBuffer
+- Buffer的使用，主要是减少copy实现零拷贝，流的读写方式还是基于用户态和内核态的拷贝
+- 从使用NIO读写文件说起——拆解堆外内存分配过程  <https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw>
+- 从操作系统看NIO <https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA>
+
+#### 关于NIO的 空轮训的bug
+```shell
+while (true) {
+    selector.select();  // select 可能在无就绪事件时异常返回！主要发生在linux系统
+
+    Set<SelectionKey> readyKeys = selector.selectedKeys();
+    Iterator<SelectionKey> it = readyKeys.iterator();
+
+    while (it.hasNext()) {
+        SelectionKey key = it.next();
+        ...  // 处理事件
+        it.remove();
+    }
+}
+```
+- selector.select() 应该 一直阻塞，直到有就绪事件到达，但很遗憾，由于 Java NIO 实现上存在 bug，select() 可能在 没有 任何就绪事件的情况下返回，从而导致 while(true) 被不断执行，最后导致某个 CPU 核心的利用率飙升到 100%，这就是臭名昭著的 Java NIO 的 epoll bug。
+- 解决方法
+```shell
+selectCnt = 0;  // epoll 空轮询场景下 select 调用次数
+long currentTimeNanos = System.nanoTime();  // 每个 for 循环开始时的绝对时间
+
+for (;;) {
+    timeoutMillis = ...  // 初始化超时参数
+
+    int selectedKeys = selector.select(timeoutMillis);
+    selectCnt++;
+
+    long time = System.nanoTime();  // 记录执行到此处的绝对时间：
+
+    // 检测逻辑
+    if (time - currentTimeNanos > timeoutMillis) {
+        selectCnt = 1;  // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1
+    } else if (selectCnt >= 重试次数阈值（默认 512）) {
+        selector = selectRebuildSelector(selectCnt);  // 解决 epoll bug 的实际逻辑
+        selectCnt = 1;  // 解决本次 epoll bug，重置 selectCnt
+        break;
+    }
+
+    currentTimeNanos = time;  // 重置下次 for 循环开始时间
+}
+```
+- <http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/>
+
+#### Netty零拷贝总结的比较清楚了
+- 零拷贝
+    - 在传统的I/O操作中，每次都需要把内核空间的数据拷贝到用户空间中，这样挺浪费空间的，所以零拷贝的出现就是为了解决这个问题。
+    - 主要有两种方法：mmap+write 和 Sendfile
+    - mmap+write
+    - 使用mmap+write方式替换原来的read+write方式，mmap是一种内存映射文件的方法，即将一个文件或者其他对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对应关系。
+        这样就可以省略掉原来内核Read缓冲区Copy数据到用户缓冲区，但是还是需要内核Read缓冲区将数据Copy到内核Socket缓冲区。
+    - Sendfile
+    - Sendfile是为了简化通过网络在两个通道内进行的数据传输过程。
+    - 它不仅减少了数据复制，还减少了上下文次数的切换。数据传送只发生在内核空间里，所以减少了一次上下文切换，但是还是存在一次Copy。
+        后来进行了改进，将Kernel Buffer中对应的数据描述信息（内存地址，偏移量）记录到相应的Socket缓冲区中，这样连内核空间中的一次CPU Copy也省掉了。
+- Netty的零拷贝具体体现
+    - Netty零拷贝主要体现在三个方面。
+    - Netty的接收和发送ByteBuffer采用DirtectByteBuffer，使用堆外直接内存进行Socket读写，不需要进行字节缓冲区的二次拷贝。
+    - Netty在操作多个Channel时，使用CompositeChannelBuffer，它并不会开辟新的内存并复制所有ChannelBuffer内容，而是直接保存了所有ChannelBuffer的引用，并在子ChannelBuffer里进行读写，实现了零拷贝。
+    - Netty的文件传输采用了transferTo方法，它可以直接将文件缓冲区的数据发送到目标Channel。
+<https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg>
 
 #### Netty
 - <https://www.cnblogs.com/xiaoyangjia/p/11526197.html>
