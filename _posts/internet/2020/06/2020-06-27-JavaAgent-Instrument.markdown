@@ -8,7 +8,7 @@ tags:
 categories:
 - 技术
 ---
-#### JavaAgent & Instrumentation & JWMTI Agent
+#### JavaAgent & Instrumentation & JWMTI Agent  (JVM Tool Interface)
 - 定义：在JDK1.5以后，我们可以使用agent技术构建一个独立于应用程序的代理程序（即为Agent），用来协助监测、运行甚至替换其他JVM上的程序。使用它可以实现虚拟机级别的AOP功能。
 - 我们日常应用的各种工具中，有很多都是基于他们实现的，例如常见的热部署（JRebel, spring-loaded）、各种线上诊断工具（btrace, Greys）、代码覆盖率工具（JaCoCo）等等。
 

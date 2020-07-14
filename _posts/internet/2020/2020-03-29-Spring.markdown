@@ -272,9 +272,11 @@ public class LogTraceInterceptor extends HandlerInterceptorAdapter {
     4. afterPropertiesSet
     5. postProcessAfterInitialization
     6. Done
+
 ```xml
 <bean id="" class="" init-method="初始化方法" destroy-method="销毁方法" />
 ```   
+
 - 依赖注入
     - 构造器注入
     - setter 方法注入

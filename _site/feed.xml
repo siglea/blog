@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 13 Jul 2020 20:28:51 +0800</pubDate>
-    <lastBuildDate>Mon, 13 Jul 2020 20:28:51 +0800</lastBuildDate>
+    <pubDate>Tue, 14 Jul 2020 20:02:27 +0800</pubDate>
+    <lastBuildDate>Tue, 14 Jul 2020 20:02:27 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -646,6 +646,31 @@ currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &amp;lt
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;lvs之drnattun模式祥解&quot;&gt;LVS之DR,NAT,TUN模式祥解&lt;/h4&gt;
+
+&lt;h4 id=&quot;utf-8-是一种变长的编码方式&quot;&gt;Utf-8 是一种变长的编码方式&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;对于单字节的符号，字节的第一位设为0，后面7位为这个符号的unicode码。因此对于英语字母，UTF-8编码和ASCII码是相同的。&lt;/li&gt;
+  &lt;li&gt;对于n字节的符号（n&amp;gt;1），第一个字节的前n位都设为1，第n+1位设为0，后面字节的前两位一律设为10。剩下的没有提及的二进制位，全部为这个符号的unicode码。
+    &lt;ul&gt;
+      &lt;li&gt;1110xxxx 10xxxxxx 10xxxxxx （3个字节，xxx放入Unicode）&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Little endian和Big endian
+    &lt;ul&gt;
+      &lt;li&gt;Unicode规范中定义，每一个文件的最前面分别加入一个表示编码顺序的字符，这个字符的名字叫做”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE），用FEFF表示。这正好是两个字节，而且FF比FE大1。&lt;/li&gt;
+      &lt;li&gt;如果一个文本文件的头两个字节是FE FF，就表示该文件采用大头方式；如果头两个字节是FF FE，就表示该文件采用小头方式。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;redis与memcached区别&quot;&gt;Redis与Memcached区别&lt;/h4&gt;
+&lt;p&gt;如果简单地比较Redis与Memcached的区别，大多数都会得到以下观点：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Redis不仅仅支持简单的k/v类型的数据，同时还提供list，set，hash等数据结构的存储。&lt;/li&gt;
+  &lt;li&gt;Redis支持数据的备份，即master-slave模式的数据备份。&lt;/li&gt;
+  &lt;li&gt;Redis支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用。&lt;/li&gt;
+  &lt;li&gt;在Redis中，并不是所有的数据都一直存储在内存中的。这是和Memcached相比一个最大的区别&lt;/li&gt;
+&lt;/ol&gt;
 </description>
         <pubDate>Wed, 08 Jul 2020 14:18:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html</link>
@@ -1034,7 +1059,7 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。&lt;/
     
       <item>
         <title>JavaAgent-Instrument</title>
-        <description>&lt;h4 id=&quot;javaagent--instrumentation--jwmti-agent&quot;&gt;JavaAgent &amp;amp; Instrumentation &amp;amp; JWMTI Agent&lt;/h4&gt;
+        <description>&lt;h4 id=&quot;javaagent--instrumentation--jwmti-agent--jvm-tool-interface&quot;&gt;JavaAgent &amp;amp; Instrumentation &amp;amp; JWMTI Agent  (JVM Tool Interface)&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;定义：在JDK1.5以后，我们可以使用agent技术构建一个独立于应用程序的代理程序（即为Agent），用来协助监测、运行甚至替换其他JVM上的程序。使用它可以实现虚拟机级别的AOP功能。&lt;/li&gt;
   &lt;li&gt;我们日常应用的各种工具中，有很多都是基于他们实现的，例如常见的热部署（JRebel, spring-loaded）、各种线上诊断工具（btrace, Greys）、代码覆盖率工具（JaCoCo）等等。&lt;/li&gt;

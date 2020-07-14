@@ -431,6 +431,17 @@ https://www.jianshu.com/p/2de97b609a44</p>
 <p>常见六大Web安全攻防解析
 https://www.cnblogs.com/fundebug/p/details-about-6-web-security.html</p>
 
+<p>CSRF，跨站请求伪造，攻击方伪装用户身份发送请求从而窃取信息或者破坏系统。
+讲述基本原理：用户访问A网站登陆并生成了cookie，再访问B网站，如果A网站存在CSRF漏洞，此时B网站给A网站的请求（此时相当于是用户访问），A网站会认为是用户发的请求，从而B网站就成功伪装了你的身份，因此叫跨站脚本攻击。</p>
+
+<p>CSRF防范：
+A、合理规范api请求方式，GET，POST
+B、对POST请求加token令牌验证，生成一个随机码并存入session，表单中带上这个随机码，提交的时候服务端进行验证随机码是否相同。</p>
+
+<p>XSS，跨站脚本攻击。</p>
+
+<p>防范：不相信任何输入，过滤输入。</p>
+
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/HackSummary.html" class="button readmore-button">Read More</a>
