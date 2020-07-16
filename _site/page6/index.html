@@ -54,6 +54,388 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html"> BigData </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>BigData</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>Hadoop官方教程 <a href="http://hadoop.apache.org/docs/r1.0.4/cn/quickstart.html">http://hadoop.apache.org/docs/r1.0.4/cn/quickstart.html</a>
+<img src="/img/bigdata.jpeg" width="600px" /></p>
+<h4 id="hadoop基础知识">Hadoop基础知识</h4>
+<ul>
+  <li>HDFS
+    <ul>
+      <li>NameNode：FsImage、Editlog（HDFS日志文件）</li>
+      <li>Secondary NameNode</li>
+      <li>DataNode</li>
+    </ul>
+  </li>
+  <li>MapReduce
+    <ul>
+      <li>JobTracker</li>
+      <li>TaskTracker
+        <ul>
+          <li>MapTask</li>
+          <li>ReduceTask</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>NameNodeHA方案
+    <ul>
+      <li>Secondary NN会定期的从NN中读取editlog，与自己存储的Image进行合并形成新的metadata image</li>
+      <li>backup NN实时得到editlog，当NN宕掉后，手动切换到Backup NN；</li>
+      <li>Avatar NameNode，这是Facebook提供的一种HA方案，将client访问hadoop的editlog放在NFS中，Standby NN能够实时拿到editlog；DataNode需要同时与Active NN和Standby NN report block信息；</li>
+      <li>Hadoop HA 是 Hadoop 2.x 中新添加的特性，包括 NameNode HA 和 ResourceManager HA。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="storm基础知识">Storm基础知识</h4>
+<ul>
+  <li>Nimbus：负责在集群里面发送代码，分配工作给机器，并且监控状态。全局只有一个。相当于master的角色。</li>
+  <li>Supervisor：监听分配给它那台机器的工作，根据需要启动/关闭工作进程Worker。每一个要运行Storm的机器上都要部署一个，并且，按照机器的配置设定上面分配的槽位数。</li>
+  <li>zookeeper：Storm重点依赖的外部资源。Nimbus和Supervisor甚至实际运行的Worker都是把心跳保存在Zookeeper上的。Nimbus也是根据Zookeerper上的心跳和任务运行状况，进行调度和任务分配的。两者之间的调度器。</li>
+  <li>Spout：在一个topology中产生源数据流的组件。通常情况下spout会从外部数据源中读取数据，然后转换为topology内部的源数据。Spout是一个主动的角色，其接口中有个nextTuple()函数，storm框架会不停地调用此函数，用户只要在其中生成源数据即可。</li>
+  <li>Bolt：在一个topology中接受数据然后执行处理的组件。Bolt可以执行过滤、函数操作、合并、写数据库等任何操作。Bolt是一个被动的角色，其接口中有个execute(Tuple input)函数,在接受到消息后会调用此函数，用户可以在其中执行自己想要的操作。</li>
+  <li>Topology：storm中运行的一个实时应用程序，因为各个组件间的消息流动形成逻辑上的一个拓扑结构。</li>
+  <li>Worker：具体处理组建逻辑的进程，</li>
+  <li>Task：不再与物理进程对应，是处理任务的线程，</li>
+  <li>Stream：源源不断传递的tuple就组成了stream。</li>
+  <li>Tuple:一次消息传递的基本单元。本来应该是一个key-value的map，但是由于各个组件间传递的tuple的字段名称已经事先定义好，所以tuple中只要按序填入各个value就行了，所以就是一个value list.</li>
+  <li>一个 spout 向拓扑提供数据，多个 bolt 完成统计任务</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">storm</span><span class="o">.</span><span class="na">analytics</span><span class="o">;</span>
+<span class="o">...</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TopologyStarter</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="na">getRootLogger</span><span class="o">().</span><span class="na">removeAllAppenders</span><span class="o">();</span>
+        <span class="n">TopologyBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TopologyBuilder</span><span class="o">();</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setSpout</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">,</span> <span class="k">new</span> <span class="n">UsersNavigationSpout</span><span class="o">(),</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="n">GetCategoryBolt</span><span class="o">(),</span><span class="mi">3</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">shuffleGrouping</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">);</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="n">UserHistoryBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Fields</span><span class="o">(</span><span class="s">"user"</span><span class="o">));</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">,</span> <span class="k">new</span> <span class="n">ProductCategoriesCounterBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Fields</span><span class="o">(</span><span class="s">"product"</span><span class="o">));</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"news-notifier"</span><span class="o">,</span> <span class="k">new</span> <span class="n">NewsNotifierBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">shuffleGrouping</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">);</span>
+
+        <span class="n">Config</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Config</span><span class="o">();</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">setDebug</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-host"</span><span class="o">,</span><span class="n">REDIS_HOST</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-port"</span><span class="o">,</span><span class="n">REDIS_PORT</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"webserver"</span><span class="o">,</span> <span class="n">WEBSERVER</span><span class="o">);</span>
+
+        <span class="n">LocalCluster</span> <span class="n">cluster</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LocalCluster</span><span class="o">();</span>
+        <span class="n">cluster</span><span class="o">.</span><span class="na">submitTopology</span><span class="o">(</span><span class="s">"analytics"</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span> <span class="n">builder</span><span class="o">.</span><span class="na">createTopology</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>  
+</code></pre></div></div>
+<ul>
+  <li>Storm教程 <a href="https://www.w3cschool.cn/storm/qk761jzb.html">https://www.w3cschool.cn/storm/qk761jzb.html</a></li>
+</ul>
+
+<h4 id="storm命名方式">Storm命名方式</h4>
+<ul>
+  <li>Storm暴风雨：其组件大多也以气象名词命名</li>
+  <li>spout龙卷：形象的理解是把原始数据卷进Storm流式计算中</li>
+  <li>bolt雷电：从spout或者其他bolt中接收数据进行处理或者输出</li>
+  <li>nimbus雨云：主控节点，存在单点问题，不过可以用watchdog来保证其可用性，fast-fail后马上就启动</li>
+  <li>topology拓扑：Storm的任务单元，形象的理解拓扑的点是spout或者bolt，之间的数据流是线，整个构成一个拓扑</li>
+</ul>
+
+<h4 id="storm为什么接kafka">storm为什么接Kafka</h4>
+<ul>
+  <li>系统解耦</li>
+  <li>storm没有自己的存储只负责计算</li>
+  <li>可以通过kafka控制流量</li>
+</ul>
+
+<h4 id="storm应用场景">Storm应用场景</h4>
+<ul>
+  <li>日志分析，例如应用系统产生大量的业务日志，这些例如网关系统的API调用情况日志，这些日志，不太适合马上存入数据库，需要进行加工，日志文件的量又非常大，所以没法直接统计，这时候可以通过Storm来进行分析。</li>
+  <li>大数据实时统计，互联网的数据量是海量的时候，没有办法在数据库层面直接SQL来进行统计，需要对于产生的数据，进行二次加工，然后产出结果，正好把实时变化的数据流到storm中处理一遍。</li>
+  <li>一淘-实时分析系统pora：实时分析用户的属性，并反馈给搜索引擎。最初，用户属性分析是通过每天在云梯上定时运行的MR job来完成的。为了满足实时性的要求，希望能够实时分析用户的行为日志，将最新的用户属性反馈给搜索引擎，能够为用户展现最贴近其当前需求的结果。</li>
+  <li>携程-网站性能监控：实时分析系统监控携程网的网站性能。利用HTML5提供的performance标准获得可用的指标，并记录日志。Storm集群实时分析日志和入库。使用DRPC聚合成报表，通过历史数据对比等判断规则，触发预警事件。</li>
+  <li>收集游戏中的数据，运营或者开发者可以在上线后几秒钟得到持续不断更新的游戏监控报告和分析结果，然后马上针对游戏的参数和平衡性进行调整。这样就能够大大缩短游戏迭代周期，加强游戏的生命力（实际上，zynga就是这么干的！虽然使用的不是Storm……Zynga研发之道探秘：用数据说话）</li>
+  <li>推荐系统：有时候在实时处理时会从mysql及hadoop中获取数据库中的信息，例如在电影推荐系统中，传入数据为：用户当前点播电影信息，从数据库中获取的是该用户之前的一些点播电影信息统计，例如点播最多的电影类型、最近点播的电影类型，及其社交关系中点播信息，结合本次点击及从数据库中获取的信息，生成推荐数据，推荐给该用户。并且该次点击记录将会更新其数据库中的参考信息，这样就是实现了简单的智能推荐。</li>
+</ul>
+
+<h4 id="hdfshive-与-hbasephoenix的区别">HDFS+Hive 与 HBase+Phoenix的区别</h4>
+<ul>
+  <li>Hive中的表是纯逻辑表，就只是表的定义等，即表的元数据。Hive本身不存储数据，它完全依赖HDFS和MapReduce。这样就可以将结构化的数据文件映射为为一张数据库表，并提供完整的SQL查询功能，并将SQL语句最终转换为MapReduce任务进行运行。 而HBase表是物理表，适合存放非结构化的数据。
+    <ol>
+      <li>两者分别是什么？
+        <ul>
+          <li>Apache Hive是数据仓库。通过Hive可以使用HQL语言查询存放在HDFS上的数据。HQL是一种类SQL语言，这种语言最终被转化为Map/Reduce. 虽然Hive提供了SQL查询功能，但是Hive不能够进行交互查询–因为它是基于MapReduce算法。</li>
+          <li>Apache Hbase Key/Value，基础单元是cell，它运行在HDFS之上。和Hive不一样，Hbase的能够在它的数据库上实时运行，而不是运行MapReduce任务。</li>
+        </ul>
+      </li>
+      <li>两者的特点
+        <ul>
+          <li>Hive帮助熟悉SQL的人运行MapReduce任务。因为它是JDBC兼容的。运行Hive查询会花费很长时间，因为它会默认遍历表中所有的数据。但可以通过Hive的分区来控制。因为这样一来文件大小是固定的，就这么大一块存储空间，从固定空间里查数据是很快的。</li>
+          <li>HBase通过存储key/value来工作。注意版本的功能。你可以用Hadoop作为静态数据仓库，HBase作为数据存储，放那些进行一些操作会改变的数据。</li>
+        </ul>
+      </li>
+      <li>限制
+        <ul>
+          <li>Hive目前不支持更新操作。另外，由于hive在hadoop上运行批量操作，它需要花费很长的时间，通常是几分钟到几个小时才可以获取到查询的结果。Hive必须提供预先定义好的schema将文件和目录映射到列，并且Hive与ACID不兼容。</li>
+          <li>HBase查询是通过特定的语言来编写的，这种语言需要重新学习。类SQL的功能可以通过Apache Phonenix实现，但这是以必须提供schema为代价的。另外，Hbase也并不是兼容所有的ACID特性，虽然它支持某些特性。最后但不是最重要的–为了运行Hbase，Zookeeper是必须的，zookeeper是一个用来进行分布式协调的服务，这些服务包括配置服务，维护元信息和命名空间服务。</li>
+        </ul>
+      </li>
+      <li>应用场景
+        <ul>
+          <li>Hive适合用来对一段时间内的数据进行分析查询，例如，用来计算趋势或者网站的日志。Hive不应该用来进行实时的查询。因为它需要很长时间才可以返回结果。</li>
+          <li>Hbase非常适合用来进行大数据的实时查询。Facebook用Hbase进行消息和实时的分析。它也可以用来统计Facebook的连接数。</li>
+        </ul>
+      </li>
+      <li>两者关系
+        <ul>
+          <li>Hive和Pig都可以与HBase组合使用，Hive和Pig还为HBase提供了高层语言支持，使得在HBase上进行数据统计处理变的非常简单</li>
+          <li>Hive与HBase，都是在Hadoop体系使用</li>
+        </ul>
+      </li>
+      <li>总结
+        <ul>
+          <li>Hive和Hbase是两种基于Hadoop的不同技术–Hive是一种类SQL的引擎，并且运行MapReduce任务，Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库。当然，这两种工具是可以同时使用的。就像用Google来搜索，用FaceBook进行社交一样，Hive可以用来进行统计查询，HBase可以用来进行实时查询，数据也可以从Hive写到Hbase，设置再从Hbase写回Hive。</li>
+        </ul>
+      </li>
+      <li>其他
+        <ul>
+          <li>Pig是接近脚本方式去描述MapReduce，Hive则用的是SQL。近似理解为SQL ON Hadoop</li>
+        </ul>
+      </li>
+      <li>Hive &amp; Mysql数据互导 sqoop</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="hadoop--spark--storm">Hadoop &amp; Spark &amp; Storm</h4>
+<ul>
+  <li>Hadoop，是实现了MapReduce的思想，将数据切片计算来处理大量的离线数据。Hadoop处理的数据必须是已经存放在HDFS上或者类似HBase的数据库中，所以Hadoop实现的时候是通过移动计算到这些存放数据的机器上来提高效率。
+适合于离线的批量数据处理适用于对实时性要求极低的场景。</li>
+  <li>Storm，可以用来处理源源不断流进来的消息，处理之后将结果写入到某个存储中去。实时性方面做得极好。(可以脱离Hadoop体系单独使用)</li>
+  <li>Spark，是一个基于内存计算的开源集群计算系统，目的是更快速的进行数据分析。Spark由加州伯克利大学AMP实验室Matei为主的小团队使用Scala开发，类似于Hadoop MapReduce的通用并行计算框架，Spark基于Map Reduce算法实现的分布式计算，拥有Hadoop MapReduce所具有的优点，但不同于MapReduce的是Job中间输出和结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的Map Reduce的算法。
+(可以简单理解为”另一种形式的MapReduce”或者是第二代”引擎”，需要在Hadoop体系使用)</li>
+</ul>
+
+<h4 id="flume--kafka--storm">flume &amp; kafka &amp; storm</h4>
+<ul>
+  <li>flume收集日志，推到kafka缓冲一下，storm消费计算，最终结果存储</li>
+  <li>基于Flume的美团日志收集系统 <a href="https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html">https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html</a></li>
+  <li>流式数据采集和计算 <a href="https://blog.csdn.net/yezonggang/article/details/85034069">https://blog.csdn.net/yezonggang/article/details/85034069</a></li>
+  <li>Flume+Kafka+Storm+Redis构建大数据实时处理系统：实时统计网站PV、UV+展示 <a href="https://blog.51cto.com/xpleaf/2104160">https://blog.51cto.com/xpleaf/2104160</a></li>
+</ul>
+
+<h4 id="搭建单机hadoop">搭建单机Hadoop</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 配置环境变量</span>
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/home/java/jdk1.8
+<span class="nb">export </span><span class="nv">JRE_HOME</span><span class="o">=</span>/home/java/jdk1.8/jre
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="nv">$JAVA_HOME</span>/lib/dt.jar:<span class="nv">$JAVA_HOME</span>/lib/tools.jar:<span class="nv">$JRE_HOME</span>/lib
+
+<span class="nb">export </span><span class="nv">HADOOP_HOME</span><span class="o">=</span>/home/hadoop/hadoop2.8
+<span class="nb">export </span><span class="nv">HADOOP_COMMON_LIB_NATIVE_DIR</span><span class="o">=</span><span class="nv">$HADOOP_HOME</span>/lib/native
+<span class="nb">export </span><span class="nv">HADOOP_OPTS</span><span class="o">=</span><span class="s2">"-Djava.library.path=</span><span class="nv">$HADOOP_HOME</span><span class="s2">/lib"</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>.:<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin:<span class="k">${</span><span class="nv">HADOOP_HOME</span><span class="k">}</span>/bin:<span class="nv">$PATH</span>
+
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hadoop  
+<span class="nb">mkdir</span>  /root/hadoop/tmp  
+<span class="nb">mkdir</span>  /root/hadoop/var  
+<span class="nb">mkdir</span>  /root/hadoop/dfs  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/name  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/data
+
+<span class="c"># 3. 修改配置文件</span>
+vim core-site.xml
+vim hadoop-env.sh
+vim hdfs-site.xml
+vim mapred-site.xml
+
+<span class="c"># 4. 启动</span>
+bin/hadoop  namenode  <span class="nt">-format</span>
+start-dfs.sh
+start-yarn.sh
+</code></pre></div></div>
+
+<h4 id="搭建单机hbase">搭建单机HBase</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 搭建好Hadoop</span>
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hbase  
+<span class="nb">mkdir</span>  /root/hbase/tmp  
+<span class="nb">mkdir</span>  /root/hbase/pids
+<span class="c"># 3. 启动</span>
+./start-hbase.sh
+<span class="c"># 4. 常用命令</span>
+<span class="c"># 进入shell</span>
+hbase shell
+status
+version
+list <span class="c"># 列出HBase的所有的表</span>
+exists <span class="s1">'test'</span> <span class="c"># 是否存在test表</span>
+disable <span class="s1">'test'</span>
+drop <span class="s1">'test'</span>
+describe <span class="s1">'t_user'</span>
+
+create <span class="s1">'&lt;table name&gt;'</span>,<span class="s1">'&lt;column family&gt;'</span>   <span class="c"># 其中column family 就是列族的意思</span>
+create <span class="s1">'Student'</span>,<span class="s1">'Num'</span>,<span class="s1">'Name'</span>,<span class="s1">'Sex'</span>,<span class="s1">'Age'</span> <span class="c"># 列族可以指定 Version 及 TTL</span>
+
+put &lt;table&gt;,&lt;rowkey&gt;,&lt;family:column&gt;,&lt;value&gt;,&lt;timestamp&gt;
+put <span class="s1">'Student'</span>,<span class="s1">'1001'</span>,<span class="s1">'ZhangSan'</span>,male<span class="s1">','</span>23<span class="s1">'
+put '</span>t1<span class="s1">','</span>rowkey001<span class="s1">','</span>f1:col1<span class="s1">','</span>value01<span class="s1">' #可以指定列族及列
+delete '</span>Student<span class="s1">','</span>1001<span class="s1">','</span>Age<span class="s1">' # 删除1001的年龄列
+delete '</span>Student<span class="s1">','</span>1001<span class="s1">' # 删除1001所有列
+
+scan '</span>Student<span class="s1">' # 查询该表所有数据
+scan '</span>t1<span class="s1">',{LIMIT=&gt;5} # 扫描表t1的前5条数据
+scan  '</span>stu2<span class="s1">',{COLUMNS =&gt; '</span>cf1:age<span class="s1">', LIMMIT 10, STARTROW =&gt; '</span>xx<span class="s1">'} # 分页查询
+
+count '</span>t1<span class="s1">', {INTERVAL =&gt; 100, CACHE =&gt; 500} # 查询表t1中的行数，每100条显示一次，缓存区为500
+
+get '</span>Student<span class="s1">','</span>1001<span class="s1">' # 查看1001的数据
+get '</span>t1<span class="s1">','</span>rowkey001<span class="s1">', '</span>f1:col1<span class="s1">' # 查询表t1，rowkey001中的f1下的col1的值
+
+create '</span>Student<span class="s1">',{NAME=&gt;'</span>username<span class="s1">',VERSIONS=&gt;5} # 创建表的时候指定版本数
+get '</span>Student<span class="s1">','</span>1001<span class="s1">',{COLUMN=&gt;'</span>username<span class="s1">',VERSIONS=&gt;5} # 查询指定版本的数据
+
+alter '</span>test1<span class="s1">',{NAME=&gt;'</span>body<span class="s1">',TTL=&gt;'</span>15552000<span class="s1">'},{NAME=&gt;'</span>meta<span class="s1">', TTL=&gt;'</span>15552000<span class="s1">'} #指定TTL
+
+</span></code></pre></div></div>
+<h4 id="本地存储结构">本地存储结构</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># /hbase/data/default/stu/8ca25fe0d49972b2efb4c36537daf1a2/cf1/d89f620da4754e1092402b577f589f8a</span>
+data：目录即是Hbase自动生成的用来存储所有表数据的一个目录
+default：默认的一个namespace
+stu：就是一张表，其实就是一个文件夹
+8ca25fe0d49972b2efb4c36537daf1a2：就是stu这张表中的一个region
+cf1：就是这个region中第一个列簇所对应的一个store
+d89f620da4754e1092402b577f589f8a：这就是用来存储真实数据的hfile
+</code></pre></div></div>
+<h4 id="hbase二级索引方案">HBase二级索引方案</h4>
+<ul>
+  <li>基于Coprocessor方案
+    <ul>
+      <li>华为的hindex</li>
+      <li>Apache Phoenix</li>
+      <li>Phoenix二级索引特点：
+        <ul>
+          <li>Covered Indexes(覆盖索引) ：把关注的数据字段也附在索引表上，只需要通过索引表就能返回所要查询的数据（列）， 所以索引的列必须包含所需查询的列(SELECT的列和WHERE的列)。</li>
+          <li>Functional indexes(函数索引)： 索引不局限于列，支持任意的表达式来创建索引。</li>
+          <li>Global indexes(全局索引)：适用于读多写少场景。通过维护全局索引表，所有的更新和写操作都会引起索引的更新，写入性能受到影响。 在读数据时，Phoenix SQL会基于索引字段，执行快速查询。</li>
+          <li>Local indexes(本地索引)：适用于写多读少场景。 在数据写入时，索引数据和表数据都会存储在本地。在数据读取时， 由于无法预先确定region的位置，所以在读取数据时需要检查每个region（以找到索引数据），会带来一定性能（网络）开销。</li>
+        </ul>
+      </li>
+      <li>Lily HBase Indexer</li>
+      <li>Solr/es</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="只能基于rowkey查询关键看如何设计">只能基于rowkey查询，关键看如何设计</h4>
+<ul>
+  <li>不支持where条件查询只能按照rowkey来查询</li>
+  <li>RowFilter</li>
+</ul>
+
+<h4 id="hadoop-region寻址方式通过zookeepermeta">Hadoop Region寻址方式(通过zookeeper.META)</h4>
+<p>第 1 步:Client 请求 ZK 获取.META.所在的 RegionServer 的地址。
+第 2 步:Client 请求.META.所在的 RegionServer 获取访问数据所在的 RegionServer 地 址，client 会将.META.的相关信息 cache 下来，以便下一次快速访问。
+第 3 步:Client 请求数据所在的 RegionServer，获取所需要的数据。</p>
+
+<h4 id="hbase的写入流程">HBase的写入流程</h4>
+<ul>
+  <li>获取 RegionServer
+第 1 步:Client 获取数据写入的 Region 所在的 RegionServer
+请求写 Hlog</li>
+  <li>第 2 步:请求写 Hlog, Hlog 存储在 HDFS，当 RegionServer 出现异常，需要使用 Hlog 来
+恢复数据。
+请求写 MemStore</li>
+  <li>第 3 步:请求写 MemStore,只有当写 Hlog 和写 MemStore 都成功了才算请求写入完成。
+MemStore 后续会逐渐刷到 HDFS 中。 14.1.5.2. MemStore刷盘
+为了提高 Hbase 的写入性能，当写请求写入 MemStore 后，不会立即刷盘。而是会等到一 定的时候进行刷盘的操作。具体是哪些场景会触发刷盘的操作呢?总结成如下的几个场景:</li>
+</ul>
+
+<h4 id="hbase全局内存控制">HBase全局内存控制</h4>
+<ol>
+  <li>这个全局的参数是控制内存整体的使用情况，当所有 memstore 占整个 heap 的最大比 例的时候，会触发刷盘的操作。这个参数是 hbase.regionserver.global.memstore.upperLimit，默认为整个 heap 内存的 40%。 但这并不意味着全局内存触发的刷盘操作会将所有的 MemStore 都进行输盘，而是通过 另外一个参数 hbase.regionserver.global.memstore.lowerLimit 来控制，默认是整个 heap 内存的 35%。当 flush 到所有 memstore 占整个 heap 内存的比率为 35%的时 候，就停止刷盘。这么做主要是为了减少刷盘对业务带来的影响，实现平滑系统负载的 目的。
+MemStore 达到上限</li>
+  <li>当 MemStore 的大小达到 hbase.hregion.memstore.flush.size 大小的时候会触发刷
+盘，默认 128M 大小
+RegionServer 的 Hlog 数量达到上限</li>
+  <li>前面说到 Hlog 为了保证 Hbase 数据的一致性，那么如果 Hlog 太多的话，会导致故障 恢复的时间太长，因此 Hbase 会对 Hlog 的最大个数做限制。当达到 Hlog 的最大个数 的时候，会强制刷盘。这个参数是 hase.regionserver.max.logs，默认是 32 个。
+手工触发</li>
+  <li>可以通过 hbase shell 或者 java api 手工触发 flush 的操作。
+关闭 RegionServer 触发</li>
+  <li>在正常关闭 RegionServer 会触发刷盘的操作，全部数据刷盘后就不需要再使用 Hlog 恢
+复数据。
+Region 使用 HLOG 恢复完数据后触发</li>
+  <li>:当 RegionServer 出现故障的时候，其上面的 Region 会迁移到其他正常的 RegionServer 上，在恢复完 Region 的数据后，会触发刷盘，当刷盘完成后才会提供给 业务访问。</li>
+</ol>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>用HBase实现亿级Feed <a href="https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ">https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ</a></li>
+  <li>HBase案例 <a href="https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw">https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw</a></li>
+  <li>HBase面试题 <a href="https://www.jianshu.com/p/9ecd4367e6d0">https://www.jianshu.com/p/9ecd4367e6d0</a></li>
+  <li>es结合Hbase <a href="https://zhuanlan.zhihu.com/p/87563468">https://zhuanlan.zhihu.com/p/87563468</a></li>
+  <li>Hbase和Cassandra比较 <a href="https://blog.csdn.net/aa5305123/article/details/83142514">https://blog.csdn.net/aa5305123/article/details/83142514</a></li>
+  <li>白话大数据 <a href="https://www.zhihu.com/question/27974418/answer/156227565">https://www.zhihu.com/question/27974418/answer/156227565</a></li>
+  <li>一步步搭建Hadoop体系 <a href="https://blog.csdn.net/qazwsxpcm/article/list/2?t=1">https://blog.csdn.net/qazwsxpcm/article/list/2?t=1</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"> Java SPI </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。
+Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。
+在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
+    <span class="kd">implements</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span>
+<span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">ServiceLoader</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
+            <span class="k">return</span> <span class="n">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><a href="https://blog.csdn.net/sweatOtt/article/details/83055191">https://blog.csdn.net/sweatOtt/article/details/83055191</a></p>
+
+<p><a href="https://juejin.im/post/5af952fdf265da0b9e652de3">https://juejin.im/post/5af952fdf265da0b9e652de3</a></p>
+
+<p><a href="https://www.jianshu.com/p/46b42f7f593c">https://www.jianshu.com/p/46b42f7f593c</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html"> Dubbo </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
@@ -750,482 +1132,6 @@ location @custom <span class="o">{</span>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html"> Java ClassLoader </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="java类加载过程">Java类加载过程</h4>
-<ul>
-  <li>加载
-    <ul>
-      <li>加载是类加载的第一个过程，在这个阶段，将完成一下三件事情：
-        <ul>
-          <li>通过一个类的全限定名获取该类的二进制流。</li>
-          <li>将该二进制流中的静态存储结构转化为方法去运行时数据结构。</li>
-          <li>在内存中生成该类的 java.lang.Class 对象，作为该类的数据访问入口。</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>验证
-    <ul>
-      <li>验证的目的是为了确保 Class 文件的字节流中的信息不回危害到虚拟机.在该阶段主要完成以下四钟验证:
-        <ul>
-          <li>文件格式验证：验证字节流是否符合 Class 文件的规范，如主次版本号是否在当前虚拟机范围内，常量池中的常量是否有不被支持的类型。</li>
-          <li>元数据验证:对字节码描述的信息进行语义分析，如这个类是否有父类，是否集成了不被继承的类等。</li>
-          <li>字节码验证：是整个验证过程中最复杂的一个阶段，通过验证数据流和控制流的分析，确定程序语义是否正确，主要针对方法体的验证。如：方法中的类型转换是否正确，跳转指令是否正确等。</li>
-          <li>符号引用验证：这个动作在后面的解析过程中发生，主要是为了确保解析动作能正确执行。</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>准备
-    <ul>
-      <li>准备阶段是为类的静态变量分配内存并将其初始化为默认值，这些内存都将在方法区中进行分配。准备阶段不分配类中的实例变量的内存，实例变量将会在对象实例化时随着对象一起分配在 Java 堆中。</li>
-    </ul>
-  </li>
-  <li>解析
-    <ul>
-      <li>该阶段主要完成符号引用到直接引用的转换动作。解析动作并不一定在初始化动作完成之前，也有可能在初始化之后。</li>
-    </ul>
-  </li>
-  <li>初始化
-    <ul>
-      <li>初始化时类加载的最后一步，前面的类加载过程，除了在加载阶段用户应用程序可以通过自定义类加载器参与之外，其余动作完全由虚拟机主导和控制。到了初始化阶段，才真正开始执行类中定义的 Java 程序代码。</li>
-    </ul>
-  </li>
-  <li>使用</li>
-  <li>卸载</li>
-</ul>
-
-<h4 id="类加载器步骤">类加载器步骤</h4>
-<ol>
-  <li>在特定目录找到.class文件，并读取</li>
-  <li>Java是模板系语言，读取.class文件之后，被实例化为对应的Class的对象</li>
-  <li>Class对象=类模板实例化，只有有类模板，新对象才能根据类模板进行实例化</li>
-</ol>
-
-<h4 id="3大内置类加载器">3大内置类加载器</h4>
-<ul>
-  <li>启动（Bootstrap）类加载器
-启动类加载器主要加载的是JVM自身需要的类，这个类加载使用C++语言实现的，是虚拟机自身的一部分，它负责将 <JAVA_HOME>/lib路径下的核心类库或-Xbootclasspath参数指定的路径下的jar包加载到内存中，注意必由于虚拟机是按照文件名识别加载jar包的，如rt.jar，如果文件名不被虚拟机识别，即使把jar包丢到lib目录下也是没有作用的(出于安全考虑，Bootstrap启动类加载器只加载包名为java、javax、sun等开头的类)。</JAVA_HOME></li>
-  <li>扩展（Extension）类加载器
-扩展类加载器是指Sun公司(已被Oracle收购)实现的sun.misc.Launcher$ExtClassLoader类，由Java语言实现的，是Launcher的静态内部类，它负责加载<JAVA_HOME>/lib/ext目录下或者由系统变量-Djava.ext.dir指定位路径中的类库，开发者可以直接使用标准扩展类加载器。</JAVA_HOME></li>
-  <li>系统（System）类加载器
-也称应用程序加载器是指 Sun公司实现的sun.misc.Launcher$AppClassLoader。它负责加载系统类路径java -classpath或-D java.class.path 指定路径下的类库，也就是我们经常用到的classpath路径，开发者可以直接使用系统类加载器，一般情况下该类加载是程序中默认的类加载器，通过ClassLoader#getSystemClassLoader()方法可以获取到该类加载器。</li>
-</ul>
-
-<h4 id="双亲委派模式">双亲委派模式</h4>
-<ul>
-  <li>工作原理的是，如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器，如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式</li>
-  <li>如果不想打破双亲委派模型，那么只需要重写findClass方法即可</li>
-  <li>如果想打破双亲委派模型，那么就重写整个loadClass方法</li>
-</ul>
-
-<h4 id="双亲委派模式优势">双亲委派模式优势</h4>
-<p>采用双亲委派模式的是好处是Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层级关可以避免类的重复加载，当父亲已经加载了该类时，就没有必要子ClassLoader再加载一次。其次是考虑到安全因素，java核心api中定义类型不会被随意替换，假设通过网络传递一个名为java.lang.Integer的类，通过双亲委托模式传递到启动类加载器，而启动类加载器在核心Java API发现这个名字的类，发现该类已被加载，并不会重新加载网络传递的过来的java.lang.Integer，而直接返回已加载过的Integer.class，这样便可以防止核心API库被随意篡改。可能你会想，如果我们在classpath路径下自定义一个名为java.lang.SingleInterge类(该类是胡编的)呢？该类并不存在java.lang中，经过双亲委托模式，传递到启动类加载器中，由于父类加载器路径下并没有该类，所以不会加载，将反向委托给子类加载器加载，最终会通过系统类加载器加载该类。但是这样做是不允许，因为java.lang是核心API包，需要访问权限，强制加载将会报出如下异常</p>
-
-<h4 id="其他">其他</h4>
-<ul>
-  <li>不同的加载器加载了同个类，在Jvm中相当于两个不同的Class对象</li>
-  <li>双亲委派模型的破坏者-线程上下文类加载器，在Java应用中存在着很多服务提供者接口（Service Provider Interface，SPI），这些接口允许第三方为它们提供实现，如常见的 SPI 有 JDBC、JNDI等，这些 SPI 的接口属于 Java 核心库，一般存在rt.jar包中，由Bootstrap类加载器加载，而 SPI 的第三方实现代码则是作为Java应用所依赖的 jar 包被存放在classpath路径下，由于SPI接口中的代码经常需要加载具体的第三方实现类并调用其相关方法，但SPI的核心接口类是由引导类加载器来加载的，而Bootstrap类加载器无法直接加载SPI的实现类，同时由于双亲委派模式的存在，Bootstrap类加载器也无法反向委托AppClassLoader加载器SPI的实现类。在这种情况下，我们就需要一种特殊的类加载器来加载第三方的类库，而线程上下文类加载器就是很好的选择。</li>
-  <li>参考<a href="https://blog.csdn.net/javazejian/article/details/73413292">https://blog.csdn.net/javazejian/article/details/73413292</a></li>
-  <li><a href="https://www.jianshu.com/p/b86ec26c19a3">https://www.jianshu.com/p/b86ec26c19a3</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html"> SpringBoot </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 27, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Spring</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>springboot启动总结<a href="https://blog.csdn.net/mnicsm/article/details/93893669">https://blog.csdn.net/mnicsm/article/details/93893669</a></p>
-<h4 id="spring-boot-是什么">Spring Boot 是什么？</h4>
-<ul>
-  <li>Spring 是一个“引擎”；</li>
-  <li>Spring MVC 是基于Spring的一个 MVC 框架；</li>
-  <li>Spring Boot 是基于Spring的条件注册的一套快速开发整合包。</li>
-</ul>
-
-<h4 id="springboot启动原理-">SpringBoot启动原理 ☆☆☆</h4>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">boot</span><span class="o">;</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SpringApplication</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="nf">SpringApplication</span><span class="o">(</span><span class="n">ResourceLoader</span> <span class="n">resourceLoader</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">primarySources</span><span class="o">)</span> <span class="o">{</span>
-            <span class="c1">// ... 省略代码</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span> <span class="o">=</span> <span class="n">resourceLoader</span><span class="o">;</span>
-            <span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">primarySources</span><span class="o">,</span> <span class="s">"PrimarySources must not be null"</span><span class="o">);</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">primarySources</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashSet</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">primarySources</span><span class="o">));</span>
-            <span class="c1">// 1. 推测ApplicationType</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">webApplicationType</span> <span class="o">=</span> <span class="n">WebApplicationType</span><span class="o">.</span><span class="na">deduceFromClasspath</span><span class="o">();</span>
-            <span class="c1">// 2. 根据spring.factories初始化ApplicationContextInitializer 与 ApplicationListener</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">setInitializers</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">ApplicationContextInitializer</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">setListeners</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">ApplicationListener</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
-            <span class="c1">// 3. 推测 Main入口</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">deduceMainApplicationClass</span><span class="o">();</span>
-    <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">ConfigurableApplicationContext</span> <span class="nf">run</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// ... 省略代码</span>
-        <span class="n">ConfigurableApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="n">Collection</span><span class="o">&lt;</span><span class="n">SpringBootExceptionReporter</span><span class="o">&gt;</span> <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">();</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">configureHeadlessProperty</span><span class="o">();</span>
-        <span class="n">SpringApplicationRunListeners</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getRunListeners</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
-        <span class="c1">// 4. SpringApplicationRunListeners生命周期之started()</span>
-        <span class="n">listeners</span><span class="o">.</span><span class="na">starting</span><span class="o">();</span>
-        <span class="c1">// ... 省略代码</span>
-       <span class="n">Collection</span> <span class="n">exceptionReporters</span><span class="o">;</span>
-       <span class="n">ApplicationArguments</span> <span class="n">applicationArguments</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultApplicationArguments</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
-       <span class="c1">// 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared()</span>
-       <span class="n">ConfigurableEnvironment</span> <span class="n">environment</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">prepareEnvironment</span><span class="o">(</span><span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
-       <span class="k">this</span><span class="o">.</span><span class="na">configureIgnoreBeanInfo</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
-       <span class="n">Banner</span> <span class="n">printedBanner</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">printBanner</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
-       <span class="n">context</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">createApplicationContext</span><span class="o">();</span>
-       <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">SpringBootExceptionReporter</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">ConfigurableApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="n">context</span><span class="o">);</span>
-       <span class="c1">// 6. 初始化类加载器、bean产生器、资源加载器等，打印banner</span>
-       <span class="k">this</span><span class="o">.</span><span class="na">prepareContext</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">environment</span><span class="o">,</span> <span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">,</span> <span class="n">printedBanner</span><span class="o">);</span>
-       <span class="c1">// 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等</span>
-       <span class="c1">//    SpringApplicationRunListeners生命周期之contextPrepared()/contextLoaded()</span>
-       <span class="k">this</span><span class="o">.</span><span class="na">refreshContext</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
-       <span class="k">this</span><span class="o">.</span><span class="na">afterRefresh</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
-       <span class="n">stopWatch</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
-       <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">logStartupInfo</span><span class="o">)</span> <span class="o">{</span>
-           <span class="o">(</span><span class="k">new</span> <span class="n">StartupInfoLogger</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span><span class="o">)).</span><span class="na">logStarted</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getApplicationLog</span><span class="o">(),</span> <span class="n">stopWatch</span><span class="o">);</span>
-       <span class="o">}</span>
-       <span class="n">listeners</span><span class="o">.</span><span class="na">started</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
-       <span class="k">this</span><span class="o">.</span><span class="na">callRunners</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
-       <span class="n">listeners</span><span class="o">.</span><span class="na">running</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
-       <span class="c1">// ... 省略代码</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<ul>
-  <li>启动原理解析</li>
-</ul>
-<p><a href="http://tengj.top/2017/03/09/springboot3/">http://tengj.top/2017/03/09/springboot3/</a></p>
-<ul>
-  <li>自动装配之@ComponentScan详解</li>
-</ul>
-<p><a href="https://blog.csdn.net/mapleleafforest/article/details/86623578">https://blog.csdn.net/mapleleafforest/article/details/86623578</a></p>
-<ul>
-  <li>自动装配之@EnableAutoConfiguration详解</li>
-</ul>
-<p><a href="https://blog.csdn.net/mapleleafforest/article/details/87273213">https://blog.csdn.net/mapleleafforest/article/details/87273213</a></p>
-
-<h4 id="apache-shiro">Apache Shiro</h4>
-<p>Apache Shiro 是 Java 的一个安全框架。使用 shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 JavaSE 环境，也可以用在 JavaEE 环境。Shiro 可以帮助我们完成:认证、授权、加密、会话管理、与 Web 集成、缓存等。
-三个核心组件:Subject, SecurityManager 和 Realms.
-Subject:即“当前操作用户”。但是，在 Shiro 中，Subject 这一概念并不仅仅指人，也可以是第三方进程、后台帐 户(Daemon Account)或其他类似事物。它仅仅意味着“当前跟软件交互的东西”。但考虑到大多数目的和用途， 你可以把它认为是 Shiro 的“用户”概念。
-Subject 代表了当前用户的安全操作，SecurityManager 则管理所有用户的安全操作。
-SecurityManager:它是 Shiro 框架的核心，典型的 Facade 模式，Shiro 通过 SecurityManager 来管理内部组 件实例，并通过它来提供安全管理的各种服务。
-Realm: Realm 充当了 Shiro 与应用安全数据间的“桥梁”或者“连接器”。也就是说，当对用户执行认证(登 录)和授权(访问控制)验证时，Shiro 会从应用配置的 Realm 中查找用户及其权限信息。</p>
-
-<h4 id="springboot自动配置-">SpringBoot自动配置 ☆☆☆</h4>
-<ul>
-  <li>SpringBoot项目配置注解@EnableAutoConfiguration后</li>
-  <li>SpringBoot启动扫描META-INF下的spring.factories</li>
-  <li>spring.factories子配置项org.springframework.boot.autoconfigure.EnableAutoConfiguration配置了所有可以自动配置的组件</li>
-  <li>各个XXXAutoConfiguration按照各自的ConditionalOnClass/OnBean等，判断是否加载XXX配置</li>
-  <li>根据XXX配置的@Import加载相关的其他类，之后通过反射机制初始化Bean</li>
-  <li>之后即可通过注入的方式使用
-    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 比如DataSourceAutoConfiguration的自动配置是检测到DataSource.class 与 EmbeddedDatabaseType.class存在</span>
-<span class="c1">// DataSource是javax包中自带，而EmbeddedDatabaseType存在于spring-boot-starter-jdbc中</span>
-<span class="c1">// 因此在pom中引入spring-boot-starter-jdbc后，即可触发加载操作</span>
-<span class="c1">// 接下来就是根据spring.datasource相关配置初始化PooledDataSource 或者 直接使用EmbeddedDatabase</span>
-<span class="nd">@Configuration</span>
-<span class="nd">@ConditionalOnClass</span><span class="o">({</span><span class="n">DataSource</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">EmbeddedDatabaseType</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
-<span class="nd">@EnableConfigurationProperties</span><span class="o">({</span><span class="n">DataSourceProperties</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
-<span class="nd">@Import</span><span class="o">({</span><span class="n">DataSourcePoolMetadataProvidersConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">DataSourceInitializationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataSourceAutoConfiguration</span> <span class="o">{</span>
-<span class="o">}</span>
-<span class="c1">// </span>
-</code></pre></div>    </div>
-    <p>DataSourceAutoConfiguration解析</p>
-  </li>
-</ul>
-<p><a href="https://blog.csdn.net/kangsa998/article/details/90231518">https://blog.csdn.net/kangsa998/article/details/90231518</a></p>
-
-<h4 id="springboot的starter-">SpringBoot的Starter ☆☆☆</h4>
-<ul>
-  <li>徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！</li>
-</ul>
-<p><a href="https://www.cnblogs.com/lenve/p/10892011.html">https://www.cnblogs.com/lenve/p/10892011.html</a></p>
-
-<ul>
-  <li>SpringBoot启动机制（starter机制）核心原理详解</li>
-</ul>
-
-<p><a href="https://www.jianshu.com/p/d166d935217b">https://www.jianshu.com/p/d166d935217b</a></p>
-
-<ul>
-  <li>实现一个Spring boot stater</li>
-</ul>
-
-<p><a href="https://www.jianshu.com/p/fdb574e1f77c">https://www.jianshu.com/p/fdb574e1f77c</a></p>
-
-<h4 id="springboot-starter">SpringBoot Starter</h4>
-<ul>
-  <li>其实是Java的SPI的全名为Service Provider Interfac的一种实现</li>
-  <li>EnableAutoConfiguration 导入 @Import({AutoConfigurationImportSelector.class})</li>
-  <li>AutoConfigurationImportSelector 从classpath中搜寻所有的META-INF/spring.factories配置文件</li>
-  <li>找到org.springframework.boot.autoconfigure.EnableAutoConfiguration该key对应的其他自动配置className</li>
-  <li>通过反射按照相关Conditional进行实例化</li>
-  <li>如关闭数据源自动配置功能: @SpringBootApplication(exclude ={ DataSourceAutoConfiguration.class })。</li>
-</ul>
-
-<h4 id="如何在-spring-boot-启动的时候运行一些特定的代码">如何在 Spring Boot 启动的时候运行一些特定的代码?</h4>
-<ul>
-  <li>可以实现接口 ApplicationRunner 或者 CommandLineRunner，这两个接口实现方式一 样，它们都只提供了一个 run 方法。</li>
-  <li>Spring Boot 可以通过 @PropertySource,@Value,@Environment</li>
-</ul>
-
-<h4 id="springboot常用注解">SpringBoot常用注解</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Conditional
-@SpringBootConfiguration
-@EnableAutoConfiguration
-@SpringBootApplication
-@Configuration：代表这个类是一个配置类。
-@ComponentScan：用来扫描指定包下面的注解类。
-@Import：用来导入其他的@Configuration配置类。
-@ImportResource：用来导入xml配置文件，比如某些配置一定要xml配置。
-@Bean：用来定义一个bean，可以指定初始、销毁方法，及bean范围等。
-@Controller 标识一个类为控制器。
-@RequestMapping URL的映射。
-@ResponseBody 返回结果转换为JSON字符串。
-@RequestBody 表示接收JSON格式字符串参数。
-@RestController这个注解，而不是@Controller，不过这个注解同样不是Spring boot提供的，而是Spring MVC4中的提供的注解，表示一个支持Restful的控制器。
-这个类中有三个URL映射是相同的，即都是/article/{id}，这在@Controller标识的类中是不允许出现的。这里的可以通过method来进行区分，produces的作用是表示返回结果的类型是JSON。
-@PathVariable这个注解，也是Spring MVC提供的，其作用是表示该变量的值是从访问路径中获取。
-</code></pre></div></div>
-<p>27个核心注解
-<a href="https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA">https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA</a></p>
-<h4 id="springwebapplication-与-servlet">SpringWebApplication 与 Servlet</h4>
-<ul>
-  <li>Servlet是JavaWeb的核心，可以理解为CGI的Java线程版本</li>
-  <li>SpringMVC核心用到DispatcherServlet，可以配置多个urlMapping</li>
-  <li>Struts2/SpringMVC是基于Servlet实现分发，而Struts1是基于Filter</li>
-  <li>一个SpringWebApplication可以定义多个Servlet，需要区分urlMapping</li>
-</ul>
-
-<h4 id="springboot-中的-tomcat-是如何启动的">SpringBoot 中的 Tomcat 是如何启动的？</h4>
-<p><a href="https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ">https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ</a></p>
-
-<h4 id="springjdbc--mybatis--spring-data--jpa">SpringJDBC / Mybatis / Spring Data / JPA</h4>
-<ul>
-  <li>Mybatis的集成和使用</li>
-</ul>
-<p><a href="https://blog.lqdev.cn/2018/12/03/springboot/chapter-thirty-five/">https://blog.lqdev.cn/2018/12/03/springboot/chapter-thirty-five/</a></p>
-<ul>
-  <li>Mybatis-plus的集成和使用</li>
-</ul>
-<p><a href="https://blog.lqdev.cn/2018/07/21/springboot/chapter-nine/">https://blog.lqdev.cn/2018/07/21/springboot/chapter-nine/</a></p>
-
-<h4 id="spring-security--apache-shrio--jwt-javawebtoken">Spring Security / Apache Shrio / JWT JavaWebToken</h4>
-
-<h4 id="springboot-打出来的war中的webxml消失了">SpringBoot 打出来的war中的web.xml消失了</h4>
-<p>springboot 是如何帮我们省去web.xml配置的</p>
-
-<p><a href="https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app">https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app</a></p>
-<h4 id="webmvcconfigureradapter-与-webmvcconfigurationsupport">WebMvcConfigurerAdapter 与 WebMvcConfigurationSupport</h4>
-<p>(遇到的一个坑查了半天)
-<a href="https://blog.csdn.net/innovationad/article/details/79959383">https://blog.csdn.net/innovationad/article/details/79959383</a></p>
-
-<h4 id="springboot之actuator">SpringBoot之Actuator</h4>
-<ul>
-  <li>Spring Boot Actuator:健康检查、审计、统计和监控</li>
-</ul>
-<p><a href="https://www.jianshu.com/p/d5943e303a1f">https://www.jianshu.com/p/d5943e303a1f</a></p>
-<ul>
-  <li>监控管理之Spring Boot Admin使用</li>
-</ul>
-<p><a href="https://blog.lqdev.cn/2018/09/14/springboot/chapter-twenty-eight/">https://blog.lqdev.cn/2018/09/14/springboot/chapter-twenty-eight/</a></p>
-
-<h4 id="springboot日志管理之aop统一日志">SpringBoot日志管理之AOP统一日志</h4>
-<p><a href="https://blog.lqdev.cn/2018/08/24/springboot/chapter-twenty-four/">https://blog.lqdev.cn/2018/08/24/springboot/chapter-twenty-four/</a></p>
-
-<h4 id="springboot日志管理之追加统一traceid">SpringBoot日志管理之追加统一traceId</h4>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.slf4j.MDC</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.servlet.ModelAndView</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.servlet.handler.HandlerInterceptorAdapter</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogTraceInterceptor</span> <span class="kd">extends</span> <span class="n">HandlerInterceptorAdapter</span> <span class="o">{</span>
-
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">preHandle</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="n">MDC</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">,</span> <span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">+</span><span class="s">":"</span><span class="o">+</span><span class="n">RandomHelper</span><span class="o">.</span><span class="na">generateNonceNumStr</span><span class="o">(</span><span class="mi">8</span><span class="o">));</span>
-        <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">preHandle</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">postHandle</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="n">ModelAndView</span> <span class="n">modelAndView</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="kd">super</span><span class="o">.</span><span class="na">postHandle</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">,</span> <span class="n">modelAndView</span><span class="o">);</span>
-        <span class="n">MDC</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">"xhs"</span> <span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.RollingFileAppender"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;file&gt;</span>${LOG_HOME}/app.log<span class="nt">&lt;/file&gt;</span>
-        <span class="nt">&lt;rollingPolicy</span> <span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.TimeBasedRollingPolicy"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;FileNamePattern&gt;</span>${LOG_HOME}/app.%d{yyyy-MM-dd}.log<span class="nt">&lt;/FileNamePattern&gt;</span>
-            <span class="nt">&lt;MaxHistory&gt;</span>30<span class="nt">&lt;/MaxHistory&gt;</span>
-        <span class="nt">&lt;/rollingPolicy&gt;</span>
-        <span class="nt">&lt;encoder&gt;</span>
-            <span class="nt">&lt;pattern&gt;</span>%d{HH:mm:ss.SSS} %X{traceId} [%thread] %-5level %c{10} - %msg%n<span class="nt">&lt;/pattern&gt;</span>
-            <span class="nt">&lt;charset&gt;</span>UTF-8<span class="nt">&lt;/charset&gt;</span>
-        <span class="nt">&lt;/encoder&gt;</span>
-<span class="nt">&lt;/appender&gt;</span>
-</code></pre></div></div>
-<h4 id="springboot--dubbo">SpringBoot &amp; Dubbo</h4>
-<p><a href="https://blog.lqdev.cn/2018/09/28/springboot/chapter-twenty-nine/">https://blog.lqdev.cn/2018/09/28/springboot/chapter-twenty-nine/</a></p>
-
-<h4 id="springboot-异步的各种实现">SpringBoot 异步的各种实现</h4>
-<ul>
-  <li>异步开发之异步请求</li>
-</ul>
-<p><a href="https://blog.lqdev.cn/2018/08/16/springboot/chapter-twenty/">https://blog.lqdev.cn/2018/08/16/springboot/chapter-twenty/</a></p>
-<ul>
-  <li>异步开发之异步调用</li>
-</ul>
-<p><a href="https://blog.lqdev.cn/2018/08/17/springboot/chapter-twenty-one/">https://blog.lqdev.cn/2018/08/17/springboot/chapter-twenty-one/</a></p>
-
-<p><a href="https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA">https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA</a></p>
-<ul>
-  <li>事件的发布和监听</li>
-</ul>
-<p><a href="https://blog.lqdev.cn/2018/11/06/springboot/chapter-thirty-two/">https://blog.lqdev.cn/2018/11/06/springboot/chapter-thirty-two/</a></p>
-<ul>
-  <li>RabbitMQ的集成和使用</li>
-</ul>
-<p><a href="https://blog.lqdev.cn/2018/07/24/springboot/chapter-twelve/">https://blog.lqdev.cn/2018/07/24/springboot/chapter-twelve/</a></p>
-
-<p><a href="https://blog.lqdev.cn/2019/07/21/springboot/chapter-thirty-eight/">https://blog.lqdev.cn/2019/07/21/springboot/chapter-thirty-eight/</a></p>
-
-<h4 id="springboot--webservice">SpringBoot &amp; WebService</h4>
-<ul>
-  <li>Spring web Servcies集成和使用</li>
-</ul>
-<p><a href="https://blog.lqdev.cn/2018/11/09/springboot/chapter-thirty-three/">https://blog.lqdev.cn/2018/11/09/springboot/chapter-thirty-three/</a></p>
-<ul>
-  <li>CXF构建WebService服务</li>
-</ul>
-<p><a href="https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/">https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/</a></p>
-
-<h4 id="ltw-in-jdk-or-springboot">LTW In Jdk Or SpringBoot</h4>
-<p><a href="https://www.cnblogs.com/takumicx/p/10150344.html">https://www.cnblogs.com/takumicx/p/10150344.html</a></p>
-
-<h4 id="集成框架spring-integration-mule-esb-or-apache-camel比较">集成框架Spring Integration, Mule ESB or Apache Camel比较</h4>
-<p><a href="https://www.jdon.com/soa/integration-framework-comparison-spring.html">https://www.jdon.com/soa/integration-framework-comparison-spring.html</a>
-<a href="https://www.jianshu.com/p/68aba8d09a89">https://www.jianshu.com/p/68aba8d09a89</a></p>
-
-<h4 id="spring">Spring</h4>
-<ul>
-  <li>ApplicationContext
-    <ol>
-      <li>BeanFactory 是 Spring 框架的基础设施，面向 Spring 本身;ApplicationContext 面向使用 Spring 框架的开发者，几乎所有的应用场合我们都直接使用 ApplicationContext 而非底层 的 BeanFactory。</li>
-      <li>HierarchicalBeanFactory 父子级联，父子级联 IoC 容器的接口，子容器可以通过接口方法访问父容器; 通过 HierarchicalBeanFactory 接口， Spring 的 IoC 容器可以建立父子层级关联的容器体系，子 容器可以访问父容器中的 Bean，但父容器不能访问子容器的 Bean。Spring 使用父子容器实 现了很多功能，比如在 Spring MVC 中，展现层 Bean 位于一个子容器中，而业务层和持久 层的 Bean 位于父容器中。这样，展现层 Bean 就可以引用业务层和持久层的 Bean，而业务 层和持久层的 Bean 则看不到展现层的 Bean。</li>
-      <li>ClassPathXmlApplicationContext -&gt; ApplicationContext -&gt; HierarchicalBeanFactory/ListableBeanFactory</li>
-      <li>ConfigurableApplicationContext 扩展于 ApplicationContext，它新增加了两个主要 的方法: refresh()和 close()，让 ApplicationContext 具有启动、刷新和关闭应用上下 文的能力。在应用上下文关闭的情况下调用 refresh()即可启动应用上下文，在已经启动 的状态下，调用 refresh()则清除缓存并重新装载配置信息，而调用 close()则可关闭应用 上下文。</li>
-      <li>WebApplicationContext 是专门为 Web 应用准备的，它允许从相对于 Web 根目录的 路径中装载配置文件完成初始化工作。从 WebApplicationContext 中可以获得 ServletContext 的引用，整个 Web 应用上下文对象将作为属性放置到 ServletContext 中，以便 Web 应用环境可以访问 Spring 应用上下文。</li>
-    </ol>
-  </li>
-  <li>Bean的Scope
-    <ol>
-      <li>singleton</li>
-      <li>prototype，每次都创建（对有状态的 bean 使用 prototype 作用域，而对无状态的 bean 使用 singleton 作用域。）</li>
-      <li>request：一次request一个实例</li>
-      <li>session：一个session一个实例</li>
-      <li>global Session:在一个全局的 Http Session 中，容器会返回该 Bean 的同一个实例，仅在 使用 portlet context 时有效。</li>
-    </ol>
-  </li>
-  <li>Bean的生命周期
-    <ol>
-      <li>根据scope，实例化</li>
-      <li>设置属性</li>
-      <li>postProcessBeforeInitialization</li>
-      <li>afterPropertiesSet</li>
-      <li>postProcessAfterInitialization</li>
-      <li>Done</li>
-    </ol>
-  </li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">""</span> <span class="na">class=</span><span class="s">""</span> <span class="na">init-method=</span><span class="s">"初始化方法"</span> <span class="na">destroy-method=</span><span class="s">"销毁方法"</span> <span class="nt">/&gt;</span>
-</code></pre></div></div>
-
-<ul>
-  <li>依赖注入
-    <ul>
-      <li>构造器注入</li>
-      <li>setter 方法注入</li>
-      <li>接口注入</li>
-    </ul>
-  </li>
-  <li>
-    <p>IOC:把对象的创建、初始化、销毁交给 spring 来管理，而不是由开发者控制，实现控制反转。</p>
-  </li>
-  <li>5 种不同方式的自动装配
-    <ul>
-      <li>no:默认的方式是不进行自动装配，通过显式设置 ref 属性来进行装配。</li>
-      <li>byName:通过参数名 自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被设置成 byname，之后容器试图匹配、装配和该 bean 的属性具有相同名字的 bean。</li>
-      <li>byType:通过参数类型自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被 设置成 byType，之后容器试图匹配、装配和该 bean 的属性具有相同类型的 bean。如果有多个 bean 符合条件，则抛出错误。</li>
-      <li>constructor:这个方式类似于 byType， 但是要提供给构造器参数，如果没有确定的带参数的构造器参数类型，将会抛出异常。</li>
-      <li>autodetect:首先尝试使用 constructor 来自动装配，如果无法工作，则使用 byType 方式</li>
-    </ul>
-  </li>
-  <li>AOP 核心概念
-    <ul>
-      <li>切面(aspect):类是对物体特征的抽象，切面就是对横切关注点的抽象</li>
-      <li>横切关注点:对哪些方法进行拦截，拦截后怎么处理，这些关注点称之为横切关注点。</li>
-      <li>连接点(joinpoint):被拦截到的点，因为 Spring 只支持方法类型的连接点，所以在 Spring中连接点指的就是被拦截到的方法，实际上连接点还可以是字段或者构造器。</li>
-      <li>切入点(pointcut):对连接点进行拦截的定义</li>
-      <li>通知(advice):所谓通知指的就是指拦截到连接点之后要执行的代码，通知分为前置、后置、 异常、最终、环绕通知五类。</li>
-      <li>目标对象:代理的目标对象</li>
-      <li>织入(weave):将切面应用到目标对象并导致代理对象创建的过程</li>
-      <li>引入(introduction):在不修改代码的前提下，引入可以在运行期为类动态地添加一些方法 或字段。</li>
-    </ul>
-  </li>
-  <li>MyBatis缓存
-    <ul>
-      <li>Mybatis 中有一级缓存和二级缓存，默认情况下一级缓存是开启的，而且是不能关闭的。一级缓存 是指 SqlSession 级别的缓存，当在同一个 SqlSession 中进行相同的 SQL 语句查询时，第二次以 后的查询不会从数据库查询，而是直接从缓存中获取，一级缓存最多缓存 1024 条 SQL。二级缓存 是指可以跨 SqlSession 的缓存。是 mapper 级别的缓存，对于 mapper 级别的缓存不同的 sqlsession 是可以共享的。</li>
-      <li>如果两次中间出现 commit 操作 (修改、添加、删除)，本 sqlsession 中的一级缓存区域全部清空，下次再去缓存中查询不到所 以要从数据库查询，从数据库查询到再写入缓存。</li>
-    </ul>
-  </li>
-  <li>Slf4j
-slf4j 的全称是 Simple Loging Facade For Java，即它仅仅是一个为 Java 程序提供日志输出的统一接 口，并不是一个具体的日志实现方案，就比如 JDBC 一样，只是一种规则而已。所以单独的 slf4j 是不 能工作的，必须搭配其他具体的日志实现方案，比如 apache 的 org.apache.log4j.Logger，jdk 自带 的 java.util.logging.Logger 等。</li>
-</ul>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -1377,7 +1283,7 @@ slf4j 的全称是 Simple Loging Facade For Java，即它仅仅是一个为 Java
       
       
       <a  href="/tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 9 )</span>
+      <span class="label label-default">数据结构与算法 ( 10 )</span>
       </a><br />
 
       
@@ -1391,7 +1297,7 @@ slf4j 的全称是 Simple Loging Facade For Java，即它仅仅是一个为 Java
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 10 )</span>
+      <span class="label label-default">Java ( 11 )</span>
       </a><br />
 
       

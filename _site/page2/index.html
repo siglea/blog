@@ -54,6 +54,201 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html">用户画像之标签数据开发</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 7, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>用户</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="离线标签开发">离线标签开发</h4>
+<ul>
+  <li>统计类标签开发，是指统计用户相关数值、客户描述用户状态的标签，如用户的年龄、体重、累计购买金额、累计购买次数、近30日登陆次数
+    <ul>
+      <li>近30日购买行为（付款订单量ACTION_U_01_001、总付款金额ACTION_U_01_002、加入购物车次数ACTION_U_01_003）</li>
+      <li>最近来访：最近登录到今天的天数</li>
+    </ul>
+  </li>
+  <li>规则类标签开发，是指根据业务运营上的需要，在业务层面制定规则的标签。这类标签会带一些人为主观判断
+    <ul>
+      <li>数码达人，用户浏览的商品中有80%是3C产品，自动打标签</li>
+      <li>用户价值类RFM（重要/一般 价值/保持/发展/挽留）
+        <ul>
+          <li>R&lt;=90为近，R&gt;90为远</li>
+          <li>F&lt;=3为低频，F&gt;3为高频</li>
+          <li>M&lt;=300为低额，M&gt;300为高额</li>
+        </ul>
+      </li>
+      <li>用户活跃程度（用户留存率的拐点一般就是用户的生命周期）
+        <ul>
+          <li>ACTION_U_05_003 高活跃</li>
+          <li>ACTION_U_05_002 中活跃</li>
+          <li>ACTION_U_05_001 低活跃</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>挖掘类标签开发，是指需要应用算法挖掘用户相关特征，比如预测性别、预测下单、预测流失、预测偏好
+      - 文章分类</li>
+</ul>
+
+<h4 id="实时类标签开发">实时类标签开发</h4>
+<ul>
+  <li>新人弹窗、新人红包</li>
+</ul>
+
+<h4 id="用户特征库开发动态标签">用户特征库开发（动态标签）</h4>
+<ul>
+  <li>用户特征库就是对用户每一次的不同行为（如浏览、收藏、搜索、购买等）及该行为对应的标签（或商品品类）进行
+  详细的记录，以便从用户的行为特征中挖掘用户的偏好。</li>
+  <li>经常浏览或购买奶粉、尿不湿等，她可能是个妈妈。</li>
+  <li>查询最近7日浏览某商品详情页超过10次的用户</li>
+  <li>查询7日浏览、收藏、关注过”母婴”品类商品的用户</li>
+  <li>用户标签权重=行为类型权重 X 时间衰减 X 用户行为次数 X TF-IDF计算标签权重
+<img src="/img/up9.jpg" width="600px" /></li>
+  <li>同现矩阵是指标签和标签之间的关联程度，这种关联程度有用户身上的标签所决定。（啤酒&amp;尿不湿）</li>
+</ul>
+
+<h4 id="人群计算">人群计算</h4>
+<ul>
+  <li>通过标签筛选人群
+    <ul>
+      <li>从MySQL中读出规则</li>
+      <li>请求es数据找出用户id</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="打通数据服务处">打通数据服务处</h4>
+<ul>
+  <li>把数据发送给相应的业务系统</li>
+</ul>
+
+<h4 id="用户画像的应用">用户画像的应用</h4>
+<ul>
+  <li>经营分析
+    <ul>
+      <li>商品分析</li>
+      <li>用户分析</li>
+      <li>渠道分析</li>
+      <li>漏斗分析</li>
+      <li>客服话术</li>
+      <li>人群特征分析</li>
+    </ul>
+  </li>
+  <li>精准营销
+    <ul>
+      <li>短信/邮件营销</li>
+      <li>效果分析</li>
+    </ul>
+  </li>
+  <li>个性化推荐与服务</li>
+</ul>
+
+<h4 id="案例">案例</h4>
+<ul>
+  <li>
+    <p>风控反欺诈画像模型
+<img src="/img/up10.jpg" width="600px" /></p>
+  </li>
+  <li>LTV生命周期运营
+    <ul>
+      <li>流失率的倒数用来表示预测的用户的生命周期，如果一个产品的流失率为10%，则产品对应的生命周期为10个月</li>
+      <li>单个用户毛利 = CLV customer life value - CAC customer aqurie cost - COC customer operation cost
+<img src="/img/up11.jpg" width="600px" /></li>
+    </ul>
+  </li>
+  <li>80%的注册用户在安装3日内完成注册，那就圈出来3日用户发红包优惠券等</li>
+  <li>76%的下单用户是在注册前9日完成的首次交易</li>
+  <li>注册首日消费满100，立即短信营销赠送红包，以更好地留存该高价值新用户</li>
+  <li>Session特征库
+<img src="/img/up12.jpg" width="600px" /></li>
+  <li>在线医疗场景
+<img src="/img/up13.jpg" width="600px" />
+<img src="/img/up14.jpg" width="600px" />
+<img src="/img/up15.jpg" width="600px" />
+<img src="/img/up16.jpg" width="600px" /></li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html">用户画像之标签存储</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 7, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>用户</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="数据仓库">数据仓库</h4>
+<p>“数据􏱓库􏲄父”W.H.Inmon􏱖《Building the Data Warehouse》在一书􏰇􏰷定义数据􏱓仓库是“一个􏱥面􏰤向主题的、集成的、非易失的、随时􏰣变化的、用来支持􏲆管理人员决策的数据集合􏰬”。</p>
+<ul>
+  <li>面􏰤向主题:业􏰊务数据库中􏰷的数据主要􏲊对事务处􏲋理，各个业􏱇􏱥􏰊务系统之间􏰦􏰮􏲄􏰣是相互分离的，而􏱽数据􏱓仓库中􏰷的数据是􏲌按照一定主题进行组织的。</li>
+  <li>集成:数据仓􏱓库中􏰷存储的数据是从业􏰊务数据库中􏰷提取出来的，但􏱟并不是对原有数据的􏱂简单复􏲍制，而􏱽是经过了抽􏲎􏱗􏱞􏲏取、清􏲐理、转􏲑换 (ETL)等􏱣工作􏰔。业􏰊务数据库记􏱀录的是每􏱤一项􏰊业务处􏲋理的流水􏰸􏲒账。这􏲓些数据不适􏰬进行分析处理，进入数据􏱓库􏲄前需要􏲎􏱗一系列计算􏰢， 同时􏲔􏲕抛弃一些无关分析处理的数据。</li>
+  <li>非易􏲅失:􏰊业务数据库中􏰷一般􏲃􏲖存储短期数据，􏲗因此其数据是不稳定的，记􏱀的是􏰦􏰮􏰷数据变化的瞬态􏱪。数据􏱓仓库中􏰷的数据􏱝􏱿大多表示过􏱗去某􏱋一时刻的数据，主要用于查询、分析􏱼，不像􏰊业务系统中􏰦􏰮􏰷的数据库一样􏲎经常修改，一般􏲃数据􏱓仓库构􏰼建完成后主要用于􏰋访问􏱭，不进行修􏲘改􏱰删除。</li>
+  <li>随时􏰣变化:数据仓􏱓库关注􏱩的是历史􏲙数据，按􏲌时间􏰣顺序定期从􏰊业务库和􏱰日志􏱺库里面载􏲚入新的数据进行追􏲛加，带有时间属性􏰲。</li>
+</ul>
+
+<h4 id="标签分区存储">标签分区存储</h4>
+<p><img src="/img/up1.jpeg" width="600px" /></p>
+<ul>
+  <li>数字表示
+    <ul>
+      <li>0：用户没被打上该标签</li>
+      <li>1：用户被打上该标签，但是没有具体数值</li>
+      <li>具体数字：用户被打上该标签，有具体数值
+<img src="/img/up2.jpg" width="600px" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="标签以userid进行冗余存储">标签以UserID进行冗余存储</h4>
+<p><img src="/img/up3.jpg" width="600px" /></p>
+
+<h4 id="id-map">ID-MAP</h4>
+<ul>
+  <li>用户使用不同设备登录系统，或者同一设备登录多个用户</li>
+  <li>可以通过event_log、page_view_log等来获取登录时长、登录天数</li>
+  <li>userid与cookieId通常是多对多
+<img src="/img/up4.jpg" width="600px" /></li>
+</ul>
+
+<h4 id="mysql存储元数据管理">Mysql存储元数据管理</h4>
+<p><img src="/img/up5.jpg" width="600px" /></p>
+
+<h4 id="mysql存储结果集">Mysql存储结果集</h4>
+<p>比如用脚本通过Sqoop把Hive结果导入的mysql中，主要是离线，在线的建议用HBase</p>
+
+<h4 id="hbase存储">HBase存储</h4>
+<p>使用Spark，把用户标签同步到HBase以供线上实时访问
+<img src="/img/up6.jpg" width="600px" /></p>
+
+<h4 id="es做为hbase的二级索引方便快速检索">Es做为HBase的二级索引方便快速检索</h4>
+<p><img src="/img/up7.jpg" width="600px" /></p>
+
+<h4 id="从etlhivhbasees整个链路的数据监控旧数据可怕">从ETL/Hiv/HBase/Es整个链路的数据监控，旧数据可怕</h4>
+<p><img src="/img/up8.jpg" width="600px" /></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html">myBatis</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 30, 2020</span>
@@ -505,127 +700,6 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2020/06/25/MckinseyMethodology.html">麦肯锡方法</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 25, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2020/06/25/MckinseyMethodology.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>方法论</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="专业主义">专业主义</h4>
-<ul>
-  <li>结构化的思维，清晰的语言，具有责任心同时又敢于发表不同意见的知识精英以及专业化的目标，
-  这都是会让一个组织及其人员发挥其最大的潜力。</li>
-</ul>
-
-<h4 id="主要方法论">主要方法论</h4>
-<ul>
-  <li>以事实为基础</li>
-  <li>严格的结构化（MESE原则，相互独立完全穷尽）</li>
-  <li>以假设为导向，寻找关键路径。（错误的路径某种程度上会促使你发现正确路径）</li>
-</ul>
-
-<h4 id="作用力量分析框架">作用力量分析框架</h4>
-<ul>
-  <li>客户的供应商</li>
-  <li>顾客</li>
-  <li>竞争对手</li>
-  <li>可能的替代产品</li>
-</ul>
-
-<h4 id="重要原则">重要原则</h4>
-<ul>
-  <li>80/20原则</li>
-  <li>电梯测试</li>
-  <li>界定你的前提，这是把你由问题引向解决方案的路线图</li>
-  <li>为你的情况说明”预先布线”以确保成功的秘密</li>
-  <li>为什么问题不会永远是问题？
-    <ul>
-      <li>不要去重新发明轮子，尽可能寻找现有的或类似的解决方案</li>
-      <li>每个客户都是独一无二的，不存在一刀切的解决办法</li>
-      <li>不要让事实去适应你的解决办法</li>
-      <li>确保你的解决办法适合你的客户</li>
-      <li>有时候你必须让解决方案来找你。（收集事实，描述清楚问题，解决方案就会自己找上门来）</li>
-      <li>遇到”不可能解决”的难题怎么办？
-        <ul>
-          <li>重新定义问题</li>
-          <li>锲而不舍实施看似不是最优方案的方案，最终有可能就是最优</li>
-          <li>解决政治问题</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>成功地进行收集信息的谈话的7个要诀
-    <ul>
-      <li>让被访者的上司安排会面</li>
-      <li>两个人一起进行走访</li>
-      <li>倾听，不要指导</li>
-      <li>复述、复述、复述</li>
-      <li>采用旁敲侧击的方式</li>
-      <li>不要问太多</li>
-      <li>采用考伦波的策略。（电梯间提问，此时大家都放松了，可能能得到意想不到的答案）</li>
-    </ul>
-  </li>
-  <li>高效沟通的3个构成要素
-    <ul>
-      <li>简洁、完整、结构</li>
-    </ul>
-  </li>
-  <li>如何应付”讨债鬼”似的团队成员或难以打交道的同事。
-    <ul>
-      <li>清除或转化</li>
-    </ul>
-  </li>
-  <li>如何让整个企业接受你的方案。
-    <ul>
-      <li>让客户参与，并从上到下的沟通实施</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="如何保持团队士气">如何保持团队士气</h4>
-<ul>
-  <li>把握团队温度</li>
-  <li>掌握稳定的过程</li>
-  <li>让团队明白为什么他们要干正在干的事情</li>
-  <li>以尊重对待你的团队</li>
-  <li>把队友当成人来了解</li>
-  <li>耐心坚持</li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E9%9A%8F%E8%AE%B0/2020/06/25/MckinseyMethodology.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/24/O2O%E6%B4%BE%E5%8D%95.html">O2O派单</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 24, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/24/O2O%E6%B4%BE%E5%8D%95.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>策略</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>滴滴派单
-https://mp.weixin.qq.com/s/mbzr55b-0KrNXdrBTMcYcg
-https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/24/O2O%E6%B4%BE%E5%8D%95.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -777,7 +851,7 @@ https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
       
       
       <a  href="/tag/数据结构与算法">
-      <span class="label label-default">数据结构与算法 ( 9 )</span>
+      <span class="label label-default">数据结构与算法 ( 10 )</span>
       </a><br />
 
       
@@ -791,7 +865,7 @@ https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</p>
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 10 )</span>
+      <span class="label label-default">Java ( 11 )</span>
       </a><br />
 
       

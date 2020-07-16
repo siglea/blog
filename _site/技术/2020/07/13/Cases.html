@@ -161,10 +161,52 @@
   <li>微信后台基于时间序的新一代海量数据存储架构的设计实践 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2970&amp;highlight=%B4%E6%B4%A2">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2970&amp;highlight=%B4%E6%B4%A2</a></li>
 </ul>
 
-<h4 id="kubernetes-和-istio-service-mesh-sidecar-">Kubernetes 和 Istio 、Service Mesh Sidecar ???</h4>
+<h4 id="亿级用户中心设计">亿级用户中心设计</h4>
+<p>用户中心，是典型的“单KEY”类业务，这一类业务，都可以使用上述架构方案。</p>
+
 <ul>
-  <li>微服务的缺点？分布式系统的复杂性;多服务运维难度,随着服务的增加,运维的压力也在增大;系统部署依赖;服务间通信成本;数 据一致性;系统集成测试;性能监控</li>
+  <li>常见的数据库水平切分方式有两种：
+    <ol>
+      <li>范围法；</li>
+      <li>哈希法；</li>
+    </ol>
+  </li>
+  <li>水平切分后碰到的问题是：
+    <ol>
+      <li>通过uid属性查询能直接定位到库，通过非uid属性查询不能定位到库；</li>
+    </ol>
+  </li>
+  <li>非uid属性查询，有两类典型的业务：
+    <ol>
+      <li>用户侧，前台访问，单条记录的查询，访问量较大，服务需要高可用，并且对一致性的要求较高；</li>
+      <li>运营侧，后台访问，根据产品、运营需求，访问模式各异，基本上是批量分页的查询，由于是内部系统，访问量很低，对可用性的要求不高，对一致性的要求也没这么严格；</li>
+    </ol>
+  </li>
+  <li>针对这两类业务，架构设计的思路是：
+    <ol>
+      <li>用户侧，采用“建立非uid属性到uid的映射关系”的架构方案；</li>
+      <li>运营侧，采用“前台与后台分离”的架构方案；</li>
+    </ol>
+  </li>
+  <li>前台用户侧，“建立非uid属性到uid的映射关系”，有四种常见的实践：
+    <ol>
+      <li>索引表法：数据库中记录login_name与uid的映射关系；</li>
+      <li>缓存映射法：缓存中记录login_name与uid的映射关系；</li>
+      <li>生成uid法：login_name生成uid；</li>
+      <li>基因法：login_name基因融入uid；</li>
+    </ol>
+  </li>
+  <li>后台运营侧，“前台与后台分离”的最佳实践是：
+    <ol>
+      <li>前台、后台系统 web/service/db 分离解耦，避免后台低效查询引发前台查询抖动；</li>
+      <li>可以采用数据冗余的设计方式；</li>
+      <li>可以采用“外置索引”（例如ES搜索系统）或者“大数据处理”（例如HIVE）来满足后台变态的查询需求；</li>
+    </ol>
+  </li>
 </ul>
+
+<p><a href="https://mp.weixin.qq.com/s/8KTK_Bz8netP6R5MNSKeFw">https://mp.weixin.qq.com/s/8KTK_Bz8netP6R5MNSKeFw</a></p>
+
 
   </div>
 </article>
