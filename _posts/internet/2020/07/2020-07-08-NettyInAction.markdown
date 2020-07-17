@@ -9,6 +9,8 @@ tags:
 categories:
 - 技术
 ---
+TODO <https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg>
+netty源码阅读之ByteBuf之内存概念arena、chunk、page、subpage
 #### Netty的组件
 - group() EventLoop -> 控制流、多线程处理、并发
   - 一个 EventLoopGroup 包含一个或者多个 EventLoop;
@@ -80,7 +82,9 @@ if (!f.isSuccess()) { f.cause().printStackTrace();
 - Netty 还提供了使用 OpenSSL 工具包(www.openssl.org)的 SSLEngine 实现。这个 OpenSsl-Engine 类提供了比 JDK 提供的 SSLEngine 实现更好的性能。
 - 如果 OpenSSL 库可用，可以将 Netty 应用程序(客户端和服务器)配置为默认使用 OpenSslEngine。如果不可用，Netty 将会回退到 JDK 实现。有关配置 OpenSSL 支持的详细说明，参见 Netty 文档: http://netty.io/wiki/forked-tomcat-native.html#wikih2-1。
 - 注意，无论你使用 JDK 的 SSLEngine 还是使用 Netty 的 OpenSslEngine，SSL API 和数据流都 是一致的。
+
 <img src="/img/ssl_tls.jpg" width="600px" />
+
 ```shell
 SelfSignedCertificate cert = new SelfSignedCertificate();
 SslContext context = SslContext.newServerContext(cert.certificate(), cert.privateKey());

@@ -78,7 +78,7 @@ public boolean compareAndSet(V   expectedReference,
 - 当没有竞争出现时，默认会使用偏向锁。
     - JVM 会利用 CAS 操作，在对象头上的 Mark Word 部分设置线程 ID，以表示这个对象偏向于当前线程，所以并不涉及真正的互斥锁，因为在很多应用场景中，大部分对象生命周期中最多会被一个线程锁定，使用偏斜锁可以降低无竞争开销。
 - 如果有另一线程试图锁定某个被偏斜过的对象，JVM 就撤销偏斜锁，切换到轻量级锁实现。
-- 轻量级锁依赖 CAS 操作 Mark Word 来试图获取锁，如果重试成功，就使用普通的轻量级锁(自旋锁)；否则，进一步升级为重量级锁。
+- 轻量级锁依赖 CAS 操作 Mark Word 来试图获取锁，如果重试成功，就使用普通的轻量级锁；否则，进一步升级为重量级锁。
 
 ####  ReadWriteLock 
 ```shell 
@@ -289,3 +289,7 @@ for (;;) {
 - 微服务的缺点？分布式系统的复杂性;多服务运维难度,随着服务的增加,运维的压力也在增大;系统部署依赖;服务间通信成本;数 据一致性;系统集成测试;性能监控
 
 #### LVS之DR,NAT,TUN模式祥解 
+
+#### Direct Memory 回收？？？
+- <https://blog.csdn.net/xieyuooo/article/details/7547435>
+- <https://blog.csdn.net/phj88/article/details/8011830>

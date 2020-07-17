@@ -8,8 +8,102 @@ tags:
 categories:
 - 技术
 ---
+#### JPS JVM Process Status Tool
+```shell
+jps
+31856 xhs-push.jar
+22640 Jps
 
-#### jmap : 内存占用情况查询
+jps -q
+31856
+22640
+
+[root@VM_0_17_centos ~]# jps -m
+31856 xhs-push.jar --push.queue=message_queue_low
+22825 Jps -m
+
+[root@VM_0_17_centos ~]# jps -l
+31856 /home/web/xhs-push/xhs-push.jar
+22886 sun.tools.jps.Jps
+
+[root@VM_0_17_centos ~]# jps -v
+31856 xhs-push.jar -Xms256m -Xmx512m -XX:+PrintGCDateStamps -XX:+PrintGC -Xloggc:...
+22932 Jps -Dapplication.home=/usr/java/jdk1.8.0_171-amd64 -Xms8m
+
+```
+
+#### jstat: JVM Statistics Monitoring Tool 可以实时监测系统资源占用与jvm运行情况
+- 类加载相关 -class
+- gc相关 -gc*
+- 编译相关 -compiler
+
+```
+## 命令语法结构：
+Usage: jstat -help|-options
+       jstat -<option> [-t] [-h<lines>] <vmid> [<interval> [<count>]]
+## 参数解释：
+Options — 选项，我们一般使用 -gcutil 查看gc情况
+-t      — 输出Timestamp
+vmid    — VM的进程号，即当前运行的java进程号
+interval– 间隔时间，单位为秒或者毫秒
+count   — 打印次数，如果缺省则打印无数次
+ 
+S0  — Heap上的 Survivor space 0 区已使用空间的百分比
+S1  — Heap上的 Survivor space 1 区已使用空间的百分比
+E   — Heap上的 Eden space 区已使用空间的百分比
+O   — Heap上的 Old space 区已使用空间的百分比
+P   — Perm space 区已使用空间的百分比
+YGC — 从应用程序启动到采样时发生 Young GC 的次数
+YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒)
+FGC — 从应用程序启动到采样时发生 Full GC 的次数
+FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒)
+GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒)
+
+## jstat -options
+    -class 类加载统计
+    -compiler 编译统计 
+    -gc
+    -gccapacity
+    -gccause Allocation Failure
+    -gcmetacapacity 元数据空间统计
+    -gcnew
+    -gcnewcapacity
+    -gcold
+    -gcoldcapacity
+    -gcutil 总结垃圾回收统计
+    -printcompilation JVM编译方法统计
+
+## 示例1 总结垃圾回收统计
+[root@VM_0_8_centos ~]# jstat -gcutil 27472 1000 5
+  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT
+ 78.04   0.00  14.10  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  24.05  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  34.14  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  40.62  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+ 78.04   0.00  47.20  61.31  96.88  94.27    288    5.612     4    3.335    8.947
+
+## 示例2 类加载统计
+[root@VM_0_8_centos ~]# jstat -class -t 27472 1000 5
+Timestamp       加载class的数量  所占用空间大小  未加载数量  未加载占用空间     Time(秒)
+Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
+         5359.3  10847 20148.1        0     0.0      46.25
+         5360.4  10847 20148.1        0     0.0      46.25
+         5361.4  10847 20148.1        0     0.0      46.25
+         5362.3  10847 20148.1        0     0.0      46.25
+         5363.3  10847 20148.1        0     0.0      46.25
+
+```
+jstat命令使用
+<https://www.cnblogs.com/lizhonghua34/p/7307139.html>
+
+#### jinfo java配置信息
+```shell
+ -flags               to print VM flags
+ -sysprops            to print Java system properties
+ <no option>          to print both of the above
+```
+
+#### jmap : Memory Map For Java 内存占用情况查询
 ```shell
 ## 查询某个pid进程对应的应用程序内存占用情况
 jmap -heap pid
@@ -73,66 +167,31 @@ jmap -F -histo 16464 > 16464.log
 jmap -dump:format=b,file=outfile 3024可以将3024进程的内存heap输出出来到outfile文件里，再配合MAT（内存分析工具）。
 
 ```
-
-#### jstat: 可以实时监测系统资源占用与jvm运行情况
+#### jhat JVM Heap Analysis Tool ，把jmap dump的文件展示
+```shell script
+jhat outfile
+http://localhost:7000
 ```
-## 命令语法结构：
-Usage: jstat -help|-options
-       jstat -<option> [-t] [-h<lines>] <vmid> [<interval> [<count>]]
-## 参数解释：
-Options — 选项，我们一般使用 -gcutil 查看gc情况
--t      — 输出Timestamp
-vmid    — VM的进程号，即当前运行的java进程号
-interval– 间隔时间，单位为秒或者毫秒
-count   — 打印次数，如果缺省则打印无数次
+
+#### jstack Java堆栈跟踪
+```shell
+# 示例
+jstach 5940
+Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.92-b14 mixed mode):
  
-S0  — Heap上的 Survivor space 0 区已使用空间的百分比
-S1  — Heap上的 Survivor space 1 区已使用空间的百分比
-E   — Heap上的 Eden space 区已使用空间的百分比
-O   — Heap上的 Old space 区已使用空间的百分比
-P   — Perm space 区已使用空间的百分比
-YGC — 从应用程序启动到采样时发生 Young GC 的次数
-YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒)
-FGC — 从应用程序启动到采样时发生 Full GC 的次数
-FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒)
-GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒)
+"RMI TCP Connection(10)-10.2.13.162" #32 daemon prio=5 os_prio=0 tid=0x00000000179dc000 nid=0x1f60 in Object.wait() [0x000000001d7dd000]
+   java.lang.Thread.State: TIMED_WAITING (on object monitor)
+        at java.lang.Object.wait(Native Method)
+        at com.sun.jmx.remote.internal.ArrayNotificationBuffer.fetchNotifications(ArrayNotificationBuffer.java:449)
+        - locked <0x00000000d462ec18> (a com.sun.jmx.remote.internal.ArrayNotificationBuffer)
 
-## jstat -options
-    -class 类加载统计
-    -compiler 编译统计 
-    -gc
-    -gccapacity
-    -gccause Allocation Failure
-    -gcmetacapacity 元数据空间统计
-    -gcnew
-    -gcnewcapacity
-    -gcold
-    -gcoldcapacity
-    -gcutil 总结垃圾回收统计
-    -printcompilation JVM编译方法统计
-
-## 示例1 总结垃圾回收统计
-[root@VM_0_8_centos ~]# jstat -gcutil 27472 1000 5
-  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT
- 78.04   0.00  14.10  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  24.05  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  34.14  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  40.62  61.31  96.88  94.27    288    5.612     4    3.335    8.947
- 78.04   0.00  47.20  61.31  96.88  94.27    288    5.612     4    3.335    8.947
-
-## 示例2 类加载统计
-[root@VM_0_8_centos ~]# jstat -class -t 27472 1000 5
-Timestamp       加载class的数量  所占用空间大小  未加载数量  未加载占用空间     Time(秒)
-Timestamp       Loaded  Bytes  Unloaded  Bytes     Time
-         5359.3  10847 20148.1        0     0.0      46.25
-         5360.4  10847 20148.1        0     0.0      46.25
-         5361.4  10847 20148.1        0     0.0      46.25
-         5362.3  10847 20148.1        0     0.0      46.25
-         5363.3  10847 20148.1        0     0.0      46.25
-
+# 查看该进程中哪个线程占用大量 CPU，执行 top -H -p 11281 
+# 输出线程id：2c6d
+# 接下来我们将进程中的所有线程输出到一个文件中，执行：jstack  11281> jstack.txt
+# 在进程中查找对应的线程 ID，执行：cat jstack.txt | grep -i 2c6d
 ```
-jstat命令使用
-<https://www.cnblogs.com/lizhonghua34/p/7307139.html>
+
+#### JConsole、VisualVM
 
 JVM运行时内存使用情况监控
 <https://blog.csdn.net/zmx729618/article/details/78392715>

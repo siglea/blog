@@ -152,7 +152,7 @@ public boolean compareAndSet<span class="o">(</span>V   expectedReference,
     </ul>
   </li>
   <li>如果有另一线程试图锁定某个被偏斜过的对象，JVM 就撤销偏斜锁，切换到轻量级锁实现。</li>
-  <li>轻量级锁依赖 CAS 操作 Mark Word 来试图获取锁，如果重试成功，就使用普通的轻量级锁(自旋锁)；否则，进一步升级为重量级锁。</li>
+  <li>轻量级锁依赖 CAS 操作 Mark Word 来试图获取锁，如果重试成功，就使用普通的轻量级锁；否则，进一步升级为重量级锁。</li>
 </ul>
 
 <h4 id="readwritelock">ReadWriteLock</h4>
@@ -406,6 +406,12 @@ currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &lt;htt
 </ul>
 
 <h4 id="lvs之drnattun模式祥解">LVS之DR,NAT,TUN模式祥解</h4>
+
+<h4 id="direct-memory-回收">Direct Memory 回收？？？</h4>
+<ul>
+  <li><a href="https://blog.csdn.net/xieyuooo/article/details/7547435">https://blog.csdn.net/xieyuooo/article/details/7547435</a></li>
+  <li><a href="https://blog.csdn.net/phj88/article/details/8011830">https://blog.csdn.net/phj88/article/details/8011830</a></li>
+</ul>
 
   </div>
 </article>

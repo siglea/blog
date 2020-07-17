@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Netty In Action</title>
-  <meta name="description" content="Netty的组件  group() EventLoop -&gt; 控制流、多线程处理、并发          一个 EventLoopGroup 包含一个或者多个 EventLoop;      一个 EventLoop 在它的生命周期内只和一个 Thread 绑定;      所有由 EventLoop 处理...">
+  <meta name="description" content="TODO https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRgnetty源码阅读之ByteBuf之内存概念arena、chunk、page、subpageNetty的组件  group() EventLoop -&gt; 控制流、多线程处理、并发          一...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,7 +60,9 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="netty的组件">Netty的组件</h4>
+    <p>TODO <a href="https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg">https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg</a>
+netty源码阅读之ByteBuf之内存概念arena、chunk、page、subpage</p>
+<h4 id="netty的组件">Netty的组件</h4>
 <ul>
   <li>group() EventLoop -&gt; 控制流、多线程处理、并发
     <ul>
@@ -158,39 +160,43 @@ public void operationComplete<span class="o">(</span>ChannelFuture f<span class=
 <ul>
   <li>Netty 还提供了使用 OpenSSL 工具包(www.openssl.org)的 SSLEngine 实现。这个 OpenSsl-Engine 类提供了比 JDK 提供的 SSLEngine 实现更好的性能。</li>
   <li>如果 OpenSSL 库可用，可以将 Netty 应用程序(客户端和服务器)配置为默认使用 OpenSslEngine。如果不可用，Netty 将会回退到 JDK 实现。有关配置 OpenSSL 支持的详细说明，参见 Netty 文档: http://netty.io/wiki/forked-tomcat-native.html#wikih2-1。</li>
-  <li>注意，无论你使用 JDK 的 SSLEngine 还是使用 Netty 的 OpenSslEngine，SSL API 和数据流都 是一致的。
-<img src="/img/ssl_tls.jpg" width="600px" />
-```shell
-SelfSignedCertificate cert = new SelfSignedCertificate();
-SslContext context = SslContext.newServerContext(cert.certificate(), cert.privateKey());</li>
+  <li>注意，无论你使用 JDK 的 SSLEngine 还是使用 Netty 的 OpenSslEngine，SSL API 和数据流都 是一致的。</li>
 </ul>
 
-<p>SSLEngine engine = context.newEngine(ch.alloc());
-engine.setUseClientMode(false);
-ch.pipeline().addFirst(new SslHandler(engine));</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-#### 检测空闲连接以及超时对于及时释放资源 
-- new IdleStateHandler(0, 0, 60, TimeUnit.SECONDS)
-- ReadTimeoutHandler exceptionCaught()
-- WriteTimeoutHandler exceptionCaught()
+<p><img src="/img/ssl_tls.jpg" width="600px" /></p>
 
-#### 写大数据
-- ChunkedFile 从文件中逐块获取数据，当你的平台不支持零拷贝或者你需要转换数据时使用
-- ChunkedNioFile 和 ChunkedFile 类似，只是它使用了 FileChannel 
-- ChunkedStream 从 InputStream 中逐块传输内容 
-- ChunkedNioStream 从ReadableByteChannel中逐块传输内容
-```shell 
-public final class WriteStreamHandler extends ChannelInboundHandlerAdapter {
-    @Override
-    public void channelActive(ChannelHandlerContext ctx)throws Exception {
-        super.channelActive(ctx);
-        ctx.writeAndFlush(
-        new ChunkedStream(new FileInputStream(file)));
-    } 
-}
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SelfSignedCertificate cert <span class="o">=</span> new SelfSignedCertificate<span class="o">()</span><span class="p">;</span>
+SslContext context <span class="o">=</span> SslContext.newServerContext<span class="o">(</span>cert.certificate<span class="o">()</span>, cert.privateKey<span class="o">())</span><span class="p">;</span>
+
+SSLEngine engine <span class="o">=</span> context.newEngine<span class="o">(</span>ch.alloc<span class="o">())</span><span class="p">;</span>
+engine.setUseClientMode<span class="o">(</span><span class="nb">false</span><span class="o">)</span><span class="p">;</span>
+ch.pipeline<span class="o">()</span>.addFirst<span class="o">(</span>new SslHandler<span class="o">(</span>engine<span class="o">))</span><span class="p">;</span>
 </code></pre></div></div>
-<h4 id="websocketframe">WebSocketFrame</h4>
+
+<h4 id="检测空闲连接以及超时对于及时释放资源">检测空闲连接以及超时对于及时释放资源</h4>
 <ul>
+  <li>new IdleStateHandler(0, 0, 60, TimeUnit.SECONDS)</li>
+  <li>ReadTimeoutHandler exceptionCaught()</li>
+  <li>WriteTimeoutHandler exceptionCaught()</li>
+</ul>
+
+<h4 id="写大数据">写大数据</h4>
+<ul>
+  <li>ChunkedFile 从文件中逐块获取数据，当你的平台不支持零拷贝或者你需要转换数据时使用</li>
+  <li>ChunkedNioFile 和 ChunkedFile 类似，只是它使用了 FileChannel</li>
+  <li>ChunkedStream 从 InputStream 中逐块传输内容</li>
+  <li>ChunkedNioStream 从ReadableByteChannel中逐块传输内容
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final class WriteStreamHandler extends ChannelInboundHandlerAdapter <span class="o">{</span>
+  @Override
+  public void channelActive<span class="o">(</span>ChannelHandlerContext ctx<span class="o">)</span>throws Exception <span class="o">{</span>
+      super.channelActive<span class="o">(</span>ctx<span class="o">)</span><span class="p">;</span>
+      ctx.writeAndFlush<span class="o">(</span>
+      new ChunkedStream<span class="o">(</span>new FileInputStream<span class="o">(</span>file<span class="o">)))</span><span class="p">;</span>
+  <span class="o">}</span> 
+<span class="o">}</span>
+</code></pre></div>    </div>
+    <h4 id="websocketframe">WebSocketFrame</h4>
+  </li>
   <li>BinaryWebSocketFrame 包含了二进制数据</li>
   <li>TextWebSocketFrame 包含了文本数据</li>
   <li>ContinuationWebSocketFrame 包含属于上一个BinaryWebSocketFrame或TextWebSocket-Frame 的文本数据或者二进制数据</li>
