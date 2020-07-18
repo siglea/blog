@@ -54,7 +54,7 @@
     
     <div class="post-contents">
       <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-GC.html"> Jvm垃圾回收机制与调优 </a>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-GC.html"> Jvm（一）垃圾回收机制与调优 </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
       <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-GC.html#disqus_thread"></a></span>
@@ -130,8 +130,13 @@ From Survivor 和 To Survivor 分区交换，From Survivor 变 To Survivor，To 
   <li>Metaspace (Java8之后）</li>
 </ul>
 
-<h5 id="参考">参考</h5>
-<p>JVM的4种垃圾回收算法、垃圾回收机制与总结 <a href="https://zhuanlan.zhihu.com/p/54851319">https://zhuanlan.zhihu.com/p/54851319</a></p>
+<h4 id="安全点安全空间">安全点、安全空间</h4>
+<p><img src="/img/gc1.jpg" width="600px" />
+<img src="/img/gc2.jpg" width="600px" />
+<img src="/img/gc3.jpg" width="600px" /></p>
+
+<h4 id="空间分配担保">空间分配担保</h4>
+<p><img src="/img/gc4.jpg" width="600px" /></p>
 
 <h4 id="gc收集器">GC收集器</h4>
 <ul>
@@ -149,8 +154,9 @@ From Survivor 和 To Survivor 分区交换，From Survivor 变 To Survivor，To 
   <li>JDK11的ZGC <a href="https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw">https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw</a></li>
 </ul>
 
-<h5 id="参考-1">参考</h5>
+<h4 id="参考">参考</h4>
 <ul>
+  <li>JVM的4种垃圾回收算法、垃圾回收机制与总结 <a href="https://zhuanlan.zhihu.com/p/54851319">https://zhuanlan.zhihu.com/p/54851319</a></li>
   <li>7种JVM垃圾收集器特点，优劣势、及使用场景 <a href="https://zhuanlan.zhihu.com/p/58896728">https://zhuanlan.zhihu.com/p/58896728</a></li>
   <li>深入理解JVM，7种垃圾收集器 <a href="http://blog.itpub.net/69917606/viewspace-2656882">http://blog.itpub.net/69917606/viewspace-2656882</a></li>
   <li>深入详解JVM内存模型与JVM参数详细配置 <a href="https://zhuanlan.zhihu.com/p/58896619">https://zhuanlan.zhihu.com/p/58896619</a>
@@ -1201,7 +1207,7 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 12 )</span>
+      <span class="label label-default">Java ( 14 )</span>
       </a><br />
 
       
@@ -1293,13 +1299,6 @@ curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/sc
       
       <a  href="/tag/方法论">
       <span class="label label-default">方法论 ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/java">
-      <span class="label label-default">java ( 2 )</span>
       </a><br />
 
       

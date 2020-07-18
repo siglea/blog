@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title> Jvm垃圾回收机制与调优 </title>
+  <title> Jvm（一）垃圾回收机制与调优 </title>
   <meta name="description" content="垃圾回收器组合 7种  Parallel Old &amp; Parallel Scavenge New 高吞吐量 （1种）  G1 （1种）  Serial Old （5种）                                                      &amp; CMS Old &...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
@@ -55,7 +55,7 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline"> Jvm垃圾回收机制与调优 </h1>
+    <h1 class="post-title" itemprop="name headline"> Jvm（一）垃圾回收机制与调优 </h1>
     <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-04T19:25:00+08:00" itemprop="datePublished">Nov 4, 2019</time></p>
   </header>
 
@@ -127,8 +127,13 @@ From Survivor 和 To Survivor 分区交换，From Survivor 变 To Survivor，To 
   <li>Metaspace (Java8之后）</li>
 </ul>
 
-<h5 id="参考">参考</h5>
-<p>JVM的4种垃圾回收算法、垃圾回收机制与总结 <a href="https://zhuanlan.zhihu.com/p/54851319">https://zhuanlan.zhihu.com/p/54851319</a></p>
+<h4 id="安全点安全空间">安全点、安全空间</h4>
+<p><img src="/img/gc1.jpg" width="600px" />
+<img src="/img/gc2.jpg" width="600px" />
+<img src="/img/gc3.jpg" width="600px" /></p>
+
+<h4 id="空间分配担保">空间分配担保</h4>
+<p><img src="/img/gc4.jpg" width="600px" /></p>
 
 <h4 id="gc收集器">GC收集器</h4>
 <ul>
@@ -146,8 +151,9 @@ From Survivor 和 To Survivor 分区交换，From Survivor 变 To Survivor，To 
   <li>JDK11的ZGC <a href="https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw">https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw</a></li>
 </ul>
 
-<h5 id="参考-1">参考</h5>
+<h4 id="参考">参考</h4>
 <ul>
+  <li>JVM的4种垃圾回收算法、垃圾回收机制与总结 <a href="https://zhuanlan.zhihu.com/p/54851319">https://zhuanlan.zhihu.com/p/54851319</a></li>
   <li>7种JVM垃圾收集器特点，优劣势、及使用场景 <a href="https://zhuanlan.zhihu.com/p/58896728">https://zhuanlan.zhihu.com/p/58896728</a></li>
   <li>深入理解JVM，7种垃圾收集器 <a href="http://blog.itpub.net/69917606/viewspace-2656882">http://blog.itpub.net/69917606/viewspace-2656882</a></li>
   <li>深入详解JVM内存模型与JVM参数详细配置 <a href="https://zhuanlan.zhihu.com/p/58896619">https://zhuanlan.zhihu.com/p/58896619</a>
