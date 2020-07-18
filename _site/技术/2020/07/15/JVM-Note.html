@@ -404,6 +404,8 @@
               <li>当一个对象在方法中被定义后，它可能被外部方法所引用</li>
               <li>逃逸分析带来的好处：栈上分配，同步消除、标量替换</li>
               <li>缺点：不确定逃逸对象的比例，反而会浪费性能</li>
+              <li><a href="https://blog.csdn.net/w372426096/article/details/80333657">https://blog.csdn.net/w372426096/article/details/80333657</a></li>
+              <li><a href="https://blog.csdn.net/hollis_chuang/article/details/80922794">https://blog.csdn.net/hollis_chuang/article/details/80922794</a></li>
             </ul>
           </li>
         </ul>
@@ -419,6 +421,87 @@
     </ul>
   </li>
 </ul>
+
+<h4 id="线程与内存模型">线程与内存模型</h4>
+<ul>
+  <li>缓存一致性 Cache Coherence，解决CPU高速缓存与主内存数据一致性。如MSI、FireFly等协议</li>
+  <li>指令重排 Instruction Reorder，与处理器乱序执行OutOfOrder Execution类似，使得处理器内部的运算单元尽可能被充分利用</li>
+  <li>Java内存模型：所有变量储存在主内存Main Memory、每条线程还有自己的工作内存Working Memory
+    <ul>
+      <li>read/load : 从主内存读取到工作内存</li>
+      <li>store/write ：从工作内存写入主内存</li>
+      <li>use：从工作内存传递给执行引擎</li>
+      <li>assign：工作引擎赋值给工作内存</li>
+      <li>lock/unlock：在主内存锁定或解锁变量</li>
+    </ul>
+  </li>
+  <li>volatile：
+    <ul>
+      <li>保证可见性：本质上volatile变量也可以存在不一致的情况，但由于每次使用前都要先刷新，执行引擎看不到不一致的情况</li>
+      <li>禁止指令重排：通过插入内存屏障指令来实现，因此写操作会比普通变量慢</li>
+      <li>非原子性的i++之类的操作仍然会出现问题</li>
+    </ul>
+  </li>
+  <li>long/double这种64位的数据，几乎所有虚拟机厂商都实现读写原子性，所以可以不需要声明为volatile</li>
+  <li>先行发生原则 happen before，只要遵循以下几个原则就是有顺序保障的，否则可能被重排。也就是说我们考虑并发问题
+  不要看先后发生的时间顺序，而一切以先行发生原则为准
+    <ul>
+      <li>程序次序规则 Program Order Rule</li>
+      <li>管程锁定规则 Monitor Lock Rule</li>
+      <li>volatile变量规则 Volatile Variable Rule</li>
+      <li>线程启动、终止、中断规则</li>
+      <li>对象终结规则 init 先于 finalize</li>
+      <li>传递性 Transitivity</li>
+    </ul>
+  </li>
+  <li>Java线程实现
+    <ul>
+      <li>JDK1.2之前，是用用户线程</li>
+      <li>JDK1.2及之后，是用操作系统的线程来实现</li>
+    </ul>
+  </li>
+  <li>Java线程调度
+    <ul>
+      <li>协同式线程调度 Cooperative Thread-Scheduling，线程执行时间由自己控制，会造成各种阻塞不让出资源</li>
+      <li>抢占式线程调度 Preemptive Threads Scheduling，由操作系统分配执行时间，Java使用该方式，可以指定线程优先级但是不一定起作用</li>
+    </ul>
+  </li>
+  <li>线程状态
+    <ul>
+      <li>新建 New：尚未启动的状态</li>
+      <li>运行 Runable，对应操作系统中的Running和Ready，可以是正在执行也可以是等待CPU分配时间</li>
+      <li>等待 Waiting
+        <ul>
+          <li>无限期等待：Object.wait/Thread.join/LockSupport.park</li>
+          <li>限期等待：Thread.sleep/Object.wait timeout/Thread.join timeout/LockSupport.parkNanos timeout/LockSupport.parkUntil timeout</li>
+        </ul>
+      </li>
+      <li>阻塞 Blocked
+        <ul>
+          <li>阻塞与等待的区别：阻塞是在等待这获取到一个排他锁，等待状态是在等待时间或者被唤醒</li>
+          <li>在程序等待进入同步区域的时候会进入该状态</li>
+        </ul>
+      </li>
+      <li>结束 Terminated</li>
+    </ul>
+  </li>
+  <li>线程安全的实现方法
+    <ul>
+      <li>互斥同步</li>
+      <li>非阻塞同步/乐观锁，乐观锁的实现依赖于”硬件指令集的发展”
+      - 测试并设置 Test-and-Set
+      - 获取并增加 Fetch-and-Increment
+      - 交换 Swap
+      - 比较并交换 CAS
+      - 加载链接/条件存储</li>
+      <li>无同步</li>
+    </ul>
+  </li>
+  <li>自旋锁，单纯自旋等待前面的锁定释放</li>
+  <li>偏向锁、轻量级锁、重量级锁</li>
+</ul>
+
+<p><img src="/img/lock_optimize.jpg" width="600px" /></p>
 
 <h4 id="总览">总览</h4>
 <ul>

@@ -54,6 +54,135 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html">Java基础</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 17, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="基础">基础</h4>
+<ol>
+  <li>Hotspot 的作者经过以往的研究发现大多数情况下锁不仅不存在多线程竞争，而且总是由同一线
+程多次获得。偏向锁的目的是在某个线程获得锁之后，消除这个线程锁重入(CAS)的开销，看起
+来让这个线程得到了偏护。引入偏向锁是为了在无多线程竞争的情况下尽量减少不必要的轻量级
+锁执行路径，因为轻量级锁的获取及释放依赖多次 CAS 原子指令，而偏向锁只需要在置换
+ThreadID 的时候依赖一次 CAS 原子指令(由于一旦出现多线程竞争的情况就必须撤销偏向锁，所
+以偏向锁的撤销操作的性能损耗必须小于节省下来的 CAS 原子指令的性能消耗)。上面说过，轻
+量级锁是为了在线程交替执行同步块时提高性能，而偏向锁则是在只有一个线程执行同步块时进
+一步提高性能。</li>
+  <li>很多情况下，主线程生成并启动了子线程，需要用到子线程返回的结果，也就是需要主线程需要
+在子线程结束后再结束，这时候就要用到 join() 方法。</li>
+</ol>
+
+<h4 id="java内存泄露">Java内存泄露</h4>
+<ul>
+  <li>非静态内部类引用了外部类，类似循环引用。使用静态内部类解决该问题。</li>
+</ul>
+
+<h4 id="分布式垃圾回收dgc">分布式垃圾回收DGC？</h4>
+<ul>
+  <li>分布式垃圾回收。RMI使用DGC来做自动垃圾回收，因为RMI包含了跨虚拟机的远程对象的引用，
+  垃圾回收是很困难的。DGC使用引用计数算法来给远程对象提供自动内存管理。</li>
+</ul>
+
+<h4 id="请对比下-volatile-对比-synchronized-的异同">请对比下 volatile 对比 Synchronized 的异同。</h4>
+<ul>
+  <li>Synchronized 既能保证可见性，又能保证原子性，而 volatile 只能保证可见性，无法保证原子性。</li>
+  <li>ThreadLocal 和 Synchonized 都用于解决多线程并发访问，防止任务在共享资源上产生冲突。但是Thread Local 与 Synchronized 有本质的区别。
+    <ul>
+      <li>Synchronized 用于实现同步机制，是利用锁的机制使变量或代码块在某一时该只能被一个线程访问，是一种“以时间换空间”的方式。</li>
+      <li>而ThreadLocal 为每一个线程都提供了变量的副本，使得每个线程在某一时间访问到的并不是同一个对象，根除了对变量的共享，是一种“以空间换时间”的方式。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="请谈谈-threadlocal-是怎么解决并发安全的">请谈谈 ThreadLocal 是怎么解决并发安全的？</h4>
+<ul>
+  <li>ThreadLocal 这是Java提供的一种保存线程私有信息的机制，因为其在整个线程生命周期内有效，所以可以方便地在一个线程关联的不同业务模块之间传递信息，
+比如事务, Cookie等上下文相关信息。 ThreadLocal 为每一个线程维护变量的副本，把共享数据的可见范围限制在同一个线程之内，其实现原理是，在ThreadLocal 类中有一个Map ，用于存储每一个线程的变量的副本。
+ThreadLocal 注意需要自己remove，否则可能发生泄漏。</li>
+</ul>
+
+<h4 id="throwable-是-java-语言中所有错误或异常的超类下一层分为-error-和-exception">Throwable 是 Java 语言中所有错误或异常的超类。下一层分为 Error 和 Exception</h4>
+<ol>
+  <li>Error 类是指 java 运行时系统的内部错误和资源耗尽错误。应用程序不会抛出该类对象。如果出现了这样的错误，除了告知用户，剩下的就是尽力使程序安全的终止。</li>
+  <li>Exception 又有两个分支，一个是运行时异常 RuntimeException，一个是CheckedException。</li>
+</ol>
+
+<h4 id="序列化-id">序列化 ID</h4>
+<p>Java 平台允许我们在内存中创建可复用的 Java 对象，但一般情况下，只有当 JVM 处于运行时，
+这些对象才可能存在，即，这些对象的生命周期不会比 JVM 的生命周期更长。但在现实应用中，
+就可能要求在 JVM 停止运行之后能够保存(持久化)指定的对象，并在将来重新读取被保存的对象。
+Java 对象序列化就能够帮助我们实现该功能。
+ 使用 Java 对象序列化，在保存对象时，会把其状态保存为一组字节，在未来，再将这些字节组装
+ 成对象。必须注意地是，对象序列化保存的是对象的”状态”，即它的成员变量。由此可知，对
+ 象序列化不会关注类中的静态变量。
+ 除了在持久化对象时会用到对象序列化之外，当使用 RMI(远程方法调用)，或在网络中传递对象时，
+ 都会用到对象序列化。Java 序列化 API 为处理对象序列化提供了一个标准机制，该 API 简单易用。
+ 虚拟机是否允许反序列化，不仅取决于类路径和功能代码是否一致，一个非常重要的一点是两个
+ 类的序列化 ID 是否一致(就是 private static final long serialVersionUID)</p>
+
+<h4 id="线程间共享">线程间共享</h4>
+<p>线程 A 与线程 B 之间如要通信的话，必须要经历下面 2 个步骤: 1. 首先，线程 A 把本地内存 A 中更新过的共享变量刷新到主内存中去。</p>
+<ol>
+  <li>然后，线程 B 到主内存中去读取线程 A 之前已更新过的共享变量。</li>
+</ol>
+
+<h4 id="iterater-和-listiterator-之间有什么区别">Iterater 和 ListIterator 之间有什么区别?</h4>
+<p>(1)我们可以使用 Iterator 来遍历 Set 和 List 集合，而 ListIterator 只能遍历 List。 (2)Iterator 只可以向前遍历，而 LIstIterator 可以双向遍历。
+(3)ListIterator 从 Iterator 接口继承，然后添加了一些额外的功能，比如添加一个元素、替 换一个元素、获取前面或后面元素的索引位置。</p>
+
+<h4 id="什么是-java-内存模型">什么是 Java 内存模型</h4>
+<ul>
+  <li>Java 内存模型定义了一种多线程访问 Java 内存的规范。Java 内存模型要完 整讲不是这里几句话能说清楚的，我简单总结一下 Java 内存模型的几部分内 容:</li>
+  <li>Java 内存模型将内存分为了主内存和工作内存。类的状态，也就是类之间 共享的变量，是存储在主内存中的，每次 Java 线程用到这些主内存中的变量 的时候，会读一次主内存中的变量，并让这些内存在自己的工作内存中有一份
+ 拷贝，运行自己线程代码的时候，用到这些变量，操作的都是自己工作内存中 的那一份。在线程代码执行完毕之后，会将最新的值更新到主内存中去</li>
+  <li>定义了几个原子操作，用于操作主内存和工作内存中的变量</li>
+  <li>定义了 volatile 变量的使用规则</li>
+  <li>happens-before，即先行发生原则，定义了操作 A 必然先行发生于操作 B 的一些规则，比如在同一个线程内控制流前面的代码一定先行发生于控制流 后面的代码、一个释放锁 unlock 的动作一定先行发生于后面对于同一个锁进 行锁定 lock 的动作等等，只要符合这些规则，则不需要额外做同步措施，如 果某段代码不符合所有的 happens-before 规则，则这段代码一定是线程非 安全的</li>
+  <li>8种内存间操作
+    <ul>
+      <li>lock：把一个变量标志为一条线程独占的状态</li>
+      <li>
+        <p>unlock：把一个处于锁定状态的变量释放出来，释放之后的变量才能被其他线程锁定</p>
+      </li>
+      <li>read：把一个变量值从主内存传输到线程的工作内存，以便load</li>
+      <li>
+        <p>load：把read操作从主内存得到的变量值放入到工作内存的变量副本中</p>
+      </li>
+      <li>write：把store操作从工作内存得到的变量的值，放到主内存的变量中</li>
+      <li>
+        <p>store：把工作内存的变量值传到主内存，以便write</p>
+      </li>
+      <li>use：把工作内存变量值传递给执行引擎</li>
+      <li>assign：将执行引擎值传递给工作内存变量值</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Pojo(plian ordinary普通的; 平常的; java object)</p>
+
+<h4 id="hashmap-为啥size是2的倍数18比17做了哪些优化">HashMap 为啥size是2的倍数，1.8比1.7做了哪些优化？</h4>
+<p>JDK1.7 VS JDK1.8 比较
+JDK1.8主要解决或优化了一下问题：
+resize 扩容优化
+引入了红黑树，目的是避免单条链表过长而影响查询效率，红黑树算法请参考
+解决了多线程死循环问题，但仍是非线程安全的，多线程时可能会造成数据丢失问题。</p>
+
+<h4 id="seata-的-demo">Seata 的 Demo</h4>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/HackSummary.html">各种攻击</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
@@ -259,108 +388,6 @@ F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<sp
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html">ZooKeeper</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 6, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="散点">散点</h4>
-<ul>
-  <li>临时节点不允许有子节点，Ephemeral Node</li>
-  <li>没给节点大小不超过1MB</li>
-</ul>
-
-<h4 id="使用场景">使用场景</h4>
-<ul>
-  <li>注册中心</li>
-  <li>配置中心</li>
-  <li>HBase之MetaData存储</li>
-  <li>分布式锁</li>
-</ul>
-
-<h4 id="常用命令">常用命令</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./zkServer.sh start | stop 
-./zkServer.sh status
-./zkCli.sh 
-
-<span class="nb">ls</span> /
-<span class="nb">stat</span> /
-ls2 /
-
-create /node1 /node1-content
-create <span class="nt">-e</span> /node1-temp /node1-content-temp
-</code></pre></div></div>
-<p><a href="https://blog.csdn.net/dandandeshangni/article/details/80558383">https://blog.csdn.net/dandandeshangni/article/details/80558383</a></p>
-
-<h4 id="阿里为什么不用-zookeeper-做服务发现">阿里为什么不用 ZooKeeper 做服务发现？</h4>
-<ul>
-  <li>基于CP而非AP</li>
-  <li>自身仅仅是主从的集群，而非分布式集群</li>
-  <li>The King Of Coordination for Big Data</li>
-</ul>
-
-<h4 id="zookeeper的observer">ZooKeeper的observer</h4>
-<p>当ZooKeeper集群中follower的数量很多时，投票过程会成为一个性能瓶颈，为了解决投票造成的压力，于是出现了observer角色。
-observer角色不参与投票，它只是投票结果的”听众”，除此之外，它和follower完全一样，例如能接受读、写请求。就这一个特点，让整个ZooKeeper集群性能大大改善。
-和follower一样，当observer收到客户端的读请求时，会直接从内存数据库中取出数据返回给客户端。
-对于写请求，当写请求发送到某server上后，无论这个节点是follower还是observer，都会将它发送给leader。然后leader组织投票过程，所有server都收到这个proposal(包括observer，因为proposal是广播出去的)，但是leader和follower以及observer通过配置文件，都知道自己是不是observer以及谁是observer。自己是observer的server不参与投票。当leader收集完投票后，将那些observer的server去掉，在剩下的server中计算大多数，如果投票结果达到了大多数，这次写事务就成功，于是leader通知所有的节点(包括observer)，让它们将事务写入事务日志，并提交。</p>
-
-<h4 id="使用-redis-如何设计分布式锁说一下实现思路使用-zk-可以吗如何实现这两种有什-么区别">使用 redis 如何设计分布式锁?说一下实现思路?使用 zk 可以吗?如何实现?这两种有什 么区别?</h4>
-<ul>
-  <li>redis:
-    <ol>
-      <li>线程 A setnx(上锁的对象,超时时的时间戳 t1)，如果返回 true，获得锁。</li>
-      <li>线程 B 用 get 获取 t1,与当前时间戳比较,判断是是否超时,没超时 false,若超时执行第 3 步;</li>
-      <li>计算新的超时时间 t2,使用 getset 命令返回 t3(该值可能其他线程已经修改过),如果 t1==t3，获得锁，如果 t1!=t3 说明锁被其他线程获取了。</li>
-      <li>获取锁后，处理完业务逻辑，再去判断锁是否超时，如果没超时删除锁，如果已超时， 不用处理(防止删除其他线程的锁)。</li>
-    </ol>
-  </li>
-  <li>zk:
-    <ol>
-      <li>客户端对某个方法加锁时，在 zk 上的与该方法对应的指定节点的目录下，生成一个唯一 的瞬时有序节点 node1;</li>
-      <li>客户端获取该路径下所有已经创建的子节点，如果发现自己创建的 node1 的序号是最小 的，就认为这个客户端获得了锁。</li>
-      <li>如果发现 node1 不是最小的，则监听比自己创建节点序号小的最大的节点，进入等待。</li>
-      <li>获取锁后，处理完逻辑，删除自己创建的 node1 即可。 区别:zk 性能差一些，开销大，实现简单。</li>
-    </ol>
-  </li>
-  <li>redis分布式锁的缺点
-    <ul>
-      <li>比如分布式环境下，A获取到了锁之后，因为线程A的业务代码耗时过长，导致锁的超时时间，锁自动失效。
-后续线程B就意外的持有了锁，之后线程A再次恢复执行，直接用del命令释放锁，这样就错误的将线程B同样Key的锁误删除了。代码耗时过长还是比较常见的场景，假如你的代码中有外部通讯接口调用，就容易产生这样的场景。</li>
-    </ul>
-  </li>
-</ul>
-
-<p><a href="https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg">https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg</a></p>
-
-<h4 id="zookeeper队列管理文件系统通知机制">Zookeeper队列管理(文件系统、通知机制)</h4>
-<ul>
-  <li>两种类型的队列:
-    <ul>
-      <li>同步队列，当一个队列的成员都聚⻬时，这个队列才可用，否则一直等待所有成员到达。</li>
-      <li>队列按照 FIFO 方式进行入队和出队操作。</li>
-    </ul>
-  </li>
-  <li>第一类，在约定目录下创建临时目录节点，监听节点数目是否是我们要求的数目。</li>
-  <li>第二类，和分布式锁服务中的控制时序场景基本原理一致，入列有编号，出列按编号。在特定的目录下创建 PERSISTENT_SEQUENTIAL节点，创建成功时Watcher通知等待的队列，队列删除序列号最小的节点用以消费。</li>
-  <li>此场景下Zookeeper的znode用于消息存储，znode存储的数据就是消息队列中的消息内容，SEQUENTIAL序列号就是消息的编 号，按序取出即可。由于创建的节点是持久化的，所以不必担心队列消息的丢失问题。</li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -526,7 +553,7 @@ observer角色不参与投票，它只是投票结果的”听众”，除此之
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 11 )</span>
+      <span class="label label-default">Java ( 12 )</span>
       </a><br />
 
       

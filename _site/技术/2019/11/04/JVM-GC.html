@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title> Jvm内存模型、垃圾回收机制与调优 </title>
+  <title> Jvm垃圾回收机制与调优 </title>
   <meta name="description" content="垃圾回收器组合 7种  Parallel Old &amp; Parallel Scavenge New 高吞吐量 （1种）  G1 （1种）  Serial Old （5种）                                                      &amp; CMS Old &...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-Options.html">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-GC.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -55,7 +55,7 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline"> Jvm内存模型、垃圾回收机制与调优 </h1>
+    <h1 class="post-title" itemprop="name headline"> Jvm垃圾回收机制与调优 </h1>
     <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-04T19:25:00+08:00" itemprop="datePublished">Nov 4, 2019</time></p>
   </header>
 
@@ -95,18 +95,6 @@
   <li>CMS(Concurrent Mark Sweep)收集器（标记-清除算法）： 老年代并行收集器，以获取最短回收停顿时间为目标的收集器，具有高并发、低停顿的特点，追求最短GC回收停顿时间。</li>
   <li>G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。</li>
 </ul>
-
-<h4 id="jvm">JVM</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-Xms2g</span>：初始化推大小为 2g；
-<span class="nt">-Xmx2g</span>：堆最大内存为 2g；
-<span class="nt">-XX</span>:NewRatio<span class="o">=</span>4：设置年轻的和老年代的内存比例为 1:4；
-<span class="nt">-XX</span>:SurvivorRatio<span class="o">=</span>8：设置新生代 Eden 和 Survivor 比例为 8:2；
-–XX:+UseParNewGC：指定使用 ParNew + Serial Old 垃圾回收器组合；
-<span class="nt">-XX</span>:+UseParallelOldGC：指定使用 ParNew + ParNew Old 垃圾回收器组合；
-<span class="nt">-XX</span>:+UseConcMarkSweepGC：指定使用 CMS + Serial Old 垃圾回收器组合；
-<span class="nt">-XX</span>:+PrintGC：开启打印 gc 信息；
-<span class="nt">-XX</span>:+PrintGCDetails：打印 gc 详细信息。
-</code></pre></div></div>
 
 <h4 id="分代垃圾回收器是怎么工作的">分代垃圾回收器是怎么工作的？</h4>
 <ul>
@@ -187,11 +175,6 @@ Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间�
   <li>JVM 参数 <a href="https://blog.csdn.net/liyongbing1122/article/details/88716400">https://blog.csdn.net/liyongbing1122/article/details/88716400</a></li>
 </ul>
 
-<p>逃逸分析</p>
-<ul>
-  <li><a href="https://blog.csdn.net/w372426096/article/details/80333657">https://blog.csdn.net/w372426096/article/details/80333657</a></li>
-  <li><a href="https://blog.csdn.net/hollis_chuang/article/details/80922794">https://blog.csdn.net/hollis_chuang/article/details/80922794</a></li>
-</ul>
 
   </div>
 </article>

@@ -54,6 +54,379 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html">DotDot</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 8, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="蚂蚁金服">蚂蚁金服</h4>
+<ul>
+  <li>ArrayList的扩容方式和扩容时机
+    <ul>
+      <li>初始化
+  ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断
+  如果参数等于0，则将数组初始化为一个空数组，
+  如果不等于0，将数组初始化为一个容量为10的数组。</li>
+      <li>扩容时机
+  当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。
+  Vector会扩容2倍。</li>
+      <li>扩容方式
+ 扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。</li>
+    </ul>
+  </li>
+  <li><a href="https://www.cnblogs.com/silyvin/p/10223910.html">https://www.cnblogs.com/silyvin/p/10223910.html</a></li>
+</ul>
+
+<h4 id="volatile保证可见性禁止重排无法实现原子性">volatile（保证可见性、禁止重排、无法实现原子性）</h4>
+<ul>
+  <li>指令重排只会保证串行语义的执行一致性(单线程) 并不会关心多线程间的语义一致性</li>
+</ul>
+
+<h3 id="cas--unsafe">CAS &amp; Unsafe</h3>
+<ul>
+  <li>CAS的全称为Compare-And-Swap，它是一条CPU并发原语。它的功能是判断内存某个位置的值是否为预期值，如果是则更改为新的值，这个过程是原子的。</li>
+  <li>CAS并发原语体现在JAVA语言中就是sum.misc.Unsafe类中的各个方法。调用Unsafe类中的CAS方法，JVM会帮我们实现出CAS汇编指令。这是一种完全依赖于硬件的功能，通过它实现了原子操作。再次强调，由于CAS是一种系统原语，原语属于操作系统用语范畴，是由若干条指令组成的，用于完成某个功能的一个过程，并且原语的执行必须是连续的，在执行过程中不允许被中断，也就是说CAS是一条CPU的原子指令，不会造成所有的数据不一致问题。</li>
+  <li>CAS只能保证一个共享变量的原子性</li>
+  <li>CAS自旋</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 我们可以看到getAndAddInt方法执行时，有个do while</span>
+<span class="c"># unsafe.getAndAddInt</span>
+public final int getAndAddInt<span class="o">(</span>Object var1, long var2, int var4<span class="o">){</span>
+    int var5<span class="p">;</span>
+    <span class="k">do</span> <span class="o">{</span>
+        var5 <span class="o">=</span> this.getIntVolatile<span class="o">(</span>var1, var2<span class="o">)</span><span class="p">;</span>
+    <span class="o">}</span> <span class="k">while</span><span class="o">(!</span>this.compareAndSwapInt<span class="o">(</span>var1, var2, var5, var5 + var4<span class="o">))</span><span class="p">;</span>
+    <span class="k">return </span>var5<span class="p">;</span>
+<span class="o">}</span>
+
+<span class="c"># 如果CAS失败，会一直进行尝试。如果CAS长时间一直不成功，可能会能CPU带来很大的开锁。</span>
+</code></pre></div></div>
+
+<ul>
+  <li>CAS造成的ABA问题用版本号解决</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># （旧值，新值）</span>
+atomicReference.compareAndSet<span class="o">(</span>101, 100<span class="o">)</span><span class="p">;</span>
+
+<span class="c"># AtomicStampedReference 以时间戳做为版本号解决ABA的问题</span>
+public boolean compareAndSet<span class="o">(</span>V   expectedReference,
+                                 V   newReference,
+                                 int expectedStamp,
+                                 int newStamp<span class="o">)</span> <span class="o">{</span>
+</code></pre></div></div>
+
+<h4 id="exchanger">Exchanger</h4>
+<ul>
+  <li>允许在并发任务之间交换数据。具体来说，Exchanger类允许在两个线程之间定义同步点。当两个线程都到达同步点时，他们交换数据结构，因此第一个线程的数据结构进入到第二个线程中，第二个线程的数据结构进入到第一个线程中</li>
+  <li>例子模拟一个队列中数据的交换使用的场景：
+    <ul>
+      <li>线程A往队列中存入数据</li>
+      <li>线程B从队列中消耗数据</li>
+      <li>当线程A存满的时候</li>
+      <li>才交换给线程B</li>
+      <li>当线程B消耗完成之后才交换给线程A。</li>
+      <li>线程A、B的生产和消耗的速率有可能不同</li>
+      <li>对方线程调用exchange之前，另一个线程执行到exchange会阻塞</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="jvm-对-java-的原生锁做了哪些优化">JVM 对 Java 的原生锁做了哪些优化？</h4>
+<ul>
+  <li>
+    <p>一种优化是使用自旋锁，即在把线程进行阻塞操作之前先让线程自旋等待一段时间，可能在等待期间其他线程已经解锁，这时就无需再让线程执行阻塞操作，避免了用户态到内核态的切换。</p>
+  </li>
+  <li>现代 JDK 中还提供了三种不同的 Monitor 实现，也就是三种不同的锁：
+    <ul>
+      <li>偏向锁（Biased Locking）</li>
+      <li>轻量级锁</li>
+      <li>重量级锁,这三种锁使得 JDK 得以优化 Synchronized 的运行，当 JVM 检测到不同的竞争状况时，会自动切换到适合的锁实现，这就是锁的升级、降级。</li>
+    </ul>
+  </li>
+  <li>当没有竞争出现时，默认会使用偏向锁。
+    <ul>
+      <li>JVM 会利用 CAS 操作，在对象头上的 Mark Word 部分设置线程 ID，以表示这个对象偏向于当前线程，所以并不涉及真正的互斥锁，因为在很多应用场景中，大部分对象生命周期中最多会被一个线程锁定，使用偏斜锁可以降低无竞争开销。</li>
+    </ul>
+  </li>
+  <li>如果有另一线程试图锁定某个被偏斜过的对象，JVM 就撤销偏斜锁，切换到轻量级锁实现。</li>
+  <li>轻量级锁依赖 CAS 操作 Mark Word 来试图获取锁，如果重试成功，就使用普通的轻量级锁；否则，进一步升级为重量级锁。</li>
+</ul>
+
+<h4 id="readwritelock">ReadWriteLock</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final boolean tryWriteLock<span class="o">()</span> <span class="o">{</span>
+            Thread current <span class="o">=</span> Thread.currentThread<span class="o">()</span><span class="p">;</span>
+            int c <span class="o">=</span> getState<span class="o">()</span><span class="p">;</span>
+            <span class="k">if</span> <span class="o">(</span>c <span class="o">!=</span> 0<span class="o">)</span> <span class="o">{</span>
+                int w <span class="o">=</span> exclusiveCount<span class="o">(</span>c<span class="o">)</span><span class="p">;</span>
+                <span class="k">if</span> <span class="o">(</span>w <span class="o">==</span> 0 <span class="o">||</span> current <span class="o">!=</span> getExclusiveOwnerThread<span class="o">())</span>
+                    <span class="k">return </span><span class="nb">false</span><span class="p">;</span>
+                <span class="k">if</span> <span class="o">(</span>w <span class="o">==</span> MAX_COUNT<span class="o">)</span>
+                    throw new Error<span class="o">(</span><span class="s2">"Maximum lock count exceeded"</span><span class="o">)</span><span class="p">;</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(!</span>compareAndSetState<span class="o">(</span>c, c + 1<span class="o">))</span>
+                <span class="k">return </span><span class="nb">false</span><span class="p">;</span>
+            setExclusiveOwnerThread<span class="o">(</span>current<span class="o">)</span><span class="p">;</span>
+            <span class="k">return </span><span class="nb">true</span><span class="p">;</span>
+        <span class="o">}</span>
+
+        /<span class="k">**</span>
+         <span class="k">*</span> Performs tryLock <span class="k">for </span><span class="nb">read</span>, enabling barging <span class="k">in </span>both modes.
+         <span class="k">*</span> This is identical <span class="k">in </span>effect to tryAcquireShared except <span class="k">for</span>
+         <span class="k">*</span> lack of calls to readerShouldBlock.
+         <span class="k">*</span>/
+        final boolean tryReadLock<span class="o">()</span> <span class="o">{</span>
+            Thread current <span class="o">=</span> Thread.currentThread<span class="o">()</span><span class="p">;</span>
+            <span class="k">for</span> <span class="o">(</span><span class="p">;;</span><span class="o">)</span> <span class="o">{</span>
+                int c <span class="o">=</span> getState<span class="o">()</span><span class="p">;</span>
+                <span class="k">if</span> <span class="o">(</span>exclusiveCount<span class="o">(</span>c<span class="o">)</span> <span class="o">!=</span> 0 <span class="o">&amp;&amp;</span>
+                    getExclusiveOwnerThread<span class="o">()</span> <span class="o">!=</span> current<span class="o">)</span>
+                    <span class="k">return </span><span class="nb">false</span><span class="p">;</span>
+                int r <span class="o">=</span> sharedCount<span class="o">(</span>c<span class="o">)</span><span class="p">;</span>
+                <span class="k">if</span> <span class="o">(</span>r <span class="o">==</span> MAX_COUNT<span class="o">)</span>
+                    throw new Error<span class="o">(</span><span class="s2">"Maximum lock count exceeded"</span><span class="o">)</span><span class="p">;</span>
+                <span class="k">if</span> <span class="o">(</span>compareAndSetState<span class="o">(</span>c, c + SHARED_UNIT<span class="o">))</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span>r <span class="o">==</span> 0<span class="o">)</span> <span class="o">{</span>
+                        firstReader <span class="o">=</span> current<span class="p">;</span>
+                        firstReaderHoldCount <span class="o">=</span> 1<span class="p">;</span>
+                    <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span>firstReader <span class="o">==</span> current<span class="o">)</span> <span class="o">{</span>
+                        firstReaderHoldCount++<span class="p">;</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        HoldCounter rh <span class="o">=</span> cachedHoldCounter<span class="p">;</span>
+                        <span class="k">if</span> <span class="o">(</span>rh <span class="o">==</span> null <span class="o">||</span> rh.tid <span class="o">!=</span> getThreadId<span class="o">(</span>current<span class="o">))</span>
+                            cachedHoldCounter <span class="o">=</span> rh <span class="o">=</span> readHolds.get<span class="o">()</span><span class="p">;</span>
+                        <span class="k">else if</span> <span class="o">(</span>rh.count <span class="o">==</span> 0<span class="o">)</span>
+                            readHolds.set<span class="o">(</span>rh<span class="o">)</span><span class="p">;</span>
+                        rh.count++<span class="p">;</span>
+                    <span class="o">}</span>
+                    <span class="k">return </span><span class="nb">true</span><span class="p">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+</code></pre></div></div>
+<h4 id="面向对象的五大基本原则solid">面向对象的五大基本原则(solid)</h4>
+<ul>
+  <li>S单一职责SRP:Single-Responsibility Principle
+   一个类,最好只做一件事,只有一个引起它的变化。单一职责原则可以看做是低耦合,高内聚在面向对象原则的引申,将职责定义为引起变化的原因,以提高内聚性减少引起变化的原因。</li>
+  <li>O开放封闭原则OCP:Open-Closed Principle
+   软件实体应该是可扩展的,而不是可修改的。对扩展开放,对修改封闭</li>
+  <li>L里氏替换原则LSP:Liskov-Substitution Principle
+   子类必须能够替换其基类。这一思想表现为对继承机制的约束规范,只有子类能够替换其基类时,才能够保证系统在运行期内识别子类,这是保证继承复用的基础。</li>
+  <li>I接口隔离原则ISP:Interface-Segregation Principle
+   使用多个小的接口,而不是一个大的总接口</li>
+  <li>D依赖倒置原则DIP:Dependency-Inversion Principle
+   依赖于抽象。具体而言就是高层模块不依赖于底层模块,二者共同依赖于抽象。抽象不依赖于具体,具体依赖于抽象。</li>
+</ul>
+
+<h4 id="类什么时候才被初始化">类什么时候才被初始化</h4>
+<ul>
+  <li>创建类的实例，也就是new一个对象</li>
+  <li>访问某个类或接口的静态变量，或者对该静态变量赋值</li>
+  <li>调用类的静态方法</li>
+  <li>反射（Class.forName(“com.lyj.load”)）</li>
+  <li>初始化一个类的子类（会首先初始化子类的父类）</li>
+  <li>JVM启动时标明的启动类，即文件名和类名相同的那个类</li>
+</ul>
+
+<h4 id="arraylist">ArrayList</h4>
+<p>ArrayList创建时的大小为0；当加入第一个元素时，进行第一次扩容时，默认容量大小为10。
+ArrayList每次扩容都以当前数组大小的1.5倍去扩容。
+Vector创建时的默认大小为10。
+Vector每次扩容都以当前数组大小的2倍去扩容。当指定了capacityIncrement之后，每次扩容仅在原先基础上增加capacityIncrement个单位空间。
+ArrayList和Vector的add、get、size方法的复杂度都为O(1)，remove方法的复杂度为O(n)。
+ArrayList是非线程安全的，Vector是线程安全的。</p>
+
+<h4 id="hashmap为什么初始容量是2的指数幂">hashmap为什么初始容量是2的指数幂</h4>
+<ol>
+  <li>hashmap在确定元素落在数组的位置的时候，计算方法是(n - 1) &amp; hash，n为数组长度也就是初始容量 ，这是因为“取模”运算的消耗还是比较大的，那么如何保证(n - 1) &amp; hash和hash%n的结果相同呢，当n为2的指数次幂时，会满足一个公式：(n - 1) &amp; hash = hash % n，这样就可以用(n - 1) &amp; hash的位运算来使计算更加高效。</li>
+  <li>如果初始容量是奇数，那么（n-1)就为偶数，偶数2进制的结尾都是0，经过hash值&amp;运算后末尾都是0，那么0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这样就会造成空间的浪费而且会增加hash冲突。</li>
+  <li>只有是2的指数次幂的数字经过n-1之后，二进制肯定是  …11111111  这样的格式，这种格式计算的位置的时候，完全是由产生的hash值类决定，而不受n-1 影响。这样会提高效率。比如要扩容了，2的幂次方*2，在二进制中比如4和8，代表2的2次方和3次方，他们的2进制结构相 似,比如 4和8   00000100    0000 1000   只是高位向前移了一位，这样扩容的时候，只需要判断高位hash,移动到之前位置的倍数就可以了，免去了重新计算位置的运算。并且这样可以保证(n - 1) &amp; hash得到的存储位置是在hashmap的length之内的,也就是n之内。因为最大也就是hash值也全是…1111111</li>
+</ol>
+
+<h4 id="springboot-start">SpringBoot Start</h4>
+<ol>
+  <li>引入该Start相关依赖</li>
+  <li>查找resources/META-INF/spring.factories下对应的XXXAutoConfigure</li>
+  <li>根据Condition自己加装相关的Bean
+    <ul>
+      <li>@ConditionalOnBean:当容器中有指定的Bean的条件下</li>
+      <li>@ConditionalOnClass：当类路径下有指定的类的条件下</li>
+      <li>@ConditionalOnExpression:基于SpEL表达式作为判断条件</li>
+      <li>@ConditionalOnJava:基于JVM版本作为判断条件</li>
+      <li>@ConditionalOnJndi:在JNDI存在的条件下查找指定的位置</li>
+      <li>@ConditionalOnMissingBean:当容器中没有指定Bean的情况下</li>
+      <li>@ConditionalOnMissingClass:当类路径下没有指定的类的条件下</li>
+      <li>@ConditionalOnNotWebApplication:当前项目不是Web项目的条件下</li>
+      <li>@ConditionalOnProperty:指定的属性是否有指定的值</li>
+      <li>@ConditionalOnResource:类路径下是否有指定的资源</li>
+      <li>@ConditionalOnSingleCandidate:当指定的Bean在容器中只有一个，或者在有多个Bean的情况下，用来指定首选的Bean</li>
+      <li>@ConditionalOnWebApplication:当前项目是Web项目的条件下</li>
+    </ul>
+  </li>
+</ol>
+
+<p><a href="https://www.cnblogs.com/yuansc/p/9088212.html">https://www.cnblogs.com/yuansc/p/9088212.html</a></p>
+
+<h4 id="spring中解决循环依赖为什么要用三级缓存">Spring中解决循环依赖为什么要用三级缓存</h4>
+<ul>
+  <li>Bean创建有3步
+    <ol>
+      <li>初始化init,分配内存空间，此时在singletonFactories完成</li>
+      <li>注入各种属性，此时在earlySingletonObjects中</li>
+      <li>完美的bean最终会在singletonObjects中</li>
+    </ol>
+  </li>
+  <li>举例
+    <ul>
+      <li>A与B循环依赖，A初始化经过第1、2步，在第2步发现依赖B</li>
+      <li>此时，触发B的初始化进入第1步，如果再进入第2步，会发现依赖A了，所以此时B只能在第1步</li>
+      <li>把B的第1步，不完美的B注入给A，先完成A的注入，让A进入第3步</li>
+      <li>然后，再完成B的完美初始化</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="关于nio的-channel与bytebuffer">关于NIO的 Channel与ByteBuffer</h4>
+<ul>
+  <li>Buffer的使用，主要是减少copy实现零拷贝，流的读写方式还是基于用户态和内核态的拷贝</li>
+  <li>从使用NIO读写文件说起——拆解堆外内存分配过程  <a href="https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw">https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw</a></li>
+  <li>从操作系统看NIO <a href="https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA">https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA</a></li>
+</ul>
+
+<h4 id="关于nio的-空轮训的bug">关于NIO的 空轮训的bug</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="o">(</span><span class="nb">true</span><span class="o">)</span> <span class="o">{</span>
+    selector.select<span class="o">()</span><span class="p">;</span>  // <span class="k">select </span>可能在无就绪事件时异常返回！主要发生在linux系统
+
+    Set&lt;SelectionKey&gt; readyKeys <span class="o">=</span> selector.selectedKeys<span class="o">()</span><span class="p">;</span>
+    Iterator&lt;SelectionKey&gt; it <span class="o">=</span> readyKeys.iterator<span class="o">()</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="o">(</span>it.hasNext<span class="o">())</span> <span class="o">{</span>
+        SelectionKey key <span class="o">=</span> it.next<span class="o">()</span><span class="p">;</span>
+        ...  // 处理事件
+        it.remove<span class="o">()</span><span class="p">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li>selector.select() 应该 一直阻塞，直到有就绪事件到达，但很遗憾，由于 Java NIO 实现上存在 bug，select() 可能在 没有 任何就绪事件的情况下返回，从而导致 while(true) 被不断执行，最后导致某个 CPU 核心的利用率飙升到 100%，这就是臭名昭著的 Java NIO 的 epoll bug。</li>
+  <li>解决方法
+```shell
+selectCnt = 0;  // epoll 空轮询场景下 select 调用次数
+long currentTimeNanos = System.nanoTime();  // 每个 for 循环开始时的绝对时间</li>
+</ul>
+
+<p>for (;;) {
+    timeoutMillis = …  // 初始化超时参数</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int selectedKeys = selector.select(timeoutMillis);
+selectCnt++;
+
+long time = System.nanoTime();  // 记录执行到此处的绝对时间：
+
+// 检测逻辑
+if (time - currentTimeNanos &gt; timeoutMillis) {
+    selectCnt = 1;  // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1
+} else if (selectCnt &gt;= 重试次数阈值（默认 512）) {
+    selector = selectRebuildSelector(selectCnt);  // 解决 epoll bug 的实际逻辑
+    selectCnt = 1;  // 解决本次 epoll bug，重置 selectCnt
+    break;
+}
+
+currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &lt;http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/&gt;
+</code></pre></div></div>
+
+<h4 id="netty零拷贝总结的比较清楚了">Netty零拷贝总结的比较清楚了</h4>
+<ul>
+  <li>零拷贝
+    <ul>
+      <li>在传统的I/O操作中，每次都需要把内核空间的数据拷贝到用户空间中，这样挺浪费空间的，所以零拷贝的出现就是为了解决这个问题。</li>
+      <li>主要有两种方法：mmap+write 和 Sendfile</li>
+      <li>mmap+write</li>
+      <li>使用mmap+write方式替换原来的read+write方式，mmap是一种内存映射文件的方法，即将一个文件或者其他对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对应关系。
+  这样就可以省略掉原来内核Read缓冲区Copy数据到用户缓冲区，但是还是需要内核Read缓冲区将数据Copy到内核Socket缓冲区。</li>
+      <li>Sendfile</li>
+      <li>Sendfile是为了简化通过网络在两个通道内进行的数据传输过程。</li>
+      <li>它不仅减少了数据复制，还减少了上下文次数的切换。数据传送只发生在内核空间里，所以减少了一次上下文切换，但是还是存在一次Copy。
+  后来进行了改进，将Kernel Buffer中对应的数据描述信息（内存地址，偏移量）记录到相应的Socket缓冲区中，这样连内核空间中的一次CPU Copy也省掉了。</li>
+    </ul>
+  </li>
+  <li>Netty的零拷贝具体体现
+    <ul>
+      <li>Netty零拷贝主要体现在三个方面。</li>
+      <li>Netty的接收和发送ByteBuffer采用DirtectByteBuffer，使用堆外直接内存进行Socket读写，不需要进行字节缓冲区的二次拷贝。</li>
+      <li>Netty在操作多个Channel时，使用CompositeChannelBuffer，它并不会开辟新的内存并复制所有ChannelBuffer内容，而是直接保存了所有ChannelBuffer的引用，并在子ChannelBuffer里进行读写，实现了零拷贝。</li>
+      <li>Netty的文件传输采用了transferTo方法，它可以直接将文件缓冲区的数据发送到目标Channel。</li>
+    </ul>
+  </li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg">https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg</a></p>
+
+<h4 id="netty">Netty</h4>
+<ul>
+  <li><a href="https://www.cnblogs.com/xiaoyangjia/p/11526197.html">https://www.cnblogs.com/xiaoyangjia/p/11526197.html</a></li>
+</ul>
+
+<h4 id="utf-8-是一种变长的编码方式">Utf-8 是一种变长的编码方式</h4>
+<ul>
+  <li>对于单字节的符号，字节的第一位设为0，后面7位为这个符号的unicode码。因此对于英语字母，UTF-8编码和ASCII码是相同的。</li>
+  <li>对于n字节的符号（n&gt;1），第一个字节的前n位都设为1，第n+1位设为0，后面字节的前两位一律设为10。剩下的没有提及的二进制位，全部为这个符号的unicode码。
+    <ul>
+      <li>1110xxxx 10xxxxxx 10xxxxxx （3个字节，xxx放入Unicode）</li>
+    </ul>
+  </li>
+  <li>Little endian和Big endian
+    <ul>
+      <li>Unicode规范中定义，每一个文件的最前面分别加入一个表示编码顺序的字符，这个字符的名字叫做”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE），用FEFF表示。这正好是两个字节，而且FF比FE大1。</li>
+      <li>如果一个文本文件的头两个字节是FE FF，就表示该文件采用大头方式；如果头两个字节是FF FE，就表示该文件采用小头方式。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="redis与memcached区别">Redis与Memcached区别</h4>
+<p>如果简单地比较Redis与Memcached的区别，大多数都会得到以下观点：</p>
+<ol>
+  <li>Redis不仅仅支持简单的k/v类型的数据，同时还提供list，set，hash等数据结构的存储。</li>
+  <li>Redis支持数据的备份，即master-slave模式的数据备份。</li>
+  <li>Redis支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用。</li>
+  <li>在Redis中，并不是所有的数据都一直存储在内存中的。这是和Memcached相比一个最大的区别</li>
+</ol>
+
+<h4 id="http-https-dns原理-">HTTP HTTPS DNS原理 !!!???</h4>
+<ul>
+  <li>使用HTTPDNS相比LocalDNS的好处</li>
+</ul>
+
+<h4 id="jdk-各个版本特性">JDK 各个版本特性</h4>
+
+<h4 id="kubernetes-和-istio-service-mesh-sidecar-">Kubernetes 和 Istio 、Service Mesh Sidecar ???</h4>
+<ul>
+  <li>微服务的缺点？分布式系统的复杂性;多服务运维难度,随着服务的增加,运维的压力也在增大;系统部署依赖;服务间通信成本;数 据一致性;系统集成测试;性能监控</li>
+</ul>
+
+<h4 id="lvs之drnattun模式祥解">LVS之DR,NAT,TUN模式祥解</h4>
+
+<h4 id="内存泄漏-内存溢出">内存泄漏 内存溢出</h4>
+
+<h4 id="direct-memory-回收">Direct Memory 回收？？？</h4>
+<ul>
+  <li><a href="https://blog.csdn.net/xieyuooo/article/details/7547435">https://blog.csdn.net/xieyuooo/article/details/7547435</a></li>
+  <li><a href="https://blog.csdn.net/phj88/article/details/8011830">https://blog.csdn.net/phj88/article/details/8011830</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html">用户画像之标签数据开发</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 7, 2020</span>
@@ -446,260 +819,6 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/27/JavaAgent-Instrument.html">JavaAgent-Instrument</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 27, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/27/JavaAgent-Instrument.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="javaagent--instrumentation--jwmti-agent--jvm-tool-interface">JavaAgent &amp; Instrumentation &amp; JWMTI Agent  (JVM Tool Interface)</h4>
-<ul>
-  <li>定义：在JDK1.5以后，我们可以使用agent技术构建一个独立于应用程序的代理程序（即为Agent），用来协助监测、运行甚至替换其他JVM上的程序。使用它可以实现虚拟机级别的AOP功能。</li>
-  <li>我们日常应用的各种工具中，有很多都是基于他们实现的，例如常见的热部署（JRebel, spring-loaded）、各种线上诊断工具（btrace, Greys）、代码覆盖率工具（JaCoCo）等等。</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Instrumentation</span> <span class="o">{</span>
-    <span class="cm">/**
-     * 注册一个Transformer，从此之后的类加载都会被Transformer拦截。
-     * Transformer可以直接对类的字节码byte[]进行修改
-     */</span>
-    <span class="kt">void</span> <span class="nf">addTransformer</span><span class="o">(</span><span class="nc">ClassFileTransformer</span> <span class="n">transformer</span><span class="o">);</span>
-    
-    <span class="cm">/**
-     * 对JVM已经加载的类重新触发类加载。使用的就是上面注册的Transformer。
-     * retransformation可以修改方法体，但是不能变更方法签名、增加和删除方法/类的成员属性
-     */</span>
-    <span class="kt">void</span> <span class="nf">retransformClasses</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">classes</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">UnmodifiableClassException</span><span class="o">;</span>
-    
-    <span class="cm">/**
-     * 获取一个对象的大小
-     */</span>
-    <span class="kt">long</span> <span class="nf">getObjectSize</span><span class="o">(</span><span class="nc">Object</span> <span class="n">objectToSize</span><span class="o">);</span>
-    
-    <span class="cm">/**
-     * 将一个jar加入到bootstrap classloader的 classpath里
-     */</span>
-    <span class="kt">void</span> <span class="nf">appendToBootstrapClassLoaderSearch</span><span class="o">(</span><span class="nc">JarFile</span> <span class="n">jarfile</span><span class="o">);</span>
-    
-    <span class="cm">/**
-     * 获取当前被JVM加载的所有类对象
-     */</span>
-    <span class="nc">Class</span><span class="o">[]</span> <span class="nf">getAllLoadedClasses</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
- * 以vm参数的形式载入，在程序main方法执行之前执行
- * 其jar包的manifest需要配置属性Premain-Class
- */</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="nc">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="nc">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
-<span class="cm">/**
- * 以Attach的方式载入，在Java程序启动后执行
- * 其jar包的manifest需要配置属性Agent-Class
- */</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">agentmain</span><span class="o">(</span><span class="nc">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="nc">Instrumentation</span> <span class="n">inst</span><span class="o">);</span>
-</code></pre></div></div>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">InstrumentationExample</span> <span class="o">{</span>
-    <span class="c1">// Java agent指定的premain方法，会在main方法之前被调用</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">,</span> <span class="nc">Instrumentation</span> <span class="n">inst</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// Instrumentation提供的addTransformer方法，在类加载时会回调ClassFileTransformer接口</span>
-        <span class="n">inst</span><span class="o">.</span><span class="na">addTransformer</span><span class="o">(</span><span class="k">new</span> <span class="nc">ClassFileTransformer</span><span class="o">()</span> <span class="o">{</span>
-            <span class="nd">@Override</span>
-            <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">transform</span><span class="o">(</span><span class="nc">ClassLoader</span> <span class="n">loader</span><span class="o">,</span> <span class="nc">String</span> <span class="n">className</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">classBeingRedefined</span><span class="o">,</span>
-                                    <span class="nc">ProtectionDomain</span> <span class="n">protectionDomain</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">classfileBuffer</span><span class="o">)</span>
-                                    <span class="kd">throws</span> <span class="nc">IllegalClassFormatException</span> <span class="o">{</span>
-                <span class="k">if</span> <span class="o">(!</span><span class="s">"com/test/TestClass"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">className</span><span class="o">))</span> <span class="o">{</span>
-                    <span class="c1">// 只修改指定的Class</span>
-                    <span class="k">return</span> <span class="n">classfileBuffer</span><span class="o">;</span>
-                <span class="o">}</span>
-        
-                <span class="kt">byte</span><span class="o">[]</span> <span class="n">transformed</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-                <span class="nc">CtClass</span> <span class="n">cl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-                <span class="k">try</span> <span class="o">{</span>
-                    <span class="c1">// CtClass、ClassPool、CtMethod、ExprEditor都是javassist提供的字节码操作的类</span>
-                    <span class="nc">ClassPool</span> <span class="n">pool</span> <span class="o">=</span> <span class="nc">ClassPool</span><span class="o">.</span><span class="na">getDefault</span><span class="o">();</span>
-                    <span class="n">cl</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="na">makeClass</span><span class="o">(</span><span class="k">new</span> <span class="nc">ByteArrayInputStream</span><span class="o">(</span><span class="n">classfileBuffer</span><span class="o">));</span>
-                    <span class="nc">CtMethod</span><span class="o">[]</span> <span class="n">methods</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">getDeclaredMethods</span><span class="o">();</span>
-                    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">methods</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-                        <span class="n">methods</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">instrument</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExprEditor</span><span class="o">()</span> <span class="o">{</span>
-        
-                            <span class="nd">@Override</span>
-                            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">edit</span><span class="o">(</span><span class="nc">MethodCall</span> <span class="n">m</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">CannotCompileException</span> <span class="o">{</span>
-                                <span class="c1">// 把方法体直接替换掉，其中 $proceed($$);是javassist的语法，用来表示原方法体的调用</span>
-                                <span class="n">m</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="s">"{ long stime = System.currentTimeMillis();"</span> <span class="o">+</span> <span class="s">" $_ = $proceed($$);"</span>
-                                          <span class="o">+</span> <span class="s">"System.out.println(\""</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="na">getClassName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"."</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="na">getMethodName</span><span class="o">()</span>
-                                          <span class="o">+</span> <span class="s">" cost:\" + (System.currentTimeMillis() - stime) + \" ms\"); }"</span><span class="o">);</span>
-                            <span class="o">}</span>
-                        <span class="o">});</span>
-                    <span class="o">}</span>
-                    <span class="c1">// javassist会把输入的Java代码再编译成字节码byte[]</span>
-                    <span class="n">transformed</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">toBytecode</span><span class="o">();</span>
-                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-                <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-                    <span class="k">if</span> <span class="o">(</span><span class="n">cl</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                        <span class="n">cl</span><span class="o">.</span><span class="na">detach</span><span class="o">();</span><span class="c1">// ClassPool默认不会回收，需要手动清理</span>
-                    <span class="o">}</span>                           
-                <span class="o">}</span>
-                <span class="k">return</span> <span class="n">transformed</span><span class="o">;</span>
-            <span class="o">}</span>
-        <span class="o">});</span>
-    <span class="o">}</span>
-    
-<span class="o">}</span>
-</code></pre></div></div>
-
-<p><img src="/img/JavaAgent.jpg" width="600px" /></p>
-
-<ul>
-  <li><a href="https://www.jianshu.com/p/be68d66afb85">https://www.jianshu.com/p/be68d66afb85</a></li>
-  <li><a href="https://www.jianshu.com/p/b72f66da679f">https://www.jianshu.com/p/b72f66da679f</a></li>
-</ul>
-
-<h4 id="asm--cglib">ASM &amp; CGlib</h4>
-<p><img src="/img/AOP.jpg" width="600px" /></p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckClassAdapter</span> <span class="kd">extends</span> <span class="nc">ClassAdapter</span> <span class="o">{</span>
- 
-    <span class="kd">public</span> <span class="nf">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="nc">ClassVisitor</span> <span class="n">cv</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">//Responsechain 的下一个 ClassVisitor，这里我们将传入 ClassWriter，</span>
-        <span class="c1">// 负责改写后代码的输出</span>
-        <span class="kd">super</span><span class="o">(</span><span class="n">cv</span><span class="o">);</span> 
-    <span class="o">}</span> 
-     
-    <span class="c1">// 重写 visitMethod，访问到 "operation" 方法时，</span>
-    <span class="c1">// 给出自定义 MethodVisitor，实际改写方法内容</span>
-    <span class="kd">public</span> <span class="nc">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
-        <span class="kd">final</span> <span class="nc">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="nc">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span><span class="n">exceptions</span><span class="o">);</span>
-        <span class="nc">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
-        <span class="k">if</span> <span class="o">(</span><span class="n">mv</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> 
-            <span class="c1">// 对于 "operation" 方法</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"operation"</span><span class="o">))</span> <span class="o">{</span> 
-                <span class="c1">// 使用自定义 MethodVisitor，实际改写方法内容</span>
-                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
-            <span class="o">}</span> 
-        <span class="o">}</span> 
-        <span class="k">return</span> <span class="n">wrappedMv</span><span class="o">;</span> 
-    <span class="o">}</span> 
-
-    <span class="kd">public</span> <span class="nc">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
-        <span class="kd">final</span> <span class="nc">String</span> <span class="n">desc</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="nc">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span> <span class="n">exceptions</span><span class="o">);</span> 
-        <span class="nc">MethodVisitor</span> <span class="n">wrappedMv</span> <span class="o">=</span> <span class="n">mv</span><span class="o">;</span> 
-        <span class="k">if</span> <span class="o">(</span><span class="n">mv</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> 
-            <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"operation"</span><span class="o">))</span> <span class="o">{</span> 
-                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
-            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"&lt;init&gt;"</span><span class="o">))</span> <span class="o">{</span> 
-                <span class="n">wrappedMv</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">,</span> 
-                    <span class="n">enhancedSuperName</span><span class="o">);</span> 
-            <span class="o">}</span> 
-        <span class="o">}</span> 
-        <span class="k">return</span> <span class="n">wrappedMv</span><span class="o">;</span> 
-    <span class="o">}</span>
-
-    
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visit</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">version</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
-            <span class="kd">final</span> <span class="nc">String</span> <span class="n">signature</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">superName</span><span class="o">,</span> 
-            <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">interfaces</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="nc">String</span> <span class="n">enhancedName</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"$EnhancedByASM"</span><span class="o">;</span>  <span class="c1">// 改变类命名</span>
-        <span class="n">enhancedSuperName</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span> <span class="c1">// 改变父类，这里是”Account”</span>
-        <span class="kd">super</span><span class="o">.</span><span class="na">visit</span><span class="o">(</span><span class="n">version</span><span class="o">,</span> <span class="n">access</span><span class="o">,</span> <span class="n">enhancedName</span><span class="o">,</span> <span class="n">signature</span><span class="o">,</span> 
-        <span class="n">enhancedSuperName</span><span class="o">,</span> <span class="n">interfaces</span><span class="o">);</span> 
-    <span class="o">}</span>
-
-<span class="o">}</span>
-</code></pre></div></div>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AddSecurityCheckMethodAdapter</span> <span class="kd">extends</span> <span class="nc">MethodAdapter</span> <span class="o">{</span> 
-    <span class="kd">public</span> <span class="nf">AddSecurityCheckMethodAdapter</span><span class="o">(</span><span class="nc">MethodVisitor</span> <span class="n">mv</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="kd">super</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
-    <span class="o">}</span> 
- 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitCode</span><span class="o">()</span> <span class="o">{</span> 
-        <span class="n">visitMethodInsn</span><span class="o">(</span><span class="nc">Opcodes</span><span class="o">.</span><span class="na">INVOKESTATIC</span><span class="o">,</span> <span class="s">"SecurityChecker"</span><span class="o">,</span> 
-           <span class="s">"checkSecurity"</span><span class="o">,</span> <span class="s">"()V"</span><span class="o">);</span> 
-    <span class="o">}</span> 
-<span class="o">}</span>
-</code></pre></div></div>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">ChangeToChildConstructorMethodAdapter</span> <span class="kd">extends</span> <span class="nc">MethodAdapter</span> <span class="o">{</span> 
-    <span class="kd">private</span> <span class="nc">String</span> <span class="n">superClassName</span><span class="o">;</span> 
- 
-    <span class="kd">public</span> <span class="nf">ChangeToChildConstructorMethodAdapter</span><span class="o">(</span><span class="nc">MethodVisitor</span> <span class="n">mv</span><span class="o">,</span> 
-        <span class="nc">String</span> <span class="n">superClassName</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="kd">super</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span> 
-        <span class="k">this</span><span class="o">.</span><span class="na">superClassName</span> <span class="o">=</span> <span class="n">superClassName</span><span class="o">;</span> 
-    <span class="o">}</span> 
- 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitMethodInsn</span><span class="o">(</span><span class="kt">int</span> <span class="n">opcode</span><span class="o">,</span> <span class="nc">String</span> <span class="n">owner</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> 
-        <span class="nc">String</span> <span class="n">desc</span><span class="o">)</span> <span class="o">{</span> 
-        <span class="c1">// 调用父类的构造函数时</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">opcode</span> <span class="o">==</span> <span class="nc">Opcodes</span><span class="o">.</span><span class="na">INVOKESPECIAL</span> <span class="o">&amp;&amp;</span> <span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"&lt;init&gt;"</span><span class="o">))</span> <span class="o">{</span> 
-            <span class="n">owner</span> <span class="o">=</span> <span class="n">superClassName</span><span class="o">;</span> 
-        <span class="o">}</span> 
-        <span class="kd">super</span><span class="o">.</span><span class="na">visitMethodInsn</span><span class="o">(</span><span class="n">opcode</span><span class="o">,</span> <span class="n">owner</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">);</span><span class="c1">// 改写父类为 superClassName </span>
-    <span class="o">}</span> 
-<span class="o">}</span>
-</code></pre></div></div>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SecureAccountGenerator</span> <span class="o">{</span> 
- 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">AccountGeneratorClassLoader</span> <span class="n">classLoader</span> <span class="o">=</span> 
-        <span class="k">new</span> <span class="nf">AccountGeneratorClassLoade</span><span class="o">();</span> 
-     
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Class</span> <span class="n">secureAccountClass</span><span class="o">;</span> 
-     
-    <span class="kd">public</span> <span class="nc">Account</span> <span class="nf">generateSecureAccount</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">ClassFormatError</span><span class="o">,</span> 
-        <span class="nc">InstantiationException</span><span class="o">,</span> <span class="nc">IllegalAccessException</span> <span class="o">{</span> 
-        <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">secureAccountClass</span><span class="o">)</span> <span class="o">{</span>            
-            <span class="nc">ClassReader</span> <span class="n">cr</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassReader</span><span class="o">(</span><span class="s">"Account"</span><span class="o">);</span> 
-            <span class="nc">ClassWriter</span> <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassWriter</span><span class="o">(</span><span class="nc">ClassWriter</span><span class="o">.</span><span class="na">COMPUTE_MAXS</span><span class="o">);</span> 
-            <span class="nc">ClassAdapter</span> <span class="n">classAdapter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AddSecurityCheckClassAdapter</span><span class="o">(</span><span class="n">cw</span><span class="o">);</span>
-            <span class="n">cr</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">classAdapter</span><span class="o">,</span> <span class="nc">ClassReader</span><span class="o">.</span><span class="na">SKIP_DEBUG</span><span class="o">);</span> 
-            <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span> 
-            <span class="n">secureAccountClass</span> <span class="o">=</span> <span class="n">classLoader</span><span class="o">.</span><span class="na">defineClassFromClassFile</span><span class="o">(</span> 
-               <span class="s">"Account$EnhancedByASM"</span><span class="o">,</span><span class="n">data</span><span class="o">);</span> 
-        <span class="o">}</span> 
-        <span class="k">return</span> <span class="o">(</span><span class="nc">Account</span><span class="o">)</span> <span class="n">secureAccountClass</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span> 
-    <span class="o">}</span> 
-     
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">AccountGeneratorClassLoader</span> <span class="kd">extends</span> <span class="nc">ClassLoader</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="nc">Class</span> <span class="nf">defineClassFromClassFile</span><span class="o">(</span><span class="nc">String</span> <span class="n">className</span><span class="o">,</span> 
-            <span class="kt">byte</span><span class="o">[]</span> <span class="n">classFile</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">ClassFormatError</span> <span class="o">{</span> 
-            <span class="k">return</span> <span class="nf">defineClass</span><span class="o">(</span><span class="s">"Account$EnhancedByASM"</span><span class="o">,</span> <span class="n">classFile</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> 
-            <span class="n">classFile</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
-        <span class="o">}</span> 
-    <span class="o">}</span> 
-<span class="o">}</span>
-</code></pre></div></div>
-<ul>
-  <li><a href="https://www.ibm.com/developerworks/cn/java/j-lo-asm30/">https://www.ibm.com/developerworks/cn/java/j-lo-asm30/</a></li>
-</ul>
-
-<h4 id="byte-buddyjavassist">Byte Buddy,Javassist</h4>
-<ul>
-  <li>Byte Buddy的作者是业界著名的Rafael Winterhalter。这个项目在2015年获得了Oracle的公爵选择奖，为了表彰它“对于Java技术创新作出的无与伦比的贡献”。说实话，这个评价实至名归。Byte Buddy确实是Java这个中规中矩略显死板的语言中不多的黑科技之一。</li>
-</ul>
-<p><a href="https://zhuanlan.zhihu.com/p/84514959">https://zhuanlan.zhihu.com/p/84514959</a></p>
-<ul>
-  <li>Javassist是一个开源的分析、编辑和创建Java字节码的类库。是由东京工业大学的数学和计算机科学系的 Shigeru Chiba （千叶 滋）所创建的。它已加入了开放源代码JBoss 应用服务器项目,通过使用Javassist对字节码操作为JBoss实现动态AOP框架。javassist是jboss的一个子项目，其主要的优点，在于简单，而且快速。直接使用java编码的形式，而不需要了解虚拟机指令，就能动态改变类的结构，或者动态生成类。</li>
-</ul>
-<p><a href="https://blog.csdn.net/ShuSheng0007/article/details/81269295">https://blog.csdn.net/ShuSheng0007/article/details/81269295</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/27/JavaAgent-Instrument.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -865,7 +984,7 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 11 )</span>
+      <span class="label label-default">Java ( 12 )</span>
       </a><br />
 
       

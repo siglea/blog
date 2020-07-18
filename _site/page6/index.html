@@ -54,6 +54,640 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty.html">Netty</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 18, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="netty-要点">Netty 要点</h4>
+<ul>
+  <li>NioEventLoopGroup、EventLoop都是集成或者实现 ScheduledExecutorService、ExecutorService，因此本质都是线程池</li>
+</ul>
+<p><a href="https://www.jianshu.com/p/da4398743b5a">https://www.jianshu.com/p/da4398743b5a</a></p>
+<ul>
+  <li>NioEventLoopGroup还提供了setIoRatio()和rebuildSelectors()两个方法，一个用来设置I/O任务和非I/O任务的执行时间比，一个用来重建线程中的selector来规避JDK的epoll 100% CPU Bug。其实现也是依次设置各线程的状态，故不再列出。</li>
+  <li>Java NIO支持HeapByteBuffer与DirectByteBuffer，Netty使用DirectByteBuffer实现零拷贝
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ByteBuffer buffer <span class="o">=</span> ByteBuffer.allocate<span class="o">(</span>int capacity<span class="o">)</span><span class="p">;</span>
+ByteBuffer buffer <span class="o">=</span> ByteBuffer.allocateDirect<span class="o">(</span>int capacity<span class="o">)</span><span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>OioServerSocketChannel 是同步阻塞 IO 的服务端实现，它接受新的客户端连接，并为它们创建 OioSocketChannel。</li>
+  <li>BIO  Stream单向 与 NIO Channel双向
+ChannelInboundHandler SimpleChannelInboundHandler</li>
+</ul>
+
+<h4 id="netty-reactor多种模式-reactor模式又有别名dispatcher或者notifier">Netty Reactor多种模式, Reactor模式又有别名“Dispatcher”或者“Notifier”</h4>
+<ul>
+  <li>Reactor 是反应堆的意思，Reactor 模型是指通过一个或多个输入同时传递给服务处理器的服务请求的事件驱动处理模式。
+服务端程序处理传入多路请求，并将它们同步分派给请求对应的处理线程，Reactor 模式也叫 Dispatcher 模式，即 I/O 多了复用统一监听事件，收到事件后分发(Dispatch 给某进程)，是编写高性能网络服务器的必备技术之一。</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">crossoverjie</span><span class="o">.</span><span class="na">cim</span><span class="o">.</span><span class="na">server</span><span class="o">.</span><span class="na">server</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.crossoverjie.cim.common.constant.Constants</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.crossoverjie.cim.common.protocol.CIMRequestProto</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.crossoverjie.cim.server.init.CIMServerInitializer</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.crossoverjie.cim.server.util.SessionSocketHolder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.crossoverjie.cim.server.vo.req.SendMsgReqVO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.bootstrap.ServerBootstrap</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelFuture</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelFutureListener</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelOption</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.EventLoopGroup</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.nio.NioEventLoopGroup</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.socket.nio.NioServerSocketChannel</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.socket.nio.NioSocketChannel</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.slf4j.Logger</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.slf4j.LoggerFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.annotation.PostConstruct</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.annotation.PreDestroy</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CIMServer</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+        <span class="c1">// 单线程Reactor配置</span>
+        <span class="nc">EventLoopGroup</span> <span class="n">singleEventLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
+        <span class="nc">EventLoopGroup</span> <span class="n">singleEventLoop</span> <span class="o">=</span> <span class="n">singleEventLoopGroup</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+        <span class="nc">ServerBootstrap</span> <span class="n">bootstrapSingle</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">singleEventLoop</span><span class="o">,</span> <span class="n">singleEventLoop</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
+                <span class="c1">//保持长连接</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
+                <span class="c1">// Nagle拆包算法禁用</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">TCP_NODELAY</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
+                <span class="c1">// sync-recv个数，防止sync-blood攻击</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">CIMServerInitializer</span><span class="o">());</span>
+
+        <span class="c1">// 单Boss线程，多Worker线程，Reactor配置</span>
+        <span class="nc">EventLoopGroup</span> <span class="n">eventLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
+        <span class="nc">EventLoopGroup</span> <span class="n">bossEventLoop</span> <span class="o">=</span> <span class="n">eventLoopGroup</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+        <span class="nc">EventLoopGroup</span> <span class="n">workLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
+        <span class="nc">ServerBootstrap</span> <span class="n">bootstrapSingle2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">bossEventLoop</span><span class="o">,</span> <span class="n">workLoopGroup</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">CIMServerInitializer</span><span class="o">());</span>
+
+        <span class="c1">// 多Boss线程，多Worker线程，Reactor配置</span>
+        <span class="nc">EventLoopGroup</span> <span class="n">boss</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
+        <span class="nc">EventLoopGroup</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
+        <span class="nc">ServerBootstrap</span> <span class="n">bootstrap</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">boss</span><span class="o">,</span> <span class="n">work</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">CIMServerInitializer</span><span class="o">());</span>
+
+        <span class="nc">ChannelFuture</span> <span class="n">future</span> <span class="o">=</span> <span class="n">bootstrap</span><span class="o">.</span><span class="na">bind</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">future</span><span class="o">.</span><span class="na">isSuccess</span><span class="o">())</span> <span class="o">{</span>
+            <span class="no">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"启动 cim server 成功"</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><a href="https://mp.weixin.qq.com/s/66TxgxynqlQ1978_qMFSwQ">https://mp.weixin.qq.com/s/66TxgxynqlQ1978_qMFSwQ</a></li>
+  <li><a href="https://github.com/code4craft/netty-learning/blob/master/posts/ch4-reactor.md">https://github.com/code4craft/netty-learning/blob/master/posts/ch4-reactor.md</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/csslzxEGTRX1WnK5Qp8jWQ">https://mp.weixin.qq.com/s/csslzxEGTRX1WnK5Qp8jWQ</a></li>
+  <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2043&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2043&amp;highlight=netty</a></li>
+</ul>
+
+<h4 id="操作系统zero-copy">操作系统Zero-Copy</h4>
+<pre>
+1. ReadBuffer copyTo AppBuffer
+2. AppBuffer  copyTo SocketBuffer
+3. SocketBuffer  copyTo  NIC Buffer
+通过transferTo()，减少了从内核态copyTo用户态，演变为
+1. ReadBuffer copyTo SocketBuffer
+3. SocketBuffer  copyTo  NIC Buffer
+通过sendfile，去除了SocketBuffer，演变为 (Linux 2.1)
+1. ReadBuffer copyTo  NIC Buffer
+根据socket buffer中的位置和偏移量直接将kernel buffer的数据copy到网卡设备（protocol engine）中，演变为 (Linux 2.4)
+1. 根据位置和偏移量，   NIC Buffer，直接从ReadBuffer读取
+</pre>
+<ul>
+  <li><a href="https://www.jianshu.com/p/017f193663a0">https://www.jianshu.com/p/017f193663a0</a></li>
+</ul>
+
+<h4 id="nio本身支持dma方式的zero-copy">NIO本身支持DMA方式的Zero-Copy</h4>
+<ul>
+  <li>DMA(Direct Memory Access，直接存储器访问)</li>
+  <li><a href="https://mp.weixin.qq.com/s/A8vc7exPDko1k1WaXuO0Og">https://mp.weixin.qq.com/s/A8vc7exPDko1k1WaXuO0Og</a></li>
+</ul>
+
+<h4 id="netty零拷贝终于讲清楚了">Netty零拷贝终于讲清楚了</h4>
+<ul>
+  <li>其实是靠CompositeByteBuf，把多个数组引用成同一个逻辑数组 <a href="https://cloud.tencent.com/developer/article/1488088">https://cloud.tencent.com/developer/article/1488088</a></li>
+  <li>深入探秘Netty、Kafka中的零拷贝技术！ <a href="https://www.debug8.com/java/t_43617.html">https://www.debug8.com/java/t_43617.html</a></li>
+</ul>
+
+<h4 id="protocol-buffer-的序列化--反序列化简单--速度快的原因是">Protocol Buffer 的序列化 &amp; 反序列化简单 &amp; 速度快的原因是:</h4>
+<ol>
+  <li>编码 / 解码 方式简单(只需要简单的数学运算 = 位移等等)</li>
+  <li>采用 Protocol Buffer 自身的框架代码 和 编译器 共同完成</li>
+</ol>
+
+<h4 id="protocol-buffer-的数据压缩效果好即序列化后的数据量体积小的原因是">Protocol Buffer 的数据压缩效果好(即序列化后的数据量体积小)的原因是:</h4>
+<ol>
+  <li>a. 采用了独特的编码方式，如 Varint、Zigzag 编码方式等等</li>
+  <li>b. 采用 T - L - V 的数据存储方式:减少了分隔符的使用 &amp; 数据存储得紧凑</li>
+</ol>
+
+<h4 id="tcp-粘包分包的原因">TCP 粘包/分包的原因:</h4>
+<ul>
+  <li>应用程序写入的字节大小大于套接字发送缓冲区的大小，会发生拆包现象，而应用程序写入 数据小于套接字缓冲区大小，网卡将应用多次写入的数据发送到网络上，这将会发生粘包现 象;</li>
+  <li>进行 MSS 大小的 TCP 分段，当 TCP 报文长度-TCP 头部长度&gt;MSS 的时候将发生拆包 以太网帧的 payload(净荷)大于 MTU(1500 字节)进行 ip 分片。</li>
+  <li>解决方案
+    <ul>
+      <li>FixedLengthFrameDecoder 客户端在发送数据包的时候，每个包都固定长度，比如1024个字节大小，如果客户端发送的数据长度不足1024个字节，则通过补充空格的方式补全到指定长度；</li>
+      <li>LineBasedFrameDecoder/DelimiterBasedFrameDecoder 客户端在每个包的末尾使用固定的分隔符，例如\r\n，如果一个包被拆分了，则等待下一个包发送过来之后找到其中的\r\n，然后对其拆分后的头部部分与前一个包的剩余部分进行合并，这样就得到了一个完整的包；</li>
+      <li>LengthFieldBasedFrameDecoder 将消息分为头部和消息体，在头部中保存有当前整个消息的长度，只有在读取到足够长度的消息之后才算是读到了一个完整的消息；
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ch.pipeline<span class="o">()</span>.addLast<span class="o">(</span>new FixeLengthFrameDecoder<span class="o">(</span>31<span class="o">))</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="从零开发一个im服务端">从零开发一个IM服务端</h4>
+<ul>
+  <li>通俗易懂 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty</a></li>
+  <li>基于Netty实现海量接入的推送服务技术要点 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty</a></li>
+</ul>
+
+<h4 id="bionioaio-有什么区别">BIO,NIO,AIO 有什么区别?</h4>
+<ul>
+  <li>BIO：Block IO 同步阻塞式 IO，就是我们平常使用的传统 IO，它的特点是模式简单使用方便，并发处理能力低。</li>
+  <li>NIO：Non IO 同步非阻塞 IO，是传统 IO 的升级，客户端和服务器端通过 Channel（通道）通讯，实现了多路复用。</li>
+  <li>
+    <p>AIO：Asynchronous IO 是 NIO 的升级，也叫 NIO2，实现了异步非堵塞 IO ，异步 IO 的操作基于事件和回调机制。</p>
+  </li>
+  <li>BIO (Blocking I/O): 同步阻塞I/O模式，数据的读取写入必须阻塞在一个线程内等待其完成。在活动连接数不是特别高（小于单机1000）的情况下，这种模型是比较不错的，可以让每一个连接专注于自己的 I/O 并且编程模型简单，也不用过多考虑系统的过载、限流等问题。线程池本身就是一个天然的漏斗，可以缓冲一些系统处理不了的连接或请求。但是，当面对十万甚至百万级连接的时候，传统的 BIO 模型是无能为力的。因此，我们需要一种更高效的 I/O 处理模型来应对更高的并发量。</li>
+  <li>NIO (New I/O): NIO是一种同步非阻塞的I/O模型，在Java 1.4 中引入了NIO框架，对应 java.nio 包，提供了 Channel , Selector，Buffer等抽象。NIO中的N可以理解为Non-blocking，不单纯是New。它支持面向缓冲的，基于通道的I/O操作方法。 NIO提供了与传统BIO模型中的 Socket 和 ServerSocket 相对应的 SocketChannel 和 ServerSocketChannel 两种不同的套接字通道实现,两种通道都支持阻塞和非阻塞两种模式。阻塞模式使用就像传统中的支持一样，比较简单，但是性能和可靠性都不好；非阻塞模式正好与之相反。对于低负载、低并发的应用程序，可以使用同步阻塞I/O来提升开发速率和更好的维护性；对于高负载、高并发的（网络）应用，应使用 NIO 的非阻塞模式来开发</li>
+  <li>AIO (Asynchronous I/O): AIO 也就是 NIO 2。在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的IO模型。异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。AIO 是异步IO的缩写，虽然 NIO 在网络操作中，提供了非阻塞的方法，但是 NIO 的 IO 行为还是同步的。对于 NIO 来说，我们的业务线程是在 IO 操作准备好时，得到通知，接着就由这个线程自行进行 IO 操作，IO操作本身是同步的。查阅网上相关资料，我发现就目前来说 AIO 的应用还不是很广泛，Netty 之前也尝试使用过 AIO，不过又放弃了。</li>
+</ul>
+
+<h4 id="必读有关为何选择netty的11个疑问及解答">必读有关“为何选择Netty”的11个疑问及解答</h4>
+<ul>
+  <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=163&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=163&amp;highlight=netty</a></li>
+</ul>
+
+<h4 id="tcp网关">TCP网关</h4>
+<p>HAProxy nginx LVS</p>
+<ul>
+  <li>生产环境大部分还是采用通过rest方式获取IpList，然后有客户端直接发起长连接的方式</li>
+  <li>京东京麦的生产级TCP网关技术实践总结 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1243&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1243&amp;highlight=netty</a></li>
+  <li>一套海量在线用户的移动端IM架构设计实践 <a href="http://www.52im.net/thread-812-1-1.html">http://www.52im.net/thread-812-1-1.html</a></li>
+</ul>
+
+<h4 id="why-nettyjdk-原生-nio-程序的问题">Why Netty?JDK 原生 NIO 程序的问题</h4>
+<ul>
+  <li>JDK 原生也有一套网络应用程序 API，但是存在一系列问题，主要如下：
+    <ol>
+      <li>NIO 的类库和 API 繁杂，使用麻烦：你需要熟练掌握 Selector、ServerSocketChannel、SocketChannel、ByteBuffer 等。</li>
+      <li>需要具备其他的额外技能做铺垫：例如熟悉 Java 多线程编程，因为 NIO 编程涉及到 Reactor 模式，你必须对多线程和网路编程非常熟悉，才能编写出高质量的 NIO 程序。</li>
+      <li>可靠性能力补齐，开发工作量和难度都非常大：例如客户端面临断连重连、网络闪断、半包读写、失败缓存、网络拥塞和异常码流的处理等等。NIO 编程的特点是功能开发相对容易，但是可靠性能力补齐工作量和难度都非常大。</li>
+      <li>JDK NIO 的 Bug：例如臭名昭著的 Epoll Bug，它会导致 Selector 空轮询，最终导致 CPU 100%。官方声称在 JDK 1.6 版本的 update 18 修复了该问题，但是直到 JDK 1.7 版本该问题仍旧存在，只不过该 Bug 发生概率降低了一些而已，它并没有被根本解决。</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="java-nio-epoll-bug-以及-netty-的解决之道">Java NIO epoll bug 以及 Netty 的解决之道</h4>
+<ul>
+  <li>epoll 空轮询导致 CPU 利用率 100% <a href="http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/">http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/</a></li>
+</ul>
+
+<h4 id="netty中的epoll实现">netty中的epoll实现</h4>
+<ul>
+  <li>在java中，IO多路复用的功能通过nio中的Selector提供，在不同的操作系统下jdk会通过spi的方式加载不同的实现，
+比如在macos下是KQueueSelectorProvider，KQueueSelectorProvider底层使用了kqueue来进行IO多路复用；
+在linux 2.6以后的版本则是EPollSelectorProvider，EPollSelectorProvider底层使用的是epoll。
+虽然jdk自身提供了selector的epoll实现，netty仍实现了自己的epoll版本，根据netty开发者在StackOverflow的回答，主要原因有两个：
+    <ul>
+      <li>支持更多socket option，比如TCP_CORK和SO_REUSEPORT</li>
+      <li>使用了边缘触发（ET）模式</li>
+    </ul>
+  </li>
+  <li><a href="https://juejin.im/post/5d46ce64f265da03e05af722">https://juejin.im/post/5d46ce64f265da03e05af722</a></li>
+  <li>ET和LT的区别在于触发事件的条件不同，LT比较符合编程思维（有满足条件的就触发），ET触发的条件更苛刻一些（仅在发生变化时才触发），对使用者的要求也更高，理论效率更高</li>
+  <li>边缘触发和水平触发<a href="https://juejin.im/post/5cdaa67f518825691b4a5cc0">https://juejin.im/post/5cdaa67f518825691b4a5cc0</a></li>
+</ul>
+
+<h4 id="netty-coding">Netty Coding</h4>
+
+<ul>
+  <li>EchoServer</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">siglea</span><span class="o">.</span><span class="na">bobo</span><span class="o">.</span><span class="na">imserver</span><span class="o">.</span><span class="na">service</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">io.netty.bootstrap.ServerBootstrap</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelFuture</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelInitializer</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.EventLoopGroup</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.nio.NioEventLoopGroup</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.socket.SocketChannel</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.socket.nio.NioServerSocketChannel</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
+
+<span class="nd">@Service</span><span class="o">(</span><span class="s">"EchoServer"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServer</span>
+<span class="o">{</span>
+    <span class="c1">// 服务器端口</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">"${server.port}"</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>
+    <span class="c1">// 通过nio方式来接收连接和处理连接</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">EventLoopGroup</span> <span class="n">boss</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">EventLoopGroup</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
+
+    <span class="c1">// 启动引导器</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">ServerBootstrap</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">();</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">EchoServerHandler</span> <span class="n">echoServerHandler</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span>
+    <span class="o">{</span>
+        <span class="k">try</span>
+        <span class="o">{</span>
+            <span class="n">b</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">boss</span><span class="o">,</span> <span class="n">work</span><span class="o">);</span>
+            <span class="c1">// 设置nio类型的channel</span>
+            <span class="n">b</span><span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+            <span class="c1">// 设置监听端口</span>
+            <span class="n">b</span><span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">port</span><span class="o">));</span>
+            <span class="c1">// 设置通道初始化</span>
+            <span class="n">b</span><span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">ChannelInitializer</span><span class="o">&lt;</span><span class="nc">SocketChannel</span><span class="o">&gt;()</span>
+            <span class="o">{</span>
+                <span class="c1">//有连接到达时会创建一个channel</span>
+                <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
+                <span class="o">{</span>
+                    <span class="c1">// pipeline管理channel中的Handler</span>
+                    <span class="c1">// 在channel队列中添加一个handler来处理业务</span>
+                    <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="s">"echoServerHandler"</span><span class="o">,</span><span class="n">echoServerHandler</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+            <span class="c1">// 配置完成，开始绑定server</span>
+            <span class="c1">// 通过调用sync同步方法阻塞直到绑定成功</span>
+
+            <span class="nc">ChannelFuture</span> <span class="n">f</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="na">bind</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">EchoServer</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span>
+                    <span class="s">" started and listen on "</span> <span class="o">+</span> <span class="n">f</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">localAddress</span><span class="o">());</span>
+
+            <span class="c1">// 监听服务器关闭事件</span>
+            <span class="c1">// 应用程序会一直等待，直到channel关闭</span>
+            <span class="n">f</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">closeFuture</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span>
+        <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span>
+        <span class="o">{</span>
+            <span class="c1">// 关闭EventLoopGroup，释放掉所有资源包括创建的线程</span>
+            <span class="n">work</span><span class="o">.</span><span class="na">shutdownGracefully</span><span class="o">();</span>
+            <span class="n">boss</span><span class="o">.</span><span class="na">shutdownGracefully</span><span class="o">();</span>
+        <span class="o">}</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>EchoServerHandler</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">siglea</span><span class="o">.</span><span class="na">bobo</span><span class="o">.</span><span class="na">imserver</span><span class="o">.</span><span class="na">service</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">io.netty.buffer.Unpooled</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelFutureListener</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelHandlerContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelInboundHandlerAdapter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.util.CharsetUtil</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.util.ReferenceCountUtil</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
+
+<span class="nd">@Service</span><span class="o">(</span><span class="s">"echoServerHandler"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
+<span class="o">{</span>
+
+    <span class="cm">/**
+     * 建立连接时，发送一条消息
+     */</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
+    <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">channelActive</span><span class="o">(</span><span class="n">ctx</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="k">try</span>
+        <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+<span class="c1">//            ctx.write(msg);//写回数据，</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="c1">//flush掉所有写回的数据</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="nc">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="c1">//捕捉异常信息</span>
+        <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="c1">//出现异常时关闭channel</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>EchoClient</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">siglea</span><span class="o">.</span><span class="na">bobo</span><span class="o">.</span><span class="na">imserver</span><span class="o">.</span><span class="na">service</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">io.netty.buffer.Unpooled</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelFutureListener</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelHandlerContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelInboundHandlerAdapter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.util.CharsetUtil</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.util.ReferenceCountUtil</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
+
+<span class="nd">@Service</span><span class="o">(</span><span class="s">"echoServerHandler"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
+<span class="o">{</span>
+
+    <span class="cm">/**
+     * 建立连接时，发送一条消息
+     */</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
+    <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">channelActive</span><span class="o">(</span><span class="n">ctx</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="k">try</span>
+        <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+<span class="c1">//            ctx.write(msg);//写回数据，</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="c1">//flush掉所有写回的数据</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="nc">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="c1">//捕捉异常信息</span>
+        <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="c1">//出现异常时关闭channel</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>EchoClientHandler</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">siglea</span><span class="o">.</span><span class="na">bobo</span><span class="o">.</span><span class="na">imclient</span><span class="o">.</span><span class="na">service</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">io.netty.buffer.ByteBuf</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.buffer.ByteBufUtil</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.buffer.Unpooled</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelHandlerContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.channel.ChannelInboundHandlerAdapter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.util.CharsetUtil</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.netty.util.ReferenceCountUtil</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
+
+<span class="nd">@Service</span><span class="o">(</span><span class="s">"echoClientHandler"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoClientHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
+<span class="o">{</span>
+    <span class="cm">/**
+     * 此方法会在连接到服务器后被调用
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
+    <span class="o">{</span>
+
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelActive"</span><span class="o">);</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"Netty rocks!"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 业务逻辑处理
+     */</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
+    <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelRead"</span><span class="o">);</span>
+        <span class="c1">// 如果不是protobuf类型的数据</span>
+        <span class="k">if</span> <span class="o">(!(</span><span class="n">msg</span> <span class="k">instanceof</span> <span class="nc">ByteBuf</span><span class="o">))</span>
+        <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"未知数据!"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">try</span>
+        <span class="o">{</span>
+            <span class="nc">ByteBuf</span> <span class="n">in</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ByteBuf</span><span class="o">)</span> <span class="n">msg</span><span class="o">;</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Client received: "</span> <span class="o">+</span>
+                    <span class="nc">ByteBufUtil</span><span class="o">.</span><span class="na">hexDump</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">())));</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span>
+        <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span>
+        <span class="o">{</span>
+            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="cm">/**
+     * 捕捉到异常
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"exceptionCaught"</span><span class="o">);</span>
+        <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="netty--protobuf">Netty &amp; Protobuf</h4>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bootstrap</span><span class="o">.</span><span class="na">handler</span><span class="o">(</span>
+        <span class="k">new</span> <span class="nc">ChannelInitializer</span><span class="o">&lt;</span><span class="nc">SocketChannel</span><span class="o">&gt;()</span>
+        <span class="o">{</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
+            <span class="o">{</span>
+                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="nc">ProtobufDecoder</span><span class="o">());</span>
+                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="nc">ProtobufEncoder</span><span class="o">());</span>
+                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="n">chatClientHandler</span><span class="o">);</span>
+<span class="err">​</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+<span class="o">);</span>
+</code></pre></div></div>
+
+<h4 id="netty--websocket">Netty &amp; WebSocket</h4>
+<p><a href="https://baijiahao.baidu.com/s?id=1654057194889667404&amp;wfr=spider&amp;for=pc">https://baijiahao.baidu.com/s?id=1654057194889667404&amp;wfr=spider&amp;for=pc</a></p>
+
+<h4 id="netty-分布式部署">Netty 分布式部署</h4>
+<ul>
+  <li>接入层同时拥有 Connect 及 Transfer作用</li>
+  <li>Transfer可以通过Mq方式订阅所有消息</li>
+  <li>也可以通过Tranfer之间通过rpc调用或者直接发起另一组长连接</li>
+</ul>
+
+<h4 id="再说netty-的零拷">再说Netty 的零拷⻉</h4>
+<h5 id="传统意义的拷">传统意义的拷⻉</h5>
+<p>是在发送数据的时候，传统的实现方式是:</p>
+<ol>
+  <li><code class="highlighter-rouge">File.read(bytes)</code></li>
+  <li><code class="highlighter-rouge">Socket.send(bytes)</code> 这种方式需要四次数据拷⻉和四次上下文切换: 1. 数据从磁盘读取到内核的read buffer</li>
+  <li>数据从内核缓冲区拷⻉到用戶缓冲区</li>
+  <li>数据从用戶缓冲区拷⻉到内核的socket buffer</li>
+  <li>数据从内核的socket buffer拷⻉到网卡接口(硬件)的缓冲区
+    <h5 id="零拷的概念">零拷⻉的概念</h5>
+    <p>明显上面的第二步和第三步是没有必要的，通过java的FileChannel.transferTo方法，可以避免上面两次多余的拷⻉(当然这需要底层操作 系统支持)</p>
+  </li>
+  <li>调用transferTo,数据从文件由DMA引擎拷⻉到内核read buffer 2. 接着DMA从内核read buffer将数据拷⻉到网卡接口buffer 上面的两次操作都不需要CPU参与，所以就达到了零拷⻉。 3、Netty中的零拷⻉
+主要体现在三个方面:
+1、bytebuffer
+Netty发送和接收消息主要使用bytebuffer，bytebuffer使用对外内存(DirectMemory)直接进行Socket读写。
+原因:如果使用传统的堆内存进行Socket读写，JVM会将堆内存buffer拷⻉一份到直接内存中然后再写入socket，多了一次缓冲区的内存拷 ⻉。DirectMemory中可以直接通过DMA发送到网卡接口
+    <h5 id="composite-buffers">Composite Buffers</h5>
+    <p>传统的ByteBuffer，如果需要将两个ByteBuffer中的数据组合到一起，我们需要首先创建一个size=size1+size2大小的新的数组，然后将两 个数组中的数据拷⻉到新的数组中。但是使用Netty提供的组合ByteBuf，就可以避免这样的操作，因为CompositeByteBuf并没有真正将多 个Buffer组合起来，而是保存了它们的引用，从而避免了数据的拷⻉，实现了零拷⻉。</p>
+    <h5 id="对于filechanneltransferto的使用">对于FileChannel.transferTo的使用</h5>
+    <p>Netty中使用了FileChannel的transferTo方法，该方法依赖于操作系统实现零拷⻉。</p>
+  </li>
+</ol>
+
+<h4 id="netty-报文加密">Netty 报文加密</h4>
+<ul>
+  <li>AESencoder/AESdecoder
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufEncoder</span> <span class="kd">extends</span> <span class="nc">MessageToMessageEncoder</span><span class="o">&lt;</span><span class="nc">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
+ 
+  <span class="nd">@Override</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">encode</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="nc">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+      <span class="kt">byte</span> <span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuf</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">()];</span>
+      <span class="n">byteBuf</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+      <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="nc">AESTest</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+      <span class="nc">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="nc">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
+      <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">buf</span><span class="o">);</span>
+ 
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufDecoder</span> <span class="kd">extends</span> <span class="nc">MessageToMessageDecoder</span><span class="o">&lt;</span><span class="nc">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
+ 
+  <span class="nd">@Override</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">decode</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="nc">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+      <span class="kt">byte</span> <span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuf</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">()];</span>
+      <span class="n">byteBuf</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+      <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="nc">AESTest</span><span class="o">.</span><span class="na">decode</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+      <span class="nc">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="nc">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
+      <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">buf</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>RSAencoder/RSAdecoder
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufClientEncoder</span> <span class="kd">extends</span> <span class="nc">MessageToMessageEncoder</span><span class="o">&lt;</span><span class="nc">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
+ 
+ <span class="nd">@Override</span>
+ <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">encode</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="nc">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+     <span class="kt">byte</span> <span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuf</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">()];</span>
+     <span class="n">byteBuf</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+     <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="nc">RSACoder</span><span class="o">.</span><span class="na">encryptByPublicKey</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+     <span class="nc">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="nc">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
+     <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">buf</span><span class="o">);</span>
+ 
+ <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufServerDecoder</span> <span class="kd">extends</span> <span class="nc">MessageToMessageDecoder</span><span class="o">&lt;</span><span class="nc">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
+ 
+ <span class="nd">@Override</span>
+ <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">decode</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="nc">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+     <span class="kt">byte</span> <span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuf</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">()];</span>
+     <span class="n">byteBuf</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+     <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="nc">RSACoder</span><span class="o">.</span><span class="na">decryptByPrivateKey</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+     <span class="nc">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="nc">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
+     <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">buf</span><span class="o">);</span>
+ <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li><a href="https://www.cnblogs.com/silyvin/articles/11827030.html">https://www.cnblogs.com/silyvin/articles/11827030.html</a></li>
+</ul>
+
+<h4 id="看一看">看一看</h4>
+<ul>
+  <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty</a></li>
+  <li><a href="http://www.52im.net/thread-2775-1-1.html">http://www.52im.net/thread-2775-1-1.html</a></li>
+  <li>Netty精粹之JAVA NIO开发需要知道的 <a href="https://my.oschina.net/andylucc/blog/614295">https://my.oschina.net/andylucc/blog/614295</a></li>
+  <li>通俗易懂 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2768&amp;highlight=netty</a></li>
+  <li>基于Netty实现海量接入的推送服务技术要点 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty">http://www.52im.net/forum.php?mod=viewthread&amp;tid=166&amp;highlight=netty</a></li>
+  <li>游戏服务 <a href="https://www.jianshu.com/p/82212eb7d76c">https://www.jianshu.com/p/82212eb7d76c</a></li>
+  <li>Netty整合SpringBoot并使用Protobuf进行数据传输 <a href="https://juejin.im/post/5bb596196fb9a05d0f16f006">https://juejin.im/post/5bb596196fb9a05d0f16f006</a></li>
+  <li>Netty随笔<a href="https://www.cnblogs.com/silyvin/category/1294168.html">https://www.cnblogs.com/silyvin/category/1294168.html</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/18/Netty.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html"> BigData </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
@@ -972,166 +1606,6 @@ Nginx路由请求的压力，对请求进行平均后，交给了服务器处理
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html"> Nginx </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="location-优先级从高到低">location 优先级从高到低</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. location <span class="o">=</span>    <span class="c"># 精准匹配</span>
-2. location ^~   <span class="c"># 带参前缀匹配</span>
-3. location ~    <span class="c"># 正则匹配（区分大小写）</span>
-4. location ~<span class="k">*</span>   <span class="c"># 正则匹配（不区分大小写）</span>
-5. location /a   <span class="c"># 普通前缀匹配，优先级低于带参数前缀匹配。</span>
-6. location /    <span class="c"># 任何没有匹配成功的，都会匹配这里处理</span>
-</code></pre></div></div>
-<h4 id="location-示例">location 示例</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-location  <span class="o">=</span> / <span class="o">{</span>
-    <span class="c"># 只精准匹配 / 的查询.</span>
-  <span class="o">[</span> configuration A <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 匹配成功： / </span>
-
-location / <span class="o">{</span>
-    <span class="c"># 匹配任何请求，因为所有请求都是以”/“开始</span>
-    <span class="c"># 但是更长字符匹配或者正则表达式匹配会优先匹配</span>
-  <span class="o">[</span> configuration B <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c">#匹配成功：/index.html</span>
-
-location /documents <span class="o">{</span>
-    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
-    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
-  <span class="o">[</span> configuration C <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 匹配成功：/documents/document.html</span>
-<span class="c"># 匹配成功：/documents/abc</span>
-
-location ~ /documents/ABC <span class="o">{</span>
-    <span class="c"># 区分大小写的正则匹配</span>
-    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
-    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
-  <span class="o">[</span> configuration CC <span class="o">]</span> 
-<span class="o">}</span>
-
-location ^~ /images/ <span class="o">{</span>
-    <span class="c"># 匹配任何以 /images/ 开头的地址，匹配符合以后，立即停止往下搜索正则，采用这一条。/</span>
-  <span class="o">[</span> configuration D <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 成功匹配：/images/a.gif</span>
-
-location ~<span class="k">*</span> <span class="se">\.</span><span class="o">(</span>gif|jpg|jpeg<span class="o">)</span><span class="nv">$ </span><span class="o">{</span>
-    <span class="c"># 匹配所有以 .gif、.jpg 或 .jpeg 结尾的请求，不区分大小写</span>
-    <span class="c"># 然而，所有请求 /images/ 下的图片会被 [ config D ]  处理，因为 ^~ 到达不了这一条正则/</span>
-    <span class="o">[</span> configuration E <span class="o">]</span> 
-<span class="o">}</span>
-<span class="c"># 成功匹配：/documents/a.jpg</span>
-
-location /images/ <span class="o">{</span>
-    <span class="c"># 字符匹配到 /images/，继续往下，会发现 ^~ 存在/</span>
-  <span class="o">[</span> configuration F <span class="o">]</span> 
-<span class="o">}</span>
-
-location /images/abc <span class="o">{</span>
-    <span class="c"># 最长字符匹配到 /images/abc，继续往下，会发现 ^~ 存在/</span>
-    <span class="c"># F与G的放置顺序是没有关系的/</span>
-  <span class="o">[</span> configuration G <span class="o">]</span> 
-<span class="o">}</span>
-
-location ~ /images/abc/ <span class="o">{</span>
-    <span class="c"># 只有去掉 [ config D ] 才有效：先最长匹配 [ config G ] 开头的地址，继续往下搜索，匹配到这一条正则，采用/</span>
-    <span class="o">[</span> configuration H <span class="o">]</span> 
-<span class="o">}</span>
-</code></pre></div></div>
-<h4 id="命名-location">命名 location</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>location / <span class="o">{</span>
-    try_files <span class="nv">$uri</span> <span class="nv">$uri</span>/ @custom
-<span class="o">}</span>
-location @custom <span class="o">{</span>
-    <span class="c"># ...do something</span>
-<span class="o">}</span>
-</code></pre></div></div>
-<h4 id="全局变量">全局变量</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$args</span> ： <span class="c">#这个变量等于请求行中的参数，同$query_string</span>
-<span class="nv">$content_length</span> ： 请求头中的Content-length字段。
-<span class="nv">$content_type</span> ： 请求头中的Content-Type字段。
-<span class="nv">$document_root</span> ： 当前请求在root指令中指定的值。
-<span class="nv">$host</span> ： 请求主机头字段，否则为服务器名称。
-<span class="nv">$http_user_agent</span> ： 客户端agent信息
-<span class="nv">$http_cookie</span> ： 客户端cookie信息
-<span class="nv">$limit_rate</span> ： 这个变量可以限制连接速率。
-<span class="nv">$request_method</span> ： 客户端请求的动作，通常为GET或POST。
-<span class="nv">$remote_addr</span> ： 客户端的IP地址。
-<span class="nv">$remote_port</span> ： 客户端的端口。
-<span class="nv">$remote_user</span> ： 已经经过Auth Basic Module验证的用户名。
-<span class="nv">$request_filename</span> ： 当前请求的文件路径，由root或alias指令与URI请求生成。
-<span class="nv">$scheme</span> ： HTTP方法（如http，https）。
-<span class="nv">$server_protocol</span> ： 请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
-<span class="nv">$server_addr</span> ： 服务器地址，在完成一次系统调用后可以确定这个值。
-<span class="nv">$server_name</span> ： 服务器名称。
-<span class="nv">$server_port</span> ： 请求到达服务器的端口号。
-<span class="nv">$request_uri</span> ： 包含请求参数的原始URI，不包含主机名，如：”/foo/bar.php?arg<span class="o">=</span>baz”。
-<span class="nv">$uri</span> ： 不带请求参数的当前URI，<span class="nv">$uri</span>不包含主机名，如”/foo/bar.html”。
-<span class="nv">$document_uri</span> ： 与<span class="nv">$uri</span>相同。
-</code></pre></div></div>
-<h4 id="rewrite规则">Rewrite规则</h4>
-<ul>
-  <li>rewrite功能就是，使用nginx提供的全局变量或自己设置的变量，结合正则表达式和标志位实现url重写以及重定向。rewrite只能放在server{},location{},if{}中，并且只能对域名后边的除去传递的参数外的字符串起作用，例如 http://seanlook.com/a/we/index.php?id=1&amp;u=str 只对/a/we/index.php重写。语法rewrite regex replacement [flag];</li>
-  <li>如果相对域名或参数字符串起作用，可以使用全局变量匹配，也可以使用proxy_pass反向代理。</li>
-  <li>表明看rewrite和location功能有点像，都能实现跳转，主要区别在于rewrite是在同一域名内更改获取资源的路径，而location是对一类路径做控制访问或反向代理，可以proxy_pass到其他机器。很多情况下rewrite也会写在location里，它们的执行顺序是：
-    <ul>
-      <li>执行server块的rewrite指令</li>
-      <li>执行location匹配</li>
-      <li>执行选定的location中的rewrite指令</li>
-    </ul>
-  </li>
-  <li>如果其中某步URI被重写，则重新循环执行1-3，直到找到真实存在的文件；循环超过10次，则返回500 Internal Server Error错误。</li>
-</ul>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>执行搜索
-这个规则的目的是为了执行搜索，搜索URL中包含的关键字。
-请求的URL //hqidi.com/search/some-search-keywords
-重写后URL //hqidi.com/search.php?p<span class="o">=</span>some-search-keywords
-重写规则         rewrite ^/search/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/search.php?p<span class="o">=</span><span class="nv">$1</span>?<span class="p">;</span>
-
-用户个人资料页面
-大多数运行访问者注册的动态网站都提供一个可以查看个人资料的页面，这个页面的URL包含用户的UID和用户名
-请求的URL //hqidi.com/user/47/dige
-重写后URL //hqidi.com/user.php?id<span class="o">=</span>47&amp;name<span class="o">=</span>dige
-重写规则         rewrite ^/user/<span class="o">([</span>0-9]+<span class="o">)</span>/<span class="o">(</span>.+<span class="o">)</span><span class="nv">$ </span>/user.php?id<span class="o">=</span><span class="nv">$1</span>&amp;name<span class="o">=</span><span class="nv">$2</span>?<span class="p">;</span>
-
-多个参数
-有些网站对字符串参数使用不同的语法，例如 通过斜线“/”来分隔非命名参数
-请求的URL //hqidi.com/index.php/param1/param2/param3
-重写后URL //hqidi.com/index.php?p1<span class="o">=</span>param1&amp;p2<span class="o">=</span>param2&amp;p3<span class="o">=</span>param3
-重写规则         rewrite ^/index.php/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/index.php?p1<span class="o">=</span><span class="nv">$1</span>&amp;p2<span class="o">=</span><span class="nv">$2</span>&amp;p3<span class="o">=</span><span class="nv">$3</span>?<span class="p">;</span>
-</code></pre></div></div>
-
-<h4 id="参考">参考</h4>
-<ul>
-  <li>location 配置一 <a href="https://segmentfault.com/a/1190000022315733">https://segmentfault.com/a/1190000022315733</a></li>
-  <li>location 配置二 <a href="https://segmentfault.com/a/1190000022407797">https://segmentfault.com/a/1190000022407797</a></li>
-  <li>Nginx 架构原理科普 <a href="https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ">https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ</a></li>
-  <li>OpenResty 概要及原理科普 <a href="https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw">https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw</a></li>
-  <li>微服务网关 Kong 科普 <a href="https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g">https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -1297,7 +1771,7 @@ location @custom <span class="o">{</span>
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 11 )</span>
+      <span class="label label-default">Java ( 12 )</span>
       </a><br />
 
       

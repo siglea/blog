@@ -168,7 +168,8 @@ jmap -dump:format=b,file=outfile 3024可以将3024进程的内存heap输出出�
 
 ```
 #### jhat JVM Heap Analysis Tool ，把jmap dump的文件展示
-```shell script
+
+```shell
 jhat outfile
 http://localhost:7000
 ```
@@ -192,6 +193,13 @@ Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.92-b14 mixed mode):
 ```
 
 #### JConsole、VisualVM
+<img src="/img/jconsole.jpg" width="600px" />
 
-JVM运行时内存使用情况监控
-<https://blog.csdn.net/zmx729618/article/details/78392715>
+#### 用javap查看字节码指令
+<img src="/img/javap.jpg" width="600px" />
+
+#### HSDIS：JIT生成代码反汇编
+<img src="/img/hsdis.jpg" width="600px" />
+
+#### JVM运行时内存使用情况监控
+- <https://blog.csdn.net/zmx729618/article/details/78392715>
