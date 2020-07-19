@@ -394,11 +394,62 @@ currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &lt;htt
   <li>Redis支持数据的备份，即master-slave模式的数据备份。</li>
   <li>Redis支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用。</li>
   <li>在Redis中，并不是所有的数据都一直存储在内存中的。这是和Memcached相比一个最大的区别</li>
+  <li>memcache可以存储大文件</li>
 </ol>
 
-<h4 id="http-https-dns原理-">HTTP HTTPS DNS原理 !!!???</h4>
+<h4 id="dns">DNS</h4>
 <ul>
-  <li>使用HTTPDNS相比LocalDNS的好处</li>
+  <li>在UDP协议栈上方</li>
+  <li>全面了解移动端DNS域名劫持等杂症：原理、根源、HttpDNS解决方案等 <a href="http://www.52im.net/thread-2121-1-1.html">http://www.52im.net/thread-2121-1-1.html</a></li>
+  <li>HTTPDNS 替代 LocalDNS
+    <ol>
+      <li>解决域名检验和多个子域名多个证书SNI（Server Name Indication 允许客户端向服务器提供它所请求的域名） 的问题
+        <ul>
+          <li>android 美图APP <a href="http://www.52im.net/thread-2172-1-1.html">http://www.52im.net/thread-2172-1-1.html</a></li>
+          <li>ios <a href="https://kangzubin.com/httpdns-https/">https://kangzubin.com/httpdns-https/</a></li>
+          <li>百度 <a href="http://www.52im.net/thread-2472-1-1.html">http://www.52im.net/thread-2472-1-1.html</a></li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="lvs之drnattun模式祥解">LVS之DR,NAT,TUN模式祥解</h4>
+<ul>
+  <li>NAT：修改请求报文的目标IP，多目标IP的DNAT</li>
+  <li>DR：操纵封装新的MAC地址</li>
+  <li>TUN：在原请求IP报文之外新加一个IP首部</li>
+  <li>FullNAT：修改请求报文的源和目标IP</li>
+</ul>
+
+<h4 id="nat-与-打洞">Nat 与 打洞</h4>
+<ul>
+  <li>Nat技术 Net Address Transfer
+    <ul>
+      <li>全锥型NAT：一旦内部主机端口对(iAddr:iPort)被NAT网关映射到(eAddr:ePort)，所有后续的(iAddr:iPort)报文都会被转换为(eAddr:ePort)；任何一个外部主机发送到(eAddr:ePort)的报文将会被转换后发到(iAddr:iPort)。</li>
+      <li>限制锥型NAT：在全锥基础上限制机器</li>
+      <li>端口限制锥型NAT：在限制锥型NAT基础上限制端口</li>
+      <li>对称型NAT：限制在固定的主机+端口，可以理解为是”Session级”</li>
+    </ul>
+  </li>
+  <li>
+    <p>p2p打洞原理是通过中间服务器S”伪装”连接，获取到P1与P2的公网IP+端口组合，然后P1与P2分别伪装S与彼此建立连接</p>
+  </li>
+  <li><a href="http://www.52im.net/thread-542-1-1.html">http://www.52im.net/thread-542-1-1.html</a></li>
+  <li><a href="http://www.52im.net/thread-50-1-1.html">http://www.52im.net/thread-50-1-1.html</a></li>
+  <li><a href="https://blog.csdn.net/weiyuefei/article/details/52247497">https://blog.csdn.net/weiyuefei/article/details/52247497</a></li>
+</ul>
+
+<h4 id="内存泄漏-内存溢出">内存泄漏 内存溢出</h4>
+<ul>
+  <li>ThreadLocal内存泄漏，是因为内部的Map的key是通过弱引用关联的threadLocal，发生GC的时候key就消失了，造成Value泄漏。使用的时候记得显示remove</li>
+</ul>
+<p><a href="https://www.jianshu.com/p/1a5d288bdaee">https://www.jianshu.com/p/1a5d288bdaee</a></p>
+
+<h4 id="direct-memory-回收">Direct Memory 回收？？？</h4>
+<ul>
+  <li><a href="https://blog.csdn.net/xieyuooo/article/details/7547435">https://blog.csdn.net/xieyuooo/article/details/7547435</a></li>
+  <li><a href="https://blog.csdn.net/phj88/article/details/8011830">https://blog.csdn.net/phj88/article/details/8011830</a></li>
 </ul>
 
 <h4 id="jdk-各个版本特性">JDK 各个版本特性</h4>
@@ -406,16 +457,6 @@ currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &lt;htt
 <h4 id="kubernetes-和-istio-service-mesh-sidecar-">Kubernetes 和 Istio 、Service Mesh Sidecar ???</h4>
 <ul>
   <li>微服务的缺点？分布式系统的复杂性;多服务运维难度,随着服务的增加,运维的压力也在增大;系统部署依赖;服务间通信成本;数 据一致性;系统集成测试;性能监控</li>
-</ul>
-
-<h4 id="lvs之drnattun模式祥解">LVS之DR,NAT,TUN模式祥解</h4>
-
-<h4 id="内存泄漏-内存溢出">内存泄漏 内存溢出</h4>
-
-<h4 id="direct-memory-回收">Direct Memory 回收？？？</h4>
-<ul>
-  <li><a href="https://blog.csdn.net/xieyuooo/article/details/7547435">https://blog.csdn.net/xieyuooo/article/details/7547435</a></li>
-  <li><a href="https://blog.csdn.net/phj88/article/details/8011830">https://blog.csdn.net/phj88/article/details/8011830</a></li>
 </ul>
 
       </div>
@@ -677,7 +718,44 @@ currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &lt;htt
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="linux版本">Linux版本</h4>
+	<h4 id="http-https">HTTP HTTPS</h4>
+<ul>
+  <li>理解HTTPS <a href="http://www.52im.net/thread-1890-1-1.html">http://www.52im.net/thread-1890-1-1.html</a></li>
+</ul>
+
+<h4 id="ssltls">SSL/TLS</h4>
+<ul>
+  <li>过程概述，4次握手，主要是为了生成”对话秘钥”
+    <ol>
+      <li>客户端携带随机数1、TLS版本号、加密方式如RSA、压缩方式等，发送给服务器</li>
+      <li>服务器携带随机数2、确认的TLS版本号、加密方式如RSA、压缩方式、服务器正式（含公钥）等，发送给客户端</li>
+      <li>客户端生成随机数3并用公钥加密发送给服务器，并通知服务器编码方式改变，握手结束</li>
+      <li>服务器收到随机数3，通知客户端编码方式改变，握手结束</li>
+      <li>双方采用”对话密钥”进行加密通信。</li>
+    </ol>
+  </li>
+  <li>要点
+    <ul>
+      <li>通信阶段的会话密码，是由3个随机数生成：客户端产生2个、服务端产生1个</li>
+    </ul>
+  </li>
+  <li>参考
+    <ul>
+      <li>SSL/TLS协议运行机制的概述 <a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html</a></li>
+      <li>图解SSL/TLS协议 <a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html">http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html</a></li>
+      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=327&amp;highlight=SSL%2FTLS">http://www.52im.net/forum.php?mod=viewthread&amp;tid=327&amp;highlight=SSL%2FTLS</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="公钥私钥有何特点">公钥、私钥有何特点？</h4>
+<p>公钥加密的，私钥可以解密；
+私钥加密的，公钥可以解密。</p>
+
+<p>但公钥加密的，公钥无法解密；
+私钥加密的，私钥也无法解密！</p>
+
+<h4 id="linux版本">Linux版本</h4>
 <ul>
   <li>0.00  1991.2-4 两个进程分别显示AAA BBB</li>
   <li>0.01  1991.9 第一个正式向外公布的Linux内核版本</li>
@@ -745,6 +823,7 @@ currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &lt;htt
 这个协议在Chrome浏览器上证明可行以后，就被当作 HTTP/2 的基础，主要特性都在 HTTP/2 之中得到继承。</li>
     </ul>
   </li>
+  <li>参考 <a href="http://www.52im.net/thread-1709-1-1.html">http://www.52im.net/thread-1709-1-1.html</a></li>
 </ul>
 
 <h4 id="ssltls历史">SSL/TLS历史</h4>
@@ -768,6 +847,9 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
 
 <h4 id="mitm攻击">MITM攻击</h4>
 <ul>
+  <li>SSLStrip （降级攻击），把Https，降到Http。这种攻击利用的是很多网站并没有关掉http访问，而是在服务端将首页从http跳到https，
+  给了攻击者一个http响应做突破口。不过这种攻击也可以防御，启用HSTS(HTTP Strict Transport Security, HTTP 严格传输安全)和Preload list就行了，让攻击者找不到任何http的机会。</li>
+  <li>SSLSplit（解密攻击）</li>
   <li>理解清楚中间人攻击（Man-in-the-MiddleAttack，简称“MITM攻击”）也就理解了HTTPS。</li>
   <li>中间人攻击（MITM攻击）是指，黑客拦截并篡改网络中的通信数据。又分为被动MITM和主动MITM，被动MITM只窃取通信数据而不修改，而主动MITM不但能窃取数据，还会篡改通信数据。最常见的中间人攻击常常发生在公共wifi或者公共路由上。</li>
 </ul>

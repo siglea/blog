@@ -8,6 +8,30 @@ tags:
 categories:
 - 技术
 ---
+#### HTTP HTTPS 
+- 理解HTTPS <http://www.52im.net/thread-1890-1-1.html>
+
+#### SSL/TLS 
+- 过程概述，4次握手，主要是为了生成"对话秘钥"
+    1. 客户端携带随机数1、TLS版本号、加密方式如RSA、压缩方式等，发送给服务器
+    2. 服务器携带随机数2、确认的TLS版本号、加密方式如RSA、压缩方式、服务器正式（含公钥）等，发送给客户端
+    3. 客户端生成随机数3并用公钥加密发送给服务器，并通知服务器编码方式改变，握手结束
+    4. 服务器收到随机数3，通知客户端编码方式改变，握手结束
+    3. 双方采用"对话密钥"进行加密通信。
+- 要点
+    - 通信阶段的会话密码，是由3个随机数生成：客户端产生2个、服务端产生1个
+- 参考
+    - SSL/TLS协议运行机制的概述 <http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html>
+    - 图解SSL/TLS协议 <http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html>
+    - <http://www.52im.net/forum.php?mod=viewthread&tid=327&highlight=SSL%2FTLS>
+
+#### 公钥、私钥有何特点？
+公钥加密的，私钥可以解密；
+私钥加密的，公钥可以解密。
+
+但公钥加密的，公钥无法解密；
+私钥加密的，私钥也无法解密！
+ 
 #### Linux版本
 - 0.00  1991.2-4 两个进程分别显示AAA BBB
 - 0.01  1991.9 第一个正式向外公布的Linux内核版本
@@ -58,6 +82,7 @@ categories:
 - SPDY 协议
     - 2009年，谷歌公开了自行研发的 SPDY 协议，主要解决 HTTP/1.1 效率不高的问题。
       这个协议在Chrome浏览器上证明可行以后，就被当作 HTTP/2 的基础，主要特性都在 HTTP/2 之中得到继承。
+- 参考 <http://www.52im.net/thread-1709-1-1.html>
 
 #### SSL/TLS历史
 - 1994年，NetScape公司设计了SSL协议（Secure Sockets Layer）的1.0版，但是未发布。
@@ -75,6 +100,9 @@ categories:
 - <https://kb.cnblogs.com/page/197396/>
 
 #### MITM攻击
+- SSLStrip （降级攻击），把Https，降到Http。这种攻击利用的是很多网站并没有关掉http访问，而是在服务端将首页从http跳到https，
+    给了攻击者一个http响应做突破口。不过这种攻击也可以防御，启用HSTS(HTTP Strict Transport Security, HTTP 严格传输安全)和Preload list就行了，让攻击者找不到任何http的机会。
+- SSLSplit（解密攻击）
 - 理解清楚中间人攻击（Man-in-the-MiddleAttack，简称“MITM攻击”）也就理解了HTTPS。
 - 中间人攻击（MITM攻击）是指，黑客拦截并篡改网络中的通信数据。又分为被动MITM和主动MITM，被动MITM只窃取通信数据而不修改，而主动MITM不但能窃取数据，还会篡改通信数据。最常见的中间人攻击常常发生在公共wifi或者公共路由上。
 

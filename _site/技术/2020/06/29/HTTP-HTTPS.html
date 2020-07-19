@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>HTTP-HTTPS</title>
-  <meta name="description" content="Linux版本  0.00  1991.2-4 两个进程分别显示AAA BBB  0.01  1991.9 第一个正式向外公布的Linux内核版本  0.02  1991.10.5 Linus Torvalds将当时最初的0.02内核版本发布到了Minix新闻组，很快就得到了反应。Linus Torvalds在这...">
+  <meta name="description" content="HTTP HTTPS  理解HTTPS http://www.52im.net/thread-1890-1-1.html">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,7 +60,44 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="linux版本">Linux版本</h4>
+    <h4 id="http-https">HTTP HTTPS</h4>
+<ul>
+  <li>理解HTTPS <a href="http://www.52im.net/thread-1890-1-1.html">http://www.52im.net/thread-1890-1-1.html</a></li>
+</ul>
+
+<h4 id="ssltls">SSL/TLS</h4>
+<ul>
+  <li>过程概述，4次握手，主要是为了生成”对话秘钥”
+    <ol>
+      <li>客户端携带随机数1、TLS版本号、加密方式如RSA、压缩方式等，发送给服务器</li>
+      <li>服务器携带随机数2、确认的TLS版本号、加密方式如RSA、压缩方式、服务器正式（含公钥）等，发送给客户端</li>
+      <li>客户端生成随机数3并用公钥加密发送给服务器，并通知服务器编码方式改变，握手结束</li>
+      <li>服务器收到随机数3，通知客户端编码方式改变，握手结束</li>
+      <li>双方采用”对话密钥”进行加密通信。</li>
+    </ol>
+  </li>
+  <li>要点
+    <ul>
+      <li>通信阶段的会话密码，是由3个随机数生成：客户端产生2个、服务端产生1个</li>
+    </ul>
+  </li>
+  <li>参考
+    <ul>
+      <li>SSL/TLS协议运行机制的概述 <a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html</a></li>
+      <li>图解SSL/TLS协议 <a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html">http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html</a></li>
+      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=327&amp;highlight=SSL%2FTLS">http://www.52im.net/forum.php?mod=viewthread&amp;tid=327&amp;highlight=SSL%2FTLS</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="公钥私钥有何特点">公钥、私钥有何特点？</h4>
+<p>公钥加密的，私钥可以解密；
+私钥加密的，公钥可以解密。</p>
+
+<p>但公钥加密的，公钥无法解密；
+私钥加密的，私钥也无法解密！</p>
+
+<h4 id="linux版本">Linux版本</h4>
 <ul>
   <li>0.00  1991.2-4 两个进程分别显示AAA BBB</li>
   <li>0.01  1991.9 第一个正式向外公布的Linux内核版本</li>
@@ -128,6 +165,7 @@
 这个协议在Chrome浏览器上证明可行以后，就被当作 HTTP/2 的基础，主要特性都在 HTTP/2 之中得到继承。</li>
     </ul>
   </li>
+  <li>参考 <a href="http://www.52im.net/thread-1709-1-1.html">http://www.52im.net/thread-1709-1-1.html</a></li>
 </ul>
 
 <h4 id="ssltls历史">SSL/TLS历史</h4>
@@ -151,6 +189,9 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
 
 <h4 id="mitm攻击">MITM攻击</h4>
 <ul>
+  <li>SSLStrip （降级攻击），把Https，降到Http。这种攻击利用的是很多网站并没有关掉http访问，而是在服务端将首页从http跳到https，
+  给了攻击者一个http响应做突破口。不过这种攻击也可以防御，启用HSTS(HTTP Strict Transport Security, HTTP 严格传输安全)和Preload list就行了，让攻击者找不到任何http的机会。</li>
+  <li>SSLSplit（解密攻击）</li>
   <li>理解清楚中间人攻击（Man-in-the-MiddleAttack，简称“MITM攻击”）也就理解了HTTPS。</li>
   <li>中间人攻击（MITM攻击）是指，黑客拦截并篡改网络中的通信数据。又分为被动MITM和主动MITM，被动MITM只窃取通信数据而不修改，而主动MITM不但能窃取数据，还会篡改通信数据。最常见的中间人攻击常常发生在公共wifi或者公共路由上。</li>
 </ul>
