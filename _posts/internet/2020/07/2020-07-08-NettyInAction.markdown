@@ -11,6 +11,8 @@ categories:
 ---
 TODO <https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg>
 netty源码阅读之ByteBuf之内存概念arena、chunk、page、subpage
+<https://www.cnblogs.com/itxiaok/category/1395489.html>
+
 #### Netty的组件
 - group() EventLoop -> 控制流、多线程处理、并发
   - 一个 EventLoopGroup 包含一个或者多个 EventLoop;

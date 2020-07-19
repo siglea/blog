@@ -8,18 +8,17 @@ tags:
 categories:
 - 技术
 ---
-#### 蚂蚁金服
-- ArrayList的扩容方式和扩容时机
-    - 初始化
-        ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断
-        如果参数等于0，则将数组初始化为一个空数组，
-        如果不等于0，将数组初始化为一个容量为10的数组。
-    - 扩容时机
-        当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。
-        Vector会扩容2倍。
-    - 扩容方式
-       扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。
-- <https://www.cnblogs.com/silyvin/p/10223910.html>
+#### ArrayList的扩容方式和扩容时机
+- 初始化
+    ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断
+    如果参数等于0，则将数组初始化为一个空数组，
+    如果不等于0，将数组初始化为一个容量为10的数组。
+- 扩容时机
+    当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。
+    Vector会扩容2倍。
+- 扩容方式
+   扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。
+-  蚂蚁金服 <https://www.cnblogs.com/silyvin/p/10223910.html>
 
 #### volatile（保证可见性、禁止重排、无法实现原子性）
 - 指令重排只会保证串行语义的执行一致性(单线程) 并不会关心多线程间的语义一致性
@@ -217,6 +216,7 @@ while (true) {
 ```
 - selector.select() 应该 一直阻塞，直到有就绪事件到达，但很遗憾，由于 Java NIO 实现上存在 bug，select() 可能在 没有 任何就绪事件的情况下返回，从而导致 while(true) 被不断执行，最后导致某个 CPU 核心的利用率飙升到 100%，这就是臭名昭著的 Java NIO 的 epoll bug。
 - 解决方法
+
 ```shell
 selectCnt = 0;  // epoll 空轮询场景下 select 调用次数
 long currentTimeNanos = System.nanoTime();  // 每个 for 循环开始时的绝对时间
@@ -307,16 +307,91 @@ for (;;) {
 - <http://www.52im.net/thread-50-1-1.html>
 - <https://blog.csdn.net/weiyuefei/article/details/52247497>
 
+#### 内存泄漏
+1. 内部类持有外部类 
+2. 静态集合类
+3. 各种连接的打开与关闭
+4. 变量作用域不合理，比如类似逃逸
+5. 改变了Hash算法，导致之前的hash key 对应的 value不能被释放
+6. ThreadLocal内存泄漏，是因为内部的Map的key是通过虚引用关联的threadLocal，发生GC的时候key就消失了，造成Value泄漏。使用的时候记得显示remove
+    <https://www.jianshu.com/p/1a5d288bdaee>
+7. 监听器的回调绑定与取消
 
-#### 内存泄漏 内存溢出
-- ThreadLocal内存泄漏，是因为内部的Map的key是通过弱引用关联的threadLocal，发生GC的时候key就消失了，造成Value泄漏。使用的时候记得显示remove
-<https://www.jianshu.com/p/1a5d288bdaee>
+#### Direct Memory 回收
+- DirectByteBuffer是通过虚引用(Phantom Reference)来实现堆外内存的释放的
+- Cleaner是PhantomReference的子类，并通过自身的next和prev字段维护的一个双向链表。PhantomReference的作用在于跟踪垃圾回收过程，
+    并不会对对象的垃圾回收过程造成任何的影响。 所以cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); 
+    用于对当前构造的DirectByteBuffer对象的垃圾回收过程进行跟踪。 当DirectByteBuffer对象从pending状态 ——> enqueue状态时，会触发Cleaner的clean()，
+    而Cleaner的clean()的方法会实现通过unsafe对堆外内存的释放。
 
-#### Direct Memory 回收？？？
-- <https://blog.csdn.net/xieyuooo/article/details/7547435>
-- <https://blog.csdn.net/phj88/article/details/8011830>
+```shell 
+        try {
+            base = unsafe.allocateMemory(size);
+        } catch (OutOfMemoryError x) {
+            Bits.unreserveMemory(size, cap);
+            throw x;
+        }
+        unsafe.setMemory(base, size, (byte) 0);
+        if (pa && (base % ps != 0)) {
+            // Round up to page boundary
+            address = base + ps - (base & (ps - 1));
+        } else {
+            address = base;
+        }
+        // DirectByteBuffer 内 构建Cleaner对象用于跟踪DirectByteBuffer对象的垃圾回收，以实现当DirectByteBuffer被垃圾回收时，堆外内存也会被释放
+        cleaner = Cleaner.create(this, new Deallocator(base, size, cap));
+        // Cleaner 内 clean
+        cleaner.clean()
+        // Deallocator 继承 Runnable
+        public void run() {
+            if (address == 0) {
+                // Paranoia
+                return;
+            }
+            unsafe.freeMemory(address);
+            address = 0;
+            Bits.unreserveMemory(size, capacity);
+        }
+```
+- java之HeapByteBuffer&DirectByteBuffer以及回收DirectByteBuffer <https://blog.csdn.net/xieyuooo/article/details/7547435>
+- java nio 和 jvm 虚拟机参数的 XX:+DisableExplicitGC 的潜规则 <https://blog.csdn.net/phj88/article/details/8011830>
+- Java网络编程和NIO详解8：浅析mmap和Direct Buffer <https://www.cnblogs.com/itxiaok/p/10357832.html>
+- KAFKA推送消息用到了sendfile，落盘技术用到了mmap，DMA贯穿其中 <https://www.jianshu.com/p/7863667d5fa7>
+- Java魔法类：Unsafe应用解析 <https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html>
 
 #### JDK 各个版本特性
+- Java5 ，2004-09-30发行
+    - 泛型
+    - 枚举
+    - 自动装箱拆箱
+    - 可变参数
+    - 注解
+    - foreach循环（增强for、for/in）
+    - 静态导入
+    - 格式化（System.out.println 支持%s %d等格式化输出）
+    - 线程框架/数据结构 JUC
+    - Arrays工具类/StringBuilder/instrument
+- Java6
+    - 开发代号为Mustang(野马),于2006-12-11发行。评价：鸡肋的版本，有JDBC4.0更新、Complier API、WebSevice支持的加强等更新。
+- Java7
+    - switch中添加对String类型的支持
+    - 数字字面量的改进 / 数值可加下划
+    - 异常处理（捕获多个异常） try-with-resources
+    - 增强泛型推断
+    - JSR203 NIO2.0（AIO）新IO的支持
+    - JSR292与InvokeDynamic指令，可以调用其他语言生成的字节码
+    - Path接口、DirectoryStream、Files、WatchService（重要接口更新）
+    - fork/join framework 并行计算
+- - Java8 2014年
+    - Lambda     
+- Java9 2017年9月1日
+    - 平台级modularity（原名：Jigsaw） 模块化系统
+    - Java 的 REPL 工具： jShell 命令
+- Java10 2018年3月20日
+    - 局部变量的类型推断 var关键字
+    - GC改进和内存管理 并行全垃圾回收器 G1
+- Java11 2018年9月26日
+- 参考 <https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA>
 
 ####  Kubernetes 和 Istio 、Service Mesh Sidecar ???
 - 微服务的缺点？分布式系统的复杂性;多服务运维难度,随着服务的增加,运维的压力也在增大;系统部署依赖;服务间通信成本;数 据一致性;系统集成测试;性能监控

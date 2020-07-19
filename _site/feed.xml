@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 19 Jul 2020 20:46:07 +0800</pubDate>
-    <lastBuildDate>Sun, 19 Jul 2020 20:46:07 +0800</lastBuildDate>
+    <pubDate>Sun, 19 Jul 2020 22:48:23 +0800</pubDate>
+    <lastBuildDate>Sun, 19 Jul 2020 22:48:23 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -762,7 +762,9 @@
       <item>
         <title>Netty In Action</title>
         <description>&lt;p&gt;TODO &lt;a href=&quot;https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg&quot;&gt;https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg&lt;/a&gt;
-netty源码阅读之ByteBuf之内存概念arena、chunk、page、subpage&lt;/p&gt;
+netty源码阅读之ByteBuf之内存概念arena、chunk、page、subpage
+&lt;a href=&quot;https://www.cnblogs.com/itxiaok/category/1395489.html&quot;&gt;https://www.cnblogs.com/itxiaok/category/1395489.html&lt;/a&gt;&lt;/p&gt;
+
 &lt;h4 id=&quot;netty的组件&quot;&gt;Netty的组件&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;group() EventLoop -&amp;gt; 控制流、多线程处理、并发
@@ -973,22 +975,18 @@ Sec-WebSocket-Version: 13
     
       <item>
         <title>DotDot</title>
-        <description>&lt;h4 id=&quot;蚂蚁金服&quot;&gt;蚂蚁金服&lt;/h4&gt;
+        <description>&lt;h4 id=&quot;arraylist的扩容方式和扩容时机&quot;&gt;ArrayList的扩容方式和扩容时机&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;ArrayList的扩容方式和扩容时机
-    &lt;ul&gt;
-      &lt;li&gt;初始化
+  &lt;li&gt;初始化
   ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断
   如果参数等于0，则将数组初始化为一个空数组，
   如果不等于0，将数组初始化为一个容量为10的数组。&lt;/li&gt;
-      &lt;li&gt;扩容时机
+  &lt;li&gt;扩容时机
   当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。
   Vector会扩容2倍。&lt;/li&gt;
-      &lt;li&gt;扩容方式
+  &lt;li&gt;扩容方式
  扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/silyvin/p/10223910.html&quot;&gt;https://www.cnblogs.com/silyvin/p/10223910.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;蚂蚁金服 &lt;a href=&quot;https://www.cnblogs.com/silyvin/p/10223910.html&quot;&gt;https://www.cnblogs.com/silyvin/p/10223910.html&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;volatile保证可见性禁止重排无法实现原子性&quot;&gt;volatile（保证可见性、禁止重排、无法实现原子性）&lt;/h4&gt;
@@ -1224,31 +1222,35 @@ ArrayList是非线程安全的，Vector是线程安全的。&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;ul&gt;
   &lt;li&gt;selector.select() 应该 一直阻塞，直到有就绪事件到达，但很遗憾，由于 Java NIO 实现上存在 bug，select() 可能在 没有 任何就绪事件的情况下返回，从而导致 while(true) 被不断执行，最后导致某个 CPU 核心的利用率飙升到 100%，这就是臭名昭著的 Java NIO 的 epoll bug。&lt;/li&gt;
-  &lt;li&gt;解决方法
-```shell
-selectCnt = 0;  // epoll 空轮询场景下 select 调用次数
-long currentTimeNanos = System.nanoTime();  // 每个 for 循环开始时的绝对时间&lt;/li&gt;
+  &lt;li&gt;解决方法&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;for (;;) {
-    timeoutMillis = …  // 初始化超时参数&lt;/p&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;selectCnt &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  // epoll 空轮询场景下 &lt;span class=&quot;k&quot;&gt;select &lt;/span&gt;调用次数
+long currentTimeNanos &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; System.nanoTime&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  // 每个 &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;循环开始时的绝对时间
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;int selectedKeys = selector.select(timeoutMillis);
-selectCnt++;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    timeoutMillis &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; ...  // 初始化超时参数
 
-long time = System.nanoTime();  // 记录执行到此处的绝对时间：
+    int selectedKeys &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; selector.select&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;timeoutMillis&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    selectCnt++&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-// 检测逻辑
-if (time - currentTimeNanos &amp;gt; timeoutMillis) {
-    selectCnt = 1;  // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1
-} else if (selectCnt &amp;gt;= 重试次数阈值（默认 512）) {
-    selector = selectRebuildSelector(selectCnt);  // 解决 epoll bug 的实际逻辑
-    selectCnt = 1;  // 解决本次 epoll bug，重置 selectCnt
-    break;
-}
+    long &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; System.nanoTime&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  // 记录执行到此处的绝对时间：
 
-currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &amp;lt;http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/&amp;gt;
+    // 检测逻辑
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt; - currentTimeNanos &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; timeoutMillis&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        selectCnt &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;selectCnt &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; 重试次数阈值（默认 512）&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        selector &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; selectRebuildSelector&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;selectCnt&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  // 解决 epoll bug 的实际逻辑
+        selectCnt &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  // 解决本次 epoll bug，重置 selectCnt
+        &lt;span class=&quot;nb&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    currentTimeNanos &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  // 重置下次 &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;循环开始时间
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/&quot;&gt;http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h4 id=&quot;netty零拷贝总结的比较清楚了&quot;&gt;Netty零拷贝总结的比较清楚了&lt;/h4&gt;
 &lt;ul&gt;
@@ -1350,19 +1352,120 @@ currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &amp;lt
   &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/weiyuefei/article/details/52247497&quot;&gt;https://blog.csdn.net/weiyuefei/article/details/52247497&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;内存泄漏-内存溢出&quot;&gt;内存泄漏 内存溢出&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;ThreadLocal内存泄漏，是因为内部的Map的key是通过弱引用关联的threadLocal，发生GC的时候key就消失了，造成Value泄漏。使用的时候记得显示remove&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.jianshu.com/p/1a5d288bdaee&quot;&gt;https://www.jianshu.com/p/1a5d288bdaee&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&quot;内存泄漏&quot;&gt;内存泄漏&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;内部类持有外部类&lt;/li&gt;
+  &lt;li&gt;静态集合类&lt;/li&gt;
+  &lt;li&gt;各种连接的打开与关闭&lt;/li&gt;
+  &lt;li&gt;变量作用域不合理，比如类似逃逸&lt;/li&gt;
+  &lt;li&gt;改变了Hash算法，导致之前的hash key 对应的 value不能被释放&lt;/li&gt;
+  &lt;li&gt;ThreadLocal内存泄漏，是因为内部的Map的key是通过虚引用关联的threadLocal，发生GC的时候key就消失了，造成Value泄漏。使用的时候记得显示remove
+ &lt;a href=&quot;https://www.jianshu.com/p/1a5d288bdaee&quot;&gt;https://www.jianshu.com/p/1a5d288bdaee&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;监听器的回调绑定与取消&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;h4 id=&quot;direct-memory-回收&quot;&gt;Direct Memory 回收？？？&lt;/h4&gt;
+&lt;h4 id=&quot;direct-memory-回收&quot;&gt;Direct Memory 回收&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/xieyuooo/article/details/7547435&quot;&gt;https://blog.csdn.net/xieyuooo/article/details/7547435&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/phj88/article/details/8011830&quot;&gt;https://blog.csdn.net/phj88/article/details/8011830&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;DirectByteBuffer是通过虚引用(Phantom Reference)来实现堆外内存的释放的&lt;/li&gt;
+  &lt;li&gt;Cleaner是PhantomReference的子类，并通过自身的next和prev字段维护的一个双向链表。PhantomReference的作用在于跟踪垃圾回收过程，
+  并不会对对象的垃圾回收过程造成任何的影响。 所以cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); 
+  用于对当前构造的DirectByteBuffer对象的垃圾回收过程进行跟踪。 当DirectByteBuffer对象从pending状态 ——&amp;gt; enqueue状态时，会触发Cleaner的clean()，
+  而Cleaner的clean()的方法会实现通过unsafe对堆外内存的释放。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        try &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            base &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; unsafe.allocateMemory&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;size&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; catch &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;OutOfMemoryError x&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            Bits.unreserveMemory&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;size, cap&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            throw x&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        unsafe.setMemory&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;base, size, &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;byte&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; 0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;pa &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;base % ps &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; 0&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            // Round up to page boundary
+            address &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; base + ps - &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;base &amp;amp; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ps - 1&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            address &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; base&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        // DirectByteBuffer 内 构建Cleaner对象用于跟踪DirectByteBuffer对象的垃圾回收，以实现当DirectByteBuffer被垃圾回收时，堆外内存也会被释放
+        cleaner &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; Cleaner.create&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;this, new Deallocator&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;base, size, cap&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        // Cleaner 内 clean
+        cleaner.clean&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+        // Deallocator 继承 Runnable
+        public void run&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;address &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; 0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                // Paranoia
+                &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+            unsafe.freeMemory&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;address&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            address &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            Bits.unreserveMemory&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;size, capacity&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;java之HeapByteBuffer&amp;amp;DirectByteBuffer以及回收DirectByteBuffer &lt;a href=&quot;https://blog.csdn.net/xieyuooo/article/details/7547435&quot;&gt;https://blog.csdn.net/xieyuooo/article/details/7547435&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;java nio 和 jvm 虚拟机参数的 XX:+DisableExplicitGC 的潜规则 &lt;a href=&quot;https://blog.csdn.net/phj88/article/details/8011830&quot;&gt;https://blog.csdn.net/phj88/article/details/8011830&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Java网络编程和NIO详解8：浅析mmap和Direct Buffer &lt;a href=&quot;https://www.cnblogs.com/itxiaok/p/10357832.html&quot;&gt;https://www.cnblogs.com/itxiaok/p/10357832.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;KAFKA推送消息用到了sendfile，落盘技术用到了mmap，DMA贯穿其中 &lt;a href=&quot;https://www.jianshu.com/p/7863667d5fa7&quot;&gt;https://www.jianshu.com/p/7863667d5fa7&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Java魔法类：Unsafe应用解析 &lt;a href=&quot;https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html&quot;&gt;https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;jdk-各个版本特性&quot;&gt;JDK 各个版本特性&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Java5 ，2004-09-30发行
+    &lt;ul&gt;
+      &lt;li&gt;泛型&lt;/li&gt;
+      &lt;li&gt;枚举&lt;/li&gt;
+      &lt;li&gt;自动装箱拆箱&lt;/li&gt;
+      &lt;li&gt;可变参数&lt;/li&gt;
+      &lt;li&gt;注解&lt;/li&gt;
+      &lt;li&gt;foreach循环（增强for、for/in）&lt;/li&gt;
+      &lt;li&gt;静态导入&lt;/li&gt;
+      &lt;li&gt;格式化（System.out.println 支持%s %d等格式化输出）&lt;/li&gt;
+      &lt;li&gt;线程框架/数据结构 JUC&lt;/li&gt;
+      &lt;li&gt;Arrays工具类/StringBuilder/instrument&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Java6
+    &lt;ul&gt;
+      &lt;li&gt;开发代号为Mustang(野马),于2006-12-11发行。评价：鸡肋的版本，有JDBC4.0更新、Complier API、WebSevice支持的加强等更新。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Java7
+    &lt;ul&gt;
+      &lt;li&gt;switch中添加对String类型的支持&lt;/li&gt;
+      &lt;li&gt;数字字面量的改进 / 数值可加下划&lt;/li&gt;
+      &lt;li&gt;异常处理（捕获多个异常） try-with-resources&lt;/li&gt;
+      &lt;li&gt;增强泛型推断&lt;/li&gt;
+      &lt;li&gt;JSR203 NIO2.0（AIO）新IO的支持&lt;/li&gt;
+      &lt;li&gt;JSR292与InvokeDynamic指令，可以调用其他语言生成的字节码&lt;/li&gt;
+      &lt;li&gt;Path接口、DirectoryStream、Files、WatchService（重要接口更新）&lt;/li&gt;
+      &lt;li&gt;fork/join framework 并行计算&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Java8 2014年
+        &lt;ul&gt;
+          &lt;li&gt;Lambda&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Java9 2017年9月1日
+    &lt;ul&gt;
+      &lt;li&gt;平台级modularity（原名：Jigsaw） 模块化系统&lt;/li&gt;
+      &lt;li&gt;Java 的 REPL 工具： jShell 命令&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Java10 2018年3月20日
+    &lt;ul&gt;
+      &lt;li&gt;局部变量的类型推断 var关键字&lt;/li&gt;
+      &lt;li&gt;GC改进和内存管理 并行全垃圾回收器 G1&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Java11 2018年9月26日&lt;/li&gt;
+  &lt;li&gt;参考 &lt;a href=&quot;https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA&quot;&gt;https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h4 id=&quot;kubernetes-和-istio-service-mesh-sidecar-&quot;&gt;Kubernetes 和 Istio 、Service Mesh Sidecar ???&lt;/h4&gt;
 &lt;ul&gt;

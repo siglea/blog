@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>DotDot</title>
-  <meta name="description" content="蚂蚁金服  ArrayList的扩容方式和扩容时机          初始化  ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断  如果参数等于0，则将数组初始化为一个空数组，  如果不等于0，将数组初始化为一个容量为10的数组。      ...">
+  <meta name="description" content="ArrayList的扩容方式和扩容时机  初始化  ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断  如果参数等于0，则将数组初始化为一个空数组，  如果不等于0，将数组初始化为一个容量为10的数组。  扩容时机  当数组的大小大于初始容量...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,22 +60,18 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="蚂蚁金服">蚂蚁金服</h4>
+    <h4 id="arraylist的扩容方式和扩容时机">ArrayList的扩容方式和扩容时机</h4>
 <ul>
-  <li>ArrayList的扩容方式和扩容时机
-    <ul>
-      <li>初始化
+  <li>初始化
   ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断
   如果参数等于0，则将数组初始化为一个空数组，
   如果不等于0，将数组初始化为一个容量为10的数组。</li>
-      <li>扩容时机
+  <li>扩容时机
   当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。
   Vector会扩容2倍。</li>
-      <li>扩容方式
+  <li>扩容方式
  扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。</li>
-    </ul>
-  </li>
-  <li><a href="https://www.cnblogs.com/silyvin/p/10223910.html">https://www.cnblogs.com/silyvin/p/10223910.html</a></li>
+  <li>蚂蚁金服 <a href="https://www.cnblogs.com/silyvin/p/10223910.html">https://www.cnblogs.com/silyvin/p/10223910.html</a></li>
 </ul>
 
 <h4 id="volatile保证可见性禁止重排无法实现原子性">volatile（保证可见性、禁止重排、无法实现原子性）</h4>
@@ -311,31 +307,35 @@ ArrayList是非线程安全的，Vector是线程安全的。</p>
 </code></pre></div></div>
 <ul>
   <li>selector.select() 应该 一直阻塞，直到有就绪事件到达，但很遗憾，由于 Java NIO 实现上存在 bug，select() 可能在 没有 任何就绪事件的情况下返回，从而导致 while(true) 被不断执行，最后导致某个 CPU 核心的利用率飙升到 100%，这就是臭名昭著的 Java NIO 的 epoll bug。</li>
-  <li>解决方法
-```shell
-selectCnt = 0;  // epoll 空轮询场景下 select 调用次数
-long currentTimeNanos = System.nanoTime();  // 每个 for 循环开始时的绝对时间</li>
+  <li>解决方法</li>
 </ul>
 
-<p>for (;;) {
-    timeoutMillis = …  // 初始化超时参数</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>selectCnt <span class="o">=</span> 0<span class="p">;</span>  // epoll 空轮询场景下 <span class="k">select </span>调用次数
+long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()</span><span class="p">;</span>  // 每个 <span class="k">for </span>循环开始时的绝对时间
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int selectedKeys = selector.select(timeoutMillis);
-selectCnt++;
+<span class="k">for</span> <span class="o">(</span><span class="p">;;</span><span class="o">)</span> <span class="o">{</span>
+    timeoutMillis <span class="o">=</span> ...  // 初始化超时参数
 
-long time = System.nanoTime();  // 记录执行到此处的绝对时间：
+    int selectedKeys <span class="o">=</span> selector.select<span class="o">(</span>timeoutMillis<span class="o">)</span><span class="p">;</span>
+    selectCnt++<span class="p">;</span>
 
-// 检测逻辑
-if (time - currentTimeNanos &gt; timeoutMillis) {
-    selectCnt = 1;  // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1
-} else if (selectCnt &gt;= 重试次数阈值（默认 512）) {
-    selector = selectRebuildSelector(selectCnt);  // 解决 epoll bug 的实际逻辑
-    selectCnt = 1;  // 解决本次 epoll bug，重置 selectCnt
-    break;
-}
+    long <span class="nb">time</span> <span class="o">=</span> System.nanoTime<span class="o">()</span><span class="p">;</span>  // 记录执行到此处的绝对时间：
 
-currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &lt;http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/&gt;
+    // 检测逻辑
+    <span class="k">if</span> <span class="o">(</span><span class="nb">time</span> - currentTimeNanos <span class="o">&gt;</span> timeoutMillis<span class="o">)</span> <span class="o">{</span>
+        selectCnt <span class="o">=</span> 1<span class="p">;</span>  // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1
+    <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span>selectCnt <span class="o">&gt;=</span> 重试次数阈值（默认 512）<span class="o">)</span> <span class="o">{</span>
+        selector <span class="o">=</span> selectRebuildSelector<span class="o">(</span>selectCnt<span class="o">)</span><span class="p">;</span>  // 解决 epoll bug 的实际逻辑
+        selectCnt <span class="o">=</span> 1<span class="p">;</span>  // 解决本次 epoll bug，重置 selectCnt
+        <span class="nb">break</span><span class="p">;</span>
+    <span class="o">}</span>
+
+    currentTimeNanos <span class="o">=</span> <span class="nb">time</span><span class="p">;</span>  // 重置下次 <span class="k">for </span>循环开始时间
+<span class="o">}</span>
 </code></pre></div></div>
+<ul>
+  <li><a href="http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/">http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/</a></li>
+</ul>
 
 <h4 id="netty零拷贝总结的比较清楚了">Netty零拷贝总结的比较清楚了</h4>
 <ul>
@@ -437,19 +437,120 @@ currentTimeNanos = time;  // 重置下次 for 循环开始时间 } ``` - &lt;htt
   <li><a href="https://blog.csdn.net/weiyuefei/article/details/52247497">https://blog.csdn.net/weiyuefei/article/details/52247497</a></li>
 </ul>
 
-<h4 id="内存泄漏-内存溢出">内存泄漏 内存溢出</h4>
-<ul>
-  <li>ThreadLocal内存泄漏，是因为内部的Map的key是通过弱引用关联的threadLocal，发生GC的时候key就消失了，造成Value泄漏。使用的时候记得显示remove</li>
-</ul>
-<p><a href="https://www.jianshu.com/p/1a5d288bdaee">https://www.jianshu.com/p/1a5d288bdaee</a></p>
+<h4 id="内存泄漏">内存泄漏</h4>
+<ol>
+  <li>内部类持有外部类</li>
+  <li>静态集合类</li>
+  <li>各种连接的打开与关闭</li>
+  <li>变量作用域不合理，比如类似逃逸</li>
+  <li>改变了Hash算法，导致之前的hash key 对应的 value不能被释放</li>
+  <li>ThreadLocal内存泄漏，是因为内部的Map的key是通过虚引用关联的threadLocal，发生GC的时候key就消失了，造成Value泄漏。使用的时候记得显示remove
+ <a href="https://www.jianshu.com/p/1a5d288bdaee">https://www.jianshu.com/p/1a5d288bdaee</a></li>
+  <li>监听器的回调绑定与取消</li>
+</ol>
 
-<h4 id="direct-memory-回收">Direct Memory 回收？？？</h4>
+<h4 id="direct-memory-回收">Direct Memory 回收</h4>
 <ul>
-  <li><a href="https://blog.csdn.net/xieyuooo/article/details/7547435">https://blog.csdn.net/xieyuooo/article/details/7547435</a></li>
-  <li><a href="https://blog.csdn.net/phj88/article/details/8011830">https://blog.csdn.net/phj88/article/details/8011830</a></li>
+  <li>DirectByteBuffer是通过虚引用(Phantom Reference)来实现堆外内存的释放的</li>
+  <li>Cleaner是PhantomReference的子类，并通过自身的next和prev字段维护的一个双向链表。PhantomReference的作用在于跟踪垃圾回收过程，
+  并不会对对象的垃圾回收过程造成任何的影响。 所以cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); 
+  用于对当前构造的DirectByteBuffer对象的垃圾回收过程进行跟踪。 当DirectByteBuffer对象从pending状态 ——&gt; enqueue状态时，会触发Cleaner的clean()，
+  而Cleaner的clean()的方法会实现通过unsafe对堆外内存的释放。</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        try <span class="o">{</span>
+            base <span class="o">=</span> unsafe.allocateMemory<span class="o">(</span>size<span class="o">)</span><span class="p">;</span>
+        <span class="o">}</span> catch <span class="o">(</span>OutOfMemoryError x<span class="o">)</span> <span class="o">{</span>
+            Bits.unreserveMemory<span class="o">(</span>size, cap<span class="o">)</span><span class="p">;</span>
+            throw x<span class="p">;</span>
+        <span class="o">}</span>
+        unsafe.setMemory<span class="o">(</span>base, size, <span class="o">(</span>byte<span class="o">)</span> 0<span class="o">)</span><span class="p">;</span>
+        <span class="k">if</span> <span class="o">(</span>pa <span class="o">&amp;&amp;</span> <span class="o">(</span>base % ps <span class="o">!=</span> 0<span class="o">))</span> <span class="o">{</span>
+            // Round up to page boundary
+            address <span class="o">=</span> base + ps - <span class="o">(</span>base &amp; <span class="o">(</span>ps - 1<span class="o">))</span><span class="p">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            address <span class="o">=</span> base<span class="p">;</span>
+        <span class="o">}</span>
+        // DirectByteBuffer 内 构建Cleaner对象用于跟踪DirectByteBuffer对象的垃圾回收，以实现当DirectByteBuffer被垃圾回收时，堆外内存也会被释放
+        cleaner <span class="o">=</span> Cleaner.create<span class="o">(</span>this, new Deallocator<span class="o">(</span>base, size, cap<span class="o">))</span><span class="p">;</span>
+        // Cleaner 内 clean
+        cleaner.clean<span class="o">()</span>
+        // Deallocator 继承 Runnable
+        public void run<span class="o">()</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span>address <span class="o">==</span> 0<span class="o">)</span> <span class="o">{</span>
+                // Paranoia
+                <span class="k">return</span><span class="p">;</span>
+            <span class="o">}</span>
+            unsafe.freeMemory<span class="o">(</span>address<span class="o">)</span><span class="p">;</span>
+            address <span class="o">=</span> 0<span class="p">;</span>
+            Bits.unreserveMemory<span class="o">(</span>size, capacity<span class="o">)</span><span class="p">;</span>
+        <span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li>java之HeapByteBuffer&amp;DirectByteBuffer以及回收DirectByteBuffer <a href="https://blog.csdn.net/xieyuooo/article/details/7547435">https://blog.csdn.net/xieyuooo/article/details/7547435</a></li>
+  <li>java nio 和 jvm 虚拟机参数的 XX:+DisableExplicitGC 的潜规则 <a href="https://blog.csdn.net/phj88/article/details/8011830">https://blog.csdn.net/phj88/article/details/8011830</a></li>
+  <li>Java网络编程和NIO详解8：浅析mmap和Direct Buffer <a href="https://www.cnblogs.com/itxiaok/p/10357832.html">https://www.cnblogs.com/itxiaok/p/10357832.html</a></li>
+  <li>KAFKA推送消息用到了sendfile，落盘技术用到了mmap，DMA贯穿其中 <a href="https://www.jianshu.com/p/7863667d5fa7">https://www.jianshu.com/p/7863667d5fa7</a></li>
+  <li>Java魔法类：Unsafe应用解析 <a href="https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html">https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html</a></li>
 </ul>
 
 <h4 id="jdk-各个版本特性">JDK 各个版本特性</h4>
+<ul>
+  <li>Java5 ，2004-09-30发行
+    <ul>
+      <li>泛型</li>
+      <li>枚举</li>
+      <li>自动装箱拆箱</li>
+      <li>可变参数</li>
+      <li>注解</li>
+      <li>foreach循环（增强for、for/in）</li>
+      <li>静态导入</li>
+      <li>格式化（System.out.println 支持%s %d等格式化输出）</li>
+      <li>线程框架/数据结构 JUC</li>
+      <li>Arrays工具类/StringBuilder/instrument</li>
+    </ul>
+  </li>
+  <li>Java6
+    <ul>
+      <li>开发代号为Mustang(野马),于2006-12-11发行。评价：鸡肋的版本，有JDBC4.0更新、Complier API、WebSevice支持的加强等更新。</li>
+    </ul>
+  </li>
+  <li>Java7
+    <ul>
+      <li>switch中添加对String类型的支持</li>
+      <li>数字字面量的改进 / 数值可加下划</li>
+      <li>异常处理（捕获多个异常） try-with-resources</li>
+      <li>增强泛型推断</li>
+      <li>JSR203 NIO2.0（AIO）新IO的支持</li>
+      <li>JSR292与InvokeDynamic指令，可以调用其他语言生成的字节码</li>
+      <li>Path接口、DirectoryStream、Files、WatchService（重要接口更新）</li>
+      <li>fork/join framework 并行计算</li>
+    </ul>
+  </li>
+  <li>
+    <ul>
+      <li>Java8 2014年
+        <ul>
+          <li>Lambda</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Java9 2017年9月1日
+    <ul>
+      <li>平台级modularity（原名：Jigsaw） 模块化系统</li>
+      <li>Java 的 REPL 工具： jShell 命令</li>
+    </ul>
+  </li>
+  <li>Java10 2018年3月20日
+    <ul>
+      <li>局部变量的类型推断 var关键字</li>
+      <li>GC改进和内存管理 并行全垃圾回收器 G1</li>
+    </ul>
+  </li>
+  <li>Java11 2018年9月26日</li>
+  <li>参考 <a href="https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA">https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA</a></li>
+</ul>
 
 <h4 id="kubernetes-和-istio-service-mesh-sidecar-">Kubernetes 和 Istio 、Service Mesh Sidecar ???</h4>
 <ul>
