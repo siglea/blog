@@ -9,6 +9,7 @@ tags:
 categories:
 - 技术
 ---
+
 #### 前言
 - 牛逼elasticsearch专栏 <https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&album_id=1340073242396114944&__biz=MzI2NDY1MTA3OQ==&scene=21#wechat_redirect>
 - 腾讯Elasticsearch海量规模背后的内核优化剖析 <https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw>
@@ -20,6 +21,26 @@ categories:
 - Elasticsearch之基础概念 <https://www.jianshu.com/p/d68197bc7def>
 - [ec官网](https://www.elastic.co/cn/products/elasticsearch)
 
+#### 提高ElasticSearch性能的九个高级配置技巧
+<https://blog.csdn.net/xshy3412/article/details/51841270>
+
+#### Elasticsearch是如何选举出master的
+- 一次join，即是加入又是投票
+- 相比于其他一致性方案，该方案没有term的概念（虽然有clusterState），所以在同一个选举周期内会出现NodeA 投票给了多个Node的情况。
+    这种情况会在广播的时候其中一个Master自动降级 <https://blog.csdn.net/ailiandeziwei/article/details/87856210>
+- ES针对当前集群中所有的Master Eligible Node进行选举得到master节点，为了避免出现Split-brain现象，ES选择了分布式系统常见的quorum（多数派）思想，也就是只有获得了超过半数选票的节点才能成为master。在ES中使用 discovery.zen.minimum_master_nodes 属性设置quorum，这个属性一般设置为 eligibleNodesNum / 2 + 1。
+- 如何触发一次选举，当满足如下条件是，集群内就会发生一次master选举
+    - 当前master eligible（合格）节点不是master
+    - 当前master eligible节点与其它的节点通信无法发现master
+    - 集群中无法连接到master的master eligible节点数量已达到 discovery.zen.minimum_master_nodes 所设定的值
+- 如何选举，当某个节点决定要进行一次选举是，它会实现如下操作
+    - 寻找clusterStateVersion比自己高的master eligible的节点，向其发送选票
+    - 如果clusterStatrVersion一样，则计算自己能找到的master eligible节点（包括自己）中节点id最小的一个节点，向该节点发送选举投票
+    - 如果一个节点收到足够多的投票（即 minimum_master_nodes 的设置），并且它也向自己投票了，那么该节点成为master开始发布集群状态
+    - 超时就进入下一轮
+- ZenDiscovery，节点发现组件(类似于Hadoop的ZK，或者RocketMq的nameserver)
+- <https://blog.csdn.net/ailiandeziwei/article/details/87856210>
+- <https://www.cnblogs.com/dogs/p/11511458.html>
 
 #### es的核心概念
 - Index（索引-数据库），
@@ -40,7 +61,6 @@ es中的shard用来解决节点的容量上限问题,通过将index分为多个�
     由于数据只有一份,如果一个node挂了,那存在上面的数据就都丢了,有了replicas,只要不是存储这条数据的node全挂了,数据就不会丢。
     通过在所有replicas上并行搜索提高搜索性能.由于replicas上的数据是近实时的(near realtime),因此所有replicas都能提供搜索功能,通过设置合理的replicas数量可以极高的提高搜索吞吐量。
     eg,如果指定了replicas=2,那么对于一条数据它共有三份,一份称为primary shard,另外两份称为 replicas shard. 这三个统称为replicas group(副本组)。
-- ZenDiscovery，节点发现组件(类似于Hadoop的ZK，或者RocketMq的nameserver)
 - LSM思想，Translog In-memory buffer
 - 为了解磁盘 IO 问题，Lucene 引入排索引的二级索引 FST [Finite State Transducer] 。原理上可以理解为前缀树，加速查询。
 
