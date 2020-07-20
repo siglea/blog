@@ -263,13 +263,13 @@ Dubbo 会在这个方法中调用 ServiceBean 父类 ServiceConfig 的 export �
 </ul>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="nc">ChangeService</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="n">ChangeService</span> <span class="o">{</span>
 
     <span class="nd">@Reference</span><span class="o">(</span><span class="n">loadbalance</span> <span class="o">=</span> <span class="s">"roundrobin"</span><span class="o">)</span>
-    <span class="nc">NameService</span> <span class="n">nameService</span><span class="o">;</span>
+    <span class="n">NameService</span> <span class="n">nameService</span><span class="o">;</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">change</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">change</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">nameService</span><span class="o">.</span><span class="na">updateName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -314,24 +314,24 @@ Dubbo 会在这个方法中调用 ServiceBean 父类 ServiceConfig 的 export �
   <li>远程服务返回结果后，唤醒请求线程，调用方得到结果</li>
 </ol>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">Object</span> <span class="nf">get</span><span class="o">(</span><span class="kt">int</span> <span class="n">timeout</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">RemotingException</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">Object</span> <span class="nf">get</span><span class="o">(</span><span class="kt">int</span> <span class="n">timeout</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">RemotingException</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">timeout</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">timeout</span> <span class="o">=</span> <span class="nc">Constants</span><span class="o">.</span><span class="na">DEFAULT_TIMEOUT</span><span class="o">;</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="n">Constants</span><span class="o">.</span><span class="na">DEFAULT_TIMEOUT</span><span class="o">;</span>
         <span class="o">}</span>
         <span class="c1">// isDone()方法就是判断Response是否有值(即是否有返回结果)</span>
         <span class="k">if</span> <span class="o">(!</span><span class="n">isDone</span><span class="o">())</span> <span class="o">{</span>
-            <span class="kt">long</span> <span class="n">start</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="kt">long</span> <span class="n">start</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
             <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
             <span class="k">try</span> <span class="o">{</span>
                 <span class="k">while</span> <span class="o">(!</span><span class="n">isDone</span><span class="o">())</span> <span class="o">{</span>
                     <span class="c1">// 超时等待</span>
-                    <span class="n">done</span><span class="o">.</span><span class="na">await</span><span class="o">(</span><span class="n">timeout</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">);</span>
+                    <span class="n">done</span><span class="o">.</span><span class="na">await</span><span class="o">(</span><span class="n">timeout</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">);</span>
                     <span class="c1">// 如果有返回结果了，或者，超时了，就退出循环</span>
-                    <span class="k">if</span> <span class="o">(</span><span class="n">isDone</span><span class="o">()</span> <span class="o">||</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">isDone</span><span class="o">()</span> <span class="o">||</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="o">)</span> <span class="o">{</span>
                         <span class="k">break</span><span class="o">;</span>
                     <span class="o">}</span>
                 <span class="o">}</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                 <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
             <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
                 <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
@@ -344,7 +344,7 @@ Dubbo 会在这个方法中调用 ServiceBean 父类 ServiceConfig 的 export �
         <span class="c1">// 远程服务正常返回结果，则返回给调用方</span>
         <span class="k">return</span> <span class="nf">returnFromResponse</span><span class="o">();</span>
 <span class="o">}</span>
-<span class="kd">private</span> <span class="kt">void</span> <span class="nf">doReceived</span><span class="o">(</span><span class="nc">Response</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">private</span> <span class="kt">void</span> <span class="nf">doReceived</span><span class="o">(</span><span class="n">Response</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
         <span class="k">try</span> <span class="o">{</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">res</span><span class="o">;</span>

@@ -5,9 +5,29 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 19 Jul 2020 23:04:03 +0800</pubDate>
-    <lastBuildDate>Sun, 19 Jul 2020 23:04:03 +0800</lastBuildDate>
-    <generator>Jekyll v4.0.0</generator>
+    <pubDate>Mon, 20 Jul 2020 15:16:47 +0800</pubDate>
+    <lastBuildDate>Mon, 20 Jul 2020 15:16:47 +0800</lastBuildDate>
+    <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>DotDot</title>
+        <description>&lt;h4 id=&quot;cassandra--es-分布式实现靠什么&quot;&gt;cassandra / es 分布式实现靠什么？&lt;/h4&gt;
+
+&lt;h4 id=&quot;raidredundant-array-of-independent-disks独立冗余磁盘阵列&quot;&gt;RAID(Redundant Array of Independent Disks,独立冗余磁盘阵列)&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;磁盘本地的互备容错高可用 &lt;a href=&quot;https://blog.csdn.net/Mr_Yang__/article/details/85228465&quot;&gt;https://blog.csdn.net/Mr_Yang__/article/details/85228465&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Mon, 20 Jul 2020 09:46:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html</guid>
+        
+        <category>Java</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
     
       <item>
         <title>  Jvm（三）参数一览</title>
@@ -226,13 +246,13 @@
 &lt;/ul&gt;
 
 &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;test0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Throwable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;test0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Throwable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
         &lt;span class=&quot;c1&quot;&gt;// 通过MethodType的静态工厂方法构造 MethodType&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;MethodType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methodType&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MethodType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;methodType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;MethodType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methodType&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MethodType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;methodType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
         &lt;span class=&quot;c1&quot;&gt;// 获取方法句柄&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;MethodHandle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methodHandle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MethodHandles&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lookup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;findVirtual&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;say&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methodType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;User&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;MethodHandle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methodHandle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MethodHandles&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lookup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;findVirtual&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;say&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methodType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;User&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;methodHandle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;invoke&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;zero&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
         &lt;span class=&quot;c1&quot;&gt;// invoke和invokeExact方法, invokeExact方法与直接调用底层方法是一样的&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;methodHandle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;invokeExact&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;zero&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
@@ -241,14 +261,14 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;useConstantCallSite&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Throwable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
-        &lt;span class=&quot;nc&quot;&gt;MethodHandles&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Lookup&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lookup&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MethodHandles&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lookup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;  
-        &lt;span class=&quot;nc&quot;&gt;MethodType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MethodType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;methodType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;  
-        &lt;span class=&quot;nc&quot;&gt;MethodHandle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mh&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lookup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;findVirtual&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;substring&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;useConstantCallSite&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Throwable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+        &lt;span class=&quot;n&quot;&gt;MethodHandles&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Lookup&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lookup&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MethodHandles&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;lookup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;  
+        &lt;span class=&quot;n&quot;&gt;MethodType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MethodType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;methodType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;  
+        &lt;span class=&quot;n&quot;&gt;MethodHandle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mh&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lookup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;findVirtual&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;substring&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
         
-        &lt;span class=&quot;nc&quot;&gt;ConstantCallSite&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;callSite&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ConstantCallSite&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;  
-        &lt;span class=&quot;nc&quot;&gt;MethodHandle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;invoker&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;callSite&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;dynamicInvoker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;  
-        &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;invoker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;invoke&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Hello&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;  
+        &lt;span class=&quot;n&quot;&gt;ConstantCallSite&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;callSite&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConstantCallSite&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;  
+        &lt;span class=&quot;n&quot;&gt;MethodHandle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;invoker&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;callSite&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;dynamicInvoker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;  
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;invoker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;invoke&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Hello&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;  
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; 
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -761,9 +781,131 @@
     
       <item>
         <title>Netty In Action</title>
-        <description>&lt;p&gt;TODO &lt;a href=&quot;https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg&quot;&gt;https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg&lt;/a&gt;
-netty源码阅读之ByteBuf之内存概念arena、chunk、page、subpage
-&lt;a href=&quot;https://www.cnblogs.com/itxiaok/category/1395489.html&quot;&gt;https://www.cnblogs.com/itxiaok/category/1395489.html&lt;/a&gt;&lt;/p&gt;
+        <description>&lt;h4 id=&quot;其他&quot;&gt;其他&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Netty实战 &lt;a href=&quot;https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg&quot;&gt;https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Java网络编程与NIO，多看几遍 &lt;a href=&quot;https://www.cnblogs.com/itxiaok/category/1395489.html&quot;&gt;https://www.cnblogs.com/itxiaok/category/1395489.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;jemalloc之arena、chunk、page、subpage &lt;a href=&quot;https://www.jianshu.com/p/f1988cc08dfd&quot;&gt;https://www.jianshu.com/p/f1988cc08dfd&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;内存规格、缓存&amp;amp;结构、chunk、arena、page、subpage等概念介绍 &lt;a href=&quot;https://blog.csdn.net/qq_33347239/article/details/104270629&quot;&gt;https://blog.csdn.net/qq_33347239/article/details/104270629&lt;/a&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Arena
+        &lt;ul&gt;
+          &lt;li&gt;简单来说，Arena就是一个内存分配器，所有分配的内存都是由Arena维护的，并且一般会有多个，目的是减少锁竞争。
+而netty则是对jemalloc的Arena进行能更加具体的实现，也就是netty中的PoolArena。&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;Chunk
+        &lt;ul&gt;
+          &lt;li&gt;chunk是Netty向操作系统申请内存的最小调度单位，根据上图，chunk大小固定为16mB，也就是说，Netty每次向操作系统申请内存最小为16mB。&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;Page
+        &lt;ul&gt;
+          &lt;li&gt;上面说了一个chunk大小是16mb，如果Netty每次分配一个ByteBuf，都用掉一个chunk的大小，那显然太浪费了。&lt;/li&gt;
+          &lt;li&gt;于是设计者们就决定将一个chunk划分为2048个Page，每个Page大小为8kb，Page是给ByteBuf分配内存的最小调度单位，尽管还有更小的subpage级别，但是分配subpage时，仍然需要先拿到一个page。&lt;/li&gt;
+          &lt;li&gt;当ByteBuf需要申请的内存大小（必定是2的幂次方） &amp;gt;= 8kb时，会先取一个chunk，然后会以page级别分配内存，最后将当前chunk标记为“使用了一个部分”，然后放进对应占用率的chunkList。&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;SubPage
+        &lt;ul&gt;
+          &lt;li&gt;当ByteBuf需要申请的内存大小（必定是2的幂次方）&amp;lt; 8kb时，比如现在需要size=2kb，则会先取一个chunk，然后再取一个page，然后将page分成4份（pageSize/size），每一份为2kb，然后取其中一份给ByteBuf初始化。&lt;/li&gt;
+          &lt;li&gt;之后就是一个自底向上标记的过程了，将当前使用的一份subpage标记为“已使用”，上一层page标记为“部分使用”，再上一级chunk标记为“部分使用”，最终也是将chunk放进对应占用率的chunkList。&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;关于OS Page Cache的简单介绍，同时再一次介绍了kafka的零拷贝 &lt;a href=&quot;https://www.cnblogs.com/leadership/p/12349486.html&quot;&gt;https://www.cnblogs.com/leadership/p/12349486.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;netty的零拷贝体现在多个方面&quot;&gt;Netty的零拷贝体现在多个方面&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;NIO 的基于mmap的DirectMemory&lt;/li&gt;
+  &lt;li&gt;FileRegion 的基于sendFile的transferTo&lt;/li&gt;
+  &lt;li&gt;CompositeByteBuf的wrap数组合并与slice数组分拆&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;nio-selector&quot;&gt;NIO Selector&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;linux系统下sun.nio.ch.DefaultSelectorProvider.create(); 会生成一个sun.nio.ch.EPollSelectorProvider类型的SelectorProvider。
+或者在META-INF/services包含有一个java.nio.channels.spi.SelectorProvider提供类配置文件&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public static SelectorProvider provider&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    synchronized &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;lock&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;provider &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; null&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return &lt;/span&gt;provider&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return &lt;/span&gt;AccessController.doPrivileged&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+            new PrivilegedAction&amp;lt;&lt;span class=&quot;o&quot;&gt;&amp;gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                public SelectorProvider run&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;loadProviderFromProperty&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;
+                            &lt;span class=&quot;k&quot;&gt;return &lt;/span&gt;provider&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;loadProviderAsService&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;
+                            &lt;span class=&quot;k&quot;&gt;return &lt;/span&gt;provider&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                        provider &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; sun.nio.ch.DefaultSelectorProvider.create&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                        &lt;span class=&quot;k&quot;&gt;return &lt;/span&gt;provider&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;})&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;EPollSelectorImpl中初始化epoll相关方法&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;EPollSelectorImpl&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;SelectorProvider sp&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; throws IOException &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        super&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;sp&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        long pipeFds &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; IOUtil.makePipe&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        fd0 &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;int&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;pipeFds &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; 32&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        fd1 &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;int&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; pipeFds&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        try &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            pollWrapper &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; new EPollArrayWrapper&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            pollWrapper.initInterrupt&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;fd0, fd1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            fdToKey &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; new HashMap&amp;lt;&lt;span class=&quot;o&quot;&gt;&amp;gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; catch &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Throwable t&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+// EPollArrayWrapper
+void initInterrupt&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;int fd0, int fd1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    outgoingInterruptFD &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; fd1&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    incomingInterruptFD &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; fd0&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    epollCtl&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;epfd, EPOLL_CTL_ADD, fd0, EPOLLIN&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+private native int epollCreate&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+private native void epollCtl&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;int epfd, int opcode, int fd, int events&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+private native int epollWait&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;long pollAddress, int numfds, long &lt;span class=&quot;nb&quot;&gt;timeout&lt;/span&gt;,
+                             int epfd&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; throws IOException&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;Selector中维护3个特别重要的SelectionKey集合，分别是
+    &lt;ul&gt;
+      &lt;li&gt;keys：所有注册到Selector的Channel所表示的SelectionKey都会存在于该集合中。keys元素的添加会在Channel注册到Selector时发生。&lt;/li&gt;
+      &lt;li&gt;selectedKeys：该集合中的每个SelectionKey都是其对应的Channel在上一次操作selection期间被检查到至少有一种SelectionKey中所感兴趣的操作已经准备好被处理。该集合是keys的一个子集。&lt;/li&gt;
+      &lt;li&gt;cancelledKeys：执行了取消操作的SelectionKey会被放入到该集合中。该集合是keys的一个子集。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;参考 &lt;a href=&quot;https://www.cnblogs.com/itxiaok/p/10357828.html&quot;&gt;https://www.cnblogs.com/itxiaok/p/10357828.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;再说epoll&quot;&gt;再说epoll&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;epoll相关系统调用是在Linux 2.5 后的某个版本开始引入的。该系统调用针对传统的select/poll不足，设计上作了很大的改动。select/poll 的缺点在于:
+    &lt;ul&gt;
+      &lt;li&gt;每次调用时要重复地从用户模式读入参数，并重复地扫描文件描述符。&lt;/li&gt;
+      &lt;li&gt;每次在调用开始时，要把当前进程放入各个文件描述符的等待队列。在调用结束后，又把进程从各个等待队列中删除。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;epoll 是把 select/poll 单个的操作拆分为 1 个 epollcreate，多个 epollctrl和一个 wait。
+  此外，操作系统内核针对 epoll 操作添加了一个文件系统，每一个或者多个要监视的文件描述符都有一个对应的inode 节点，
+  主要信息保存在 eventpoll 结构中。而被监视的文件的重要信息则保存在 epitem 结构中，是一对多的关系。
+  由于在执行 epollcreate 和 epollctrl 时，已经把用户模式的信息保存到内核了， 所以之后即便反复地调用 epoll_wait，
+  也不会重复地拷贝参数，不会重复扫描文件描述符，也不反复地把当前进程放入/拿出等待队列。&lt;/li&gt;
+  &lt;li&gt;select，poll实现需要自己不断轮询所有fd集合，直到设备就绪，期间可能要睡眠和唤醒多次交替。而epoll其实也需要调用epoll_wait不断轮询就绪链表，
+  期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。虽然都要睡眠和交替，
+  但是select和poll在“醒着”的时候要遍历整个fd集合，而epoll在“醒着”的时候只要判断一下就绪链表是否为空就行了，这节省了大量的CPU时间。这就是回调机制带来的性能提升。&lt;/li&gt;
+  &lt;li&gt;select，poll每次调用都要把fd集合从用户态往内核态拷贝一次，并且要把current往设备等待队列中挂一次，而epoll只要一次拷贝，而且把current往等待队列上挂也只挂一次
+  （在epoll_wait的开始，注意这里的等待队列并不是设备等待队列，只是一个epoll内部定义的等待队列）。这也能节省不少的开销。&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h4 id=&quot;netty的组件&quot;&gt;Netty的组件&lt;/h4&gt;
 &lt;ul&gt;
@@ -953,11 +1095,11 @@ Sec-WebSocket-Version: 13
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;p&gt;&lt;a href=&quot;http://www.xiaosongit.com/index/detail/id/645.html&quot;&gt;http://www.xiaosongit.com/index/detail/id/645.html&lt;/a&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;其他&quot;&gt;其他&lt;/h4&gt;
+&lt;h4 id=&quot;其他-1&quot;&gt;其他&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;ChannelFuture 与 ChannelFutureListener相互结合，构成了Netty本身的关键构件之一&lt;/li&gt;
   &lt;li&gt;关于ServerBootStrap，因为服务器需要两组不同的 Channel。第一组将只包含一个 ServerChannel，代表服务 器自身的已绑定到某个本地端口的正在监听的套接字。而第二组将包含所有已创建的用来处理传 入客户端连接(对于每个服务器已经接受的连接都有一个)的 Channel。&lt;/li&gt;
-  &lt;li&gt;为啥ByteBuffer 为啥flip()?&lt;/li&gt;
+  &lt;li&gt;PCB Process Control Block&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         <pubDate>Wed, 08 Jul 2020 18:18:00 +0800</pubDate>
@@ -1430,7 +1572,7 @@ long currentTimeNanos &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; System.nano
       &lt;li&gt;开发代号为Mustang(野马),于2006-12-11发行。评价：鸡肋的版本，有JDBC4.0更新、Complier API、WebSevice支持的加强等更新。&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
-  &lt;li&gt;Java7
+  &lt;li&gt;Java7  2011年7月7日
     &lt;ul&gt;
       &lt;li&gt;switch中添加对String类型的支持&lt;/li&gt;
       &lt;li&gt;数字字面量的改进 / 数值可加下划&lt;/li&gt;
@@ -1704,195 +1846,6 @@ long currentTimeNanos &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; System.nano
         <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html</guid>
         
         <category>数据库</category>
-        
-        
-        <category>技术</category>
-        
-      </item>
-    
-      <item>
-        <title>HTTP-HTTPS</title>
-        <description>&lt;h4 id=&quot;http-https&quot;&gt;HTTP HTTPS&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;理解HTTPS &lt;a href=&quot;http://www.52im.net/thread-1890-1-1.html&quot;&gt;http://www.52im.net/thread-1890-1-1.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;ssltls&quot;&gt;SSL/TLS&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;过程概述，4次握手，主要是为了生成”对话秘钥”
-    &lt;ol&gt;
-      &lt;li&gt;客户端携带随机数1、TLS版本号、加密方式如RSA、压缩方式等，发送给服务器&lt;/li&gt;
-      &lt;li&gt;服务器携带随机数2、确认的TLS版本号、加密方式如RSA、压缩方式、服务器正式（含公钥）等，发送给客户端&lt;/li&gt;
-      &lt;li&gt;客户端生成随机数3并用公钥加密发送给服务器，并通知服务器编码方式改变，握手结束&lt;/li&gt;
-      &lt;li&gt;服务器收到随机数3，通知客户端编码方式改变，握手结束&lt;/li&gt;
-      &lt;li&gt;双方采用”对话密钥”进行加密通信。&lt;/li&gt;
-    &lt;/ol&gt;
-  &lt;/li&gt;
-  &lt;li&gt;要点
-    &lt;ul&gt;
-      &lt;li&gt;通信阶段的会话密码，是由3个随机数生成：客户端产生2个、服务端产生1个&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;参考
-    &lt;ul&gt;
-      &lt;li&gt;SSL/TLS协议运行机制的概述 &lt;a href=&quot;http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html&quot;&gt;http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;图解SSL/TLS协议 &lt;a href=&quot;http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html&quot;&gt;http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=327&amp;amp;highlight=SSL%2FTLS&quot;&gt;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=327&amp;amp;highlight=SSL%2FTLS&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;公钥私钥有何特点&quot;&gt;公钥、私钥有何特点？&lt;/h4&gt;
-&lt;p&gt;公钥加密的，私钥可以解密；
-私钥加密的，公钥可以解密。&lt;/p&gt;
-
-&lt;p&gt;但公钥加密的，公钥无法解密；
-私钥加密的，私钥也无法解密！&lt;/p&gt;
-
-&lt;h4 id=&quot;linux版本&quot;&gt;Linux版本&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;0.00  1991.2-4 两个进程分别显示AAA BBB&lt;/li&gt;
-  &lt;li&gt;0.01  1991.9 第一个正式向外公布的Linux内核版本&lt;/li&gt;
-  &lt;li&gt;0.02  1991.10.5 Linus Torvalds将当时最初的0.02内核版本发布到了Minix新闻组，很快就得到了反应。Linus Torvalds在这种简单的任务切换机制上进行扩展，并在很多热心支持者的帮助下开发和推出了Linux的第一个稳定的工作版本。&lt;/li&gt;
-  &lt;li&gt;0.03  1991.10.5&lt;/li&gt;
-  &lt;li&gt;0.10  1991.10 Linux0.10版本内核发布，0.11版本随后在1991年12月推出，当时它被发布在Internet上，供人们免费使用。&lt;/li&gt;
-  &lt;li&gt;0.11  1991.12.8 基本可以正常运行的内核版本&lt;/li&gt;
-  &lt;li&gt;0.12  1992.1.15 主要加入对数学协处理器的软件模拟程序&lt;/li&gt;
-  &lt;li&gt;0.95（0.13） 1992.3.8 开始加入虚拟文件系统思想的内核版本&lt;/li&gt;
-  &lt;li&gt;0.96  1992.5.12 开始加入网络支持和虚拟文件系统&lt;/li&gt;
-  &lt;li&gt;0.97  1992.8.1&lt;/li&gt;
-  &lt;li&gt;0.98  1992.9.29&lt;/li&gt;
-  &lt;li&gt;0.99  1992.12.13&lt;/li&gt;
-  &lt;li&gt;1.0   1994.3.14 Linux1.0版本内核发布，使用它的用户越来越多，而且Linux系统的核心开发队伍也建起来了。&lt;/li&gt;
-  &lt;li&gt;1.2   1995.3.7&lt;/li&gt;
-  &lt;li&gt;2.0   1996.2.9&lt;/li&gt;
-  &lt;li&gt;2.2   1999.1.26&lt;/li&gt;
-  &lt;li&gt;2.4   2001.1.4 Linux2.4.0版本内核发布。&lt;/li&gt;
-  &lt;li&gt;2.6.x 2003-12 2011-05&lt;/li&gt;
-  &lt;li&gt;3.x   2011-06 2015-02&lt;/li&gt;
-  &lt;li&gt;4.x   2015-04 2018-12&lt;/li&gt;
-  &lt;li&gt;5.x   2019-03&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;http版本差异&quot;&gt;HTTP版本差异&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;HTTP/0.9 (1991)
-    &lt;ul&gt;
-      &lt;li&gt;只支持GET、无协议头、无图片的HTML&lt;/li&gt;
-      &lt;li&gt;连接用完立即关闭、无错误码&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;HTTP/1.0 (1992-1996)
-    &lt;ul&gt;
-      &lt;li&gt;请求与响应支持头域&lt;/li&gt;
-      &lt;li&gt;响应对象以一个响应状态行开始&lt;/li&gt;
-      &lt;li&gt;响应对象不只限于超文本&lt;/li&gt;
-      &lt;li&gt;开始支持客户端通过POST方法向Web服务器提交数据，支持GET、HEAD、POST方法&lt;/li&gt;
-      &lt;li&gt;支持长连接（但默认还是使用短连接），缓存机制，以及身份认证&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;HTTP/1.1 (1997-1999)
-    &lt;ul&gt;
-      &lt;li&gt;keepalive连接&lt;/li&gt;
-      &lt;li&gt;chunked编码传输&lt;/li&gt;
-      &lt;li&gt;字节范围请求，断点续传&lt;/li&gt;
-      &lt;li&gt;请求流水线，同时交叉请求&lt;/li&gt;
-      &lt;li&gt;请求消息和响应消息都应支持Host头域&lt;/li&gt;
-      &lt;li&gt;增加了OPTIONS,PUT, DELETE, TRACE, CONNECT方法&lt;/li&gt;
-      &lt;li&gt;HTTP/1.1在1.0的基础上加入了一些cache的新特性，引入了实体标签，一般被称为e-tags，新增更为强大的Cache-Control头。&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;HTTP/2.0 (2012-2014)
-    &lt;ul&gt;
-      &lt;li&gt;多路复用（二进制分帧）&lt;/li&gt;
-      &lt;li&gt;头部压缩&lt;/li&gt;
-      &lt;li&gt;随时复位&lt;/li&gt;
-      &lt;li&gt;Server PUSH&lt;/li&gt;
-      &lt;li&gt;优先权依赖&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;SPDY 协议
-    &lt;ul&gt;
-      &lt;li&gt;2009年，谷歌公开了自行研发的 SPDY 协议，主要解决 HTTP/1.1 效率不高的问题。
-这个协议在Chrome浏览器上证明可行以后，就被当作 HTTP/2 的基础，主要特性都在 HTTP/2 之中得到继承。&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;参考 &lt;a href=&quot;http://www.52im.net/thread-1709-1-1.html&quot;&gt;http://www.52im.net/thread-1709-1-1.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;ssltls历史&quot;&gt;SSL/TLS历史&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;1994年，NetScape公司设计了SSL协议（Secure Sockets Layer）的1.0版，但是未发布。&lt;/li&gt;
-  &lt;li&gt;1995年，NetScape公司发布SSL 2.0版，很快发现有严重漏洞。&lt;/li&gt;
-  &lt;li&gt;1996年，SSL 3.0版问世，得到大规模应用。&lt;/li&gt;
-  &lt;li&gt;1999年，互联网标准化组织ISOC接替NetScape公司，发布了SSL的升级版TLS 1.0版。&lt;/li&gt;
-  &lt;li&gt;2006年和2008年，TLS进行了两次升级，分别为TLS 1.1版和TLS 1.2版。最新的变动是2011年TLS 1.2的修订版。&lt;/li&gt;
-  &lt;li&gt;目前，应用最广泛的是TLS 1.0，接下来是SSL 3.0。但是，主流浏览器都已经实现了TLS 1.2的支持。
-TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;ssltls简介&quot;&gt;SSL/TLS简介&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;SSL：（Secure Socket Layer，安全套接字层），位于可靠的面向连接的网络层协议和应用层协议之间的一种协议层。SSL通过互相认证、使用数字签名确保完整性、使用加密确保私密性，以实现客户端和服务器之间的安全通讯。该协议由两层组成：SSL记录协议和SSL握手协议。&lt;/li&gt;
-  &lt;li&gt;TLS：(Transport Layer Security，传输层安全协议)，用于两个应用程序之间提供保密性和数据完整性。该协议由两层组成：TLS记录协议和TLS握手协议。&lt;/li&gt;
-  &lt;li&gt;SSL是Netscape开发的专门用户保护Web通讯的，目前版本为3.0。最新版本的TLS 1.0是IETF(工程任务组)制定的一种新的协议，它建立在SSL 3.0协议规范之上，是SSL 3.0的后续版本。两者差别极小，可以理解为SSL 3.1，它是写入了RFC的。&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://kb.cnblogs.com/page/197396/&quot;&gt;https://kb.cnblogs.com/page/197396/&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;mitm攻击&quot;&gt;MITM攻击&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;SSLStrip （降级攻击），把Https，降到Http。这种攻击利用的是很多网站并没有关掉http访问，而是在服务端将首页从http跳到https，
-  给了攻击者一个http响应做突破口。不过这种攻击也可以防御，启用HSTS(HTTP Strict Transport Security, HTTP 严格传输安全)和Preload list就行了，让攻击者找不到任何http的机会。&lt;/li&gt;
-  &lt;li&gt;SSLSplit（解密攻击）&lt;/li&gt;
-  &lt;li&gt;理解清楚中间人攻击（Man-in-the-MiddleAttack，简称“MITM攻击”）也就理解了HTTPS。&lt;/li&gt;
-  &lt;li&gt;中间人攻击（MITM攻击）是指，黑客拦截并篡改网络中的通信数据。又分为被动MITM和主动MITM，被动MITM只窃取通信数据而不修改，而主动MITM不但能窃取数据，还会篡改通信数据。最常见的中间人攻击常常发生在公共wifi或者公共路由上。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;https加密原理&quot;&gt;HTTPS加密原理&lt;/h4&gt;
-&lt;ol&gt;
-  &lt;li&gt;各个操作系统或浏览器提前内置或缓存了合法CA机构的公钥&lt;/li&gt;
-  &lt;li&gt;服务器提交相关信息给CA机构&lt;/li&gt;
-  &lt;li&gt;CA机构生成该服务器对应的私钥+证书（包含服务器公钥、数字签名等）&lt;/li&gt;
-  &lt;li&gt;客户端发起请求到服务器，服务器返回CA机构生成的证书&lt;/li&gt;
-  &lt;li&gt;客户端用提前内置的CA机构的公钥解密该证书，并验证该证书是否合法&lt;/li&gt;
-  &lt;li&gt;验证证书合法后，从证书中提取服务器的公钥，开始SSL/TLS交互&lt;/li&gt;
-  &lt;li&gt;其他方便理解的总结
-    &lt;ul&gt;
-      &lt;li&gt;引入CA之后，重点是有2个公钥：自己服务器的公钥、CA机构的公钥&lt;/li&gt;
-      &lt;li&gt;当客户端收到证书之后，使用本地配置的权威机构的公钥对证书进行解密得到服务端的公钥和证书的数字签名，数字签名经过CA公钥解密得到证书信息摘要。&lt;/li&gt;
-      &lt;li&gt;然后用证书签名的方法计算一下当前证书的信息摘要，与收到的信息摘要作对比，如果一样，表示证书一定是服务器下发的，没有被中间人篡改过。因为中间人虽然有权威机构的公钥，能够解析证书内容并篡改，但是篡改完成之后中间人需要将证书重新加密，但是中间人没有权威机构的私钥，无法加密，强行加密只会导致客户端无法解密，如果中间人强行乱修改证书，就会导致证书内容和证书签名不匹配。&lt;/li&gt;
-      &lt;li&gt;客户端验证证书的合法性，包括：
-        &lt;ul&gt;
-          &lt;li&gt;证书是否过期&lt;/li&gt;
-          &lt;li&gt;发行服务器证书的CA是否可靠&lt;/li&gt;
-          &lt;li&gt;本地CA公钥是否能正确解开证书&lt;/li&gt;
-          &lt;li&gt;服务器证书上的域名是否和服务器的实际域名相匹配&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4 id=&quot;第三方攻击者能否让自己的证书显示出来的信息也是服务端呢&quot;&gt;第三方攻击者能否让自己的证书显示出来的信息也是服务端呢？&lt;/h4&gt;
-&lt;p&gt;-（伪装服务端一样的配置）显然这个是不行的，因为当第三方攻击者去CA那边寻求认证的时候CA会要求其提供例如域名的whois信息、域名管理邮箱等证明你是服务端域名的拥有者，而第三方攻击者是无法提供这些信息所以他就是无法骗CA他拥有属于服务端的域名&lt;/p&gt;
-
-&lt;h4 id=&quot;ios-面试题什么是中间人攻击如何避免&quot;&gt;iOS 面试题·什么是中间人攻击？如何避免？&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;客户端不要轻易信任证书&lt;/li&gt;
-  &lt;li&gt;App可以提前预埋证书在本地&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/210c296eb836&quot;&gt;https://www.jianshu.com/p/210c296eb836&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;参考&quot;&gt;参考&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;理解HTTPS &lt;a href=&quot;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=1890&amp;amp;highlight=https&quot;&gt;http://www.52im.net/forum.php?mod=viewthread&amp;amp;tid=1890&amp;amp;highlight=https&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Mon, 29 Jun 2020 15:42:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html</guid>
-        
-        <category>网络</category>
         
         
         <category>技术</category>

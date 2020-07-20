@@ -67,8 +67,8 @@
   <li>TCP三要素：ip+端口、序列号（解决乱序）、窗口大小（流量控制）</li>
   <li>TCP与UDP
     <ul>
-      <li>TCP 首部长度较长，会有一定的开销，首部在没有使用「选项」字段时是 20 个字节（5个32位），如果使用了「选项」字段则会变长的。
-    UDP 首部只有 8 个字节，并且是固定不变的，开销较小。</li>
+      <li>TCP 首部长度较长，会有一定的开销，首部在没有使用「选项」字段时是24个字节（6个32位），含「选项」字段。
+    UDP 首部只有8个字节（2个32位），并且是固定不变的，开销较小。</li>
       <li>为什么 UDP 头部没有「首部长度」字段，而 TCP 头部有「首部长度」字段呢？
   原因是 TCP 有可变长的「选项」字段，而 UDP 头部长度则是不会变化的，无需多一个字段去记录 UDP 的首部长度。</li>
       <li>为什么 UDP 头部有「包长度」字段，而 TCP 头部则没有「包长度」字段呢？
@@ -364,15 +364,18 @@ MTU值又不能设得太大，因为封包太大，传送时出现错误的机�
   <li><a href="http://www.ruanyifeng.com/blog/2017/06/tcp-protocol.html">http://www.ruanyifeng.com/blog/2017/06/tcp-protocol.html</a></li>
   <li><a href="http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html">http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html</a></li>
 </ul>
-<div align="left">
-<img src="/img/4.jpg" width="400px" />
-<img src="/img/5.png" width="400px" />
-</div>
+
+<p><img src="/img/4.jpg" width="600px" />
+<img src="/img/5.png" width="600px" /></p>
 
 <h4 id="控制位标志符详解">控制位标志符详解</h4>
-<div align="left">
-<img src="/img/6.png" width="400px" />
-</div>
+
+<h5 id="udp">UDP</h5>
+<p><img src="/img/udp_head.jpg" width="600px" /></p>
+
+<h5 id="tcp-1">TCP</h5>
+<p><img src="/img/6.png" width="600px" /></p>
+
 <ul>
   <li>控制位：这六位有很重要的作用，TCP的连接、传输和断开都受这六个控制位的指挥。各位含义如下：
     <ol>

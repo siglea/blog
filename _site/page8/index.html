@@ -54,6 +54,133 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html">Docker</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 12, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>容器</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="docker原理-">Docker原理 ☆☆☆</h4>
+<ul>
+  <li>cgroups (2006年 linux推出)</li>
+  <li>namespace</li>
+</ul>
+
+<h4 id="docker-hello-world">Docker Hello World!</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run hello-world
+docker run ubuntu:15.10 /bin/echo <span class="s2">"Hello world"</span>
+</code></pre></div></div>
+<h4 id="docker-pull-image">Docker pull Image</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull library/hello-world
+</code></pre></div></div>
+<h4 id="docker-run-nginx">docker run nginx</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">--name</span> my_nginx_v1 <span class="nt">-p</span> 8080:80 <span class="nt">-d</span> nginx:v1
+<span class="c">## --name nginx-test：容器名称。</span>
+<span class="c">## -p 8080:80： 端口进行映射，将本地 8080 端口映射到容器内部的 80 端口。</span>
+<span class="c">## -d nginx： 设置容器在在后台一直运行。</span>
+</code></pre></div></div>
+<p><a href="https://www.runoob.com/docker/docker-install-nginx.html">https://www.runoob.com/docker/docker-install-nginx.html</a></p>
+
+<h4 id="docker-run-springboot">docker run springboot</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-p</span> 8080:8080 <span class="nt">-t</span> springboot/spring-boot-docker
+</code></pre></div></div>
+<p><a href="http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html">http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html</a></p>
+<h4 id="查看运行的容器">查看运行的容器</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker ps
+docker ps <span class="nt">-a</span>
+<span class="c"># 输出详情介绍：</span>
+<span class="c">## CONTAINER ID: 容器 ID。</span>
+<span class="c">## IMAGE: 使用的镜像。</span>
+<span class="c">## COMMAND: 启动容器时运行的命令。</span>
+<span class="c">## CREATED: 容器的创建时间。</span>
+
+<span class="c">## STATUS: 容器状态。</span>
+<span class="c">## 状态有7种：</span>
+<span class="c">### created（已创建）</span>
+<span class="c">### restarting（重启中）</span>
+<span class="c">### running（运行中）</span>
+<span class="c">### removing（迁移中）</span>
+<span class="c">### paused（暂停）</span>
+<span class="c">### exited（停止）</span>
+<span class="c">### dead（死亡）</span>
+
+<span class="c">## PORTS: 容器的端口信息和使用的连接类型（tcp\udp）。</span>
+<span class="c">## NAMES: 自动分配的容器名称。</span>
+</code></pre></div></div>
+<h4 id="查看容器内的标准输出日志">查看容器内的标准输出日志</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker logs 2b1b7a428627
+</code></pre></div></div>
+<h4 id="启动重启停止容器">启动/重启/停止容器</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start/restart amazing_cori
+docker stop 2b1b7a428627
+</code></pre></div></div>
+<h4 id="删除容器镜像">删除容器/镜像</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="nb">rm </span>20ca2a70ee13
+docker rmi ec49dbd13cf5
+</code></pre></div></div>
+<h4 id="compose-machine-swarm">Compose Machine Swarm</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+<p><a href="http://www.ityouknow.com/docker/2018/03/22/docker-compose.html">http://www.ityouknow.com/docker/2018/03/22/docker-compose.html</a></p>
+<h4 id="docker中run和start的区别">docker中run和start的区别</h4>
+<ul>
+  <li>docker run 后面指定的是一个镜像</li>
+  <li>而docker start指定的是一个容器</li>
+  <li>docker run是利用镜像生成容器，并启动容器，而docker start是启动一个之前生成过的容器</li>
+</ul>
+
+<h4 id="dockerfile-命令详解">Dockerfile 命令详解</h4>
+<p><a href="http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html">http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html</a></p>
+
+<p><a href="http://www.ityouknow.com/docker.html">http://www.ityouknow.com/docker.html</a></p>
+
+<h4 id="cloud-foundry和-kubernetes-的区别">Cloud Foundry和 Kubernetes 的区别</h4>
+<p><a href="https://blog.csdn.net/qq_30154571/article/details/84955097">https://blog.csdn.net/qq_30154571/article/details/84955097</a></p>
+
+<h4 id="cloud-foundry-与kubernetes-cfk8s结合简史">Cloud Foundry 与Kubernetes: CF/K8s结合简史</h4>
+<p><a href="https://blog.csdn.net/zhanggongsw/article/details/79948420">https://blog.csdn.net/zhanggongsw/article/details/79948420</a></p>
+
+<h4 id="阿里飞天云apsara-stack和openstack">阿里飞天云Apsara Stack和OpenStack</h4>
+<ul>
+  <li><a href="https://blog.csdn.net/liuxiao723846/article/details/82630926">https://blog.csdn.net/liuxiao723846/article/details/82630926</a></li>
+  <li><a href="https://www.csdn.net/gather_21/MtTaYg1sNTY5Mi1ibG9n.html">https://www.csdn.net/gather_21/MtTaYg1sNTY5Mi1ibG9n.html</a></li>
+</ul>
+
+<h4 id="kubernetes-vs-openstack">Kubernetes vs OpenStack</h4>
+<ul>
+  <li><a href="https://blog.csdn.net/luanpeng825485697/article/details/86706131">https://blog.csdn.net/luanpeng825485697/article/details/86706131</a></li>
+  <li><a href="https://blog.csdn.net/dualvencsdn/article/details/79207281">https://blog.csdn.net/dualvencsdn/article/details/79207281</a></li>
+  <li><a href="https://www.kubernetes.org.cn/2121.html">https://www.kubernetes.org.cn/2121.html</a></li>
+  <li><a href="https://www.cnblogs.com/goldsunshine/p/9872142.html">https://www.cnblogs.com/goldsunshine/p/9872142.html</a></li>
+</ul>
+
+<h4 id="google-kubernetes--docker-swarm--mesos-marathon">Google Kubernetes &amp; Docker Swarm &amp; Mesos Marathon</h4>
+<ul>
+  <li><a href="https://www.kubernetes.org.cn/757.html">https://www.kubernetes.org.cn/757.html</a></li>
+  <li><a href="https://www.zhihu.com/question/55391506">https://www.zhihu.com/question/55391506</a></li>
+  <li><a href="https://www.cnblogs.com/wzj4858/p/7910883.html">https://www.cnblogs.com/wzj4858/p/7910883.html</a></li>
+  <li><a href="http://dockone.io/article/823">http://dockone.io/article/823</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/28301108">https://zhuanlan.zhihu.com/p/28301108</a></li>
+</ul>
+
+<h4 id="国内外paas服务一览">国内外PaaS服务一览</h4>
+<p><a href="https://www.jianshu.com/p/a4b9be650fa4">https://www.jianshu.com/p/a4b9be650fa4</a></p>
+
+<p><a href="https://mp.weixin.qq.com/s/_m_ZV9LdbQQqFbshxIgWrA">https://mp.weixin.qq.com/s/_m_ZV9LdbQQqFbshxIgWrA</a>
+<a href="https://mp.weixin.qq.com/s/u0LRq_NNkCtU3wkdMdYlUA">https://mp.weixin.qq.com/s/u0LRq_NNkCtU3wkdMdYlUA</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html"> 主流互联网公司系统概况及指标 </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jan 3, 2020</span>
@@ -222,38 +349,6 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/Principles.html">《原则》Ray Dalio</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 1, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/Principles.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>读书笔记</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="原则">原则</h4>
-<ul>
-  <li>发现问题、分析问题、正视问题、找出解决问题的路径、彻底解决问题。</li>
-  <li>一部分人不知道自己不知道处于不自知，另一部分人知道自己不知道处于自知但是不行动，只有及少数自知并且不容忍自己的问题并加以行动。</li>
-  <li>如果你的见解不比一般人搞，你就不会是领导者；如果你的见解比他们更高，那就不必担心你做得事情不受欢迎。</li>
-  <li>创意择优（可信度加权决策）。</li>
-  <li>想方设法达成共识。（基于逻辑、数据、坦诚的沟通）</li>
-  <li>多次确认，不如把同一个事情交给多人来做。（比如财务）</li>
-  <li>做有意义的工作，发展有意义的人际关系。</li>
-  <li>切勿混淆慷慨和公平。</li>
-  <li>价值观 &gt; 能力 &gt; 技能。</li>
-</ul>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E9%9A%8F%E8%AE%B0/2019/12/01/Principles.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -317,6 +412,10 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       
       
       <a href="/page14" class="button page-button">14</a>
+      
+      
+      
+      <a href="/page15" class="button page-button">15</a>
       
       
 
@@ -419,7 +518,7 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 14 )</span>
+      <span class="label label-default">Java ( 15 )</span>
       </a><br />
 
       

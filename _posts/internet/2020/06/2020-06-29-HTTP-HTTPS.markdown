@@ -102,7 +102,7 @@ categories:
 #### MITM攻击
 - SSLStrip （降级攻击），把Https，降到Http。这种攻击利用的是很多网站并没有关掉http访问，而是在服务端将首页从http跳到https，
     给了攻击者一个http响应做突破口。不过这种攻击也可以防御，启用HSTS(HTTP Strict Transport Security, HTTP 严格传输安全)和Preload list就行了，让攻击者找不到任何http的机会。
-- SSLSplit（解密攻击）
+- SSLSplit（解密攻击），有些版本的SDK并未进行证书校验，修复并给出提示；内置证书；远离非法wifi。
 - 理解清楚中间人攻击（Man-in-the-MiddleAttack，简称“MITM攻击”）也就理解了HTTPS。
 - 中间人攻击（MITM攻击）是指，黑客拦截并篡改网络中的通信数据。又分为被动MITM和主动MITM，被动MITM只窃取通信数据而不修改，而主动MITM不但能窃取数据，还会篡改通信数据。最常见的中间人攻击常常发生在公共wifi或者公共路由上。
 

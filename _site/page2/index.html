@@ -54,6 +54,347 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html">Netty In Action</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 8, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="其他">其他</h4>
+<ul>
+  <li>Netty实战 <a href="https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg">https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg</a></li>
+  <li>Java网络编程与NIO，多看几遍 <a href="https://www.cnblogs.com/itxiaok/category/1395489.html">https://www.cnblogs.com/itxiaok/category/1395489.html</a></li>
+  <li>jemalloc之arena、chunk、page、subpage <a href="https://www.jianshu.com/p/f1988cc08dfd">https://www.jianshu.com/p/f1988cc08dfd</a></li>
+  <li>内存规格、缓存&amp;结构、chunk、arena、page、subpage等概念介绍 <a href="https://blog.csdn.net/qq_33347239/article/details/104270629">https://blog.csdn.net/qq_33347239/article/details/104270629</a>
+    <ul>
+      <li>Arena
+        <ul>
+          <li>简单来说，Arena就是一个内存分配器，所有分配的内存都是由Arena维护的，并且一般会有多个，目的是减少锁竞争。
+而netty则是对jemalloc的Arena进行能更加具体的实现，也就是netty中的PoolArena。</li>
+        </ul>
+      </li>
+      <li>Chunk
+        <ul>
+          <li>chunk是Netty向操作系统申请内存的最小调度单位，根据上图，chunk大小固定为16mB，也就是说，Netty每次向操作系统申请内存最小为16mB。</li>
+        </ul>
+      </li>
+      <li>Page
+        <ul>
+          <li>上面说了一个chunk大小是16mb，如果Netty每次分配一个ByteBuf，都用掉一个chunk的大小，那显然太浪费了。</li>
+          <li>于是设计者们就决定将一个chunk划分为2048个Page，每个Page大小为8kb，Page是给ByteBuf分配内存的最小调度单位，尽管还有更小的subpage级别，但是分配subpage时，仍然需要先拿到一个page。</li>
+          <li>当ByteBuf需要申请的内存大小（必定是2的幂次方） &gt;= 8kb时，会先取一个chunk，然后会以page级别分配内存，最后将当前chunk标记为“使用了一个部分”，然后放进对应占用率的chunkList。</li>
+        </ul>
+      </li>
+      <li>SubPage
+        <ul>
+          <li>当ByteBuf需要申请的内存大小（必定是2的幂次方）&lt; 8kb时，比如现在需要size=2kb，则会先取一个chunk，然后再取一个page，然后将page分成4份（pageSize/size），每一份为2kb，然后取其中一份给ByteBuf初始化。</li>
+          <li>之后就是一个自底向上标记的过程了，将当前使用的一份subpage标记为“已使用”，上一层page标记为“部分使用”，再上一级chunk标记为“部分使用”，最终也是将chunk放进对应占用率的chunkList。</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>关于OS Page Cache的简单介绍，同时再一次介绍了kafka的零拷贝 <a href="https://www.cnblogs.com/leadership/p/12349486.html">https://www.cnblogs.com/leadership/p/12349486.html</a></li>
+</ul>
+
+<h4 id="netty的零拷贝体现在多个方面">Netty的零拷贝体现在多个方面</h4>
+<ol>
+  <li>NIO 的基于mmap的DirectMemory</li>
+  <li>FileRegion 的基于sendFile的transferTo</li>
+  <li>CompositeByteBuf的wrap数组合并与slice数组分拆</li>
+</ol>
+
+<h4 id="nio-selector">NIO Selector</h4>
+<ul>
+  <li>linux系统下sun.nio.ch.DefaultSelectorProvider.create(); 会生成一个sun.nio.ch.EPollSelectorProvider类型的SelectorProvider。
+或者在META-INF/services包含有一个java.nio.channels.spi.SelectorProvider提供类配置文件</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static SelectorProvider provider<span class="o">()</span> <span class="o">{</span>
+    synchronized <span class="o">(</span>lock<span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span>provider <span class="o">!=</span> null<span class="o">)</span>
+            <span class="k">return </span>provider<span class="p">;</span>
+        <span class="k">return </span>AccessController.doPrivileged<span class="o">(</span>
+            new PrivilegedAction&lt;<span class="o">&gt;()</span> <span class="o">{</span>
+                public SelectorProvider run<span class="o">()</span> <span class="o">{</span>
+                        <span class="k">if</span> <span class="o">(</span>loadProviderFromProperty<span class="o">())</span>
+                            <span class="k">return </span>provider<span class="p">;</span>
+                        <span class="k">if</span> <span class="o">(</span>loadProviderAsService<span class="o">())</span>
+                            <span class="k">return </span>provider<span class="p">;</span>
+                        provider <span class="o">=</span> sun.nio.ch.DefaultSelectorProvider.create<span class="o">()</span><span class="p">;</span>
+                        <span class="k">return </span>provider<span class="p">;</span>
+                    <span class="o">}</span>
+                <span class="o">})</span><span class="p">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>EPollSelectorImpl中初始化epoll相关方法</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>EPollSelectorImpl<span class="o">(</span>SelectorProvider sp<span class="o">)</span> throws IOException <span class="o">{</span>
+        super<span class="o">(</span>sp<span class="o">)</span><span class="p">;</span>
+        long pipeFds <span class="o">=</span> IOUtil.makePipe<span class="o">(</span><span class="nb">false</span><span class="o">)</span><span class="p">;</span>
+        fd0 <span class="o">=</span> <span class="o">(</span>int<span class="o">)</span> <span class="o">(</span>pipeFds <span class="o">&gt;&gt;&gt;</span> 32<span class="o">)</span><span class="p">;</span>
+        fd1 <span class="o">=</span> <span class="o">(</span>int<span class="o">)</span> pipeFds<span class="p">;</span>
+        try <span class="o">{</span>
+            pollWrapper <span class="o">=</span> new EPollArrayWrapper<span class="o">()</span><span class="p">;</span>
+            pollWrapper.initInterrupt<span class="o">(</span>fd0, fd1<span class="o">)</span><span class="p">;</span>
+            fdToKey <span class="o">=</span> new HashMap&lt;<span class="o">&gt;()</span><span class="p">;</span>
+        <span class="o">}</span> catch <span class="o">(</span>Throwable t<span class="o">)</span> <span class="o">{}</span>
+<span class="o">}</span>
+// EPollArrayWrapper
+void initInterrupt<span class="o">(</span>int fd0, int fd1<span class="o">)</span> <span class="o">{</span>
+    outgoingInterruptFD <span class="o">=</span> fd1<span class="p">;</span>
+    incomingInterruptFD <span class="o">=</span> fd0<span class="p">;</span>
+    epollCtl<span class="o">(</span>epfd, EPOLL_CTL_ADD, fd0, EPOLLIN<span class="o">)</span><span class="p">;</span>
+<span class="o">}</span>
+
+private native int epollCreate<span class="o">()</span><span class="p">;</span>
+private native void epollCtl<span class="o">(</span>int epfd, int opcode, int fd, int events<span class="o">)</span><span class="p">;</span>
+private native int epollWait<span class="o">(</span>long pollAddress, int numfds, long <span class="nb">timeout</span>,
+                             int epfd<span class="o">)</span> throws IOException<span class="p">;</span>
+</code></pre></div></div>
+<ul>
+  <li>Selector中维护3个特别重要的SelectionKey集合，分别是
+    <ul>
+      <li>keys：所有注册到Selector的Channel所表示的SelectionKey都会存在于该集合中。keys元素的添加会在Channel注册到Selector时发生。</li>
+      <li>selectedKeys：该集合中的每个SelectionKey都是其对应的Channel在上一次操作selection期间被检查到至少有一种SelectionKey中所感兴趣的操作已经准备好被处理。该集合是keys的一个子集。</li>
+      <li>cancelledKeys：执行了取消操作的SelectionKey会被放入到该集合中。该集合是keys的一个子集。</li>
+    </ul>
+  </li>
+  <li>参考 <a href="https://www.cnblogs.com/itxiaok/p/10357828.html">https://www.cnblogs.com/itxiaok/p/10357828.html</a></li>
+</ul>
+
+<h4 id="再说epoll">再说epoll</h4>
+<ul>
+  <li>epoll相关系统调用是在Linux 2.5 后的某个版本开始引入的。该系统调用针对传统的select/poll不足，设计上作了很大的改动。select/poll 的缺点在于:
+    <ul>
+      <li>每次调用时要重复地从用户模式读入参数，并重复地扫描文件描述符。</li>
+      <li>每次在调用开始时，要把当前进程放入各个文件描述符的等待队列。在调用结束后，又把进程从各个等待队列中删除。</li>
+    </ul>
+  </li>
+  <li>epoll 是把 select/poll 单个的操作拆分为 1 个 epollcreate，多个 epollctrl和一个 wait。
+  此外，操作系统内核针对 epoll 操作添加了一个文件系统，每一个或者多个要监视的文件描述符都有一个对应的inode 节点，
+  主要信息保存在 eventpoll 结构中。而被监视的文件的重要信息则保存在 epitem 结构中，是一对多的关系。
+  由于在执行 epollcreate 和 epollctrl 时，已经把用户模式的信息保存到内核了， 所以之后即便反复地调用 epoll_wait，
+  也不会重复地拷贝参数，不会重复扫描文件描述符，也不反复地把当前进程放入/拿出等待队列。</li>
+  <li>select，poll实现需要自己不断轮询所有fd集合，直到设备就绪，期间可能要睡眠和唤醒多次交替。而epoll其实也需要调用epoll_wait不断轮询就绪链表，
+  期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。虽然都要睡眠和交替，
+  但是select和poll在“醒着”的时候要遍历整个fd集合，而epoll在“醒着”的时候只要判断一下就绪链表是否为空就行了，这节省了大量的CPU时间。这就是回调机制带来的性能提升。</li>
+  <li>select，poll每次调用都要把fd集合从用户态往内核态拷贝一次，并且要把current往设备等待队列中挂一次，而epoll只要一次拷贝，而且把current往等待队列上挂也只挂一次
+  （在epoll_wait的开始，注意这里的等待队列并不是设备等待队列，只是一个epoll内部定义的等待队列）。这也能节省不少的开销。</li>
+</ul>
+
+<h4 id="netty的组件">Netty的组件</h4>
+<ul>
+  <li>group() EventLoop -&gt; 控制流、多线程处理、并发
+    <ul>
+      <li>一个 EventLoopGroup 包含一个或者多个 EventLoop;</li>
+      <li>一个 EventLoop 在它的生命周期内只和一个 Thread 绑定;</li>
+      <li>所有由 EventLoop 处理的 I/O 事件都将在它专有的 Thread 上被处理;</li>
+      <li>一个 Channel 在它的生命周期内只注册于一个 EventLoop，一个Channel可以理解为一个用户;</li>
+      <li>一个 EventLoop 可能会被分配给一个或多个 Channel。 注意，在这种设计中，一个给定 Channel 的 I/O 操作都是由相同的 Thread 执行的，实际上消除了对于同步的需要。</li>
+      <li>EventLoop本身只由一个线程驱动，其处理了一个Channel的所有I/O事件，并且在该EventLoop的整个生命周期内都不会改变。</li>
+    </ul>
+  </li>
+  <li>channel() Channel -&gt; Socket
+    <ul>
+      <li>ChannelPipeline
+        <ul>
+          <li>handler() ChannelHandler</li>
+        </ul>
+      </li>
+      <li>ChannelConfig</li>
+    </ul>
+  </li>
+  <li>ChannelFuture -&gt; 异步通知</li>
+</ul>
+
+<h4 id="netty的数据容器bytebuf">Netty的数据容器ByteBuf</h4>
+<ul>
+  <li>它可以被用户自定义的缓冲区类型扩展;</li>
+  <li>通过内置的复合缓冲区类型实现了透明的零拷贝;</li>
+  <li>容量可以按需增长(类似于 JDK 的 StringBuilder);</li>
+  <li>在读和写这两种模式之间切换不需要调用 ByteBuffer 的 flip()方法;</li>
+  <li>读和写使用了不同的索引;</li>
+  <li>支持方法的链式调用;</li>
+  <li>支持引用计数;</li>
+  <li>支持池化。</li>
+</ul>
+
+<h4 id="netty的对象池化技术pooledbytebufallocator">Netty的对象池化技术PooledByteBufAllocator</h4>
+<ul>
+  <li>通过引用计数的方式实现 ReferenceCounted</li>
+  <li>Unpooled.copiedBuffer(“Netty rocks!”,CharsetUtil.UTF-8);</li>
+  <li>由于采用引用计数，需要在消费完消息之后调用ReferenceCountUtil.release(msg);</li>
+  <li>可以通过 java -Dio.netty.leakDetectionLevel=ADVANCED 这个参数设置泄露检测级别
+<img src="/img/leak_level.jpg" width="600px" /></li>
+</ul>
+
+<h4 id="channelhandler-channelpipeline-channelhandlercontext">ChannelHandler ChannelPipeline ChannelHandlerContext</h4>
+<ul>
+  <li>每个ChannelHandler都会分配一个ChannelHandlerContext</li>
+  <li>通过Channel、Handler的write会传递整个pipe，但是通过context的write只能传递对应Handler之后的handlers</li>
+  <li>SimpleChannelInboundHandler<T>，最常见的情况是，你的应用程序会利用一个 ChannelHandler 来接收解码消息，并对该数据应用业务逻辑。要创建一个这样的 ChannelHandler，
+  你只需要扩展基类 SimpleChannel- InboundHandler<T>，其中 T 是你要处理的消息的 Java 类型 。
+  在这个 ChannelHandler 中， 你将需要重写基类的一个或者多个方法，并且获取一个到 ChannelHandlerContext 的引用， 
+  这个引用将作为输入参数传递给 ChannelHandler 的所有方法。在这种类型的 ChannelHandler 中，最重要的方法是 channelRead0(Channel- HandlerContext,T)。除了要求不要阻塞当前的 I/O 线程之外，其具体实现完全取决于你。</T></T></li>
+  <li>ChannelOutboundHandlerAdapter，几乎所有的 ChannelOutboundHandler 上的方法都会传入一个 ChannelPromise 的实例。
+  作为 ChannelFuture 的子类，ChannelPromise 也可以被分配用于异步通知的监听器。
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>promise.addListener<span class="o">(</span>new ChannelFutureListener<span class="o">()</span> <span class="o">{</span>
+@Override
+public void operationComplete<span class="o">(</span>ChannelFuture f<span class="o">)</span> <span class="o">{</span>
+<span class="k">if</span> <span class="o">(!</span>f.isSuccess<span class="o">())</span> <span class="o">{</span> f.cause<span class="o">()</span>.printStackTrace<span class="o">()</span><span class="p">;</span>
+                      f.channel<span class="o">()</span>.close<span class="o">()</span><span class="p">;</span>
+                  <span class="o">}</span>
+<span class="o">})</span><span class="p">;</span> 
+</code></pre></div>    </div>
+    <h4 id="eventloop和线程池">EventLoop和线程池</h4>
+  </li>
+  <li>本质是创建包含少量的线程EventLoop的线程池EventLoopGroup，一个EventLoop管理多个Channel，
+  实际上就是IO多路复用
+<img src="/img/eventLoop.jpg" width="600px" /></li>
+</ul>
+
+<h4 id="bootstrap">Bootstrap</h4>
+<ul>
+  <li>为什么引导类是 Cloneable 的 你有时可能会需要创建多个具有类似配置或者完全相同配置的Channel。为了支持这种模式而又不
+    <ul>
+      <li>需要为每个Channel都创建并配置一个新的引导类实例，AbstractBootstrap被标记为了 Cloneable1。在一个已经配置完成的引导类实例上调用clone()方法将返回另一个可以立即使用的引 导类实例。</li>
+      <li>注意，这种方式只会创建引导类实例的EventLoopGroup的一个浅拷贝，所以，后者 2将在所有克 隆的Channel实例之间共享。这是可以接受的，因为通常这些克隆的Channel的生命周期都很短暂，一 个典型的场景是——创建一个Channel以进行一次HTTP请求。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="netty-设计">Netty 设计</h4>
+<ul>
+  <li>从高层次的角度来看，Netty 解决了两个相应的关注领域，我们可将其大致标记为技术的和 体系结构的。
+    <ul>
+      <li>首先，它的基于 Java NIO 的异步的和事件驱动的实现，保证了高负载下应用程序 性能的最大化和可伸缩性。</li>
+      <li>其次，Netty 也包含了一组设计模式，将应用程序逻辑从网络层解耦， 简化了开发过程，同时也最大限度地提高了可测试性、模块化以及代码的可重用性。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="不使用netty的nio">不使用Netty的NIO</h4>
+<p><img src="/img/nio-selector.jpg" width="600px" /></p>
+
+<h4 id="netty-的-opensslsslengine-实现">Netty 的 OpenSSL/SSLEngine 实现</h4>
+<ul>
+  <li>Netty 还提供了使用 OpenSSL 工具包(www.openssl.org)的 SSLEngine 实现。这个 OpenSsl-Engine 类提供了比 JDK 提供的 SSLEngine 实现更好的性能。</li>
+  <li>如果 OpenSSL 库可用，可以将 Netty 应用程序(客户端和服务器)配置为默认使用 OpenSslEngine。如果不可用，Netty 将会回退到 JDK 实现。有关配置 OpenSSL 支持的详细说明，参见 Netty 文档: http://netty.io/wiki/forked-tomcat-native.html#wikih2-1。</li>
+  <li>注意，无论你使用 JDK 的 SSLEngine 还是使用 Netty 的 OpenSslEngine，SSL API 和数据流都 是一致的。</li>
+</ul>
+
+<p><img src="/img/ssl_tls.jpg" width="600px" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SelfSignedCertificate cert <span class="o">=</span> new SelfSignedCertificate<span class="o">()</span><span class="p">;</span>
+SslContext context <span class="o">=</span> SslContext.newServerContext<span class="o">(</span>cert.certificate<span class="o">()</span>, cert.privateKey<span class="o">())</span><span class="p">;</span>
+
+SSLEngine engine <span class="o">=</span> context.newEngine<span class="o">(</span>ch.alloc<span class="o">())</span><span class="p">;</span>
+engine.setUseClientMode<span class="o">(</span><span class="nb">false</span><span class="o">)</span><span class="p">;</span>
+ch.pipeline<span class="o">()</span>.addFirst<span class="o">(</span>new SslHandler<span class="o">(</span>engine<span class="o">))</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="检测空闲连接以及超时对于及时释放资源">检测空闲连接以及超时对于及时释放资源</h4>
+<ul>
+  <li>new IdleStateHandler(0, 0, 60, TimeUnit.SECONDS)</li>
+  <li>ReadTimeoutHandler exceptionCaught()</li>
+  <li>WriteTimeoutHandler exceptionCaught()</li>
+</ul>
+
+<h4 id="写大数据">写大数据</h4>
+<ul>
+  <li>ChunkedFile 从文件中逐块获取数据，当你的平台不支持零拷贝或者你需要转换数据时使用</li>
+  <li>ChunkedNioFile 和 ChunkedFile 类似，只是它使用了 FileChannel</li>
+  <li>ChunkedStream 从 InputStream 中逐块传输内容</li>
+  <li>ChunkedNioStream 从ReadableByteChannel中逐块传输内容
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final class WriteStreamHandler extends ChannelInboundHandlerAdapter <span class="o">{</span>
+  @Override
+  public void channelActive<span class="o">(</span>ChannelHandlerContext ctx<span class="o">)</span>throws Exception <span class="o">{</span>
+      super.channelActive<span class="o">(</span>ctx<span class="o">)</span><span class="p">;</span>
+      ctx.writeAndFlush<span class="o">(</span>
+      new ChunkedStream<span class="o">(</span>new FileInputStream<span class="o">(</span>file<span class="o">)))</span><span class="p">;</span>
+  <span class="o">}</span> 
+<span class="o">}</span>
+</code></pre></div>    </div>
+    <h4 id="websocketframe">WebSocketFrame</h4>
+  </li>
+  <li>BinaryWebSocketFrame 包含了二进制数据</li>
+  <li>TextWebSocketFrame 包含了文本数据</li>
+  <li>ContinuationWebSocketFrame 包含属于上一个BinaryWebSocketFrame或TextWebSocket-Frame 的文本数据或者二进制数据</li>
+  <li>CloseWebSocketFrame 表示一个 CLOSE 请求，包含一个关闭的状态码和关闭的原因</li>
+  <li>PingWebSocketFrame 作为一个对于 PingWebSocketFrame 的响应被发送</li>
+  <li>PongWebSocketFrame 请求传输一个 PongWebSocketFrame</li>
+</ul>
+
+<h4 id="websocket示例">WebSocket示例</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ChannelPipeline pipeline <span class="o">=</span> ch.pipeline<span class="o">()</span><span class="p">;</span>
+<span class="c"># http编解码</span>
+pipeline.addLast<span class="o">(</span>new HttpServerCodec<span class="o">())</span><span class="p">;</span>
+<span class="c"># 写入一个文件的内容</span>
+pipeline.addLast<span class="o">(</span>new ChunkedWriteHandler<span class="o">())</span><span class="p">;</span>
+<span class="c"># 将一个 HttpMessage 和跟随它的多个 HttpContent 聚合</span>
+<span class="c"># 为单个 FullHttpRequest 或者 FullHttpResponse(取决于它是被用来处理请求还是响应)。</span>
+<span class="c"># 安装了这个之后， ChannelPipeline 中的下一个 ChannelHandler 将只会 收到完整的 HTTP 请求或响应</span>
+pipeline.addLast<span class="o">(</span>new HttpObjectAggregator<span class="o">(</span>64 <span class="k">*</span> 1024<span class="o">))</span><span class="p">;</span>
+<span class="c"># 如果是/ws请求就交个下个handler，否则HTTP handler来处理</span>
+pipeline.addLast<span class="o">(</span>new HttpRequestHandler<span class="o">(</span><span class="s2">"/ws"</span><span class="o">))</span><span class="p">;</span>
+<span class="c"># 按照 WebSocket 规范的要求，处理 WebSocket 升级握手、 PingWebSocketFrame 、 PongWebSocketFrame 和 CloseWebSocketFrame</span>
+pipeline.addLast<span class="o">(</span>new WebSocketServerProtocolHandler<span class="o">(</span><span class="s2">"/ws"</span><span class="o">))</span><span class="p">;</span>
+<span class="c"># 处理 TextWebSocketFrame 和握手完成事件</span>
+pipeline.addLast<span class="o">(</span>new TextWebSocketFrameHandler<span class="o">(</span>group<span class="o">))</span><span class="p">;</span>
+</code></pre></div></div>
+<p>在从标准的HTTP或者HTTPS协议切换到WebSocket时，将会使用一种称为升级握手的机制。因此 ，使用WebSocket的应用程序将始终以HTTP/S作为开始，然后再执行升级。这个升级动 作发生的确切时刻特定于应用程序;它可能会发生在启动时，也可能会发生在请求了某个特定的 URL之后。</p>
+
+<h4 id="理解http协议中的-expect-100-continue">理解HTTP协议中的 Expect: 100-continue</h4>
+<ul>
+  <li>HTTP/1.1 协议里设计 100 (Continue) HTTP 状态码的的目的是，在客户端发送 Request Message 之前，HTTP/1.1 协议允许客户端先判定服务器是否愿意接受客户端发来的消息主体（基于 Request Headers）。</li>
+  <li>即， 客户端 在 Post（较大）数据到服务端之前，允许双方“握手”，如果匹配上了，Client 才开始发送（较大）数据。</li>
+  <li>这么做的原因是，如果客户端直接发送请求数据，但是服务器又将该请求拒绝的话，这种行为将带来很大的资源开销。</li>
+</ul>
+<p><a href="https://blog.csdn.net/skh2015java/article/details/88723028">https://blog.csdn.net/skh2015java/article/details/88723028</a></p>
+
+<h4 id="http协议与websocket协议升级过程">http协议与websocket协议升级过程</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># req</span>
+GET /chat HTTP/1.1
+Host: server.example.com
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: <span class="nv">x3JJHMbDL1EzLkh9GBhXDw</span><span class="o">==</span>
+Sec-WebSocket-Protocol: chat, superchat
+Sec-WebSocket-Version: 13
+Origin: http://example.com
+
+<span class="c"># resp</span>
+Sec-WebSocket-Key: <span class="nv">x3JJHMbDL1EzLkh9GBhXDw</span><span class="o">==</span>
+Sec-WebSocket-Protocol: chat, superchat
+Sec-WebSocket-Version: 13
+</code></pre></div></div>
+<p><a href="http://www.xiaosongit.com/index/detail/id/645.html">http://www.xiaosongit.com/index/detail/id/645.html</a></p>
+
+<h4 id="其他-1">其他</h4>
+<ul>
+  <li>ChannelFuture 与 ChannelFutureListener相互结合，构成了Netty本身的关键构件之一</li>
+  <li>关于ServerBootStrap，因为服务器需要两组不同的 Channel。第一组将只包含一个 ServerChannel，代表服务 器自身的已绑定到某个本地端口的正在监听的套接字。而第二组将包含所有已创建的用来处理传 入客户端连接(对于每个服务器已经接受的连接都有一个)的 Channel。</li>
+  <li>PCB Process Control Block</li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html">DotDot</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 8, 2020</span>
@@ -518,7 +859,7 @@ long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()
       <li>开发代号为Mustang(野马),于2006-12-11发行。评价：鸡肋的版本，有JDBC4.0更新、Complier API、WebSevice支持的加强等更新。</li>
     </ul>
   </li>
-  <li>Java7
+  <li>Java7  2011年7月7日
     <ul>
       <li>switch中添加对String类型的支持</li>
       <li>数字字面量的改进 / 数值可加下划</li>
@@ -809,200 +1150,6 @@ long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html">HTTP-HTTPS</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 29, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="http-https">HTTP HTTPS</h4>
-<ul>
-  <li>理解HTTPS <a href="http://www.52im.net/thread-1890-1-1.html">http://www.52im.net/thread-1890-1-1.html</a></li>
-</ul>
-
-<h4 id="ssltls">SSL/TLS</h4>
-<ul>
-  <li>过程概述，4次握手，主要是为了生成”对话秘钥”
-    <ol>
-      <li>客户端携带随机数1、TLS版本号、加密方式如RSA、压缩方式等，发送给服务器</li>
-      <li>服务器携带随机数2、确认的TLS版本号、加密方式如RSA、压缩方式、服务器正式（含公钥）等，发送给客户端</li>
-      <li>客户端生成随机数3并用公钥加密发送给服务器，并通知服务器编码方式改变，握手结束</li>
-      <li>服务器收到随机数3，通知客户端编码方式改变，握手结束</li>
-      <li>双方采用”对话密钥”进行加密通信。</li>
-    </ol>
-  </li>
-  <li>要点
-    <ul>
-      <li>通信阶段的会话密码，是由3个随机数生成：客户端产生2个、服务端产生1个</li>
-    </ul>
-  </li>
-  <li>参考
-    <ul>
-      <li>SSL/TLS协议运行机制的概述 <a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html</a></li>
-      <li>图解SSL/TLS协议 <a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html">http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html</a></li>
-      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=327&amp;highlight=SSL%2FTLS">http://www.52im.net/forum.php?mod=viewthread&amp;tid=327&amp;highlight=SSL%2FTLS</a></li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="公钥私钥有何特点">公钥、私钥有何特点？</h4>
-<p>公钥加密的，私钥可以解密；
-私钥加密的，公钥可以解密。</p>
-
-<p>但公钥加密的，公钥无法解密；
-私钥加密的，私钥也无法解密！</p>
-
-<h4 id="linux版本">Linux版本</h4>
-<ul>
-  <li>0.00  1991.2-4 两个进程分别显示AAA BBB</li>
-  <li>0.01  1991.9 第一个正式向外公布的Linux内核版本</li>
-  <li>0.02  1991.10.5 Linus Torvalds将当时最初的0.02内核版本发布到了Minix新闻组，很快就得到了反应。Linus Torvalds在这种简单的任务切换机制上进行扩展，并在很多热心支持者的帮助下开发和推出了Linux的第一个稳定的工作版本。</li>
-  <li>0.03  1991.10.5</li>
-  <li>0.10  1991.10 Linux0.10版本内核发布，0.11版本随后在1991年12月推出，当时它被发布在Internet上，供人们免费使用。</li>
-  <li>0.11  1991.12.8 基本可以正常运行的内核版本</li>
-  <li>0.12  1992.1.15 主要加入对数学协处理器的软件模拟程序</li>
-  <li>0.95（0.13） 1992.3.8 开始加入虚拟文件系统思想的内核版本</li>
-  <li>0.96  1992.5.12 开始加入网络支持和虚拟文件系统</li>
-  <li>0.97  1992.8.1</li>
-  <li>0.98  1992.9.29</li>
-  <li>0.99  1992.12.13</li>
-  <li>1.0   1994.3.14 Linux1.0版本内核发布，使用它的用户越来越多，而且Linux系统的核心开发队伍也建起来了。</li>
-  <li>1.2   1995.3.7</li>
-  <li>2.0   1996.2.9</li>
-  <li>2.2   1999.1.26</li>
-  <li>2.4   2001.1.4 Linux2.4.0版本内核发布。</li>
-  <li>2.6.x 2003-12 2011-05</li>
-  <li>3.x   2011-06 2015-02</li>
-  <li>4.x   2015-04 2018-12</li>
-  <li>5.x   2019-03</li>
-</ul>
-
-<h4 id="http版本差异">HTTP版本差异</h4>
-<ul>
-  <li>HTTP/0.9 (1991)
-    <ul>
-      <li>只支持GET、无协议头、无图片的HTML</li>
-      <li>连接用完立即关闭、无错误码</li>
-    </ul>
-  </li>
-  <li>HTTP/1.0 (1992-1996)
-    <ul>
-      <li>请求与响应支持头域</li>
-      <li>响应对象以一个响应状态行开始</li>
-      <li>响应对象不只限于超文本</li>
-      <li>开始支持客户端通过POST方法向Web服务器提交数据，支持GET、HEAD、POST方法</li>
-      <li>支持长连接（但默认还是使用短连接），缓存机制，以及身份认证</li>
-    </ul>
-  </li>
-  <li>HTTP/1.1 (1997-1999)
-    <ul>
-      <li>keepalive连接</li>
-      <li>chunked编码传输</li>
-      <li>字节范围请求，断点续传</li>
-      <li>请求流水线，同时交叉请求</li>
-      <li>请求消息和响应消息都应支持Host头域</li>
-      <li>增加了OPTIONS,PUT, DELETE, TRACE, CONNECT方法</li>
-      <li>HTTP/1.1在1.0的基础上加入了一些cache的新特性，引入了实体标签，一般被称为e-tags，新增更为强大的Cache-Control头。</li>
-    </ul>
-  </li>
-  <li>HTTP/2.0 (2012-2014)
-    <ul>
-      <li>多路复用（二进制分帧）</li>
-      <li>头部压缩</li>
-      <li>随时复位</li>
-      <li>Server PUSH</li>
-      <li>优先权依赖</li>
-    </ul>
-  </li>
-  <li>SPDY 协议
-    <ul>
-      <li>2009年，谷歌公开了自行研发的 SPDY 协议，主要解决 HTTP/1.1 效率不高的问题。
-这个协议在Chrome浏览器上证明可行以后，就被当作 HTTP/2 的基础，主要特性都在 HTTP/2 之中得到继承。</li>
-    </ul>
-  </li>
-  <li>参考 <a href="http://www.52im.net/thread-1709-1-1.html">http://www.52im.net/thread-1709-1-1.html</a></li>
-</ul>
-
-<h4 id="ssltls历史">SSL/TLS历史</h4>
-<ul>
-  <li>1994年，NetScape公司设计了SSL协议（Secure Sockets Layer）的1.0版，但是未发布。</li>
-  <li>1995年，NetScape公司发布SSL 2.0版，很快发现有严重漏洞。</li>
-  <li>1996年，SSL 3.0版问世，得到大规模应用。</li>
-  <li>1999年，互联网标准化组织ISOC接替NetScape公司，发布了SSL的升级版TLS 1.0版。</li>
-  <li>2006年和2008年，TLS进行了两次升级，分别为TLS 1.1版和TLS 1.2版。最新的变动是2011年TLS 1.2的修订版。</li>
-  <li>目前，应用最广泛的是TLS 1.0，接下来是SSL 3.0。但是，主流浏览器都已经实现了TLS 1.2的支持。
-TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
-</ul>
-
-<h4 id="ssltls简介">SSL/TLS简介</h4>
-<ul>
-  <li>SSL：（Secure Socket Layer，安全套接字层），位于可靠的面向连接的网络层协议和应用层协议之间的一种协议层。SSL通过互相认证、使用数字签名确保完整性、使用加密确保私密性，以实现客户端和服务器之间的安全通讯。该协议由两层组成：SSL记录协议和SSL握手协议。</li>
-  <li>TLS：(Transport Layer Security，传输层安全协议)，用于两个应用程序之间提供保密性和数据完整性。该协议由两层组成：TLS记录协议和TLS握手协议。</li>
-  <li>SSL是Netscape开发的专门用户保护Web通讯的，目前版本为3.0。最新版本的TLS 1.0是IETF(工程任务组)制定的一种新的协议，它建立在SSL 3.0协议规范之上，是SSL 3.0的后续版本。两者差别极小，可以理解为SSL 3.1，它是写入了RFC的。</li>
-  <li><a href="https://kb.cnblogs.com/page/197396/">https://kb.cnblogs.com/page/197396/</a></li>
-</ul>
-
-<h4 id="mitm攻击">MITM攻击</h4>
-<ul>
-  <li>SSLStrip （降级攻击），把Https，降到Http。这种攻击利用的是很多网站并没有关掉http访问，而是在服务端将首页从http跳到https，
-  给了攻击者一个http响应做突破口。不过这种攻击也可以防御，启用HSTS(HTTP Strict Transport Security, HTTP 严格传输安全)和Preload list就行了，让攻击者找不到任何http的机会。</li>
-  <li>SSLSplit（解密攻击）</li>
-  <li>理解清楚中间人攻击（Man-in-the-MiddleAttack，简称“MITM攻击”）也就理解了HTTPS。</li>
-  <li>中间人攻击（MITM攻击）是指，黑客拦截并篡改网络中的通信数据。又分为被动MITM和主动MITM，被动MITM只窃取通信数据而不修改，而主动MITM不但能窃取数据，还会篡改通信数据。最常见的中间人攻击常常发生在公共wifi或者公共路由上。</li>
-</ul>
-
-<h4 id="https加密原理">HTTPS加密原理</h4>
-<ol>
-  <li>各个操作系统或浏览器提前内置或缓存了合法CA机构的公钥</li>
-  <li>服务器提交相关信息给CA机构</li>
-  <li>CA机构生成该服务器对应的私钥+证书（包含服务器公钥、数字签名等）</li>
-  <li>客户端发起请求到服务器，服务器返回CA机构生成的证书</li>
-  <li>客户端用提前内置的CA机构的公钥解密该证书，并验证该证书是否合法</li>
-  <li>验证证书合法后，从证书中提取服务器的公钥，开始SSL/TLS交互</li>
-  <li>其他方便理解的总结
-    <ul>
-      <li>引入CA之后，重点是有2个公钥：自己服务器的公钥、CA机构的公钥</li>
-      <li>当客户端收到证书之后，使用本地配置的权威机构的公钥对证书进行解密得到服务端的公钥和证书的数字签名，数字签名经过CA公钥解密得到证书信息摘要。</li>
-      <li>然后用证书签名的方法计算一下当前证书的信息摘要，与收到的信息摘要作对比，如果一样，表示证书一定是服务器下发的，没有被中间人篡改过。因为中间人虽然有权威机构的公钥，能够解析证书内容并篡改，但是篡改完成之后中间人需要将证书重新加密，但是中间人没有权威机构的私钥，无法加密，强行加密只会导致客户端无法解密，如果中间人强行乱修改证书，就会导致证书内容和证书签名不匹配。</li>
-      <li>客户端验证证书的合法性，包括：
-        <ul>
-          <li>证书是否过期</li>
-          <li>发行服务器证书的CA是否可靠</li>
-          <li>本地CA公钥是否能正确解开证书</li>
-          <li>服务器证书上的域名是否和服务器的实际域名相匹配</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ol>
-
-<h4 id="第三方攻击者能否让自己的证书显示出来的信息也是服务端呢">第三方攻击者能否让自己的证书显示出来的信息也是服务端呢？</h4>
-<p>-（伪装服务端一样的配置）显然这个是不行的，因为当第三方攻击者去CA那边寻求认证的时候CA会要求其提供例如域名的whois信息、域名管理邮箱等证明你是服务端域名的拥有者，而第三方攻击者是无法提供这些信息所以他就是无法骗CA他拥有属于服务端的域名</p>
-
-<h4 id="ios-面试题什么是中间人攻击如何避免">iOS 面试题·什么是中间人攻击？如何避免？</h4>
-<ul>
-  <li>客户端不要轻易信任证书</li>
-  <li>App可以提前预埋证书在本地</li>
-  <li><a href="https://www.jianshu.com/p/210c296eb836">https://www.jianshu.com/p/210c296eb836</a></li>
-</ul>
-
-<h4 id="参考">参考</h4>
-<ul>
-  <li>理解HTTPS <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1890&amp;highlight=https">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1890&amp;highlight=https</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -1066,6 +1213,10 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
       
       
       <a href="/page14" class="button page-button">14</a>
+      
+      
+      
+      <a href="/page15" class="button page-button">15</a>
       
       
 
@@ -1168,7 +1319,7 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 14 )</span>
+      <span class="label label-default">Java ( 15 )</span>
       </a><br />
 
       

@@ -9,6 +9,25 @@ tags:
 categories:
 - 技术
 ---
+- 需要反复看看 <https://www.cnblogs.com/itxiaok/p/10357825.html>
+- 相比 select ，poll 有这些优点：
+    由于 poll 在 pollfd 里用 int fd 来表示文件描述符而不像 select 里用的 fd_set 来分别表示描述符，所以没有必须小于 1024 的限制，也没有数量限制；
+    由于 poll 用 events 表示期待的事件，通过修改 revents 来表示发生的事件，所以不需要像 select 在每次调用前重新设置描述符和期待的事件。
+    除此之外，poll 和 select 几乎相同。在 poll 返回后，需要遍历 fdarray 来检查各个 pollfd 里的 revents 是否发生了期待的事件；每次调用 poll 时，
+    把 fdarray 复制到内核空间。在描述符太多而每次准备好的较少时，poll 有同样的性能问题。
+- epoll 解决了 poll 和 select 的问题：
+    - 只在 epoll_ctl 的时候把数据复制到内核空间，这保证了每个描述符和事件一定只会被复制到内核空间一次；每次调用 epoll_wait 都不会复制新数据到内核空间。相比之下，select 每次调用都会把三个 fd_set 复制一遍；poll 每次调用都会把 fdarray 复制一遍。
+    - epoll_wait 返回 n ，那么只需要做 n 次循环，可以保证遍历的每一次都是有意义的。相比之下，select 需要做至少 n 次至多 maxfdp1 次循环；poll 需要遍历完 fdarray 即做 nfds 次循环。
+    - 在内部实现上，epoll 使用了回调的方法。调用 epoll_ctl 时，就是注册了一个事件：在集合中放入文件描述符以及事件数据，并且加上一个回调函数。一旦文件描述符上的对应事件发生，就会调用回调函数，这个函数会把这个文件描述符加入到就绪队列上。当你调用 epoll_wait 时，它只是在查看就绪队列上是否有内容，有的话就返回给你的程序。select() poll() epoll_wait() 三个函数在操作系统看来，都是睡眠一会儿然后判断一会儿的循环，但是 select 和 poll 在醒着的时候要遍历整个文件描述符集合，而 epoll_wait 只是看看就绪队列是否为空而已。这是 epoll 高性能的理由，使得其 I/O 的效率不会像使用轮询的 select/poll 随着描述符增加而大大降低。
+- Epoll的机理，我们便能很容易掌握epoll的用法了。一句话描述就是：三步曲。
+  1. epoll_create()系统调用。此调用返回一个句柄，之后所有的使用都依靠这个句柄来标识。
+    11. struct rb_root  rbr; 红黑树的根节点，这颗树中存储着所有添加到epoll中的需要监控的事件
+    12. struct list_head rdlist; 双链表中则存放着将要通过epoll_wait返回给用户的满足条件的事件
+  2. epoll_ctl()系统调用。通过此调用向epoll对象中添加、删除、修改感兴趣的事件，返回0标识成功，返回-1表示失败。
+    21. 调用epoll_ctl向epoll对象中添加这100万个连接的套接字
+    22. 而所有添加到epoll中的事件都会与设备(网卡)驱动程序建立回调关系，也就是说，当相应的事件发生时会调用这个回调方法。这个回调方法在内核中叫ep_poll_callback,它会将发生的事件添加到rdlist双链表中。
+  3. epoll_wait()系统调用。通过此调用收集在epoll监控中已经发生的事件。
+
 ### 再次总结
 #### 历史
  - select出现是1984年在BSD里面实现的(为了减少数据拷贝带来的性能损坏，内核对被监控的fd_set集合大小做了限制，并且这个是通过宏控制的，大小不可改变(限制为1024))

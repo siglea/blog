@@ -54,6 +54,199 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html">用户画像</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 22, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>用户</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="核心">核心</h4>
+<ul>
+  <li>用户画像体系，有这一篇就够了 <a href="https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q">https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q</a></li>
+  <li>用户画像原理、技术选型及架构实现 <a href="https://blog.csdn.net/SecondLieutenant/article/details/81153565">https://blog.csdn.net/SecondLieutenant/article/details/81153565</a></li>
+</ul>
+
+<h4 id="用户画像概述">用户画像概述</h4>
+<ul>
+  <li>用户画像根本目的就是寻找目标客户、优化产品设计，指导运营策略，分析业务场景和完善业务形态。</li>
+  <li>不同的企业做用户画像有不同的战略目的，广告公司做用户画像是为精准广告服务，电商做用户画像是为用户购买更多商品，内容平台做用户画像是推荐用户更感兴趣的内容提升流量再变现，金融行业做用户画像是为了寻找到目标客户的同时做好风险的控制。</li>
+</ul>
+
+<h4 id="画像维度">画像维度</h4>
+<ul>
+  <li>特征：
+    <ul>
+      <li>人口统计：性别、年龄、教育</li>
+      <li>社会属性：家庭、社交、职业</li>
+    </ul>
+  </li>
+  <li>行为：
+    <ul>
+      <li>使用行为：手机使用、电脑类型、套餐使用、套餐余额</li>
+      <li>消费行为：购买力、购买频次、购买渠道、额度、信用等级</li>
+    </ul>
+  </li>
+  <li>需求
+    <ul>
+      <li>偏好属性：兴趣爱好、品牌爱好、产品爱好、网购偏好、支付偏好、价格偏好</li>
+      <li>潜在需求：</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="指标体系">指标体系</h4>
+<ul>
+  <li>用户属性维度</li>
+  <li>用户行为维度</li>
+  <li>用户消费维度</li>
+  <li>风险控制维度</li>
+  <li>社交属性维度</li>
+</ul>
+
+<h4 id="画像之静态标签动态标签">画像之静态标签、动态标签</h4>
+<ul>
+  <li>静态画像：实时性弱、覆盖广、粒度粗</li>
+  <li>动态画像：
+    <ul>
+      <li>一般建立兴趣模型，更加实时并且动态</li>
+      <li>用户行为可疑结构为5W（What/Who/When/Where/Why)</li>
+      <li>时效性非常敏感</li>
+      <li>在空间上，不同应用领域侧重点不同，营销领域更侧重消费习惯，推荐领域更侧重喜好</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="画像之标签结构化程度">画像之标签结构化程度</h4>
+<ul>
+  <li>结构化标签体系，定向广告平台采用的结构化标签体系</li>
+  <li>半结构化标签体系，在用于效果广告时，标签设计的灵活性大大提高了。标签体系是不是规整，就不那么重要了，只要有效果就行。</li>
+  <li>非结构化标签体系，非结构化，就是各个标签就事论事，各自反应各自的用户兴趣，彼此之间并无层级关系，也很难组织成规整的树状结构。非结构化标签的典型例子，是搜索广告里用的关键词。还有Facebook用的用户兴趣词</li>
+  <li>例如
+    <ul>
+      <li>汽车行业的标签体系大体应该是：价格—&gt;车型—&gt;品牌</li>
+      <li>游戏行业：按照类别、游戏素材、游戏厂商等等。游戏的用户决策过程总体上令人难以捉摸，这是因为它有点儿电影、音乐一样的艺术性特质。而人们对艺术的喜爱，并不是理性的，也就难以总结规律。</li>
+      <li>电商行业的实际做法大家都看到了，基本上不依靠分类，完全以“单品+个性化推荐”的方法构建和使用标签体系。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="画像之应用">画像之应用</h4>
+<ul>
+  <li>精准营销：根据历史用户特征，分析产品的潜在用户和用户的潜在需求，针对特定群体，利用短信、邮件等方式进行营销。</li>
+  <li>用户统计：根据用户的属性、行为特征对用户进行分类后，统计不同特征下的用户数量、分布；分析不同用户画像群体的分布特征。</li>
+  <li>数据挖掘：以用户画像为基础构建推荐系统、搜索引擎、广告投放系统，提升服务精准度。</li>
+  <li>服务产品：对产品进行用户画像，对产品进行受众分析，更透彻地理解用户使用产品的心理动机和行为习惯，完善产品运营，提升服务质量。</li>
+  <li>行业报告&amp;用户研究：通过用户画像分析可以了解行业动态，比如人群消费习惯、消费偏好分析、不同地域品类消费差异分析</li>
+</ul>
+
+<h4 id="画像之reachctr曲线">画像之reach/CTR曲线</h4>
+<ul>
+  <li>reach：该标签占总用户比例</li>
+  <li>CTR：点击率</li>
+  <li>reach越大，一般情况CTR会小</li>
+</ul>
+
+<h4 id="用户画像架构图">用户画像架构图</h4>
+<p><img src="/img/user_profile.jpg" width="600px" /></p>
+
+<h4 id="用户画像后台标签">用户画像后台标签</h4>
+<p><img src="/img/user_profile_admin.jpg" width="600px" /></p>
+
+<h4 id="用户业务标签">用户业务标签</h4>
+<p><img src="/img/user_profile_tags.jpg" width="600px" /></p>
+
+<h4 id="会员理论模型">会员理论模型</h4>
+<ul>
+  <li>会员体系模型：AIPL
+    <ul>
+      <li>Awareness潜客：内容运营、宣传吸引、新手任务、了解产品</li>
+      <li>Interest粉丝：社会新闻、热点话题、习惯养成、积分积累</li>
+      <li>Purchase会员：日常任务、促销活动、品牌影响力、共同利益</li>
+      <li>Loyalty超级会员：专属特权、心理诉求、社群活动、1V1维护</li>
+    </ul>
+  </li>
+  <li>会员体系模型：RFM
+    <ul>
+      <li>R(Recency)近度：距某节点最近的一次消费</li>
+      <li>F(Frequency)频度：消费频次</li>
+      <li>M (Monetary)额度：消费金额
+<img src="/img/RFM.jpg" width="600px" /></li>
+    </ul>
+  </li>
+  <li>会员体系模型：AARRR
+    <ul>
+      <li>Acquisition（获取用户）：关注PV、UV、CPC、点击转化率、注册量、注册率、获客成本CAC</li>
+      <li>Activation（提高活跃度）：关注登陆量、激活转化率、活跃度指标</li>
+      <li>Retention（提高留存率）：关注留存率、复购率、人均购买次数、召回率</li>
+      <li>Revenue（获取收入）：关注获客成本、顾客终身价值、营销ROI</li>
+      <li>Referral（传播）：关注邀请量、激活量、邀请激活率、传播系数</li>
+    </ul>
+  </li>
+  <li>鱼塘理论
+    <ul>
+      <li>养鱼、抓潜、成交、追销、形成自己的鱼塘</li>
+    </ul>
+  </li>
+  <li>《上瘾》Hook模型概念
+    <ul>
+      <li>触发Trigger：即诱发用户采取行动，进入系统的契机。这是上瘾模型的第一步，也是最关键一步，如果这步不能引起用户的兴趣，后续就无从谈起。</li>
+      <li>行动Action：按照斯坦福大学B.J.Fogg博士的Behavior Model理论，B=MAT，即行动（Behavior）=动机（Motivation）+能力（Ability）+触发器（Trigger）。</li>
+      <li>多变的酬赏Variable Reward：当行为被触发之后，接下来就需要给用户一些酬赏进行持续刺激，以培养对他们对产品的使用习惯。酬赏简单来说就是产品带给用户的满足感，但为什么要强调“多变”呢？
+  据行为学研究，人们对产品的满足感会随着时间的推移逐渐降低，即使现阶段用户因为产品解决了某方面问题而产生依赖，但市面上的新产品层出不穷，要想不被淘汰，“无穷的多变性”是保持产品神秘感和吸引力，维持用户长期兴趣的关键。</li>
+      <li>投入Investment：有研究表明，用户对某个产品投入时间精力的多寡与对这个产品的依赖程度成正比，就像免费东西你不会珍惜，而氪过金的游戏或服务反而会不断充值一样。已经享受酬赏的用户，想要他们对你的产品彻底“上瘾”，最后一步就是要让他们有所投入。
+ <img src="/img/hook.jpg" width="600px" /></li>
+    </ul>
+    <p><a href="https://www.sohu.com/a/239048631_100180218">https://www.sohu.com/a/239048631_100180218</a></p>
+  </li>
+  <li>《疯传》STEPPS原则
+    <ul>
+      <li>社交货币（Social Currency）：我们会共享那些能让我们显得更优秀的事情</li>
+      <li>诱因（Triggers）：顶尖的记忆，风口浪尖的提醒</li>
+      <li>情绪（Emotion）：当我们关心时，我们回去分享</li>
+      <li>公共性（Public）：构建可视的、正面的事物</li>
+      <li>实用价值（Practical Value）：如果有用，人们会情不自禁地分享</li>
+      <li>故事（Stories）：好故事就意味着成功了一般，好故事都有翅膀</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>用户研究：如何做用户画像分析 <a href="https://www.jianshu.com/p/440c30383bec">https://www.jianshu.com/p/440c30383bec</a></li>
+  <li>什么是用户画像和标签？ <a href="http://www.woshipm.com/user-research/1083807.html">http://www.woshipm.com/user-research/1083807.html</a></li>
+  <li>结构化标签、非结构化标签及reach/CTR曲线 <a href="http://www.woshipm.com/user-research/436269.html">http://www.woshipm.com/user-research/436269.html</a></li>
+  <li>电商案例、金融案例（用户画像标签体系——从零开始搭建实时用户画像） <a href="https://cloud.tencent.com/developer/column/79937">https://cloud.tencent.com/developer/column/79937</a></li>
+  <li>航空公司案例、证券案例、打车公司案例 <a href="https://www.zhihu.com/question/302695500">https://www.zhihu.com/question/302695500</a></li>
+  <li>从阿里会员解读会员体系建设 <a href="https://zhuanlan.zhihu.com/p/88738148">https://zhuanlan.zhihu.com/p/88738148</a></li>
+  <li>用户画像10大误区 <a href="https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA">https://mp.weixin.qq.com/s/Nzxa7stwvLhDvfSzqkCeAA</a></li>
+  <li>1号店案例 <a href="https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg">https://mp.weixin.qq.com/s/gtwdjTS9x_0xGKWEgo1zxg</a></li>
+  <li>Qunar用户画像构建策略及应用实践 <a href="https://blog.csdn.net/xiaoshunzi111/article/details/53170658">https://blog.csdn.net/xiaoshunzi111/article/details/53170658</a></li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>携程</td>
+          <td>手把手教你用大数据打造用户画像 <a href="https://blog.csdn.net/chenjunji123456/article/details/54966633">https://blog.csdn.net/chenjunji123456/article/details/54966633</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>《用户画像：方法论与工程化解决方案》<a href="https://www.jianshu.com/p/94dadecc162b">https://www.jianshu.com/p/94dadecc162b</a></li>
+  <li>汽车之家如何构建用户画像 <a href="https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw">https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html">Java基础</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 17, 2020</span>
@@ -384,48 +577,6 @@ F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<sp
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html">大数据常用算法概述</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 7, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>BigData</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="决策树算法">决策树算法</h4>
-<h4 id="回归算法">回归算法</h4>
-<h4 id="朴素贝叶斯分类算法">朴素贝叶斯分类算法</h4>
-<h4 id="聚类-knn算法">聚类-KNN算法</h4>
-<h4 id="svm支持向量机分类">SVM支持向量机分类</h4>
-<h4 id="推荐算法">推荐算法</h4>
-
-<h4 id="tf-idf">TF-IDF</h4>
-<ul>
-  <li>TF-IDF（term frequency–inverse document frequency，词频-逆向文件频率）是一种用于信息检索（information retrieval）与文本挖掘（text mining）的常用加权技术。</li>
-  <li>TF-IDF是一种统计方法，用以评估一字词对于一个文件集或一个语料库中的其中一份文件的重要程度。字词的重要性随着它在文件中出现的次数成正比增加，但同时会随着它在语料库中出现的频率成反比下降。</li>
-  <li>TF-IDF的主要思想是：如果某个单词在一篇文章中出现的频率TF高，并且在其他文章中很少出现，则认为此词或者短语具有很好的类别区分能力，适合用来分类。</li>
-</ul>
-
-<h4 id="tf-idf算法实现简单快速但是仍有许多不足之处">TF-IDF算法实现简单快速，但是仍有许多不足之处：</h4>
-<ul>
-  <li>没有考虑特征词的位置因素对文本的区分度，词条出现在文档的不同位置时，对区分度的贡献大小是不一样的。</li>
-  <li>按照传统TF-IDF，往往一些生僻词的IDF(反文档频率)会比较高、因此这些生僻词常会被误认为是文档关键词。</li>
-  <li>传统TF-IDF中的IDF部分只考虑了特征词与它出现的文本数之间的关系，而忽略了特征项在一个类别中不同的类别间的分布情况。</li>
-  <li>对于文档中出现次数较少的重要人名、地名信息提取效果不佳。</li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -489,6 +640,10 @@ F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<sp
       
       
       <a href="/page14" class="button page-button">14</a>
+      
+      
+      
+      <a href="/page15" class="button page-button">15</a>
       
       
 
@@ -591,7 +746,7 @@ F<span class="o">(</span>n<span class="o">)</span> <span class="o">=</span> F<sp
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 14 )</span>
+      <span class="label label-default">Java ( 15 )</span>
       </a><br />
 
       

@@ -9,9 +9,100 @@ tags:
 categories:
 - 技术
 ---
-TODO <https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg>
-netty源码阅读之ByteBuf之内存概念arena、chunk、page、subpage
-<https://www.cnblogs.com/itxiaok/category/1395489.html>
+#### 其他
+- Netty实战 <https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg>
+- Java网络编程与NIO，多看几遍 <https://www.cnblogs.com/itxiaok/category/1395489.html>
+- jemalloc之arena、chunk、page、subpage <https://www.jianshu.com/p/f1988cc08dfd>
+- 内存规格、缓存&结构、chunk、arena、page、subpage等概念介绍 <https://blog.csdn.net/qq_33347239/article/details/104270629>
+    - Arena
+      - 简单来说，Arena就是一个内存分配器，所有分配的内存都是由Arena维护的，并且一般会有多个，目的是减少锁竞争。
+        而netty则是对jemalloc的Arena进行能更加具体的实现，也就是netty中的PoolArena。
+    - Chunk
+      - chunk是Netty向操作系统申请内存的最小调度单位，根据上图，chunk大小固定为16mB，也就是说，Netty每次向操作系统申请内存最小为16mB。
+    - Page
+      - 上面说了一个chunk大小是16mb，如果Netty每次分配一个ByteBuf，都用掉一个chunk的大小，那显然太浪费了。
+      - 于是设计者们就决定将一个chunk划分为2048个Page，每个Page大小为8kb，Page是给ByteBuf分配内存的最小调度单位，尽管还有更小的subpage级别，但是分配subpage时，仍然需要先拿到一个page。
+      - 当ByteBuf需要申请的内存大小（必定是2的幂次方） >= 8kb时，会先取一个chunk，然后会以page级别分配内存，最后将当前chunk标记为“使用了一个部分”，然后放进对应占用率的chunkList。
+    - SubPage
+      - 当ByteBuf需要申请的内存大小（必定是2的幂次方）< 8kb时，比如现在需要size=2kb，则会先取一个chunk，然后再取一个page，然后将page分成4份（pageSize/size），每一份为2kb，然后取其中一份给ByteBuf初始化。
+      - 之后就是一个自底向上标记的过程了，将当前使用的一份subpage标记为“已使用”，上一层page标记为“部分使用”，再上一级chunk标记为“部分使用”，最终也是将chunk放进对应占用率的chunkList。
+- 关于OS Page Cache的简单介绍，同时再一次介绍了kafka的零拷贝 <https://www.cnblogs.com/leadership/p/12349486.html>
+
+#### Netty的零拷贝体现在多个方面
+1. NIO 的基于mmap的DirectMemory
+2. FileRegion 的基于sendFile的transferTo
+3. CompositeByteBuf的wrap数组合并与slice数组分拆
+
+#### NIO Selector
+- linux系统下sun.nio.ch.DefaultSelectorProvider.create(); 会生成一个sun.nio.ch.EPollSelectorProvider类型的SelectorProvider。
+  或者在META-INF/services包含有一个java.nio.channels.spi.SelectorProvider提供类配置文件
+  
+```shell
+public static SelectorProvider provider() {
+    synchronized (lock) {
+        if (provider != null)
+            return provider;
+        return AccessController.doPrivileged(
+            new PrivilegedAction<>() {
+                public SelectorProvider run() {
+                        if (loadProviderFromProperty())
+                            return provider;
+                        if (loadProviderAsService())
+                            return provider;
+                        provider = sun.nio.ch.DefaultSelectorProvider.create();
+                        return provider;
+                    }
+                });
+    }
+}
+```
+
+- EPollSelectorImpl中初始化epoll相关方法
+
+```shell
+EPollSelectorImpl(SelectorProvider sp) throws IOException {
+        super(sp);
+        long pipeFds = IOUtil.makePipe(false);
+        fd0 = (int) (pipeFds >>> 32);
+        fd1 = (int) pipeFds;
+        try {
+            pollWrapper = new EPollArrayWrapper();
+            pollWrapper.initInterrupt(fd0, fd1);
+            fdToKey = new HashMap<>();
+        } catch (Throwable t) {}
+}
+// EPollArrayWrapper
+void initInterrupt(int fd0, int fd1) {
+    outgoingInterruptFD = fd1;
+    incomingInterruptFD = fd0;
+    epollCtl(epfd, EPOLL_CTL_ADD, fd0, EPOLLIN);
+}
+
+private native int epollCreate();
+private native void epollCtl(int epfd, int opcode, int fd, int events);
+private native int epollWait(long pollAddress, int numfds, long timeout,
+                             int epfd) throws IOException;
+```
+- Selector中维护3个特别重要的SelectionKey集合，分别是
+    - keys：所有注册到Selector的Channel所表示的SelectionKey都会存在于该集合中。keys元素的添加会在Channel注册到Selector时发生。
+    - selectedKeys：该集合中的每个SelectionKey都是其对应的Channel在上一次操作selection期间被检查到至少有一种SelectionKey中所感兴趣的操作已经准备好被处理。该集合是keys的一个子集。
+    - cancelledKeys：执行了取消操作的SelectionKey会被放入到该集合中。该集合是keys的一个子集。
+- 参考 <https://www.cnblogs.com/itxiaok/p/10357828.html>
+
+#### 再说epoll
+- epoll相关系统调用是在Linux 2.5 后的某个版本开始引入的。该系统调用针对传统的select/poll不足，设计上作了很大的改动。select/poll 的缺点在于:
+    - 每次调用时要重复地从用户模式读入参数，并重复地扫描文件描述符。
+    - 每次在调用开始时，要把当前进程放入各个文件描述符的等待队列。在调用结束后，又把进程从各个等待队列中删除。
+- epoll 是把 select/poll 单个的操作拆分为 1 个 epollcreate，多个 epollctrl和一个 wait。
+    此外，操作系统内核针对 epoll 操作添加了一个文件系统，每一个或者多个要监视的文件描述符都有一个对应的inode 节点，
+    主要信息保存在 eventpoll 结构中。而被监视的文件的重要信息则保存在 epitem 结构中，是一对多的关系。
+    由于在执行 epollcreate 和 epollctrl 时，已经把用户模式的信息保存到内核了， 所以之后即便反复地调用 epoll_wait，
+    也不会重复地拷贝参数，不会重复扫描文件描述符，也不反复地把当前进程放入/拿出等待队列。
+- select，poll实现需要自己不断轮询所有fd集合，直到设备就绪，期间可能要睡眠和唤醒多次交替。而epoll其实也需要调用epoll_wait不断轮询就绪链表，
+    期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。虽然都要睡眠和交替，
+    但是select和poll在“醒着”的时候要遍历整个fd集合，而epoll在“醒着”的时候只要判断一下就绪链表是否为空就行了，这节省了大量的CPU时间。这就是回调机制带来的性能提升。
+- select，poll每次调用都要把fd集合从用户态往内核态拷贝一次，并且要把current往设备等待队列中挂一次，而epoll只要一次拷贝，而且把current往等待队列上挂也只挂一次
+    （在epoll_wait的开始，注意这里的等待队列并不是设备等待队列，只是一个epoll内部定义的等待队列）。这也能节省不少的开销。
 
 #### Netty的组件
 - group() EventLoop -> 控制流、多线程处理、并发
@@ -172,4 +263,4 @@ Sec-WebSocket-Version: 13
 #### 其他
 - ChannelFuture 与 ChannelFutureListener相互结合，构成了Netty本身的关键构件之一
 - 关于ServerBootStrap，因为服务器需要两组不同的 Channel。第一组将只包含一个 ServerChannel，代表服务 器自身的已绑定到某个本地端口的正在监听的套接字。而第二组将包含所有已创建的用来处理传 入客户端连接(对于每个服务器已经接受的连接都有一个)的 Channel。
-- 为啥ByteBuffer 为啥flip()?
+- PCB Process Control Block
