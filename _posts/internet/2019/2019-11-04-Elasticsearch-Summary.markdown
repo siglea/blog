@@ -21,8 +21,25 @@ categories:
 - Elasticsearch之基础概念 <https://www.jianshu.com/p/d68197bc7def>
 - [ec官网](https://www.elastic.co/cn/products/elasticsearch)
 
-#### 提高ElasticSearch性能的九个高级配置技巧
+#### 提高ElasticSearch性能的高级技巧
+1. node.master:false 和node.data: true ，优先确定好比例
+1. bootstrap.mlockall:true ，由于ES主要是靠内存提高效率，因此需要锁定内存，防止进行Swapping，此时要求预留充足的HeapSize
+1. 通过设置 gateway.recover_after_nodes、gateway.expected_nodes、 gateway.recover_after_time 可以在集群重启的时候避免过多的分片交换，这可 能会让数据恢复从数个小时缩短为几秒钟
+1. 不要随意修改垃圾回收器(CMS)和各个线程池的大小。
+1. Elasticsearch 默认被配置为使用单播发现，以防止节点无意中加入集群。只 有在同一台机器上运行的节点才会自动组成集群。最好使用单播代替组播
+```shell
+discovery.zen.ping.multicast.enabled:false
+discovery.zen.ping.unicast.hosts:["esmaster01","esmaster02","esmaster03"]
+```
+1. action.disable_delete_all_indices:true ，防止误删
+1. 调整force_merge参数，闲时合并小的segment到大的 <https://blog.csdn.net/jiankunking/article/details/84667437>
+1. 冷数据定期进行 shrink 操作，以缩减存储; <https://my.oschina.net/5icode/blog/2872151>
+1. 采取 curator 进行索引的生命周期管理 <https://blog.csdn.net/laoyang360/article/details/85882832>
+1. 在索引重建过程中使用别名 <https://blog.csdn.net/u010454030/article/details/84918103>
+1. Mapping 阶段充分结合各个字段的属性，是否需要检索、是否需要存储等
+
 <https://blog.csdn.net/xshy3412/article/details/51841270>
+<https://blog.csdn.net/u014646662/article/details/99293604/>
 
 #### Elasticsearch是如何选举出master的
 - 一次join，即是加入又是投票
@@ -61,7 +78,7 @@ es中的shard用来解决节点的容量上限问题,通过将index分为多个�
     由于数据只有一份,如果一个node挂了,那存在上面的数据就都丢了,有了replicas,只要不是存储这条数据的node全挂了,数据就不会丢。
     通过在所有replicas上并行搜索提高搜索性能.由于replicas上的数据是近实时的(near realtime),因此所有replicas都能提供搜索功能,通过设置合理的replicas数量可以极高的提高搜索吞吐量。
     eg,如果指定了replicas=2,那么对于一条数据它共有三份,一份称为primary shard,另外两份称为 replicas shard. 这三个统称为replicas group(副本组)。
-- LSM思想，Translog In-memory buffer
+- LSM (Log Structured Merge Trees)思想，Translog In-memory buffer <https://www.cnblogs.com/luxiaoxun/p/13025019.html>
 - 为了解磁盘 IO 问题，Lucene 引入排索引的二级索引 FST [Finite State Transducer] 。原理上可以理解为前缀树，加速查询。
 
 #### 常用命令
@@ -345,8 +362,17 @@ bulk 会把将要处理的数据载入内存中，所以数据量是有限制的
 在读数据与写数据之间如果有其他线程进行写操作，就会出问题，es 使用版本控制才避免 这种问题
 在修改数据的时候指定版本号，操作一次版本号加 1
 
+#### 客户端在和集群连接时，如何选择特定的节点执行请求的?
+- TransportClient 利用 transport 模块远程连接一个 elasticsearch 集群。它并 不加入到集群中，只是简单的获得一个或者多个初始化的
+    transport 地址，并以 轮 询 的方式与这些地址进行通信
+    
+#### Elasticsearch 对于大数据量(上亿量级)的聚合如何实现?
+- Elasticsearch 提供的首个近似聚合是 cardinality 度量。它提供一个字段的基数， 即该字段的 distinct 或者 unique 值的数目。它是基于 HLL 算法的。
+    HLL 会先对 我们的输入作哈希运算，然后根据哈希运算的结果中的 bits 做概率估算从而得到 基数。其特点是:可配置的精度，用来控制内存的使用(更精确 = 更多内存); 
+    小的数据集精度是非常高的;我们可以通过配置参数，来设置去重需要的固定内 存使用量。无论数千还是数十亿的唯一值，内存使用量只与你配置的精确度相关。
+
 #### ES 管理的工具有哪些?
-BigDesk Plugin、Elasticsearch Head Plugin 、Kibana
+- BigDesk Plugin、Elasticsearch Head Plugin 、Kibana
 
 ##### 参考资料
 - <https://www.cnblogs.com/yinhaiming/articles/1542921.html>
