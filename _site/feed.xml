@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 21 Jul 2020 19:29:27 +0800</pubDate>
-    <lastBuildDate>Tue, 21 Jul 2020 19:29:27 +0800</lastBuildDate>
+    <pubDate>Tue, 21 Jul 2020 20:52:40 +0800</pubDate>
+    <lastBuildDate>Tue, 21 Jul 2020 20:52:40 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -21,10 +21,12 @@
 &lt;h4 id=&quot;高可用一致性扩展性性能&quot;&gt;高可用、一致性、扩展性、性能&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？&lt;/li&gt;
-  &lt;li&gt;zk分leader/follower，是，写入代理给leader，读任意，直连&lt;/li&gt;
-  &lt;li&gt;es分primary/replica，是，写入协调节给primary，读任意，协调节点协调&lt;/li&gt;
+  &lt;li&gt;zk分leader/follower，是，写入代理给leader，读任意，直连
+  (zk的follower有可能数据不是最新的，如果需要最新的可以调用sync()方法)&lt;/li&gt;
+  &lt;li&gt;es分primary/replica，是，写入协调节给primary，读任意，协调节点协调
+  (此处的primary是指根据document路由而得到的primary shard，不是指单独的机器)&lt;/li&gt;
   &lt;li&gt;kafka分leader/follower，是，写入直接给leader，读leader，直连leader
-  (区别理解kafka中的leader/follower，本质是数据的Primary与replica会分布在不同的机器上，不会造成机器资源的不平衡)&lt;/li&gt;
+  (区别理解kafka中的leader/follower，本质是Partition数据的leader与follower会分布在不同的broker机器上，不会造成机器资源的不平衡)&lt;/li&gt;
   &lt;li&gt;cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据&lt;/li&gt;
 &lt;/ul&gt;
 
