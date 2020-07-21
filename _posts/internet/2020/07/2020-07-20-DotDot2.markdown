@@ -17,11 +17,15 @@ categories:
 - 节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？
 - zk分leader/follower，是，写入代理给leader，读任意，直连
     (zk的follower有可能数据不是最新的，如果需要最新的可以调用sync()方法)
+- redis-cluster master节点无主次分别负责不同的slot，从节点从主节点同步数据，写入直连或者被Move，读Master slave只是热备，读取直连或者被Move
+
 - es分primary/replica，是，写入协调节给primary，读任意，协调节点协调
     (此处的primary是指根据document路由而得到的primary shard，不是指单独的机器)
 - kafka分leader/follower，是，写入直接给leader，读leader，直连leader
-    (区别理解kafka中的leader/follower，本质是Partition数据的leader与follower会分布在不同的broker机器上，不会造成机器资源的不平衡)
+    (区别理解kafka中的leader/follower，本质是Partition数据的leader与follower会分布在不同的broker机器上，不会造成机器资源的不平衡
+    kafka client通过向任意broker发送metadata req来获取partition得leader)
 - cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据
+    (一致性hash确定分区）
 
 <img src="/img/biu.jpg" width="600px" />
 
