@@ -8,7 +8,15 @@ tags:
 categories:
 - 技术
 ---
-#### cassandra / es 分布式实现靠什么？
+#### 高可用、一致性、扩展性、性能
+- 节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？
+- zk分leader/follower，是，写入代理给leader，读任意，直连
+- es分primary/replica，是，写入协调节给primary，读任意，协调节点协调
+- kafka分leader/follower，是，写入直接给leader，读leader，直连leader
+- cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据
+
+#### cassandra 
+- Gossip协议 <https://www.jianshu.com/p/f1c251614bad?tdsourcetag=s_pcqq_aiomsg>
 
 #### RAID(Redundant Array of Independent Disks,独立冗余磁盘阵列)
 - 磁盘本地的互备容错高可用 <https://blog.csdn.net/Mr_Yang__/article/details/85228465>
@@ -97,3 +105,5 @@ Lock 接口比同步方法和同步块提供了更具扩展性的锁操作。 �
 当一个线程需要调用对象的 wait()方法的时候，这个线程必须拥有该对象的锁，接 着它就会释放这个对象锁并进入等待状态直到其他线程调用这个对象上的 notify() 方法。同样的，当一个线程需要调用对象的 notify()方法时，它会释放这个对象的 锁，以便其他在等待的线程就可以得到这个对象锁。由于所有的这些方法都需要 线程持有对象的锁，这样就只能通过同步来实现，所以他们只能在同步方法或者 同步块中被调用。
 #### 为什么 Thread 类的 sleep()和 yield ()方法是静态的?
 Thread 类的 sleep()和 yield()方法将在当前正在执行的线程上运行。所以在其他 处于等待状态的线程上调用这些方法是没有意义的。这就是为什么这些方法是静 态的。它们可以在当前正在执行的线程中工作，并避免程序员错误的认为可以在 其他非运行线程调用这些方法。
+
+

@@ -41,6 +41,35 @@ discovery.zen.ping.unicast.hosts:["esmaster01","esmaster02","esmaster03"]
 <https://blog.csdn.net/xshy3412/article/details/51841270>
 <https://blog.csdn.net/u014646662/article/details/99293604/>
 
+#### es 过滤filter 与 查询 query
+- filter，类似where语句，结构化检索
+    - 精准匹配 term是完全匹配，不能分词
+    - range/exists/prefix/wildcard/regexp/type/ids/flzzy模糊
+- query ，是用倒排索引进行搜索，全文检索
+    - match query 分词全文检索
+    - 短语检索 match_phrase query
+    - 短语前缀检索 match_phrase_prefix
+    - 多字段匹配检索 muti_match
+- 符合检索：固定得分、bool组合、改变评分检索
+- 特定检索：父子文档检索、GEo检索
+- <https://mp.weixin.qq.com/s/tiiveCW3W-oDIgxvlwsmXA>
+
+#### Lucene 索引文件结构
+- 索引（index）
+    Lucene的索引由许多个文件组成，这些文件放在同一个目录下
+- 段（segment）
+    一个Lucene的索引由多个段组成，段与段之间是独立的。添加新的文档时可以生成新的段，达到阈值（段的个数，段中包含的文件数等）时，不同的段可以合并。
+    在文件夹下，具有相同前缀的文件属于同一个段
+    segments.gen 和 segments_N（N表示一个具体数字，eg：segments_5）是段的元数据文件，他们保存了段的属性信息。
+- 文档（document）
+    文档是建索引的基本单位，一个段中可以包含多篇文档
+    新添加的文档时单独保存在一个新生成的段中，随着段的合并，不同的文档会合并到至相同的段中。
+- 域（Field）
+    一个文档有可由多个域（Field）组成，比如一篇新闻，有 标题，作者，正文等多个属性，这些属性可以看作是文档的域。
+    不同的域可以指定不同的索引方式，比如指定不同的分词方式，是否构建索引，是否存储等
+- 词（Term）
+    词 是索引的最小单位，是经过词法分词和语言处理后的字符串
+
 #### Elasticsearch是如何选举出master的
 - 一次join，即是加入又是投票
 - 相比于其他一致性方案，该方案没有term的概念（虽然有clusterState），所以在同一个选举周期内会出现NodeA 投票给了多个Node的情况。

@@ -110,48 +110,48 @@ ChannelInboundHandler SimpleChannelInboundHandler</li>
 <span class="nd">@Component</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">CIMServer</span> <span class="o">{</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
         <span class="c1">// 单线程Reactor配置</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">singleEventLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">singleEventLoop</span> <span class="o">=</span> <span class="n">singleEventLoopGroup</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
-        <span class="nc">ServerBootstrap</span> <span class="n">bootstrapSingle</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">()</span>
+        <span class="n">EventLoopGroup</span> <span class="n">singleEventLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NioEventLoopGroup</span><span class="o">();</span>
+        <span class="n">EventLoopGroup</span> <span class="n">singleEventLoop</span> <span class="o">=</span> <span class="n">singleEventLoopGroup</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+        <span class="n">ServerBootstrap</span> <span class="n">bootstrapSingle</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServerBootstrap</span><span class="o">()</span>
                 <span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">singleEventLoop</span><span class="o">,</span> <span class="n">singleEventLoop</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="n">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
                 <span class="c1">//保持长连接</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="n">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
                 <span class="c1">// Nagle拆包算法禁用</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">TCP_NODELAY</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="n">ChannelOption</span><span class="o">.</span><span class="na">TCP_NODELAY</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
                 <span class="c1">// sync-recv个数，防止sync-blood攻击</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">CIMServerInitializer</span><span class="o">());</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="n">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">CIMServerInitializer</span><span class="o">());</span>
 
         <span class="c1">// 单Boss线程，多Worker线程，Reactor配置</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">eventLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">bossEventLoop</span> <span class="o">=</span> <span class="n">eventLoopGroup</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">workLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-        <span class="nc">ServerBootstrap</span> <span class="n">bootstrapSingle2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">()</span>
+        <span class="n">EventLoopGroup</span> <span class="n">eventLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NioEventLoopGroup</span><span class="o">();</span>
+        <span class="n">EventLoopGroup</span> <span class="n">bossEventLoop</span> <span class="o">=</span> <span class="n">eventLoopGroup</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+        <span class="n">EventLoopGroup</span> <span class="n">workLoopGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NioEventLoopGroup</span><span class="o">();</span>
+        <span class="n">ServerBootstrap</span> <span class="n">bootstrapSingle2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServerBootstrap</span><span class="o">()</span>
                 <span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">bossEventLoop</span><span class="o">,</span> <span class="n">workLoopGroup</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">CIMServerInitializer</span><span class="o">());</span>
+                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="n">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="n">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="n">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">CIMServerInitializer</span><span class="o">());</span>
 
         <span class="c1">// 多Boss线程，多Worker线程，Reactor配置</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">boss</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-        <span class="nc">EventLoopGroup</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-        <span class="nc">ServerBootstrap</span> <span class="n">bootstrap</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">()</span>
+        <span class="n">EventLoopGroup</span> <span class="n">boss</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NioEventLoopGroup</span><span class="o">();</span>
+        <span class="n">EventLoopGroup</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NioEventLoopGroup</span><span class="o">();</span>
+        <span class="n">ServerBootstrap</span> <span class="n">bootstrap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServerBootstrap</span><span class="o">()</span>
                 <span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">boss</span><span class="o">,</span> <span class="n">work</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="nc">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">CIMServerInitializer</span><span class="o">());</span>
+                <span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="n">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">nettyPort</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="n">ChannelOption</span><span class="o">.</span><span class="na">SO_KEEPALIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childOption</span><span class="o">(</span><span class="n">ChannelOption</span><span class="o">.</span><span class="na">SO_BACKLOG</span><span class="o">,</span><span class="mi">1024</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">CIMServerInitializer</span><span class="o">());</span>
 
-        <span class="nc">ChannelFuture</span> <span class="n">future</span> <span class="o">=</span> <span class="n">bootstrap</span><span class="o">.</span><span class="na">bind</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
+        <span class="n">ChannelFuture</span> <span class="n">future</span> <span class="o">=</span> <span class="n">bootstrap</span><span class="o">.</span><span class="na">bind</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">future</span><span class="o">.</span><span class="na">isSuccess</span><span class="o">())</span> <span class="o">{</span>
-            <span class="no">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"启动 cim server 成功"</span><span class="o">);</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"启动 cim server 成功"</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -318,13 +318,13 @@ ChannelInboundHandler SimpleChannelInboundHandler</li>
     <span class="nd">@Value</span><span class="o">(</span><span class="s">"${server.port}"</span><span class="o">)</span>
     <span class="kd">private</span> <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>
     <span class="c1">// 通过nio方式来接收连接和处理连接</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">EventLoopGroup</span> <span class="n">boss</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">EventLoopGroup</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NioEventLoopGroup</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">EventLoopGroup</span> <span class="n">boss</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NioEventLoopGroup</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">EventLoopGroup</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NioEventLoopGroup</span><span class="o">();</span>
 
     <span class="c1">// 启动引导器</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">ServerBootstrap</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerBootstrap</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">ServerBootstrap</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServerBootstrap</span><span class="o">();</span>
     <span class="nd">@Autowired</span>
-    <span class="kd">private</span> <span class="nc">EchoServerHandler</span> <span class="n">echoServerHandler</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">EchoServerHandler</span> <span class="n">echoServerHandler</span><span class="o">;</span>
 
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span>
     <span class="o">{</span>
@@ -332,14 +332,14 @@ ChannelInboundHandler SimpleChannelInboundHandler</li>
         <span class="o">{</span>
             <span class="n">b</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="n">boss</span><span class="o">,</span> <span class="n">work</span><span class="o">);</span>
             <span class="c1">// 设置nio类型的channel</span>
-            <span class="n">b</span><span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="nc">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+            <span class="n">b</span><span class="o">.</span><span class="na">channel</span><span class="o">(</span><span class="n">NioServerSocketChannel</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
             <span class="c1">// 设置监听端口</span>
-            <span class="n">b</span><span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="n">port</span><span class="o">));</span>
+            <span class="n">b</span><span class="o">.</span><span class="na">localAddress</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">port</span><span class="o">));</span>
             <span class="c1">// 设置通道初始化</span>
-            <span class="n">b</span><span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">ChannelInitializer</span><span class="o">&lt;</span><span class="nc">SocketChannel</span><span class="o">&gt;()</span>
+            <span class="n">b</span><span class="o">.</span><span class="na">childHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">ChannelInitializer</span><span class="o">&lt;</span><span class="n">SocketChannel</span><span class="o">&gt;()</span>
             <span class="o">{</span>
                 <span class="c1">//有连接到达时会创建一个channel</span>
-                <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
+                <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
                 <span class="o">{</span>
                     <span class="c1">// pipeline管理channel中的Handler</span>
                     <span class="c1">// 在channel队列中添加一个handler来处理业务</span>
@@ -349,14 +349,14 @@ ChannelInboundHandler SimpleChannelInboundHandler</li>
             <span class="c1">// 配置完成，开始绑定server</span>
             <span class="c1">// 通过调用sync同步方法阻塞直到绑定成功</span>
 
-            <span class="nc">ChannelFuture</span> <span class="n">f</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="na">bind</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">EchoServer</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span>
+            <span class="n">ChannelFuture</span> <span class="n">f</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="na">bind</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">EchoServer</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span>
                     <span class="s">" started and listen on "</span> <span class="o">+</span> <span class="n">f</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">localAddress</span><span class="o">());</span>
 
             <span class="c1">// 监听服务器关闭事件</span>
             <span class="c1">// 应用程序会一直等待，直到channel关闭</span>
             <span class="n">f</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">closeFuture</span><span class="o">().</span><span class="na">sync</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span>
         <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">finally</span>
@@ -386,41 +386,41 @@ ChannelInboundHandler SimpleChannelInboundHandler</li>
 <span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
 
 <span class="nd">@Service</span><span class="o">(</span><span class="s">"echoServerHandler"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="n">ChannelInboundHandlerAdapter</span>
 <span class="o">{</span>
 
     <span class="cm">/**
      * 建立连接时，发送一条消息
      */</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
     <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
         <span class="kd">super</span><span class="o">.</span><span class="na">channelActive</span><span class="o">(</span><span class="n">ctx</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Object</span> <span class="n">msg</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="k">try</span>
         <span class="o">{</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
 <span class="c1">//            ctx.write(msg);//写回数据，</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="n">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">){</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+            <span class="n">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="c1">//flush掉所有写回的数据</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="nc">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="n">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="n">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">cause</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="c1">//捕捉异常信息</span>
         <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
@@ -446,41 +446,41 @@ ChannelInboundHandler SimpleChannelInboundHandler</li>
 <span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
 
 <span class="nd">@Service</span><span class="o">(</span><span class="s">"echoServerHandler"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServerHandler</span> <span class="kd">extends</span> <span class="n">ChannelInboundHandlerAdapter</span>
 <span class="o">{</span>
 
     <span class="cm">/**
      * 建立连接时，发送一条消息
      */</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
     <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接的客户端地址:"</span> <span class="o">+</span> <span class="n">ctx</span><span class="o">.</span><span class="na">channel</span><span class="o">().</span><span class="na">remoteAddress</span><span class="o">());</span>
         <span class="kd">super</span><span class="o">.</span><span class="na">channelActive</span><span class="o">(</span><span class="n">ctx</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Object</span> <span class="n">msg</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="k">try</span>
         <span class="o">{</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server received data :"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
 <span class="c1">//            ctx.write(msg);//写回数据，</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"I am Server"</span><span class="o">,</span> <span class="n">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">){</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+            <span class="n">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelReadComplete</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="c1">//flush掉所有写回的数据</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="nc">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">writeAndFlush</span><span class="o">(</span><span class="n">Unpooled</span><span class="o">.</span><span class="na">EMPTY_BUFFER</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="n">ChannelFutureListener</span><span class="o">.</span><span class="na">CLOSE</span><span class="o">);</span> <span class="c1">//当flush完成后关闭channel</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">cause</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="c1">//捕捉异常信息</span>
         <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
@@ -507,16 +507,16 @@ ChannelInboundHandler SimpleChannelInboundHandler</li>
 <span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
 
 <span class="nd">@Service</span><span class="o">(</span><span class="s">"echoClientHandler"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoClientHandler</span> <span class="kd">extends</span> <span class="nc">ChannelInboundHandlerAdapter</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoClientHandler</span> <span class="kd">extends</span> <span class="n">ChannelInboundHandlerAdapter</span>
 <span class="o">{</span>
     <span class="cm">/**
      * 此方法会在连接到服务器后被调用
      */</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelActive</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">)</span>
     <span class="o">{</span>
 
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelActive"</span><span class="o">);</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"Netty rocks!"</span><span class="o">,</span> <span class="nc">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelActive"</span><span class="o">);</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">Unpooled</span><span class="o">.</span><span class="na">copiedBuffer</span><span class="o">(</span><span class="s">"Netty rocks!"</span><span class="o">,</span> <span class="n">CharsetUtil</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
         <span class="n">ctx</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
     <span class="o">}</span>
 
@@ -524,34 +524,34 @@ ChannelInboundHandler SimpleChannelInboundHandler</li>
      * 业务逻辑处理
      */</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">msg</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">channelRead</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Object</span> <span class="n">msg</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
     <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelRead"</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"channelRead"</span><span class="o">);</span>
         <span class="c1">// 如果不是protobuf类型的数据</span>
-        <span class="k">if</span> <span class="o">(!(</span><span class="n">msg</span> <span class="k">instanceof</span> <span class="nc">ByteBuf</span><span class="o">))</span>
+        <span class="k">if</span> <span class="o">(!(</span><span class="n">msg</span> <span class="k">instanceof</span> <span class="n">ByteBuf</span><span class="o">))</span>
         <span class="o">{</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"未知数据!"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"未知数据!"</span> <span class="o">+</span> <span class="n">msg</span><span class="o">);</span>
             <span class="k">return</span><span class="o">;</span>
         <span class="o">}</span>
         <span class="k">try</span>
         <span class="o">{</span>
-            <span class="nc">ByteBuf</span> <span class="n">in</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ByteBuf</span><span class="o">)</span> <span class="n">msg</span><span class="o">;</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Client received: "</span> <span class="o">+</span>
-                    <span class="nc">ByteBufUtil</span><span class="o">.</span><span class="na">hexDump</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">())));</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span>
+            <span class="n">ByteBuf</span> <span class="n">in</span> <span class="o">=</span> <span class="o">(</span><span class="n">ByteBuf</span><span class="o">)</span> <span class="n">msg</span><span class="o">;</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Client received: "</span> <span class="o">+</span>
+                    <span class="n">ByteBufUtil</span><span class="o">.</span><span class="na">hexDump</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">())));</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span>
         <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">finally</span>
         <span class="o">{</span>
-            <span class="nc">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+            <span class="n">ReferenceCountUtil</span><span class="o">.</span><span class="na">release</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
     <span class="cm">/**
      * 捕捉到异常
      */</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="nc">Throwable</span> <span class="n">cause</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exceptionCaught</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">cause</span><span class="o">)</span>
     <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"exceptionCaught"</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"exceptionCaught"</span><span class="o">);</span>
         <span class="n">cause</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="n">ctx</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
     <span class="o">}</span>
@@ -561,12 +561,12 @@ ChannelInboundHandler SimpleChannelInboundHandler</li>
 <h4 id="netty--protobuf">Netty &amp; Protobuf</h4>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bootstrap</span><span class="o">.</span><span class="na">handler</span><span class="o">(</span>
-        <span class="k">new</span> <span class="nc">ChannelInitializer</span><span class="o">&lt;</span><span class="nc">SocketChannel</span><span class="o">&gt;()</span>
+        <span class="k">new</span> <span class="n">ChannelInitializer</span><span class="o">&lt;</span><span class="n">SocketChannel</span><span class="o">&gt;()</span>
         <span class="o">{</span>
-            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">initChannel</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">ch</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
             <span class="o">{</span>
-                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="nc">ProtobufDecoder</span><span class="o">());</span>
-                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="nc">ProtobufEncoder</span><span class="o">());</span>
+                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="n">ProtobufDecoder</span><span class="o">());</span>
+                <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="k">new</span> <span class="n">ProtobufEncoder</span><span class="o">());</span>
                 <span class="n">ch</span><span class="o">.</span><span class="na">pipeline</span><span class="o">().</span><span class="na">addLast</span><span class="o">(</span><span class="n">chatClientHandler</span><span class="o">);</span>
 <span class="err">​</span>
             <span class="o">}</span>
@@ -611,54 +611,54 @@ Netty发送和接收消息主要使用bytebuffer，bytebuffer使用对外内存(
 <h4 id="netty-报文加密">Netty 报文加密</h4>
 <ul>
   <li>AESencoder/AESdecoder
-    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufEncoder</span> <span class="kd">extends</span> <span class="nc">MessageToMessageEncoder</span><span class="o">&lt;</span><span class="nc">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufEncoder</span> <span class="kd">extends</span> <span class="n">MessageToMessageEncoder</span><span class="o">&lt;</span><span class="n">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
  
   <span class="nd">@Override</span>
-  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">encode</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="nc">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">encode</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="n">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
       <span class="kt">byte</span> <span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuf</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">()];</span>
       <span class="n">byteBuf</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-      <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="nc">AESTest</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-      <span class="nc">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="nc">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
+      <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="n">AESTest</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+      <span class="n">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
       <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">buf</span><span class="o">);</span>
  
   <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div>    </div>
-    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufDecoder</span> <span class="kd">extends</span> <span class="nc">MessageToMessageDecoder</span><span class="o">&lt;</span><span class="nc">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufDecoder</span> <span class="kd">extends</span> <span class="n">MessageToMessageDecoder</span><span class="o">&lt;</span><span class="n">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
  
   <span class="nd">@Override</span>
-  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">decode</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="nc">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">decode</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="n">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
       <span class="kt">byte</span> <span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuf</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">()];</span>
       <span class="n">byteBuf</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-      <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="nc">AESTest</span><span class="o">.</span><span class="na">decode</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-      <span class="nc">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="nc">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
+      <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="n">AESTest</span><span class="o">.</span><span class="na">decode</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+      <span class="n">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
       <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">buf</span><span class="o">);</span>
   <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div>    </div>
   </li>
   <li>RSAencoder/RSAdecoder
-    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufClientEncoder</span> <span class="kd">extends</span> <span class="nc">MessageToMessageEncoder</span><span class="o">&lt;</span><span class="nc">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufClientEncoder</span> <span class="kd">extends</span> <span class="n">MessageToMessageEncoder</span><span class="o">&lt;</span><span class="n">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
  
  <span class="nd">@Override</span>
- <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">encode</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="nc">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+ <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">encode</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="n">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
      <span class="kt">byte</span> <span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuf</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">()];</span>
      <span class="n">byteBuf</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-     <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="nc">RSACoder</span><span class="o">.</span><span class="na">encryptByPublicKey</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-     <span class="nc">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="nc">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
+     <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="n">RSACoder</span><span class="o">.</span><span class="na">encryptByPublicKey</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+     <span class="n">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
      <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">buf</span><span class="o">);</span>
  
  <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div>    </div>
-    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufServerDecoder</span> <span class="kd">extends</span> <span class="nc">MessageToMessageDecoder</span><span class="o">&lt;</span><span class="nc">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyProtobufServerDecoder</span> <span class="kd">extends</span> <span class="n">MessageToMessageDecoder</span><span class="o">&lt;</span><span class="n">ByteBuf</span><span class="o">&gt;</span> <span class="o">{</span>
  
  <span class="nd">@Override</span>
- <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">decode</span><span class="o">(</span><span class="nc">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="nc">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+ <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">decode</span><span class="o">(</span><span class="n">ChannelHandlerContext</span> <span class="n">channelHandlerContext</span><span class="o">,</span> <span class="n">ByteBuf</span> <span class="n">byteBuf</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
      <span class="kt">byte</span> <span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuf</span><span class="o">.</span><span class="na">readableBytes</span><span class="o">()];</span>
      <span class="n">byteBuf</span><span class="o">.</span><span class="na">readBytes</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-     <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="nc">RSACoder</span><span class="o">.</span><span class="na">decryptByPrivateKey</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-     <span class="nc">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="nc">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
+     <span class="kt">byte</span> <span class="o">[]</span> <span class="n">encoded</span> <span class="o">=</span> <span class="n">RSACoder</span><span class="o">.</span><span class="na">decryptByPrivateKey</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+     <span class="n">ByteBuf</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">Unpooled</span><span class="o">.</span><span class="na">wrappedBuffer</span><span class="o">(</span><span class="n">encoded</span><span class="o">);</span>
      <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">buf</span><span class="o">);</span>
  <span class="o">}</span>
 <span class="o">}</span>

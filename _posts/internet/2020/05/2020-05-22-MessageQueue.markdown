@@ -8,10 +8,10 @@ tags:
 categories:
 - 技术
 ---
- ### MOM(Message Oriented Middleware)
+#### MOM(Message Oriented Middleware)
 <img src="/img/mq.jpg" width="600px"> 
 
-17 个方面，综合对比 Kafka、RabbitMQ、RocketMQ、ActiveMQ 
+- 17 个方面，综合对比 Kafka、RabbitMQ、RocketMQ、ActiveMQ 
 <https://mp.weixin.qq.com/s/u7pyzEQgqmux9qUI_SPaNw>
 
 ### AMQP，即Advanced Message Queuing Protocol（ActiveMQ、RabbitMQ都支持）
@@ -235,7 +235,7 @@ broker机器的外网ip  hostname.com
 - 消费时由同一个消费者消费同一个订单
 - <https://www.cnblogs.com/hzmark/p/orderly_message.html>
 
-#### RocketMQ的部署结构有以下特点：
+#### RocketMQ的部署结构有以下特点(伪分布式，其实就是加了哨兵的主从)：
 - Name Server是一个几乎无状态节点，可集群部署，节点之间无任何信息同步。
 - Broker部署相对复杂，Broker分为Master与Slave，一个Master可以对应多个Slave，但是一个Slave只能对应一个Master，Master与Slave的对应关系通过指定相同的BrokerName，不同的BrokerId来定义，BrokerId为0表示Master，非0表示Slave。Master也可以部署多个。每个Broker与Name Server集群中的所有节点建立长连接，定时注册Topic信息到所有Name Server。
 - Producer与Name Server集群中的其中一个节点（随机选择）建立长连接，定期从Name Server取Topic路由信息，并向提供Topic服务的Master建立长连接，且定时向Master发送心跳。Producer完全无状态，可集群部署。
