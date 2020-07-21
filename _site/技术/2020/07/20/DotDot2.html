@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>DotDot2</title>
-  <meta name="description" content="高可用、一致性、扩展性、性能  节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？  zk分leader/follower，是，写入代理给leader，读任意，直连  es分primary/replica，是，写入协调节给primary，读任意，协调节点协调  kafka...">
+  <meta name="description" content="分布式控制方案  中心化的副本控制协议，也就是主从模式  primary-secondary协议，也就是leader/follower（数据切片分段存储）  去中心化的副本控制协议，也就是Gossip或者zk选举阶段">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,14 +60,24 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="高可用一致性扩展性性能">高可用、一致性、扩展性、性能</h4>
+    <h4 id="分布式控制方案">分布式控制方案</h4>
+<ul>
+  <li>中心化的副本控制协议，也就是主从模式</li>
+  <li>primary-secondary协议，也就是leader/follower（数据切片分段存储）</li>
+  <li>去中心化的副本控制协议，也就是Gossip或者zk选举阶段</li>
+</ul>
+
+<h4 id="高可用一致性扩展性性能">高可用、一致性、扩展性、性能</h4>
 <ul>
   <li>节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？</li>
   <li>zk分leader/follower，是，写入代理给leader，读任意，直连</li>
   <li>es分primary/replica，是，写入协调节给primary，读任意，协调节点协调</li>
-  <li>kafka分leader/follower，是，写入直接给leader，读leader，直连leader</li>
+  <li>kafka分leader/follower，是，写入直接给leader，读leader，直连leader
+  (区别理解kafka中的leader/follower，本质是数据的Primary与replica会分布在不同的机器上，不会造成机器资源的不平衡)</li>
   <li>cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据</li>
 </ul>
+
+<p><img src="/img/biu.jpg" width="600px" /></p>
 
 <h4 id="cassandra">cassandra</h4>
 <ul>

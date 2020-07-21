@@ -5,20 +5,30 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 21 Jul 2020 12:05:36 +0800</pubDate>
-    <lastBuildDate>Tue, 21 Jul 2020 12:05:36 +0800</lastBuildDate>
+    <pubDate>Tue, 21 Jul 2020 19:29:27 +0800</pubDate>
+    <lastBuildDate>Tue, 21 Jul 2020 19:29:27 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
         <title>DotDot2</title>
-        <description>&lt;h4 id=&quot;高可用一致性扩展性性能&quot;&gt;高可用、一致性、扩展性、性能&lt;/h4&gt;
+        <description>&lt;h4 id=&quot;分布式控制方案&quot;&gt;分布式控制方案&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;中心化的副本控制协议，也就是主从模式&lt;/li&gt;
+  &lt;li&gt;primary-secondary协议，也就是leader/follower（数据切片分段存储）&lt;/li&gt;
+  &lt;li&gt;去中心化的副本控制协议，也就是Gossip或者zk选举阶段&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;高可用一致性扩展性性能&quot;&gt;高可用、一致性、扩展性、性能&lt;/h4&gt;
 &lt;ul&gt;
   &lt;li&gt;节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？&lt;/li&gt;
   &lt;li&gt;zk分leader/follower，是，写入代理给leader，读任意，直连&lt;/li&gt;
   &lt;li&gt;es分primary/replica，是，写入协调节给primary，读任意，协调节点协调&lt;/li&gt;
-  &lt;li&gt;kafka分leader/follower，是，写入直接给leader，读leader，直连leader&lt;/li&gt;
+  &lt;li&gt;kafka分leader/follower，是，写入直接给leader，读leader，直连leader
+  (区别理解kafka中的leader/follower，本质是数据的Primary与replica会分布在不同的机器上，不会造成机器资源的不平衡)&lt;/li&gt;
   &lt;li&gt;cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/biu.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;cassandra&quot;&gt;cassandra&lt;/h4&gt;
 &lt;ul&gt;
@@ -144,7 +154,23 @@ Java 中导致饥饿的原因:
     
       <item>
         <title>  Jvm（三）参数一览</title>
-        <description>&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;-Xms2g&lt;/span&gt;：初始化推大小为 2g；
+        <description>&lt;h4 id=&quot;usecompressedoop&quot;&gt;UseCompressedOop&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;CompressedOops原理：
+64位地址分为堆的基地址+偏移量，当堆内存&amp;lt;32GB时候，在压缩过程中，把偏移量/8后保存到32位地址。在解压再把32位地址放大8倍，所以启用CompressedOops的条件是堆内存要在4GB*8=32GB以内。
+CompressedOops，可以让跑在64位平台下的JVM，不需要因为更宽的寻址，而付出Heap容量损失的代价。 不过它的实现方式是在机器码中植入压缩与解压指令，可能会给JVM增加额外的开销。&lt;/li&gt;
+  &lt;li&gt;零基压缩优化(Zero Based Compressd Oops)
+零基压缩是针对压解压动作的进一步优化。 它通过改变正常指针的随机地址分配特性，强制堆地址从零开始分配（需要OS支持），进一步提高了压解压效率。要启用零基压缩，你分配给JVM的内存大小必须控制在4G以上，32G以下。&lt;/li&gt;
+  &lt;li&gt;总结：
+    &lt;ul&gt;
+      &lt;li&gt;如果GC堆大小在4G以下，直接砍掉高32位，避免了编码解码过程；&lt;/li&gt;
+      &lt;li&gt;如果GC堆大小在4G以上32G以下，则启用UseCompressedOop；&lt;/li&gt;
+      &lt;li&gt;如果GC堆大小大于32G，压指失效，使用原来的64位（所以说服务器内存太大不好……）。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&quot;https://blog.csdn.net/liuxiao723846/article/details/91981757&quot;&gt;https://blog.csdn.net/liuxiao723846/article/details/91981757&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;-Xms2g&lt;/span&gt;：初始化推大小为 2g；
 &lt;span class=&quot;nt&quot;&gt;-Xmx2g&lt;/span&gt;：堆最大内存为 2g；
 &lt;span class=&quot;nt&quot;&gt;-XX&lt;/span&gt;:NewRatio&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;4：设置年轻的和老年代的内存比例为 1:4；
 &lt;span class=&quot;nt&quot;&gt;-XX&lt;/span&gt;:SurvivorRatio&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;8：设置新生代 Eden 和 Survivor 比例为 8:2；
@@ -517,7 +543,16 @@ Java 中导致饥饿的原因:
   可以通过数据流分析推断出取值范围，就可以把检查消除&lt;/li&gt;
           &lt;li&gt;逃逸分析 Escape Analysis
             &lt;ul&gt;
-              &lt;li&gt;当一个对象在方法中被定义后，它可能被外部方法所引用&lt;/li&gt;
+              &lt;li&gt;当一个对象在方法中被定义后，它可能被外部方法所引用
+                &lt;ul&gt;
+                  &lt;li&gt;JVM判断新创建的对象是否逃逸的依据有：一、对象被赋值给堆中对象的字段和类的静态变量。
+  二、对象被传进了不确定的代码中去运行。如果满足了以上情况的任意一种，那这个对象JVM就会判定为逃逸。
+  对于第一种情况，因为对象被放进堆中，则其它线程就可以对其进行访问，所以对象的使用情况，编译器就无法再进行追踪。
+  第二种情况相当于JVM在解析普通的字节码的时候，如果没有发生JIT即时编译，编译器是不能事先完整知道这段代码会对对象做什么操作。
+  保守一点，这个时候也只能把对象是当作是逃逸来处理。&lt;/li&gt;
+                  &lt;li&gt;&lt;a href=&quot;https://zhuanlan.zhihu.com/p/59215831&quot;&gt;https://zhuanlan.zhihu.com/p/59215831&lt;/a&gt;&lt;/li&gt;
+                &lt;/ul&gt;
+              &lt;/li&gt;
               &lt;li&gt;逃逸分析带来的好处：栈上分配，同步消除、标量替换
                 &lt;ol&gt;
                   &lt;li&gt;同步消除。如果一个对象被发现只能从一个线程被访问到，那么对于这个对象的操作可以不考虑同步。&lt;/li&gt;

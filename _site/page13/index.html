@@ -421,8 +421,8 @@ DevRTT <span class="o">=</span> <span class="o">(</span>1-β<span class="o">)</s
 
 <h4 id="数据包一览与tcp-udpip包的最大长度">数据包一览与TCP 、UDP、IP包的最大长度</h4>
 <ul>
-  <li>对于UDP协议来说，整个包的最大长度为65535，其中包头长度是65535-20=65515；</li>
-  <li>对于TCP协议来说，整个包的最大长度是由最大传输大小（MSS，Maxitum Segment Size）决定，MSS就是TCP数据包每次能够传
+  <li>对于UDP协议来说，UDP 包的大小就应该是 1500 - IP头(20) - UDP头(8) = 1472(Bytes)</li>
+  <li>对于TCP协议来说，TCP 包的大小就应该是 1500 - IP头(20) - TCP头(20) = 1460 (Bytes) 整个包的最大长度是由最大传输大小（MSS，Maxitum Segment Size）决定，MSS就是TCP数据包每次能够传
 输的最大数据分段。为了达到最佳的传输效能TCP协议在建立连接的时候通常要协商双方的MSS值，这个值TCP协议在实现的时候往往用MTU值代替（需
 要减去IP数据包包头的大小20Bytes和TCP数据段的包头20Bytes）所以往往MSS为1460。通讯双方会根据双方提供的MSS值得最小值
 确定为这次连接的最大MSS值。</li>
@@ -441,7 +441,7 @@ MTU值又不能设得太大，因为封包太大，传送时出现错误的机�
 <h4 id="控制位标志符详解">控制位标志符详解</h4>
 
 <h5 id="udp">UDP</h5>
-<p><img src="/img/udp_head.jpg" width="600px" /></p>
+<p><img src="/img/udp.jpg" width="600px" /></p>
 
 <h5 id="tcp-1">TCP</h5>
 <p><img src="/img/6.png" width="600px" /></p>

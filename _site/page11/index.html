@@ -401,6 +401,15 @@ Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间�
 <h3 id="tar-gzip">tar gzip</h3>
 <h3 id="telnet">telnet</h3>
 <h3 id="kill">kill</h3>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 强制终止</span>
+<span class="nb">kill</span> <span class="nt">-9</span> 23423
+<span class="c"># 终止</span>
+<span class="nb">kill</span> <span class="nt">-15</span> 22323
+<span class="c"># 杀死指定用户的所有进程</span>
+<span class="nb">kill</span> <span class="nt">-u</span> tester
+<span class="c"># 列出所有信号</span>
+<span class="nb">kill</span> <span class="nt">-l</span>
+</code></pre></div></div>
 <h3 id="find--locate">find &amp; locate</h3>
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Linux上提供了两款工具用于查找文件，一款是locate，另一款是find。
 locate的特点是根据已生成的数据库查找，速度较快，但是查找的是快照数据，不准确。
@@ -739,8 +748,34 @@ more和less一般用于显示文件内容超过一屏的内容，并且提供翻
 
 <p><a href="https://blog.csdn.net/volitationlong/article/details/81741754">https://blog.csdn.net/volitationlong/article/details/81741754</a></p>
 <h3 id="vmstat-mpstat-iostat-pidstat">vmstat mpstat iostat pidstat</h3>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpstat是Multiprocessor Statistic
-vmstat 是Virtual Meomory Statistics（虚拟内存统计）
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mpstat <span class="c"># Multiprocessor Statistic</span>
+Linux 3.10.0-693.el7.x86_64 <span class="o">(</span>VM_0_29_centos<span class="o">)</span> 	2020年07月21日 	_x86_64_	<span class="o">(</span>2 CPU<span class="o">)</span>
+
+19时13分41秒  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+19时13分41秒  all    0.41    0.00    0.23    0.13    0.00    0.00    0.00    0.00    0.00   99.22
+
+vmstat <span class="c"># Virtual Meomory Statistics（虚拟内存统计）</span>
+procs <span class="nt">-----------memory----------</span> <span class="nt">---swap--</span> <span class="nt">-----io----</span> <span class="nt">-system--</span> <span class="nt">------cpu-----</span>
+ r  b   swpd   free   buff  cache   si   so    bi    bo   <span class="k">in   </span>cs us sy <span class="nb">id </span>wa st
+ 9  1      0 131304 269732 2378080    0    0    11    23   30   32  0  0 99  0  0
+
+iostat 
+Linux 3.10.0-693.el7.x86_64 <span class="o">(</span>VM_0_29_centos<span class="o">)</span> 	2020年07月21日 	_x86_64_	<span class="o">(</span>2 CPU<span class="o">)</span>
+
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           0.41    0.00    0.23    0.13    0.00   99.22
+
+Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn
+vda               6.69        22.40        45.57   12298319   25020948
+scd0              0.00         0.00         0.00        534          0
+
+pidstat
+Linux 3.10.0-693.el7.x86_64 <span class="o">(</span>VM_0_29_centos<span class="o">)</span> 	2020年07月21日 	_x86_64_	<span class="o">(</span>2 CPU<span class="o">)</span>
+
+19时15分06秒   UID       PID    %usr %system  %guest    %CPU   CPU  Command
+19时15分06秒     0         1    0.00    0.00    0.00    0.00     0  systemd
+19时15分06秒     0         2    0.00    0.00    0.00    0.00     0  kthreadd
+19时15分06秒     0         3    0.00    0.00    0.00    0.00     0  ksoftirqd/0
 </code></pre></div></div>
 <p>pidstat 命令详解
 <a href="https://www.jianshu.com/p/3991c0dba094">https://www.jianshu.com/p/3991c0dba094</a></p>

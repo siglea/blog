@@ -63,14 +63,24 @@
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="高可用一致性扩展性性能">高可用、一致性、扩展性、性能</h4>
+	<h4 id="分布式控制方案">分布式控制方案</h4>
+<ul>
+  <li>中心化的副本控制协议，也就是主从模式</li>
+  <li>primary-secondary协议，也就是leader/follower（数据切片分段存储）</li>
+  <li>去中心化的副本控制协议，也就是Gossip或者zk选举阶段</li>
+</ul>
+
+<h4 id="高可用一致性扩展性性能">高可用、一致性、扩展性、性能</h4>
 <ul>
   <li>节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？</li>
   <li>zk分leader/follower，是，写入代理给leader，读任意，直连</li>
   <li>es分primary/replica，是，写入协调节给primary，读任意，协调节点协调</li>
-  <li>kafka分leader/follower，是，写入直接给leader，读leader，直连leader</li>
+  <li>kafka分leader/follower，是，写入直接给leader，读leader，直连leader
+  (区别理解kafka中的leader/follower，本质是数据的Primary与replica会分布在不同的机器上，不会造成机器资源的不平衡)</li>
   <li>cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据</li>
 </ul>
+
+<p><img src="/img/biu.jpg" width="600px" /></p>
 
 <h4 id="cassandra">cassandra</h4>
 <ul>
@@ -201,7 +211,23 @@ Java 中导致饥饿的原因:
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-Xms2g</span>：初始化推大小为 2g；
+	<h4 id="usecompressedoop">UseCompressedOop</h4>
+<ul>
+  <li>CompressedOops原理：
+64位地址分为堆的基地址+偏移量，当堆内存&lt;32GB时候，在压缩过程中，把偏移量/8后保存到32位地址。在解压再把32位地址放大8倍，所以启用CompressedOops的条件是堆内存要在4GB*8=32GB以内。
+CompressedOops，可以让跑在64位平台下的JVM，不需要因为更宽的寻址，而付出Heap容量损失的代价。 不过它的实现方式是在机器码中植入压缩与解压指令，可能会给JVM增加额外的开销。</li>
+  <li>零基压缩优化(Zero Based Compressd Oops)
+零基压缩是针对压解压动作的进一步优化。 它通过改变正常指针的随机地址分配特性，强制堆地址从零开始分配（需要OS支持），进一步提高了压解压效率。要启用零基压缩，你分配给JVM的内存大小必须控制在4G以上，32G以下。</li>
+  <li>总结：
+    <ul>
+      <li>如果GC堆大小在4G以下，直接砍掉高32位，避免了编码解码过程；</li>
+      <li>如果GC堆大小在4G以上32G以下，则启用UseCompressedOop；</li>
+      <li>如果GC堆大小大于32G，压指失效，使用原来的64位（所以说服务器内存太大不好……）。</li>
+    </ul>
+  </li>
+</ul>
+<p><a href="https://blog.csdn.net/liuxiao723846/article/details/91981757">https://blog.csdn.net/liuxiao723846/article/details/91981757</a></p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-Xms2g</span>：初始化推大小为 2g；
 <span class="nt">-Xmx2g</span>：堆最大内存为 2g；
 <span class="nt">-XX</span>:NewRatio<span class="o">=</span>4：设置年轻的和老年代的内存比例为 1:4；
 <span class="nt">-XX</span>:SurvivorRatio<span class="o">=</span>8：设置新生代 Eden 和 Survivor 比例为 8:2；
@@ -579,7 +605,16 @@ Java 中导致饥饿的原因:
   可以通过数据流分析推断出取值范围，就可以把检查消除</li>
           <li>逃逸分析 Escape Analysis
             <ul>
-              <li>当一个对象在方法中被定义后，它可能被外部方法所引用</li>
+              <li>当一个对象在方法中被定义后，它可能被外部方法所引用
+                <ul>
+                  <li>JVM判断新创建的对象是否逃逸的依据有：一、对象被赋值给堆中对象的字段和类的静态变量。
+  二、对象被传进了不确定的代码中去运行。如果满足了以上情况的任意一种，那这个对象JVM就会判定为逃逸。
+  对于第一种情况，因为对象被放进堆中，则其它线程就可以对其进行访问，所以对象的使用情况，编译器就无法再进行追踪。
+  第二种情况相当于JVM在解析普通的字节码的时候，如果没有发生JIT即时编译，编译器是不能事先完整知道这段代码会对对象做什么操作。
+  保守一点，这个时候也只能把对象是当作是逃逸来处理。</li>
+                  <li><a href="https://zhuanlan.zhihu.com/p/59215831">https://zhuanlan.zhihu.com/p/59215831</a></li>
+                </ul>
+              </li>
               <li>逃逸分析带来的好处：栈上分配，同步消除、标量替换
                 <ol>
                   <li>同步消除。如果一个对象被发现只能从一个线程被访问到，那么对于这个对象的操作可以不考虑同步。</li>
