@@ -5,8 +5,8 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 21 Jul 2020 20:52:40 +0800</pubDate>
-    <lastBuildDate>Tue, 21 Jul 2020 20:52:40 +0800</lastBuildDate>
+    <pubDate>Thu, 23 Jul 2020 14:32:12 +0800</pubDate>
+    <lastBuildDate>Thu, 23 Jul 2020 14:32:12 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -20,14 +20,35 @@
 
 &lt;h4 id=&quot;高可用一致性扩展性性能&quot;&gt;高可用、一致性、扩展性、性能&lt;/h4&gt;
 &lt;ul&gt;
-  &lt;li&gt;节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？&lt;/li&gt;
-  &lt;li&gt;zk分leader/follower，是，写入代理给leader，读任意，直连
-  (zk的follower有可能数据不是最新的，如果需要最新的可以调用sync()方法)&lt;/li&gt;
-  &lt;li&gt;es分primary/replica，是，写入协调节给primary，读任意，协调节点协调
+  &lt;li&gt;由于存储分散切片存储，实现了高可用，
+    &lt;ol&gt;
+      &lt;li&gt;物理机broker分主从&lt;/li&gt;
+      &lt;li&gt;物理机broker不分主从，但是数据切片的存储分主从&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;存储分片实现一致性，通过不同的协议
+    &lt;ol&gt;
+      &lt;li&gt;主从同步协议&lt;/li&gt;
+      &lt;li&gt;去中心化gossip协议&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？扩容自动数据迁移？&lt;/li&gt;
+  &lt;li&gt;zk分leader/follower，是，写入代理给leader，读任意，直连，扩容自动数据迁移，选举CP广播AP
+  (zk的follower有可能数据不是最新的，如果需要最新的可以调用sync()方法，
+  zk数据结构是DataTree，也就是以path为key的Map)&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;redis-cluster master节点无主次master负责不同的slot，从节点从主节点同步数据，写入直连或者被Move，
+  读Master而slave只是热备，读取直连或者被Move，扩容使用redis-trib.rb，CP&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;kafka分leader/follower，是，写入直接给leader，读leader，直连leader，扩容需要使用kafka-reassign-partitions.sh完成reblance
+  (区别理解kafka中的leader/follower，本质是Partition数据的leader与follower会分布在不同的broker机器上，不会造成机器资源的不平衡
+  kafka client通过向任意broker发送metadata req来获取partition得leader)&lt;/li&gt;
+  &lt;li&gt;rocketMq分主/次，异步复制/同步双写，写入直连Master，对任意，直连，扩容通过updateTopic进行
+  (物理机broker有主从，物理机是主就是分片message的主)&lt;/li&gt;
+  &lt;li&gt;es分primary/replica，是，写入协调节给primary，读任意，协调节点协调，扩容自动数据迁移，CA
   (此处的primary是指根据document路由而得到的primary shard，不是指单独的机器)&lt;/li&gt;
-  &lt;li&gt;kafka分leader/follower，是，写入直接给leader，读leader，直连leader
-  (区别理解kafka中的leader/follower，本质是Partition数据的leader与follower会分布在不同的broker机器上，不会造成机器资源的不平衡)&lt;/li&gt;
-  &lt;li&gt;cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据&lt;/li&gt;
+  &lt;li&gt;cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据，扩容自动数据迁移，AP
+  (一致性hash确定分区，依靠协调节点）&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/biu.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
@@ -142,6 +163,11 @@ Java 中导致饥饿的原因:
   &lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;h4 id=&quot;spring-security&quot;&gt;Spring Security&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.imooc.com/article/305184&quot;&gt;https://www.imooc.com/article/305184&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;对账 &lt;a href=&quot;http://www.woshipm.com/it/1262137.html&quot;&gt;http://www.woshipm.com/it/1262137.html&lt;/a&gt;
+如何做一个对账系统，纯洁的微笑 &lt;a href=&quot;https://www.cnblogs.com/ityouknow/p/7015879.html&quot;&gt;https://www.cnblogs.com/ityouknow/p/7015879.html&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 20 Jul 2020 09:46:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html</link>
@@ -1443,9 +1469,10 @@ ArrayList是非线程安全的，Vector是线程安全的。&lt;/p&gt;
 
 &lt;h4 id=&quot;hashmap为什么初始容量是2的指数幂&quot;&gt;hashmap为什么初始容量是2的指数幂&lt;/h4&gt;
 &lt;ol&gt;
-  &lt;li&gt;hashmap在确定元素落在数组的位置的时候，计算方法是(n - 1) &amp;amp; hash，n为数组长度也就是初始容量 ，这是因为“取模”运算的消耗还是比较大的，那么如何保证(n - 1) &amp;amp; hash和hash%n的结果相同呢，当n为2的指数次幂时，会满足一个公式：(n - 1) &amp;amp; hash = hash % n，这样就可以用(n - 1) &amp;amp; hash的位运算来使计算更加高效。&lt;/li&gt;
+  &lt;li&gt;hashmap在确定元素落在数组的位置的时候，计算方法是hash%n，类似数据库分表，但是“取模”运算的消耗还是比较大的，可以用(n - 1) &amp;amp; hash的位运算来使计算更加高效。&lt;/li&gt;
   &lt;li&gt;如果初始容量是奇数，那么（n-1)就为偶数，偶数2进制的结尾都是0，经过hash值&amp;amp;运算后末尾都是0，那么0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这样就会造成空间的浪费而且会增加hash冲突。&lt;/li&gt;
-  &lt;li&gt;只有是2的指数次幂的数字经过n-1之后，二进制肯定是  …11111111  这样的格式，这种格式计算的位置的时候，完全是由产生的hash值类决定，而不受n-1 影响。这样会提高效率。比如要扩容了，2的幂次方*2，在二进制中比如4和8，代表2的2次方和3次方，他们的2进制结构相 似,比如 4和8   00000100    0000 1000   只是高位向前移了一位，这样扩容的时候，只需要判断高位hash,移动到之前位置的倍数就可以了，免去了重新计算位置的运算。并且这样可以保证(n - 1) &amp;amp; hash得到的存储位置是在hashmap的length之内的,也就是n之内。因为最大也就是hash值也全是…1111111&lt;/li&gt;
+  &lt;li&gt;只有是2的指数次幂的数字经过n-1之后，二进制尾数才是1，这样hash最后一位无论是什么，完全是由产生的hash值类决定，而不受n-1 影响。这样会提高效率。比如要扩容了，2的幂次方*2，在二进制中比如4和8，代表2的2次方和3次方，他们的2进制结构相 似,
+比如 4：00000100 和 8：0000 1000，只是高位向前移了一位，这样扩容的时候，只需要判断高位hash,移动到之前位置的倍数就可以了，免去了重新计算位置的运算。&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h4 id=&quot;springboot-start&quot;&gt;SpringBoot Start&lt;/h4&gt;

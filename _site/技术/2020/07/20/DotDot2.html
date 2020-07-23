@@ -69,14 +69,35 @@
 
 <h4 id="高可用一致性扩展性性能">高可用、一致性、扩展性、性能</h4>
 <ul>
-  <li>节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？</li>
-  <li>zk分leader/follower，是，写入代理给leader，读任意，直连
-  (zk的follower有可能数据不是最新的，如果需要最新的可以调用sync()方法)</li>
-  <li>es分primary/replica，是，写入协调节给primary，读任意，协调节点协调
+  <li>由于存储分散切片存储，实现了高可用，
+    <ol>
+      <li>物理机broker分主从</li>
+      <li>物理机broker不分主从，但是数据切片的存储分主从</li>
+    </ol>
+  </li>
+  <li>存储分片实现一致性，通过不同的协议
+    <ol>
+      <li>主从同步协议</li>
+      <li>去中心化gossip协议</li>
+    </ol>
+  </li>
+  <li>节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？扩容自动数据迁移？</li>
+  <li>zk分leader/follower，是，写入代理给leader，读任意，直连，扩容自动数据迁移，选举CP广播AP
+  (zk的follower有可能数据不是最新的，如果需要最新的可以调用sync()方法，
+  zk数据结构是DataTree，也就是以path为key的Map)</li>
+  <li>
+    <p>redis-cluster master节点无主次master负责不同的slot，从节点从主节点同步数据，写入直连或者被Move，
+  读Master而slave只是热备，读取直连或者被Move，扩容使用redis-trib.rb，CP</p>
+  </li>
+  <li>kafka分leader/follower，是，写入直接给leader，读leader，直连leader，扩容需要使用kafka-reassign-partitions.sh完成reblance
+  (区别理解kafka中的leader/follower，本质是Partition数据的leader与follower会分布在不同的broker机器上，不会造成机器资源的不平衡
+  kafka client通过向任意broker发送metadata req来获取partition得leader)</li>
+  <li>rocketMq分主/次，异步复制/同步双写，写入直连Master，对任意，直连，扩容通过updateTopic进行
+  (物理机broker有主从，物理机是主就是分片message的主)</li>
+  <li>es分primary/replica，是，写入协调节给primary，读任意，协调节点协调，扩容自动数据迁移，CA
   (此处的primary是指根据document路由而得到的primary shard，不是指单独的机器)</li>
-  <li>kafka分leader/follower，是，写入直接给leader，读leader，直连leader
-  (区别理解kafka中的leader/follower，本质是Partition数据的leader与follower会分布在不同的broker机器上，不会造成机器资源的不平衡)</li>
-  <li>cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据</li>
+  <li>cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据，扩容自动数据迁移，AP
+  (一致性hash确定分区，依靠协调节点）</li>
 </ul>
 
 <p><img src="/img/biu.jpg" width="600px" /></p>
@@ -191,6 +212,11 @@ Java 中导致饥饿的原因:
   </li>
 </ul>
 
+<h4 id="spring-security">Spring Security</h4>
+<p><a href="https://www.imooc.com/article/305184">https://www.imooc.com/article/305184</a></p>
+
+<p>对账 <a href="http://www.woshipm.com/it/1262137.html">http://www.woshipm.com/it/1262137.html</a>
+如何做一个对账系统，纯洁的微笑 <a href="https://www.cnblogs.com/ityouknow/p/7015879.html">https://www.cnblogs.com/ityouknow/p/7015879.html</a></p>
 
   </div>
 </article>

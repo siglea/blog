@@ -24,8 +24,15 @@ categories:
 - Serial Old收集器 (标记-整理算法): 老年代单线程收集器，Serial收集器的老年代版本；
 - Parallel Old收集器 (标记-整理算法)： 老年代并行收集器，吞吐量优先，Parallel Scavenge收集器的老年代版本；
 - CMS(Concurrent Mark Sweep)收集器（标记-清除算法）： 老年代并行收集器，以获取最短回收停顿时间为目标的收集器，具有高并发、低停顿的特点，追求最短GC回收停顿时间。
-- G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。
-
+- G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。
+    此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。
+    可以通过配置参数设置可控的停顿时间。可以设置G1HeapRegionSize为2的指数，尽可能是分为2048份。会根据算法判断出哪个region回收价值最高，而优先回收。
+    Mixed GC不是full GC，它只能回收部分老年代的Region，如果mixed GC实在无法跟上程序分配内存的速度，导致老年代填满无法继续进行Mixed GC，就会使用serial old GC（full GC）来收集整个GC heap。所以我们可以知道，G1是不提供full GC的。    
+- ZGC,在64位的JVM中使用，用color point标记出Finalizable、 Remapped、Marked1、Marked0几种状态，可以节省遍历RememberSet的时间，也可执行不同的逻辑；
+    region大小不同，对象大小不同用的Page不同，方便整理回收；大部分对象标记和对象转移都是可以和应用线程并发。
+    - <https://www.jianshu.com/p/4e4fd0dd5d25>
+    - <https://www.jianshu.com/p/60d9e125dcf3>
+    
 #### 分代垃圾回收器是怎么工作的？
 - 分代回收器有两个分区：老生代和新生代，新生代默认的空间占比总空间的 1/3，老生代的默认占比是 2/3。
 - 新生代使用的是复制算法，新生代里有 3 个分区：Eden、To Survivor、From Survivor，它们的默认占比是  8:1:1，它的执行流程如下：

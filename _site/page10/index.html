@@ -852,10 +852,9 @@ redis集群动态增加节点的时候,twemproxy不会对已有数据做重分�
   顺便一提，CAP 理论中是忽略网络延迟，也就是当事务提交时，从节点 A 复制到节点 B 没有延迟，但是在现实中这个是明显不可能的，所以总会有一定的时间是不一致。
   同时 CAP 中选择两个，比如你选择了 CP，并不是叫你放弃 A。因为 P 出现的概率实在是太小了，大部分的时间你仍然需要保证 CA。
   就算分区出现了你也要为后来的 A 做准备，比如通过一些日志的手段，是其他机器回复至可用。</li>
-</ul>
-
-<h4 id="分布式系统之base定理">分布式系统之BASE定理</h4>
-<ul>
+  <li>这可能是我看过最通俗也是最深刻的CAP理论  <a href="https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg">https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg</a>
+    <h4 id="分布式系统之base定理">分布式系统之BASE定理</h4>
+  </li>
   <li>BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩写，是对 CAP 中 AP 的一个扩展。</li>
   <li>基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用。</li>
   <li>软状态：允许系统中存在中间状态，这个状态不影响系统可用性，这里指的是 CAP 中的不一致。</li>

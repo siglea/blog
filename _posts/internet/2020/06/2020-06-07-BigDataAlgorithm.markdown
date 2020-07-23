@@ -9,6 +9,16 @@ tags:
 categories:
 - 技术
 ---
+<https://www.jianshu.com/p/4427db9337d7>
+
+十道海量数据处理面试题与十个方法大总结 
+<https://blog.csdn.net/twlkyao/article/details/12037073>
+从头到尾解析Hash表算法
+<https://blog.csdn.net/v_JULY_v/article/details/6256463>
+
+教你如何迅速秒杀掉：99%的海量数据处理面试题
+<https://blog.csdn.net/v_july_v/article/details/7382693>
+
 
 #### 决策树算法
 #### 回归算法

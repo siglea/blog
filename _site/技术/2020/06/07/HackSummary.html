@@ -65,10 +65,10 @@
   <li>利用大量合法的分布式服务器对目标发送请求，从而导致正常合法用户无法获得服务。通俗点讲就是利用网络节点资源如：IDC服务器、个人PC、手机、智能设备、打印机、摄像头等对目标发起大量攻击请求，从而导致服务器拥塞而无法对外提供正常服务</li>
   <li>分类
     <ul>
-      <li>资源消耗类攻击，Syn Flood、Ack Flood、UDP Flood</li>
+      <li>资源消耗类攻击，Syn Flood、Ack Flood、UDP Flood(限流和唯一识别限制)</li>
       <li>服务消耗性攻击，它主要是针对服务的特点进行精确定点打击，如web的CC，数据服务的检索，文件服务的下载等。这类攻击往往不是为了拥塞流量通道或协议处理通道，它们是让服务端始终处理高消耗型的业务的忙碌状态</li>
       <li>反射类攻击，一般请求回应的流量远远大于请求本身流量的大小</li>
-      <li>CC(ChallengeCollapsar，挑战黑洞)，不准确的分类</li>
+      <li>CC(ChallengeCollapsar，挑战黑洞)，不准确的分类，CC攻击的原理是通过代理服务器或者大量肉鸡模拟多个用户访问目标网站的动态页面，制造大量的后台数据库查询动作，消耗目标CPU资源，造成拒绝服务。CC不像DDoS可以用硬件防火墙来过滤攻击，CC攻击本身的请求就是正常的请求。</li>
     </ul>
   </li>
   <li>防御手段
@@ -80,6 +80,7 @@
     </ul>
   </li>
   <li>参考 <a href="https://www.jianshu.com/p/e7a5fdc67b8f">https://www.jianshu.com/p/e7a5fdc67b8f</a></li>
+  <li>流量清洗的原理和DDoS流量清洗的实践 <a href="https://dun.163.com/news/p/4e52c024c7c94220b3f7201498a388c6">https://dun.163.com/news/p/4e52c024c7c94220b3f7201498a388c6</a></li>
 </ul>
 
 <h4 id="xss-crossing-site-scripting跨站脚本数据被黑客窃取">XSS crossing site scripting,跨站脚本（数据被黑客窃取）</h4>

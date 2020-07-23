@@ -14,18 +14,29 @@ categories:
 - 去中心化的副本控制协议，也就是Gossip或者zk选举阶段
 
 #### 高可用、一致性、扩展性、性能
-- 节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？
-- zk分leader/follower，是，写入代理给leader，读任意，直连
-    (zk的follower有可能数据不是最新的，如果需要最新的可以调用sync()方法)
-- redis-cluster master节点无主次分别负责不同的slot，从节点从主节点同步数据，写入直连或者被Move，读Master slave只是热备，读取直连或者被Move
+- 由于存储分散切片存储，实现了高可用，
+    1. 物理机broker分主从
+    2. 物理机broker不分主从，但是数据切片的存储分主从
+- 存储分片实现一致性，通过不同的协议
+    1. 主从同步协议
+    1. 去中心化gossip协议
 
-- es分primary/replica，是，写入协调节给primary，读任意，协调节点协调
-    (此处的primary是指根据document路由而得到的primary shard，不是指单独的机器)
-- kafka分leader/follower，是，写入直接给leader，读leader，直连leader
+- 节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？扩容自动数据迁移？
+- zk分leader/follower，是，写入代理给leader，读任意，直连，扩容自动数据迁移，选举CP广播AP
+    (zk的follower有可能数据不是最新的，如果需要最新的可以调用sync()方法，
+    zk数据结构是DataTree，也就是以path为key的Map)
+- redis-cluster master节点无主次master负责不同的slot，从节点从主节点同步数据，写入直连或者被Move，
+    读Master而slave只是热备，读取直连或者被Move，扩容使用redis-trib.rb，CP
+
+- kafka分leader/follower，是，写入直接给leader，读leader，直连leader，扩容需要使用kafka-reassign-partitions.sh完成reblance
     (区别理解kafka中的leader/follower，本质是Partition数据的leader与follower会分布在不同的broker机器上，不会造成机器资源的不平衡
     kafka client通过向任意broker发送metadata req来获取partition得leader)
-- cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据
-    (一致性hash确定分区）
+- rocketMq分主/次，异步复制/同步双写，写入直连Master，对任意，直连，扩容通过updateTopic进行
+    (物理机broker有主从，物理机是主就是分片message的主)
+- es分primary/replica，是，写入协调节给primary，读任意，协调节点协调，扩容自动数据迁移，CA
+    (此处的primary是指根据document路由而得到的primary shard，不是指单独的机器)
+- cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据，扩容自动数据迁移，AP
+    (一致性hash确定分区，依靠协调节点）
 
 <img src="/img/biu.jpg" width="600px" />
 
@@ -120,4 +131,9 @@ Lock 接口比同步方法和同步块提供了更具扩展性的锁操作。 �
 #### 为什么 Thread 类的 sleep()和 yield ()方法是静态的?
 Thread 类的 sleep()和 yield()方法将在当前正在执行的线程上运行。所以在其他 处于等待状态的线程上调用这些方法是没有意义的。这就是为什么这些方法是静 态的。它们可以在当前正在执行的线程中工作，并避免程序员错误的认为可以在 其他非运行线程调用这些方法。
 
+#### Spring Security 
+<https://www.imooc.com/article/305184>
 
+
+对账 <http://www.woshipm.com/it/1262137.html>
+如何做一个对账系统，纯洁的微笑 <https://www.cnblogs.com/ityouknow/p/7015879.html>

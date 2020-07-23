@@ -9,9 +9,17 @@ tags:
 categories:
 - 技术
 ---
+#### 数据与存储
+- 内存数据，Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。
+　　1. DataTree，DataTree是内存数据存储的核心，是一个树结构，代表了内存中一份完整的数据。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。
+　　2. DataNode，DataNode是数据存储的最小单元，其内部除了保存了结点的数据内容、ACL列表、节点状态之外，还记录了父节点的引用和子节点列表两个属性，其也提供了对子节点列表进行操作的接口。
+　　3. ZKDatabase，Zookeeper的内存数据库，管理Zookeeper的所有会话、DataTree存储和事务日志。ZKDatabase会定时向磁盘dump快照数据，同时在Zookeeper启动时，会通过磁盘的事务日志和快照文件恢复成一个完整的内存数据库。
+- 事务日志，FileTxnLog
+<https://www.cnblogs.com/leesf456/p/6179118.html>
+
 #### 散点
 - 临时节点不允许有子节点，Ephemeral Node
-- 没给节点大小不超过1MB
+- 每个节点大小不超过1MB
 
 #### 使用场景
 - 注册中心
