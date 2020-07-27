@@ -54,6 +54,58 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2018/10/23/plot-financial-data-super-basic.html">Plot Financial Data Using Matplotlib (super basic)</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Oct 23, 2018</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2018/10/23/plot-financial-data-super-basic.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>programming</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h2 id="import-libraries">import libraries</h2>
+<p>In order to plot the data, we need to import libraries for dataframe and plot, also set plot inline if you’re  using a notebook.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</code></pre></div></div>
+
+<h2 id="plot-stock-price">plot stock price</h2>
+<p>Code is super simple, you just need to set the index of the dataframe to timestamp. If you find the figure to small, use pylab to set the figure size.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">rcParams</span>
+<span class="n">rcParams</span><span class="p">[</span><span class="s">'figure.figsize'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span><span class="mi">13</span>
+<span class="n">apple_data</span> <span class="o">=</span> <span class="n">market_train_df</span><span class="p">[</span><span class="n">market_train_df</span><span class="p">[</span><span class="s">'assetCode'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'AAPL.O'</span><span class="p">]</span>
+<span class="n">apple_data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">'time'</span><span class="p">)[</span><span class="s">'close'</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+<p><img src="/img/python-plot-financial-data-1.png" style="height:50%" /></p>
+
+<h2 id="compare-multiple-plots">compare multiple plots</h2>
+<p>Then I’m trying to sanitize the data by looking at the figure it self, I want to plot all suspicious assets.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">suspicious_asset_code</span><span class="p">:</span>
+    <span class="n">apple_data</span> <span class="o">=</span> <span class="n">market_train_df</span><span class="p">[</span><span class="n">market_train_df</span><span class="p">[</span><span class="s">'assetCode'</span><span class="p">]</span> <span class="o">==</span> <span class="n">code</span><span class="p">]</span>
+    <span class="n">apple_data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">'time'</span><span class="p">)[</span><span class="s">'close'</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+<p><img src="/img/python-financial-plot-2.png" style="height:50%" /></p>
+
+<p>This only gives me one figure with all assets, it’s ugly. I want to plot them one by one.</p>
+
+<p>Subplot will give you figures put up together, use</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># treat the whole figure as a grid, specify how many rows and columns you wanna plot and the index of the current sub plot
+</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Then you’ll get graphs all together to detect abnormal data.
+<img src="/img/python-plot-subplot.png" style="height:50%" /></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2018/10/23/plot-financial-data-super-basic.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html">Configure Mailgun settings in Rails app</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 29, 2017</span>
@@ -218,7 +270,7 @@
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 14 )</span>
+      <span class="label label-default">分布式 ( 15 )</span>
       </a><br />
 
       

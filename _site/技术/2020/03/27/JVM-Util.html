@@ -240,6 +240,7 @@ Full thread dump Java HotSpot<span class="o">(</span>TM<span class="o">)</span> 
 <span class="c"># jstack 19268 |grep 4b4f</span>
 <span class="c"># 接下来我们将进程中的所有线程输出到一个文件中，执行：jstack  11281&gt; jstack.txt</span>
 <span class="c"># 在进程中查找对应的线程 ID，执行：cat jstack.txt | grep -i 2c6d</span>
+<span class="c"># jstack -l 14716 |grep deadlock # 查看死锁</span>
 </code></pre></div></div>
 
 <h4 id="jconsolevisualvm">JConsole、VisualVM</h4>

@@ -5,9 +5,152 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 27 Jul 2020 10:39:36 +0800</pubDate>
-    <lastBuildDate>Mon, 27 Jul 2020 10:39:36 +0800</lastBuildDate>
+    <pubDate>Mon, 27 Jul 2020 19:18:58 +0800</pubDate>
+    <lastBuildDate>Mon, 27 Jul 2020 19:18:58 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>高可用高并发</title>
+        <description>&lt;h4 id=&quot;高可用&quot;&gt;高可用&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;负载均衡
+    &lt;ul&gt;
+      &lt;li&gt;Consul + Consul-template 动态配置 Nginx upstream&lt;/li&gt;
+      &lt;li&gt;Nginx + lua 动态负载均衡&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;限流，限制总并发数（池化）、排队或等待、降级
+    &lt;ul&gt;
+      &lt;li&gt;接入层限流：
+        &lt;ul&gt;
+          &lt;li&gt;ngx_http_limit_conn_mode(连接数限制)&lt;/li&gt;
+          &lt;li&gt;ngx_http_limit_req_module(漏桶算法)&lt;/li&gt;
+          &lt;li&gt;openResty提供的Lua动态限流模块(lua-resty-limit-traffic)&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;应用层限流：Redis+Lua 、Nginx+Lua&lt;/li&gt;
+      &lt;li&gt;节流，相同的事件特定窗口内只处理一次&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;降级，主要是当服务出问题或影响到核心流程的性能，需要暂时屏蔽掉一些非核心流程
+    &lt;ul&gt;
+      &lt;li&gt;缓存是离用户越近越高效，而降级是离用户越近对系统的保护越好&lt;/li&gt;
+      &lt;li&gt;超时降级、故障降级&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;隔离
+    &lt;ul&gt;
+      &lt;li&gt;线程隔离，通过不同线程池实现&lt;/li&gt;
+      &lt;li&gt;进程隔离，拆分子系统单独部署&lt;/li&gt;
+      &lt;li&gt;爬虫隔离，区分正常请求与Spider请求&lt;/li&gt;
+      &lt;li&gt;热点隔离，热点活动等&lt;/li&gt;
+      &lt;li&gt;集群隔离、机房隔离、读写隔离、动静隔离、资源隔离（CPU绑定等）&lt;/li&gt;
+      &lt;li&gt;Hystrix隔离&lt;/li&gt;
+      &lt;li&gt;Servlet3，基于NIO的线程池及异步化
+```shell
+HystrixComand.Setter.
+  .withGroupKey(groupKey) # 全局服务分组
+  .andCommandKey(commandKey) # 全局服务
+  .andThreadPoolKey(threadPookKey) # 全局线程名称
+  .andThreadPoolPropertiesDefaults(threadPoolPropDefaults)
+  .andCommandPropertiesDefaults();&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;```&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;超时与重试&lt;/li&gt;
+  &lt;li&gt;回滚&lt;/li&gt;
+  &lt;li&gt;压测与预案
+    &lt;ul&gt;
+      &lt;li&gt;JMeter/Apache ab/TCPCopy&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;高并发&quot;&gt;高并发&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;缓存，缓存主要是提高系统吞吐量
+    &lt;ul&gt;
+      &lt;li&gt;分层缓存
+        &lt;ul&gt;
+          &lt;li&gt;本地缓存(GuavaCache、Ehcache堆内外、MapDB堆内外)、应用将缓存、分布式缓存&lt;/li&gt;
+          &lt;li&gt;客户端缓存、浏览器缓存&lt;/li&gt;
+          &lt;li&gt;Nginx代理层缓存&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;缓存回收策略：基于时间、基于容量、基于Java对象应用&lt;/li&gt;
+      &lt;li&gt;Java缓存类型：堆内缓存、堆外缓存、磁盘缓存&lt;/li&gt;
+      &lt;li&gt;缓存使用的模式
+        &lt;ul&gt;
+          &lt;li&gt;Cache-Aside：业务直接维护缓存&lt;/li&gt;
+          &lt;li&gt;Cache-As-SoR(system of record)：面向缓存，不CareDB
+            &lt;ul&gt;
+              &lt;li&gt;read-through、write-through、write-behind&lt;/li&gt;
+            &lt;/ul&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;HTTP缓存
+        &lt;ul&gt;
+          &lt;li&gt;Age/Vary/Via一般用于代理层CDN，比如代理层是否命中、使用什么协议&lt;/li&gt;
+          &lt;li&gt;Etag/Last-Modified，服务器用于判断本次请求与上次请求资源是否修改了&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;池化
+    &lt;ul&gt;
+      &lt;li&gt;数据库连接池&lt;/li&gt;
+      &lt;li&gt;HTTPClient连接池&lt;/li&gt;
+      &lt;li&gt;线程池&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;异步并发
+    &lt;ul&gt;
+      &lt;li&gt;微服务情况下，请求合并&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;扩容
+    &lt;ul&gt;
+      &lt;li&gt;系统拆分&lt;/li&gt;
+      &lt;li&gt;数据拆分
+        &lt;ul&gt;
+          &lt;li&gt;JIMDB，京东内存KV&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;任务拆分
+        &lt;ul&gt;
+          &lt;li&gt;Quartz&lt;/li&gt;
+          &lt;li&gt;当当开源 Elastic-Job-Lite&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;数据异构
+        &lt;ul&gt;
+          &lt;li&gt;Canal是阿里开源的一款基于MySQL数据库binlog的增量订阅和消费组件&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;队列&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;openresty&quot;&gt;openresty&lt;/h4&gt;
+&lt;p&gt;https://www.jianshu.com/p/09c17230e1ae
+&lt;a href=&quot;https://zhuanlan.zhihu.com/p/37102791&quot;&gt;https://zhuanlan.zhihu.com/p/37102791&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 26 Jul 2020 13:36:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html</guid>
+        
+        <category>分布式</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
     
       <item>
         <title>DotDot2</title>
@@ -1985,47 +2128,6 @@ long currentTimeNanos &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; System.nano
         <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html</guid>
         
         <category>用户</category>
-        
-        
-        <category>技术</category>
-        
-      </item>
-    
-      <item>
-        <title>myBatis</title>
-        <description>&lt;h4 id=&quot;mybatis-和的区别是什么&quot;&gt;myBatis #{}和${}的区别是什么?&lt;/h4&gt;
-&lt;p&gt;1)#{}是预编译处理，${}是字符串替换。
-2)Mybatis 在处理#{}时，会将 sql 中的#{}替换为?号，调用 PreparedStatement 的 set 方法来赋值;
-3)Mybatis 在处理${}时，就是把${}替换成变量的值。 4)使用#{}可以有效的防止 SQL 注入，提高系统安全性。&lt;/p&gt;
-
-&lt;h4 id=&quot;35ibatis-和-mybatis-区别&quot;&gt;35、IBatis 和 MyBatis 区别&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;IBatis 里面的核心处理类交 SqlMapClient,MyBatis 里面的核心处理类叫做 SqlSession。&lt;/li&gt;
-  &lt;li&gt;在 sql 里面变量命名有原来的#变量# 变成了#{变量}&lt;/li&gt;
-  &lt;li&gt;原来的$变量$变成了${变量}&lt;/li&gt;
-  &lt;li&gt;原来在 sql 节点里面的 class 都换名字交 type&lt;/li&gt;
-  &lt;li&gt;原来的 queryForObject queryForList 变成了 selectOne selectList5)原来的别名设置在映射 文件里面放在了核心配置文件里。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;mybatis是否支持延迟加载如果支持它的实现原理是什么&quot;&gt;Mybatis是否支持延迟加载?如果支持，它的实现原理是什么？&lt;/h4&gt;
-&lt;ol&gt;
-  &lt;li&gt;Mybatis仅支持association关联对象和collection关联集合对象的延迟 
- 加载，association指的就是一对一，collection指的就是一对多查询。在 
- Mybatis配置文件中，可以配置是否启用延迟加载 
- lazyLoadingEnabled=true|false&lt;/li&gt;
-  &lt;li&gt;它的原理是，使用CGLIB创建目标对象的代理对象，当调用目标方法 
- 时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke〇 
- 方法发现a.getB〇是null值，那么就会单独发送事先保存好的查询关联B 
- 对象的sql，把B查询上来，然后调用fsetB(b)l，于是a的对象b属 
- 性就有值了，接着完成|a.getB() .getNamet)]方法的调用。这就是延迟 
- 加载的基本原理。&lt;/li&gt;
-&lt;/ol&gt;
-</description>
-        <pubDate>Tue, 30 Jun 2020 16:06:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html</guid>
-        
-        <category>数据库</category>
         
         
         <category>技术</category>

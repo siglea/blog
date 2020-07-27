@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>高可用高并发</title>
+  <meta name="description" content="高可用  负载均衡          Consul + Consul-template 动态配置 Nginx upstream      Nginx + lua 动态负载均衡        限流，限制总并发数（池化）、排队或等待、降级          接入层限流：                  ngx_ht...">
+  <script src="/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+</head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-86140592-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  <body>
+
+    <header class="site-header">
+  <div class="container" style="text-align:center">
+    <div class="navbar" style="margin-bottom:0;border:0">
+    <ul class="navbar-nav nav header-nav">
+    <li><a href="/index.html" class="button">首页</a></li>
+      <li><a href="/category/技术" class="button">技术</a></li>
+      <li><a href="/category/产品商业" class="button">产品商业</a></li>
+      <li><a href="/category/随记" class="button">随记</a></li>
+    </ul>
+    </div>
+  </div>
+
+</header>
+<div class="clearfix">
+
+
+    <div class="page-content">
+      <div class="container" style="padding-left:0;padding-right:0;">
+        <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">高可用高并发</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-07-26T13:36:00+08:00" itemprop="datePublished">Jul 26, 2020</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h4 id="高可用">高可用</h4>
+<ul>
+  <li>负载均衡
+    <ul>
+      <li>Consul + Consul-template 动态配置 Nginx upstream</li>
+      <li>Nginx + lua 动态负载均衡</li>
+    </ul>
+  </li>
+  <li>限流，限制总并发数（池化）、排队或等待、降级
+    <ul>
+      <li>接入层限流：
+        <ul>
+          <li>ngx_http_limit_conn_mode(连接数限制)</li>
+          <li>ngx_http_limit_req_module(漏桶算法)</li>
+          <li>openResty提供的Lua动态限流模块(lua-resty-limit-traffic)</li>
+        </ul>
+      </li>
+      <li>应用层限流：Redis+Lua 、Nginx+Lua</li>
+      <li>节流，相同的事件特定窗口内只处理一次</li>
+    </ul>
+  </li>
+  <li>降级，主要是当服务出问题或影响到核心流程的性能，需要暂时屏蔽掉一些非核心流程
+    <ul>
+      <li>缓存是离用户越近越高效，而降级是离用户越近对系统的保护越好</li>
+      <li>超时降级、故障降级</li>
+    </ul>
+  </li>
+  <li>隔离
+    <ul>
+      <li>线程隔离，通过不同线程池实现</li>
+      <li>进程隔离，拆分子系统单独部署</li>
+      <li>爬虫隔离，区分正常请求与Spider请求</li>
+      <li>热点隔离，热点活动等</li>
+      <li>集群隔离、机房隔离、读写隔离、动静隔离、资源隔离（CPU绑定等）</li>
+      <li>Hystrix隔离</li>
+      <li>Servlet3，基于NIO的线程池及异步化
+```shell
+HystrixComand.Setter.
+  .withGroupKey(groupKey) # 全局服务分组
+  .andCommandKey(commandKey) # 全局服务
+  .andThreadPoolKey(threadPookKey) # 全局线程名称
+  .andThreadPoolPropertiesDefaults(threadPoolPropDefaults)
+  .andCommandPropertiesDefaults();</li>
+    </ul>
+  </li>
+</ul>
+
+<p>```</p>
+
+<ul>
+  <li>超时与重试</li>
+  <li>回滚</li>
+  <li>压测与预案
+    <ul>
+      <li>JMeter/Apache ab/TCPCopy</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="高并发">高并发</h4>
+<ul>
+  <li>缓存，缓存主要是提高系统吞吐量
+    <ul>
+      <li>分层缓存
+        <ul>
+          <li>本地缓存(GuavaCache、Ehcache堆内外、MapDB堆内外)、应用将缓存、分布式缓存</li>
+          <li>客户端缓存、浏览器缓存</li>
+          <li>Nginx代理层缓存</li>
+        </ul>
+      </li>
+      <li>缓存回收策略：基于时间、基于容量、基于Java对象应用</li>
+      <li>Java缓存类型：堆内缓存、堆外缓存、磁盘缓存</li>
+      <li>缓存使用的模式
+        <ul>
+          <li>Cache-Aside：业务直接维护缓存</li>
+          <li>Cache-As-SoR(system of record)：面向缓存，不CareDB
+            <ul>
+              <li>read-through、write-through、write-behind</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>HTTP缓存
+        <ul>
+          <li>Age/Vary/Via一般用于代理层CDN，比如代理层是否命中、使用什么协议</li>
+          <li>Etag/Last-Modified，服务器用于判断本次请求与上次请求资源是否修改了</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>池化
+    <ul>
+      <li>数据库连接池</li>
+      <li>HTTPClient连接池</li>
+      <li>线程池</li>
+    </ul>
+  </li>
+  <li>异步并发
+    <ul>
+      <li>微服务情况下，请求合并</li>
+    </ul>
+  </li>
+  <li>扩容
+    <ul>
+      <li>系统拆分</li>
+      <li>数据拆分
+        <ul>
+          <li>JIMDB，京东内存KV</li>
+        </ul>
+      </li>
+      <li>任务拆分
+        <ul>
+          <li>Quartz</li>
+          <li>当当开源 Elastic-Job-Lite</li>
+        </ul>
+      </li>
+      <li>数据异构
+        <ul>
+          <li>Canal是阿里开源的一款基于MySQL数据库binlog的增量订阅和消费组件</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>队列</li>
+</ul>
+
+<h4 id="openresty">openresty</h4>
+<p>https://www.jianshu.com/p/09c17230e1ae
+<a href="https://zhuanlan.zhihu.com/p/37102791">https://zhuanlan.zhihu.com/p/37102791</a></p>
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+      </div>
+      <div class="clearfix">
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="container">
+
+    <h2 class="footer-heading">粉笔灰杂谈</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>粉笔灰杂谈</li>
+          <li><a href="mailto:siglea@sina.com">siglea@sina.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/siglea"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">siglea</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

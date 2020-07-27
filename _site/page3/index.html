@@ -54,6 +54,52 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html">myBatis</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 30, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="mybatis-和的区别是什么">myBatis #{}和${}的区别是什么?</h4>
+<p>1)#{}是预编译处理，${}是字符串替换。
+2)Mybatis 在处理#{}时，会将 sql 中的#{}替换为?号，调用 PreparedStatement 的 set 方法来赋值;
+3)Mybatis 在处理${}时，就是把${}替换成变量的值。 4)使用#{}可以有效的防止 SQL 注入，提高系统安全性。</p>
+
+<h4 id="35ibatis-和-mybatis-区别">35、IBatis 和 MyBatis 区别</h4>
+<ul>
+  <li>IBatis 里面的核心处理类交 SqlMapClient,MyBatis 里面的核心处理类叫做 SqlSession。</li>
+  <li>在 sql 里面变量命名有原来的#变量# 变成了#{变量}</li>
+  <li>原来的$变量$变成了${变量}</li>
+  <li>原来在 sql 节点里面的 class 都换名字交 type</li>
+  <li>原来的 queryForObject queryForList 变成了 selectOne selectList5)原来的别名设置在映射 文件里面放在了核心配置文件里。</li>
+</ul>
+
+<h4 id="mybatis是否支持延迟加载如果支持它的实现原理是什么">Mybatis是否支持延迟加载?如果支持，它的实现原理是什么？</h4>
+<ol>
+  <li>Mybatis仅支持association关联对象和collection关联集合对象的延迟 
+ 加载，association指的就是一对一，collection指的就是一对多查询。在 
+ Mybatis配置文件中，可以配置是否启用延迟加载 
+ lazyLoadingEnabled=true|false</li>
+  <li>它的原理是，使用CGLIB创建目标对象的代理对象，当调用目标方法 
+ 时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke〇 
+ 方法发现a.getB〇是null值，那么就会单独发送事先保存好的查询关联B 
+ 对象的sql，把B查询上来，然后调用fsetB(b)l，于是a的对象b属 
+ 性就有值了，接着完成|a.getB() .getNamet)]方法的调用。这就是延迟 
+ 加载的基本原理。</li>
+</ol>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html">HTTP-HTTPS</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 29, 2020</span>
@@ -610,7 +656,8 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<ul>
+	<h4 id="策略">策略</h4>
+<ul>
   <li>代驾偏向派单，因为司机就位或者返程的隐形+显性成本更高，导致抢单模式下，挑单严重，成单率底。</li>
   <li>派单的业务基本价格都高些，就是用整体的收入，保证用户的高质量体验。包括偏远地区的调度，某种程度平台都需要补贴。</li>
   <li>偏远订单，是应该用户加价、平台补贴、优质司机降成本，来保证公平。里程收费标准 和 调度费是两个维度的事情。</li>
@@ -628,40 +675,23 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
   <li><a href="https://mp.weixin.qq.com/s/glH946LRbqmchIi5mosn5w">https://mp.weixin.qq.com/s/glH946LRbqmchIi5mosn5w</a></li>
 </ul>
 
+<h4 id="算法">算法</h4>
+<ul>
+  <li>车辆路径问题（Vehicle Routing Problem, VRP）等 <a href="https://blog.csdn.net/weixin_43890937/article/details/103869603">https://blog.csdn.net/weixin_43890937/article/details/103869603</a></li>
+</ul>
+
+<h4 id="产品理论">产品理论</h4>
+<ul>
+  <li>司机调度与接单意愿 <a href="https://mp.weixin.qq.com/s/gV0Bm7aCziABaE-cdnJczg">https://mp.weixin.qq.com/s/gV0Bm7aCziABaE-cdnJczg</a></li>
+  <li>遗失物品与修改目的地 <a href="https://mp.weixin.qq.com/s/I5ofTQA11V4h2ApTGXvNVQ">https://mp.weixin.qq.com/s/I5ofTQA11V4h2ApTGXvNVQ</a></li>
+  <li>司机产品的四个关键问题 <a href="https://mp.weixin.qq.com/s/DGKyyP7khHy7HcVADIX4mQ">https://mp.weixin.qq.com/s/DGKyyP7khHy7HcVADIX4mQ</a></li>
+  <li>外卖派单 <a href="https://mp.weixin.qq.com/s/cwLC2Ukhqe2HQlK827TjBQ">https://mp.weixin.qq.com/s/cwLC2Ukhqe2HQlK827TjBQ</a></li>
+  <li>从架构到算法，详解美团外卖订单分配内部机制 <a href="https://mp.weixin.qq.com/s/84kj45NIx5SkbN7ed9c_Aw">https://mp.weixin.qq.com/s/84kj45NIx5SkbN7ed9c_Aw</a></li>
+</ul>
+
       </div>
       <div style="height:50px;">
 	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/24/O2O%E6%B4%BE%E5%8D%95.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/SaaS%E4%B8%9A%E5%8A%A1.html">SaaS业务分析</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 22, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/SaaS%E4%B8%9A%E5%8A%A1.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>toB</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="中国saas的增长困境">中国SaaS的增长困境</h4>
-<ul>
-  <li>SaaS的收入模式是订阅模式，而订阅收入的衡量指标是所谓的NDR（Net Dollar Retention），也就是收入的净留存。
-  NDR的计算公式为：NDR=(beginningrevenue+upgrades-downgrades-churn)/beginning revenue</li>
-  <li>SaaS销售员的首要任务不是成交，而是找到可合作的优质客户，其次的责任才是成交。</li>
-  <li>销售员这个角色，在SaaS公司应该被定义为播种者，而非收割者。
-改变培训导向和调整提成制度。引导价值成交，树立SaaS的销售业绩导向。</li>
-  <li>ARR是annual recurring revenue的缩写</li>
-  <li><a href="https://news.futunn.com/market/125247">https://news.futunn.com/market/125247</a></li>
-  <li><a href="https://zhuanlan.zhihu.com/p/101133113">https://zhuanlan.zhihu.com/p/101133113</a></li>
-</ul>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/SaaS%E4%B8%9A%E5%8A%A1.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -793,7 +823,7 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 14 )</span>
+      <span class="label label-default">分布式 ( 15 )</span>
       </a><br />
 
       

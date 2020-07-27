@@ -54,6 +54,177 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html">Case of online system</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 13, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p><img src="/img/arch1.jpg" width="600px" /></p>
+
+<h4 id="电商秒杀系统">电商秒杀系统</h4>
+<ul>
+  <li>流量削峰前置
+    <ul>
+      <li>库存数量判断，直接走缓存，挡掉大部分请求（可以用lua在nginx层做）</li>
+      <li>只接受拥有合法token的等于库存数量的用户（需要考虑超时未支付的）</li>
+    </ul>
+  </li>
+  <li>异步化，轮询秒杀状态及下单</li>
+  <li>redis压力转移
+    <ul>
+      <li>本地应用服务器可以存储库存</li>
+      <li>商品id_分片的方式分开存储库存</li>
+    </ul>
+  </li>
+</ul>
+
+<p><a href="https://mp.weixin.qq.com/s/tx_ZfE3rqbED0pteYEkdkQ">https://mp.weixin.qq.com/s/tx_ZfE3rqbED0pteYEkdkQ</a></p>
+
+<h4 id="今日头条系统">今日头条系统</h4>
+<ul>
+  <li>业务数据：2015年 3000万日活、30亿PV、1亿VV、7000台机器</li>
+  <li>技术组件：Scribe、Flume、Kafka、Hadoop、Storm</li>
+  <li>在线存储-abase：QPS读360万、QPS写40万、延时avg 1ms、99%用户不会超过pct99 4ms</li>
+</ul>
+
+<p><a href="https://blog.csdn.net/mucaoyx/article/details/84498468">https://blog.csdn.net/mucaoyx/article/details/84498468</a></p>
+
+<h4 id="100亿次的挑战如何实现一个有把握的春晚摇一摇系统">100亿次的挑战：如何实现一个“有把握”的春晚摇一摇系统</h4>
+<ul>
+  <li>指标：QPS1400、全程110亿次、638台接入机器、支撑14.6亿同时在线</li>
+  <li>接入层能支撑200万同时在线</li>
+</ul>
+<p><a href="https://mp.weixin.qq.com/s/DLbaiSiH15QBkrB_i0imEw">https://mp.weixin.qq.com/s/DLbaiSiH15QBkrB_i0imEw</a></p>
+
+<h4 id="基于token的多平台身份认证架构设计">基于token的多平台身份认证架构设计</h4>
+<p><img src="/img/token.png" width="600px" /></p>
+
+<p><a href="https://www.cnblogs.com/beer/p/6029861.html">https://www.cnblogs.com/beer/p/6029861.html</a></p>
+
+<h4 id="框架图">框架图</h4>
+<ul>
+  <li>可视化架构设计-C4 <a href="https://www.jianshu.com/p/33c6a7ed126f">https://www.jianshu.com/p/33c6a7ed126f</a>
+    <ul>
+      <li>语境图、容器图、组件图、类图</li>
+      <li>系统景观图、部署图、动态图</li>
+    </ul>
+  </li>
+  <li>UML <a href="https://blog.csdn.net/qq_35495763/article/details/80764914">https://blog.csdn.net/qq_35495763/article/details/80764914</a>
+    <ul>
+      <li>用例图、活动图、序列图、类图、状态机</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="im系统存储设计">IM系统（存储设计）</h4>
+<ul>
+  <li>单聊、小群使用写扩散，也就是推模式
+    <ul>
+      <li>优点：
+        <ul>
+          <li>消除了拉模式（读扩散）的IO集中点，每个用户都读自己的数据，高并发下锁竞争少</li>
+          <li>拉取朋友圈feed流列表的业务流程异常简单，速度很快</li>
+          <li>拉取朋友圈feed流列表，不需要进行大量的内存计算，网络传输，性能很高</li>
+        </ul>
+      </li>
+      <li>缺点：
+        <ul>
+          <li>极大的消耗存储资源，feed数据会存储很多份，例如杨幂5KW粉丝，她每次一发博文，消息会冗余5KW份</li>
+          <li>新增关注，取消关注，发布feed的业务流会更复杂</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>群聊、大VFeed使用写读扩散，也就是拉模式（可以先拉有更新的索引，然后触发服务器推）
+    <ul>
+      <li>优点：
+        <ul>
+          <li>存储结构简单，数据存储量较小，关系数据与feed数据都只存一份</li>
+          <li>取消关注，发布feed的业务流程非常简单</li>
+          <li>存储结构，业务流程都比较容易理解，非常适合项目早期用户量、数据量、并发量不大时的快速实现</li>
+        </ul>
+      </li>
+      <li>缺点：
+        <ul>
+          <li>拉取朋友圈feed流列表的业务流程非常复杂</li>
+          <li>有多次数据访问，并且要进行大量的内存计算，大量数据的网络传输，性能较低</li>
+          <li>在拉模式中，系统的瓶颈容易出现在“用户所发布feed列表”的读取上，而每个用户发布feed的频率其实是很低的，此时，架构优化的核心是通过缓存降低数据存储磁盘IO。</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>现代IM系统中消息推送和存储架构的实现 <a href="https://developer.aliyun.com/article/253242">https://developer.aliyun.com/article/253242</a></li>
+  <li>IM群聊消息的已读回执功能该怎么实现 <a href="http://www.52im.net/thread-1611-1-1.html">http://www.52im.net/thread-1611-1-1.html</a></li>
+  <li>IM群聊消息的已读未读功能在存储空间方面的实现思路探讨 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=3054&amp;highlight=%B4%E6%B4%A2">http://www.52im.net/forum.php?mod=viewthread&amp;tid=3054&amp;highlight=%B4%E6%B4%A2</a></li>
+  <li>微信后台基于时间序的海量数据冷热分级架构设计实践 <a href="http://www.52im.net/thread-895-1-1.html">http://www.52im.net/thread-895-1-1.html</a></li>
+  <li>微信后台基于时间序的新一代海量数据存储架构的设计实践 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2970&amp;highlight=%B4%E6%B4%A2">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2970&amp;highlight=%B4%E6%B4%A2</a></li>
+</ul>
+
+<h4 id="亿级用户中心设计">亿级用户中心设计</h4>
+<p>用户中心，是典型的“单KEY”类业务，这一类业务，都可以使用上述架构方案。</p>
+
+<ul>
+  <li>常见的数据库水平切分方式有两种：
+    <ol>
+      <li>范围法；</li>
+      <li>哈希法；</li>
+    </ol>
+  </li>
+  <li>水平切分后碰到的问题是：
+    <ol>
+      <li>通过uid属性查询能直接定位到库，通过非uid属性查询不能定位到库；</li>
+    </ol>
+  </li>
+  <li>非uid属性查询，有两类典型的业务：
+    <ol>
+      <li>用户侧，前台访问，单条记录的查询，访问量较大，服务需要高可用，并且对一致性的要求较高；</li>
+      <li>运营侧，后台访问，根据产品、运营需求，访问模式各异，基本上是批量分页的查询，由于是内部系统，访问量很低，对可用性的要求不高，对一致性的要求也没这么严格；</li>
+    </ol>
+  </li>
+  <li>针对这两类业务，架构设计的思路是：
+    <ol>
+      <li>用户侧，采用“建立非uid属性到uid的映射关系”的架构方案；</li>
+      <li>运营侧，采用“前台与后台分离”的架构方案；</li>
+    </ol>
+  </li>
+  <li>前台用户侧，“建立非uid属性到uid的映射关系”，有四种常见的实践：
+    <ol>
+      <li>索引表法：数据库中记录login_name与uid的映射关系；</li>
+      <li>缓存映射法：缓存中记录login_name与uid的映射关系；</li>
+      <li>生成uid法：login_name生成uid；</li>
+      <li>基因法：login_name基因融入uid；</li>
+    </ol>
+  </li>
+  <li>后台运营侧，“前台与后台分离”的最佳实践是：
+    <ol>
+      <li>前台、后台系统 web/service/db 分离解耦，避免后台低效查询引发前台查询抖动；</li>
+      <li>可以采用数据冗余的设计方式；</li>
+      <li>可以采用“外置索引”（例如ES搜索系统）或者“大数据处理”（例如HIVE）来满足后台变态的查询需求；</li>
+    </ol>
+  </li>
+</ul>
+
+<p><a href="https://mp.weixin.qq.com/s/8KTK_Bz8netP6R5MNSKeFw">https://mp.weixin.qq.com/s/8KTK_Bz8netP6R5MNSKeFw</a></p>
+
+<h4 id="直播系统架构">直播系统架构</h4>
+
+<p><a href="https://www.cnblogs.com/wintersun/p/5860437.html">https://www.cnblogs.com/wintersun/p/5860437.html</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html">Netty In Action</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 8, 2020</span>
@@ -1105,52 +1276,6 @@ long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html">myBatis</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 30, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="mybatis-和的区别是什么">myBatis #{}和${}的区别是什么?</h4>
-<p>1)#{}是预编译处理，${}是字符串替换。
-2)Mybatis 在处理#{}时，会将 sql 中的#{}替换为?号，调用 PreparedStatement 的 set 方法来赋值;
-3)Mybatis 在处理${}时，就是把${}替换成变量的值。 4)使用#{}可以有效的防止 SQL 注入，提高系统安全性。</p>
-
-<h4 id="35ibatis-和-mybatis-区别">35、IBatis 和 MyBatis 区别</h4>
-<ul>
-  <li>IBatis 里面的核心处理类交 SqlMapClient,MyBatis 里面的核心处理类叫做 SqlSession。</li>
-  <li>在 sql 里面变量命名有原来的#变量# 变成了#{变量}</li>
-  <li>原来的$变量$变成了${变量}</li>
-  <li>原来在 sql 节点里面的 class 都换名字交 type</li>
-  <li>原来的 queryForObject queryForList 变成了 selectOne selectList5)原来的别名设置在映射 文件里面放在了核心配置文件里。</li>
-</ul>
-
-<h4 id="mybatis是否支持延迟加载如果支持它的实现原理是什么">Mybatis是否支持延迟加载?如果支持，它的实现原理是什么？</h4>
-<ol>
-  <li>Mybatis仅支持association关联对象和collection关联集合对象的延迟 
- 加载，association指的就是一对一，collection指的就是一对多查询。在 
- Mybatis配置文件中，可以配置是否启用延迟加载 
- lazyLoadingEnabled=true|false</li>
-  <li>它的原理是，使用CGLIB创建目标对象的代理对象，当调用目标方法 
- 时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke〇 
- 方法发现a.getB〇是null值，那么就会单独发送事先保存好的查询关联B 
- 对象的sql，把B查询上来，然后调用fsetB(b)l，于是a的对象b属 
- 性就有值了，接着完成|a.getB() .getNamet)]方法的调用。这就是延迟 
- 加载的基本原理。</li>
-</ol>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -1278,7 +1403,7 @@ long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 14 )</span>
+      <span class="label label-default">分布式 ( 15 )</span>
       </a><br />
 
       
