@@ -187,7 +187,9 @@ Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.92-b14 mixed mode):
         - locked <0x00000000d462ec18> (a com.sun.jmx.remote.internal.ArrayNotificationBuffer)
 
 # 查看该进程中哪个线程占用大量 CPU，执行 top -H -p 11281 
-# 输出线程id：2c6d
+# 找到执行时间最长的线程id：19279
+# printf "%x\n" 19279 #输出十六进制 4b4f
+# jstack 19268 |grep 4b4f
 # 接下来我们将进程中的所有线程输出到一个文件中，执行：jstack  11281> jstack.txt
 # 在进程中查找对应的线程 ID，执行：cat jstack.txt | grep -i 2c6d
 ```

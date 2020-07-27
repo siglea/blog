@@ -1053,7 +1053,9 @@ Full thread dump Java HotSpot<span class="o">(</span>TM<span class="o">)</span> 
         - locked &lt;0x00000000d462ec18&gt; <span class="o">(</span>a com.sun.jmx.remote.internal.ArrayNotificationBuffer<span class="o">)</span>
 
 <span class="c"># 查看该进程中哪个线程占用大量 CPU，执行 top -H -p 11281 </span>
-<span class="c"># 输出线程id：2c6d</span>
+<span class="c"># 找到执行时间最长的线程id：19279</span>
+<span class="c"># printf "%x\n" 19279 #输出十六进制 4b4f</span>
+<span class="c"># jstack 19268 |grep 4b4f</span>
 <span class="c"># 接下来我们将进程中的所有线程输出到一个文件中，执行：jstack  11281&gt; jstack.txt</span>
 <span class="c"># 在进程中查找对应的线程 ID，执行：cat jstack.txt | grep -i 2c6d</span>
 </code></pre></div></div>
