@@ -54,6 +54,98 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/15/Tree.html">Tree</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 15, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/07/15/Tree.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据结构与算法</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p><img src="/img/tree.jpg" width="600px" /></p>
+
+<h4 id="各种树">各种树</h4>
+<ul>
+  <li>AVL 树具有以下特点：
+    <ul>
+      <li>每个结点的平衡因子只可能是 -1、0、1（如果绝对值超过 1，则认为是失衡）</li>
+      <li>每个结点的左右子树高度差不超过 1</li>
+      <li>搜索、插入、删除的时间复杂度是 O(logn)</li>
+    </ul>
+  </li>
+  <li>二叉搜索树（Binary Search Tree）是二叉树的一种，英文简称 BST。又称为二叉查找树、二叉排序树。
+    <ul>
+      <li>它的特点是任何一个结点的值都大于其左子树的所有结点的值，任何一个结点的值都小于其右子树的所有结点的值。</li>
+    </ul>
+  </li>
+  <li>红黑树是一种含有红黑结点并能自平衡的二叉搜索树。
+    <ul>
+      <li>为了保证平衡，红黑树必须满足以下性质：
+        <ol>
+          <li>每个结点是要么是红色或黑色</li>
+          <li>根结点必须是黑色</li>
+          <li>叶结点（外部结点、空结点）是黑色</li>
+          <li>红色结点不能连续（也就是，红色结点的孩子和父亲都是黑色）</li>
+          <li>对于每个结点，从该点至 nil（树尾端，Java 中为 null 的结点）的任何路径都包含所相同个数的黑色结点</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+  <li>B 树（Balanced Tree）是一种平衡的多路搜索树，多用于文件系统、数据库的实现。
+    <ul>
+      <li>1个结点可以存储超过 2 个元素，可以拥有超过 2 个子结点</li>
+      <li>拥有二叉搜索树的一些性质</li>
+      <li>平衡，每个结点的所有子树高度一致</li>
+      <li>比较矮</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="数据库为什么用b树不用二叉树">数据库为什么用B树不用二叉树</h4>
+<ul>
+  <li>二叉树的高度以及建数过程，决定了磁盘的存储是分散的，导致读取时IO次数要远远高于B树</li>
+</ul>
+
+<h4 id="b树相对b-树的优点">B+树相对B-树的优点</h4>
+<ul>
+  <li>B+树只有叶节点存放数据，其余节点用来索引，而B-树是每个索引节点都会有Data域。</li>
+  <li>所以从Mysql（Inoodb）的角度来看，B+树是用来充当索引的，一般来说索引非常大，尤其是关系性数据库这种数据量大的索引能达到亿级别。</li>
+  <li>所以为了减少内存的占用，索引也会被存储在磁盘上。那么Mysql如何衡量查询效率呢？– 磁盘IO次数。</li>
+  <li>B-树/B+树 的特点就是每层节点数目非常多，层数很少，目的就是为了就少磁盘IO次数。</li>
+  <li>
+    <p>但是B-树的每个节点都有data域（指针），这无疑增大了节点大小，增加了磁盘IO次数，磁盘IO一次读出的数据量大小是固定的，单个数据变大，每次读出的就少，IO次数增多，一次IO多耗时。</p>
+  </li>
+  <li>所以我们可以看到B+树的优点：
+    <ol>
+      <li>B+树的层级更少。
+  相较于B树B+每个非叶子节点存储的关键字数更多，树的层级更少所以查询数据更快；</li>
+      <li>B+树查询速度更稳定。
+  B+所有关键字数据地址都存在叶子节点上，所以每次查找的次数都相同所以查询速度要比B树更稳定;</li>
+      <li>B+树天然具备排序功能。
+  B+树所有的叶子节点数据构成了一个有序链表，在查询大小区间的数据时候更方便，数据紧密性很高，缓存的命中率也会比B树高。</li>
+      <li>B+树全节点遍历更快。
+  B+树遍历整棵树只需要遍历所有的叶子节点即可，而不需要像B树一样需要对每一层进行遍历，这有利于数据库做全表扫描。</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>树 <a href="https://mp.weixin.qq.com/s/sq8rJBtT5mcDYh2ycBuX4g">https://mp.weixin.qq.com/s/sq8rJBtT5mcDYh2ycBuX4g</a></li>
+  <li>为什么Mysql用B+树做索引而不用B-树或红黑树？<a href="http://www.coder55.com/question/139">http://www.coder55.com/question/139</a></li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/07/15/Tree.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html">Case of online system</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 13, 2020</span>
@@ -1209,73 +1301,6 @@ long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html">用户画像之标签存储</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 7, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>用户</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="数据仓库">数据仓库</h4>
-<p>“数据􏱓库􏲄父”W.H.Inmon􏱖《Building the Data Warehouse》在一书􏰇􏰷定义数据􏱓仓库是“一个􏱥面􏰤向主题的、集成的、非易失的、随时􏰣变化的、用来支持􏲆管理人员决策的数据集合􏰬”。</p>
-<ul>
-  <li>面􏰤向主题:业􏰊务数据库中􏰷的数据主要􏲊对事务处􏲋理，各个业􏱇􏱥􏰊务系统之间􏰦􏰮􏲄􏰣是相互分离的，而􏱽数据􏱓仓库中􏰷的数据是􏲌按照一定主题进行组织的。</li>
-  <li>集成:数据仓􏱓库中􏰷存储的数据是从业􏰊务数据库中􏰷提取出来的，但􏱟并不是对原有数据的􏱂简单复􏲍制，而􏱽是经过了抽􏲎􏱗􏱞􏲏取、清􏲐理、转􏲑换 (ETL)等􏱣工作􏰔。业􏰊务数据库记􏱀录的是每􏱤一项􏰊业务处􏲋理的流水􏰸􏲒账。这􏲓些数据不适􏰬进行分析处理，进入数据􏱓库􏲄前需要􏲎􏱗一系列计算􏰢， 同时􏲔􏲕抛弃一些无关分析处理的数据。</li>
-  <li>非易􏲅失:􏰊业务数据库中􏰷一般􏲃􏲖存储短期数据，􏲗因此其数据是不稳定的，记􏱀的是􏰦􏰮􏰷数据变化的瞬态􏱪。数据􏱓仓库中􏰷的数据􏱝􏱿大多表示过􏱗去某􏱋一时刻的数据，主要用于查询、分析􏱼，不像􏰊业务系统中􏰦􏰮􏰷的数据库一样􏲎经常修改，一般􏲃数据􏱓仓库构􏰼建完成后主要用于􏰋访问􏱭，不进行修􏲘改􏱰删除。</li>
-  <li>随时􏰣变化:数据仓􏱓库关注􏱩的是历史􏲙数据，按􏲌时间􏰣顺序定期从􏰊业务库和􏱰日志􏱺库里面载􏲚入新的数据进行追􏲛加，带有时间属性􏰲。</li>
-</ul>
-
-<h4 id="标签分区存储">标签分区存储</h4>
-<p><img src="/img/up1.jpeg" width="600px" /></p>
-<ul>
-  <li>数字表示
-    <ul>
-      <li>0：用户没被打上该标签</li>
-      <li>1：用户被打上该标签，但是没有具体数值</li>
-      <li>具体数字：用户被打上该标签，有具体数值
-<img src="/img/up2.jpg" width="600px" /></li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="标签以userid进行冗余存储">标签以UserID进行冗余存储</h4>
-<p><img src="/img/up3.jpg" width="600px" /></p>
-
-<h4 id="id-map">ID-MAP</h4>
-<ul>
-  <li>用户使用不同设备登录系统，或者同一设备登录多个用户</li>
-  <li>可以通过event_log、page_view_log等来获取登录时长、登录天数</li>
-  <li>userid与cookieId通常是多对多
-<img src="/img/up4.jpg" width="600px" /></li>
-</ul>
-
-<h4 id="mysql存储元数据管理">Mysql存储元数据管理</h4>
-<p><img src="/img/up5.jpg" width="600px" /></p>
-
-<h4 id="mysql存储结果集">Mysql存储结果集</h4>
-<p>比如用脚本通过Sqoop把Hive结果导入的mysql中，主要是离线，在线的建议用HBase</p>
-
-<h4 id="hbase存储">HBase存储</h4>
-<p>使用Spark，把用户标签同步到HBase以供线上实时访问
-<img src="/img/up6.jpg" width="600px" /></p>
-
-<h4 id="es做为hbase的二级索引方便快速检索">Es做为HBase的二级索引方便快速检索</h4>
-<p><img src="/img/up7.jpg" width="600px" /></p>
-
-<h4 id="从etlhivhbasees整个链路的数据监控旧数据可怕">从ETL/Hiv/HBase/Es整个链路的数据监控，旧数据可怕</h4>
-<p><img src="/img/up8.jpg" width="600px" /></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -1445,7 +1470,7 @@ long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 15 )</span>
+      <span class="label label-default">Java ( 16 )</span>
       </a><br />
 
       

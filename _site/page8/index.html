@@ -54,6 +54,385 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html"> SpringBoot </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 27, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Spring</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>springboot启动总结<a href="https://blog.csdn.net/mnicsm/article/details/93893669">https://blog.csdn.net/mnicsm/article/details/93893669</a></p>
+<h4 id="spring-boot-是什么">Spring Boot 是什么？</h4>
+<ul>
+  <li>Spring 是一个“引擎”；</li>
+  <li>Spring MVC 是基于Spring的一个 MVC 框架；</li>
+  <li>Spring Boot 是基于Spring的条件注册的一套快速开发整合包。</li>
+</ul>
+
+<h4 id="springboot启动原理-">SpringBoot启动原理 ☆☆☆</h4>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">boot</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SpringApplication</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">SpringApplication</span><span class="o">(</span><span class="n">ResourceLoader</span> <span class="n">resourceLoader</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">primarySources</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// ... 省略代码</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span> <span class="o">=</span> <span class="n">resourceLoader</span><span class="o">;</span>
+            <span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">primarySources</span><span class="o">,</span> <span class="s">"PrimarySources must not be null"</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">primarySources</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashSet</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">primarySources</span><span class="o">));</span>
+            <span class="c1">// 1. 推测ApplicationType</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">webApplicationType</span> <span class="o">=</span> <span class="n">WebApplicationType</span><span class="o">.</span><span class="na">deduceFromClasspath</span><span class="o">();</span>
+            <span class="c1">// 2. 根据spring.factories初始化ApplicationContextInitializer 与 ApplicationListener</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">setInitializers</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">ApplicationContextInitializer</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">setListeners</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">ApplicationListener</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+            <span class="c1">// 3. 推测 Main入口</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">deduceMainApplicationClass</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">ConfigurableApplicationContext</span> <span class="nf">run</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// ... 省略代码</span>
+        <span class="n">ConfigurableApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="n">Collection</span><span class="o">&lt;</span><span class="n">SpringBootExceptionReporter</span><span class="o">&gt;</span> <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">configureHeadlessProperty</span><span class="o">();</span>
+        <span class="n">SpringApplicationRunListeners</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getRunListeners</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+        <span class="c1">// 4. SpringApplicationRunListeners生命周期之started()</span>
+        <span class="n">listeners</span><span class="o">.</span><span class="na">starting</span><span class="o">();</span>
+        <span class="c1">// ... 省略代码</span>
+       <span class="n">Collection</span> <span class="n">exceptionReporters</span><span class="o">;</span>
+       <span class="n">ApplicationArguments</span> <span class="n">applicationArguments</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultApplicationArguments</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+       <span class="c1">// 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared()</span>
+       <span class="n">ConfigurableEnvironment</span> <span class="n">environment</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">prepareEnvironment</span><span class="o">(</span><span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
+       <span class="k">this</span><span class="o">.</span><span class="na">configureIgnoreBeanInfo</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
+       <span class="n">Banner</span> <span class="n">printedBanner</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">printBanner</span><span class="o">(</span><span class="n">environment</span><span class="o">);</span>
+       <span class="n">context</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">createApplicationContext</span><span class="o">();</span>
+       <span class="n">exceptionReporters</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getSpringFactoriesInstances</span><span class="o">(</span><span class="n">SpringBootExceptionReporter</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">ConfigurableApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">},</span> <span class="n">context</span><span class="o">);</span>
+       <span class="c1">// 6. 初始化类加载器、bean产生器、资源加载器等，打印banner</span>
+       <span class="k">this</span><span class="o">.</span><span class="na">prepareContext</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">environment</span><span class="o">,</span> <span class="n">listeners</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">,</span> <span class="n">printedBanner</span><span class="o">);</span>
+       <span class="c1">// 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等</span>
+       <span class="c1">//    SpringApplicationRunListeners生命周期之contextPrepared()/contextLoaded()</span>
+       <span class="k">this</span><span class="o">.</span><span class="na">refreshContext</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+       <span class="k">this</span><span class="o">.</span><span class="na">afterRefresh</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
+       <span class="n">stopWatch</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
+       <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">logStartupInfo</span><span class="o">)</span> <span class="o">{</span>
+           <span class="o">(</span><span class="k">new</span> <span class="n">StartupInfoLogger</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mainApplicationClass</span><span class="o">)).</span><span class="na">logStarted</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getApplicationLog</span><span class="o">(),</span> <span class="n">stopWatch</span><span class="o">);</span>
+       <span class="o">}</span>
+       <span class="n">listeners</span><span class="o">.</span><span class="na">started</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+       <span class="k">this</span><span class="o">.</span><span class="na">callRunners</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">applicationArguments</span><span class="o">);</span>
+       <span class="n">listeners</span><span class="o">.</span><span class="na">running</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+       <span class="c1">// ... 省略代码</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>启动原理解析</li>
+</ul>
+<p><a href="http://tengj.top/2017/03/09/springboot3/">http://tengj.top/2017/03/09/springboot3/</a></p>
+<ul>
+  <li>自动装配之@ComponentScan详解</li>
+</ul>
+<p><a href="https://blog.csdn.net/mapleleafforest/article/details/86623578">https://blog.csdn.net/mapleleafforest/article/details/86623578</a></p>
+<ul>
+  <li>自动装配之@EnableAutoConfiguration详解</li>
+</ul>
+<p><a href="https://blog.csdn.net/mapleleafforest/article/details/87273213">https://blog.csdn.net/mapleleafforest/article/details/87273213</a></p>
+
+<h4 id="apache-shiro">Apache Shiro</h4>
+<p>Apache Shiro 是 Java 的一个安全框架。使用 shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 JavaSE 环境，也可以用在 JavaEE 环境。Shiro 可以帮助我们完成:认证、授权、加密、会话管理、与 Web 集成、缓存等。
+三个核心组件:Subject, SecurityManager 和 Realms.
+Subject:即“当前操作用户”。但是，在 Shiro 中，Subject 这一概念并不仅仅指人，也可以是第三方进程、后台帐 户(Daemon Account)或其他类似事物。它仅仅意味着“当前跟软件交互的东西”。但考虑到大多数目的和用途， 你可以把它认为是 Shiro 的“用户”概念。
+Subject 代表了当前用户的安全操作，SecurityManager 则管理所有用户的安全操作。
+SecurityManager:它是 Shiro 框架的核心，典型的 Facade 模式，Shiro 通过 SecurityManager 来管理内部组 件实例，并通过它来提供安全管理的各种服务。
+Realm: Realm 充当了 Shiro 与应用安全数据间的“桥梁”或者“连接器”。也就是说，当对用户执行认证(登 录)和授权(访问控制)验证时，Shiro 会从应用配置的 Realm 中查找用户及其权限信息。</p>
+
+<h4 id="springboot自动配置-">SpringBoot自动配置 ☆☆☆</h4>
+<ul>
+  <li>SpringBoot项目配置注解@EnableAutoConfiguration后</li>
+  <li>SpringBoot启动扫描META-INF下的spring.factories</li>
+  <li>spring.factories子配置项org.springframework.boot.autoconfigure.EnableAutoConfiguration配置了所有可以自动配置的组件</li>
+  <li>各个XXXAutoConfiguration按照各自的ConditionalOnClass/OnBean等，判断是否加载XXX配置</li>
+  <li>根据XXX配置的@Import加载相关的其他类，之后通过反射机制初始化Bean</li>
+  <li>之后即可通过注入的方式使用
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 比如DataSourceAutoConfiguration的自动配置是检测到DataSource.class 与 EmbeddedDatabaseType.class存在</span>
+<span class="c1">// DataSource是javax包中自带，而EmbeddedDatabaseType存在于spring-boot-starter-jdbc中</span>
+<span class="c1">// 因此在pom中引入spring-boot-starter-jdbc后，即可触发加载操作</span>
+<span class="c1">// 接下来就是根据spring.datasource相关配置初始化PooledDataSource 或者 直接使用EmbeddedDatabase</span>
+<span class="nd">@Configuration</span>
+<span class="nd">@ConditionalOnClass</span><span class="o">({</span><span class="n">DataSource</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">EmbeddedDatabaseType</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="nd">@EnableConfigurationProperties</span><span class="o">({</span><span class="n">DataSourceProperties</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="nd">@Import</span><span class="o">({</span><span class="n">DataSourcePoolMetadataProvidersConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">DataSourceInitializationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataSourceAutoConfiguration</span> <span class="o">{</span>
+<span class="o">}</span>
+<span class="c1">// </span>
+</code></pre></div>    </div>
+    <p>DataSourceAutoConfiguration解析</p>
+  </li>
+</ul>
+<p><a href="https://blog.csdn.net/kangsa998/article/details/90231518">https://blog.csdn.net/kangsa998/article/details/90231518</a></p>
+
+<h4 id="springboot的starter-">SpringBoot的Starter ☆☆☆</h4>
+<ul>
+  <li>徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！</li>
+</ul>
+<p><a href="https://www.cnblogs.com/lenve/p/10892011.html">https://www.cnblogs.com/lenve/p/10892011.html</a></p>
+
+<ul>
+  <li>SpringBoot启动机制（starter机制）核心原理详解</li>
+</ul>
+
+<p><a href="https://www.jianshu.com/p/d166d935217b">https://www.jianshu.com/p/d166d935217b</a></p>
+
+<ul>
+  <li>实现一个Spring boot stater</li>
+</ul>
+
+<p><a href="https://www.jianshu.com/p/fdb574e1f77c">https://www.jianshu.com/p/fdb574e1f77c</a></p>
+
+<h4 id="springboot-starter">SpringBoot Starter</h4>
+<ul>
+  <li>其实是Java的SPI的全名为Service Provider Interfac的一种实现</li>
+  <li>EnableAutoConfiguration 导入 @Import({AutoConfigurationImportSelector.class})</li>
+  <li>AutoConfigurationImportSelector 从classpath中搜寻所有的META-INF/spring.factories配置文件</li>
+  <li>找到org.springframework.boot.autoconfigure.EnableAutoConfiguration该key对应的其他自动配置className</li>
+  <li>通过反射按照相关Conditional进行实例化</li>
+  <li>如关闭数据源自动配置功能: @SpringBootApplication(exclude ={ DataSourceAutoConfiguration.class })。</li>
+</ul>
+
+<h4 id="如何在-spring-boot-启动的时候运行一些特定的代码">如何在 Spring Boot 启动的时候运行一些特定的代码?</h4>
+<ul>
+  <li>可以实现接口 ApplicationRunner 或者 CommandLineRunner，这两个接口实现方式一 样，它们都只提供了一个 run 方法。</li>
+  <li>Spring Boot 可以通过 @PropertySource,@Value,@Environment</li>
+</ul>
+
+<h4 id="springboot常用注解">SpringBoot常用注解</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Conditional
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@SpringBootApplication
+@Configuration：代表这个类是一个配置类。
+@ComponentScan：用来扫描指定包下面的注解类。
+@Import：用来导入其他的@Configuration配置类。
+@ImportResource：用来导入xml配置文件，比如某些配置一定要xml配置。
+@Bean：用来定义一个bean，可以指定初始、销毁方法，及bean范围等。
+@Controller 标识一个类为控制器。
+@RequestMapping URL的映射。
+@ResponseBody 返回结果转换为JSON字符串。
+@RequestBody 表示接收JSON格式字符串参数。
+@RestController这个注解，而不是@Controller，不过这个注解同样不是Spring boot提供的，而是Spring MVC4中的提供的注解，表示一个支持Restful的控制器。
+这个类中有三个URL映射是相同的，即都是/article/{id}，这在@Controller标识的类中是不允许出现的。这里的可以通过method来进行区分，produces的作用是表示返回结果的类型是JSON。
+@PathVariable这个注解，也是Spring MVC提供的，其作用是表示该变量的值是从访问路径中获取。
+</code></pre></div></div>
+<p>27个核心注解
+<a href="https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA">https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA</a></p>
+<h4 id="springwebapplication-与-servlet">SpringWebApplication 与 Servlet</h4>
+<ul>
+  <li>Servlet是JavaWeb的核心，可以理解为CGI的Java线程版本</li>
+  <li>SpringMVC核心用到DispatcherServlet，可以配置多个urlMapping</li>
+  <li>Struts2/SpringMVC是基于Servlet实现分发，而Struts1是基于Filter</li>
+  <li>一个SpringWebApplication可以定义多个Servlet，需要区分urlMapping</li>
+</ul>
+
+<h4 id="springboot-中的-tomcat-是如何启动的">SpringBoot 中的 Tomcat 是如何启动的？</h4>
+<p><a href="https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ">https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ</a></p>
+
+<h4 id="springjdbc--mybatis--spring-data--jpa">SpringJDBC / Mybatis / Spring Data / JPA</h4>
+<ul>
+  <li>Mybatis的集成和使用</li>
+</ul>
+<p><a href="https://blog.lqdev.cn/2018/12/03/springboot/chapter-thirty-five/">https://blog.lqdev.cn/2018/12/03/springboot/chapter-thirty-five/</a></p>
+<ul>
+  <li>Mybatis-plus的集成和使用</li>
+</ul>
+<p><a href="https://blog.lqdev.cn/2018/07/21/springboot/chapter-nine/">https://blog.lqdev.cn/2018/07/21/springboot/chapter-nine/</a></p>
+
+<h4 id="spring-security--apache-shrio--jwt-javawebtoken">Spring Security / Apache Shrio / JWT JavaWebToken</h4>
+
+<h4 id="springboot-打出来的war中的webxml消失了">SpringBoot 打出来的war中的web.xml消失了</h4>
+<p>springboot 是如何帮我们省去web.xml配置的</p>
+
+<p><a href="https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app">https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app</a></p>
+<h4 id="webmvcconfigureradapter-与-webmvcconfigurationsupport">WebMvcConfigurerAdapter 与 WebMvcConfigurationSupport</h4>
+<p>(遇到的一个坑查了半天)
+<a href="https://blog.csdn.net/innovationad/article/details/79959383">https://blog.csdn.net/innovationad/article/details/79959383</a></p>
+
+<h4 id="springboot之actuator">SpringBoot之Actuator</h4>
+<ul>
+  <li>Spring Boot Actuator:健康检查、审计、统计和监控</li>
+</ul>
+<p><a href="https://www.jianshu.com/p/d5943e303a1f">https://www.jianshu.com/p/d5943e303a1f</a></p>
+<ul>
+  <li>监控管理之Spring Boot Admin使用</li>
+</ul>
+<p><a href="https://blog.lqdev.cn/2018/09/14/springboot/chapter-twenty-eight/">https://blog.lqdev.cn/2018/09/14/springboot/chapter-twenty-eight/</a></p>
+
+<h4 id="springboot日志管理之aop统一日志">SpringBoot日志管理之AOP统一日志</h4>
+<p><a href="https://blog.lqdev.cn/2018/08/24/springboot/chapter-twenty-four/">https://blog.lqdev.cn/2018/08/24/springboot/chapter-twenty-four/</a></p>
+
+<h4 id="springboot日志管理之追加统一traceid">SpringBoot日志管理之追加统一traceId</h4>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.slf4j.MDC</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.servlet.ModelAndView</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.servlet.handler.HandlerInterceptorAdapter</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogTraceInterceptor</span> <span class="kd">extends</span> <span class="n">HandlerInterceptorAdapter</span> <span class="o">{</span>
+
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">preHandle</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">MDC</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">,</span> <span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">+</span><span class="s">":"</span><span class="o">+</span><span class="n">RandomHelper</span><span class="o">.</span><span class="na">generateNonceNumStr</span><span class="o">(</span><span class="mi">8</span><span class="o">));</span>
+        <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">preHandle</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">postHandle</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="n">ModelAndView</span> <span class="n">modelAndView</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">postHandle</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">,</span> <span class="n">modelAndView</span><span class="o">);</span>
+        <span class="n">MDC</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">Constant</span><span class="o">.</span><span class="na">traceId</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">"xhs"</span> <span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.RollingFileAppender"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;file&gt;</span>${LOG_HOME}/app.log<span class="nt">&lt;/file&gt;</span>
+        <span class="nt">&lt;rollingPolicy</span> <span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.TimeBasedRollingPolicy"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;FileNamePattern&gt;</span>${LOG_HOME}/app.%d{yyyy-MM-dd}.log<span class="nt">&lt;/FileNamePattern&gt;</span>
+            <span class="nt">&lt;MaxHistory&gt;</span>30<span class="nt">&lt;/MaxHistory&gt;</span>
+        <span class="nt">&lt;/rollingPolicy&gt;</span>
+        <span class="nt">&lt;encoder&gt;</span>
+            <span class="nt">&lt;pattern&gt;</span>%d{HH:mm:ss.SSS} %X{traceId} [%thread] %-5level %c{10} - %msg%n<span class="nt">&lt;/pattern&gt;</span>
+            <span class="nt">&lt;charset&gt;</span>UTF-8<span class="nt">&lt;/charset&gt;</span>
+        <span class="nt">&lt;/encoder&gt;</span>
+<span class="nt">&lt;/appender&gt;</span>
+</code></pre></div></div>
+<h4 id="springboot--dubbo">SpringBoot &amp; Dubbo</h4>
+<p><a href="https://blog.lqdev.cn/2018/09/28/springboot/chapter-twenty-nine/">https://blog.lqdev.cn/2018/09/28/springboot/chapter-twenty-nine/</a></p>
+
+<h4 id="springboot-异步的各种实现">SpringBoot 异步的各种实现</h4>
+<ul>
+  <li>异步开发之异步请求</li>
+</ul>
+<p><a href="https://blog.lqdev.cn/2018/08/16/springboot/chapter-twenty/">https://blog.lqdev.cn/2018/08/16/springboot/chapter-twenty/</a></p>
+<ul>
+  <li>异步开发之异步调用</li>
+</ul>
+<p><a href="https://blog.lqdev.cn/2018/08/17/springboot/chapter-twenty-one/">https://blog.lqdev.cn/2018/08/17/springboot/chapter-twenty-one/</a></p>
+
+<p><a href="https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA">https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA</a></p>
+<ul>
+  <li>事件的发布和监听</li>
+</ul>
+<p><a href="https://blog.lqdev.cn/2018/11/06/springboot/chapter-thirty-two/">https://blog.lqdev.cn/2018/11/06/springboot/chapter-thirty-two/</a></p>
+<ul>
+  <li>RabbitMQ的集成和使用</li>
+</ul>
+<p><a href="https://blog.lqdev.cn/2018/07/24/springboot/chapter-twelve/">https://blog.lqdev.cn/2018/07/24/springboot/chapter-twelve/</a></p>
+
+<p><a href="https://blog.lqdev.cn/2019/07/21/springboot/chapter-thirty-eight/">https://blog.lqdev.cn/2019/07/21/springboot/chapter-thirty-eight/</a></p>
+
+<h4 id="springboot--webservice">SpringBoot &amp; WebService</h4>
+<ul>
+  <li>Spring web Servcies集成和使用</li>
+</ul>
+<p><a href="https://blog.lqdev.cn/2018/11/09/springboot/chapter-thirty-three/">https://blog.lqdev.cn/2018/11/09/springboot/chapter-thirty-three/</a></p>
+<ul>
+  <li>CXF构建WebService服务</li>
+</ul>
+<p><a href="https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/">https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/</a></p>
+
+<h4 id="ltw-in-jdk-or-springboot">LTW In Jdk Or SpringBoot</h4>
+<p><a href="https://www.cnblogs.com/takumicx/p/10150344.html">https://www.cnblogs.com/takumicx/p/10150344.html</a></p>
+
+<h4 id="集成框架spring-integration-mule-esb-or-apache-camel比较">集成框架Spring Integration, Mule ESB or Apache Camel比较</h4>
+<p><a href="https://www.jdon.com/soa/integration-framework-comparison-spring.html">https://www.jdon.com/soa/integration-framework-comparison-spring.html</a>
+<a href="https://www.jianshu.com/p/68aba8d09a89">https://www.jianshu.com/p/68aba8d09a89</a></p>
+
+<h4 id="spring">Spring</h4>
+<ul>
+  <li>ApplicationContext
+    <ol>
+      <li>BeanFactory 是 Spring 框架的基础设施，面向 Spring 本身;ApplicationContext 面向使用 Spring 框架的开发者，几乎所有的应用场合我们都直接使用 ApplicationContext 而非底层 的 BeanFactory。</li>
+      <li>HierarchicalBeanFactory 父子级联，父子级联 IoC 容器的接口，子容器可以通过接口方法访问父容器; 通过 HierarchicalBeanFactory 接口， Spring 的 IoC 容器可以建立父子层级关联的容器体系，子 容器可以访问父容器中的 Bean，但父容器不能访问子容器的 Bean。Spring 使用父子容器实 现了很多功能，比如在 Spring MVC 中，展现层 Bean 位于一个子容器中，而业务层和持久 层的 Bean 位于父容器中。这样，展现层 Bean 就可以引用业务层和持久层的 Bean，而业务 层和持久层的 Bean 则看不到展现层的 Bean。</li>
+      <li>ClassPathXmlApplicationContext -&gt; ApplicationContext -&gt; HierarchicalBeanFactory/ListableBeanFactory</li>
+      <li>ConfigurableApplicationContext 扩展于 ApplicationContext，它新增加了两个主要 的方法: refresh()和 close()，让 ApplicationContext 具有启动、刷新和关闭应用上下 文的能力。在应用上下文关闭的情况下调用 refresh()即可启动应用上下文，在已经启动 的状态下，调用 refresh()则清除缓存并重新装载配置信息，而调用 close()则可关闭应用 上下文。</li>
+      <li>WebApplicationContext 是专门为 Web 应用准备的，它允许从相对于 Web 根目录的 路径中装载配置文件完成初始化工作。从 WebApplicationContext 中可以获得 ServletContext 的引用，整个 Web 应用上下文对象将作为属性放置到 ServletContext 中，以便 Web 应用环境可以访问 Spring 应用上下文。</li>
+    </ol>
+  </li>
+  <li>Bean的Scope
+    <ol>
+      <li>singleton</li>
+      <li>prototype，每次都创建（对有状态的 bean 使用 prototype 作用域，而对无状态的 bean 使用 singleton 作用域。）</li>
+      <li>request：一次request一个实例</li>
+      <li>session：一个session一个实例</li>
+      <li>global Session:在一个全局的 Http Session 中，容器会返回该 Bean 的同一个实例，仅在 使用 portlet context 时有效。</li>
+    </ol>
+  </li>
+  <li>Bean的生命周期
+    <ol>
+      <li>根据scope，实例化</li>
+      <li>设置属性</li>
+      <li>postProcessBeforeInitialization</li>
+      <li>afterPropertiesSet</li>
+      <li>postProcessAfterInitialization</li>
+      <li>Done</li>
+    </ol>
+  </li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">""</span> <span class="na">class=</span><span class="s">""</span> <span class="na">init-method=</span><span class="s">"初始化方法"</span> <span class="na">destroy-method=</span><span class="s">"销毁方法"</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>依赖注入
+    <ul>
+      <li>构造器注入</li>
+      <li>setter 方法注入</li>
+      <li>接口注入</li>
+    </ul>
+  </li>
+  <li>
+    <p>IOC:把对象的创建、初始化、销毁交给 spring 来管理，而不是由开发者控制，实现控制反转。</p>
+  </li>
+  <li>5 种不同方式的自动装配
+    <ul>
+      <li>no:默认的方式是不进行自动装配，通过显式设置 ref 属性来进行装配。</li>
+      <li>byName:通过参数名 自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被设置成 byname，之后容器试图匹配、装配和该 bean 的属性具有相同名字的 bean。</li>
+      <li>byType:通过参数类型自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被 设置成 byType，之后容器试图匹配、装配和该 bean 的属性具有相同类型的 bean。如果有多个 bean 符合条件，则抛出错误。</li>
+      <li>constructor:这个方式类似于 byType， 但是要提供给构造器参数，如果没有确定的带参数的构造器参数类型，将会抛出异常。</li>
+      <li>autodetect:首先尝试使用 constructor 来自动装配，如果无法工作，则使用 byType 方式</li>
+    </ul>
+  </li>
+  <li>AOP 核心概念
+    <ul>
+      <li>切面(aspect):类是对物体特征的抽象，切面就是对横切关注点的抽象</li>
+      <li>横切关注点:对哪些方法进行拦截，拦截后怎么处理，这些关注点称之为横切关注点。</li>
+      <li>连接点(joinpoint):被拦截到的点，因为 Spring 只支持方法类型的连接点，所以在 Spring中连接点指的就是被拦截到的方法，实际上连接点还可以是字段或者构造器。</li>
+      <li>切入点(pointcut):对连接点进行拦截的定义</li>
+      <li>通知(advice):所谓通知指的就是指拦截到连接点之后要执行的代码，通知分为前置、后置、 异常、最终、环绕通知五类。</li>
+      <li>目标对象:代理的目标对象</li>
+      <li>织入(weave):将切面应用到目标对象并导致代理对象创建的过程</li>
+      <li>引入(introduction):在不修改代码的前提下，引入可以在运行期为类动态地添加一些方法 或字段。</li>
+    </ul>
+  </li>
+  <li>MyBatis缓存
+    <ul>
+      <li>Mybatis 中有一级缓存和二级缓存，默认情况下一级缓存是开启的，而且是不能关闭的。一级缓存 是指 SqlSession 级别的缓存，当在同一个 SqlSession 中进行相同的 SQL 语句查询时，第二次以 后的查询不会从数据库查询，而是直接从缓存中获取，一级缓存最多缓存 1024 条 SQL。二级缓存 是指可以跨 SqlSession 的缓存。是 mapper 级别的缓存，对于 mapper 级别的缓存不同的 sqlsession 是可以共享的。</li>
+      <li>如果两次中间出现 commit 操作 (修改、添加、删除)，本 sqlsession 中的一级缓存区域全部清空，下次再去缓存中查询不到所 以要从数据库查询，从数据库查询到再写入缓存。</li>
+    </ul>
+  </li>
+  <li>Slf4j
+slf4j 的全称是 Simple Loging Facade For Java，即它仅仅是一个为 Java 程序提供日志输出的统一接 口，并不是一个具体的日志实现方案，就比如 JDBC 一样，只是一种规则而已。所以单独的 slf4j 是不 能工作的，必须搭配其他具体的日志实现方案，比如 apache 的 org.apache.log4j.Logger，jdk 自带 的 java.util.logging.Logger 等。</li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html"> Jvm（二）常用工具 </a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Mar 27, 2020</span>
@@ -485,52 +864,6 @@ docker rmi ec49dbd13cf5
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/12/08/Keepalived.html"> Keepalived </a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 8, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/12/08/Keepalived.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h3 id="keepalived是什么">keepalived是什么</h3>
-<p>Keepalived软件起初是专为LVS负载均衡软件设计的，用来管理并监控LVS集群系统中各个服务节点的状态，后来又加入了可以实现高可用的VRRP功能。因此，Keepalived除了能够管理LVS软件外，还可以作为其他服务（例如：Nginx、Haproxy、MySQL等）的高可用解决方案软件。
-Keepalived软件主要是通过VRRP协议实现高可用功能的。VRRP是Virtual Router RedundancyProtocol(虚拟路由器冗余协议）的缩写，VRRP出现的目的就是为了解决静态路由单点故障问题的，它能够保证当个别节点宕机时，整个网络可以不间断地运行。
-所以，Keepalived 一方面具有配置管理LVS的功能，同时还具有对LVS下面节点进行健康检查的功能，另一方面也可实现系统网络服务的高可用功能。</p>
-
-<h3 id="keepalived工作原理">keepalived工作原理</h3>
-<p>keepalived是以VRRP协议为实现基础的，VRRP全称Virtual Router Redundancy Protocol，即虚拟路由冗余协议。
-虚拟路由冗余协议，可以认为是实现路由器高可用的协议，即将N台提供相同功能的路由器组成一个路由器组，这个组里面有一个master和多个backup，master上面有一个对外提供服务的vip（该路由器所在局域网内其他机器的默认路由为该vip），master会发组播，当backup收不到vrrp包时就认为master宕掉了，这时就需要根据VRRP的优先级来选举一个backup当master。这样的话就可以保证路由器的高可用了。
-keepalived主要有三个模块，分别是core、check和vrrp。core模块为keepalived的核心，负责主进程的启动、维护以及全局配置文件的加载和解析。check负责健康检查，包括常见的各种检查方式。vrrp模块是来实现VRRP协议的。</p>
-
-<h3 id="keepalived官网">keepalived官网</h3>
-<p><a href="http://www.keepalived.org">http://www.keepalived.org</a></p>
-
-<h3 id="常见容错机制">常见容错机制</h3>
-<ol>
-  <li>failover：失效转移
-Fail-Over的含义为“失效转移”，是一种备份操作模式，当主要组件异常时，其功能转移到备份组件。其要点在于有主有备，且主故障时备可启用，并设置为主。如Mysql的双Master模式，当正在使用的Master出现故障时，可以拿备Master做主使用</li>
-  <li>failfast：快速失败
-从字面含义看就是“快速失败”，尽可能的发现系统中的错误，使系统能够按照事先设定好的错误的流程执行，对应的方式是“fault-tolerant（错误容忍）”。以JAVA集合（Collection）的快速失败为例，当多个线程对同一个集合的内容进行操作时，就可能会产生fail-fast事件。例如：当某一个线程A通过iterator去遍历某集合的过程中，若该集合的内容被其他线程所改变了；那么线程A访问集合时，就会抛出ConcurrentModificationException异常（发现错误执行设定好的错误的流程），产生fail-fast事件。</li>
-  <li>failback：失效自动恢复
-Fail-over之后的自动恢复，在簇网络系统（有两台或多台服务器互联的网络）中，由于要某台服务器进行维修，需要网络资源和服务暂时重定向到备用系统。在此之后将网络资源和服务器恢复为由原始主机提供的过程，称为自动恢复</li>
-  <li>failsafe：失效安全
-Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会造成伤害或者尽量减少伤害。维基百科上一个形象的例子是红绿灯的“冲突监测模块”当监测到错误或者冲突的信号时会将十字路口的红绿灯变为闪烁错误模式，而不是全部显示为绿灯。</li>
-</ol>
-
-<p><a href="https://www.cnblogs.com/clsn/p/8052649.html">https://www.cnblogs.com/clsn/p/8052649.html</a></p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/12/08/Keepalived.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -700,7 +1033,7 @@ Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会�
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 15 )</span>
+      <span class="label label-default">Java ( 16 )</span>
       </a><br />
 
       

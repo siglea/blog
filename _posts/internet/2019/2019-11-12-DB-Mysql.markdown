@@ -8,6 +8,19 @@ tags:
 categories:
 - 技术
 ---
+#### 聚集索引与非聚集索引
+#### 锁
+- 意向共享锁只是表级别的，与行级别的共享锁与排他锁没有任何关系，所以意向锁互相兼容之后交给行数进一步控制
+- 意向共享锁与意向排他锁主要是解决表级的"直接"共享锁与"直接"排他锁
+- 添加意向锁的方式
+    - 手动
+        - SELECT column FROM table ... LOCK IN SHARE MODE;
+        - SELECT column FROM table ... FOR UPDATE;
+    - 自动：加行数的时候，数据库引擎自动添加
+- 意向锁终于讲清楚了 <https://juejin.im/post/5b85124f5188253010326360>
+- InnoDB并发为什么这么高？MVCC <https://mp.weixin.qq.com/s/R3yuitWpHHGWxsUcE0qIRQ>
+- Select for update很容易死锁
+    - 条件使用了非索引字段 <https://segmentfault.com/q/1010000018750238>
 
 #### 索引原理(B+Tree)
 - BS树(Binary Search Tree二叉查找树) -> AVL(人名，平衡二叉树) Tree -> 红黑树 -> B-/B+Tree(平衡多路查找树) -> LSM

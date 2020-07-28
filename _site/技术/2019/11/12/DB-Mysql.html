@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>DB Mysql</title>
-  <meta name="description" content="索引原理(B+Tree)  BS树(Binary Search Tree二叉查找树) -&gt; AVL(人名，平衡二叉树) Tree -&gt; 红黑树 -&gt; B-/B+Tree(平衡多路查找树) -&gt; LSM          http://www.sohu.com/a/280609547_818...">
+  <meta name="description" content="聚集索引与非聚集索引锁  意向共享锁只是表级别的，与行级别的共享锁与排他锁没有任何关系，所以意向锁互相兼容之后交给行数进一步控制  意向共享锁与意向排他锁主要是解决表级的”直接”共享锁与”直接”排他锁  添加意向锁的方式          手动                  SELECT column FRO...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,7 +60,32 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="索引原理btree">索引原理(B+Tree)</h4>
+    <h4 id="聚集索引与非聚集索引">聚集索引与非聚集索引</h4>
+<h4 id="锁">锁</h4>
+<ul>
+  <li>意向共享锁只是表级别的，与行级别的共享锁与排他锁没有任何关系，所以意向锁互相兼容之后交给行数进一步控制</li>
+  <li>意向共享锁与意向排他锁主要是解决表级的”直接”共享锁与”直接”排他锁</li>
+  <li>添加意向锁的方式
+    <ul>
+      <li>手动
+        <ul>
+          <li>SELECT column FROM table … LOCK IN SHARE MODE;</li>
+          <li>SELECT column FROM table … FOR UPDATE;</li>
+        </ul>
+      </li>
+      <li>自动：加行数的时候，数据库引擎自动添加</li>
+    </ul>
+  </li>
+  <li>意向锁终于讲清楚了 <a href="https://juejin.im/post/5b85124f5188253010326360">https://juejin.im/post/5b85124f5188253010326360</a></li>
+  <li>InnoDB并发为什么这么高？MVCC <a href="https://mp.weixin.qq.com/s/R3yuitWpHHGWxsUcE0qIRQ">https://mp.weixin.qq.com/s/R3yuitWpHHGWxsUcE0qIRQ</a></li>
+  <li>Select for update很容易死锁
+    <ul>
+      <li>条件使用了非索引字段 <a href="https://segmentfault.com/q/1010000018750238">https://segmentfault.com/q/1010000018750238</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="索引原理btree">索引原理(B+Tree)</h4>
 <ul>
   <li>BS树(Binary Search Tree二叉查找树) -&gt; AVL(人名，平衡二叉树) Tree -&gt; 红黑树 -&gt; B-/B+Tree(平衡多路查找树) -&gt; LSM
     <ul>

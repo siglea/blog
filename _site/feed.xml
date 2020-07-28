@@ -5,9 +5,26 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 27 Jul 2020 19:18:58 +0800</pubDate>
-    <lastBuildDate>Mon, 27 Jul 2020 19:18:58 +0800</lastBuildDate>
+    <pubDate>Tue, 28 Jul 2020 11:58:12 +0800</pubDate>
+    <lastBuildDate>Tue, 28 Jul 2020 11:58:12 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>DotDot2</title>
+        <description>&lt;p&gt;DDD&lt;/p&gt;
+
+&lt;p&gt;jmap dump&lt;/p&gt;
+</description>
+        <pubDate>Tue, 28 Jul 2020 08:44:00 +0800</pubDate>
+        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html</guid>
+        
+        <category>Java</category>
+        
+        
+        <category>技术</category>
+        
+      </item>
     
       <item>
         <title>高可用高并发</title>
@@ -2064,68 +2081,6 @@ long currentTimeNanos &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; System.nano
         <pubDate>Tue, 07 Jul 2020 16:18:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html</link>
         <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html</guid>
-        
-        <category>用户</category>
-        
-        
-        <category>技术</category>
-        
-      </item>
-    
-      <item>
-        <title>用户画像之标签存储</title>
-        <description>&lt;h4 id=&quot;数据仓库&quot;&gt;数据仓库&lt;/h4&gt;
-&lt;p&gt;“数据􏱓库􏲄父”W.H.Inmon􏱖《Building the Data Warehouse》在一书􏰇􏰷定义数据􏱓仓库是“一个􏱥面􏰤向主题的、集成的、非易失的、随时􏰣变化的、用来支持􏲆管理人员决策的数据集合􏰬”。&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;面􏰤向主题:业􏰊务数据库中􏰷的数据主要􏲊对事务处􏲋理，各个业􏱇􏱥􏰊务系统之间􏰦􏰮􏲄􏰣是相互分离的，而􏱽数据􏱓仓库中􏰷的数据是􏲌按照一定主题进行组织的。&lt;/li&gt;
-  &lt;li&gt;集成:数据仓􏱓库中􏰷存储的数据是从业􏰊务数据库中􏰷提取出来的，但􏱟并不是对原有数据的􏱂简单复􏲍制，而􏱽是经过了抽􏲎􏱗􏱞􏲏取、清􏲐理、转􏲑换 (ETL)等􏱣工作􏰔。业􏰊务数据库记􏱀录的是每􏱤一项􏰊业务处􏲋理的流水􏰸􏲒账。这􏲓些数据不适􏰬进行分析处理，进入数据􏱓库􏲄前需要􏲎􏱗一系列计算􏰢， 同时􏲔􏲕抛弃一些无关分析处理的数据。&lt;/li&gt;
-  &lt;li&gt;非易􏲅失:􏰊业务数据库中􏰷一般􏲃􏲖存储短期数据，􏲗因此其数据是不稳定的，记􏱀的是􏰦􏰮􏰷数据变化的瞬态􏱪。数据􏱓仓库中􏰷的数据􏱝􏱿大多表示过􏱗去某􏱋一时刻的数据，主要用于查询、分析􏱼，不像􏰊业务系统中􏰦􏰮􏰷的数据库一样􏲎经常修改，一般􏲃数据􏱓仓库构􏰼建完成后主要用于􏰋访问􏱭，不进行修􏲘改􏱰删除。&lt;/li&gt;
-  &lt;li&gt;随时􏰣变化:数据仓􏱓库关注􏱩的是历史􏲙数据，按􏲌时间􏰣顺序定期从􏰊业务库和􏱰日志􏱺库里面载􏲚入新的数据进行追􏲛加，带有时间属性􏰲。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;标签分区存储&quot;&gt;标签分区存储&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&quot;/img/up1.jpeg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;数字表示
-    &lt;ul&gt;
-      &lt;li&gt;0：用户没被打上该标签&lt;/li&gt;
-      &lt;li&gt;1：用户被打上该标签，但是没有具体数值&lt;/li&gt;
-      &lt;li&gt;具体数字：用户被打上该标签，有具体数值
-&lt;img src=&quot;/img/up2.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;标签以userid进行冗余存储&quot;&gt;标签以UserID进行冗余存储&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&quot;/img/up3.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;id-map&quot;&gt;ID-MAP&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;用户使用不同设备登录系统，或者同一设备登录多个用户&lt;/li&gt;
-  &lt;li&gt;可以通过event_log、page_view_log等来获取登录时长、登录天数&lt;/li&gt;
-  &lt;li&gt;userid与cookieId通常是多对多
-&lt;img src=&quot;/img/up4.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;mysql存储元数据管理&quot;&gt;Mysql存储元数据管理&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&quot;/img/up5.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;mysql存储结果集&quot;&gt;Mysql存储结果集&lt;/h4&gt;
-&lt;p&gt;比如用脚本通过Sqoop把Hive结果导入的mysql中，主要是离线，在线的建议用HBase&lt;/p&gt;
-
-&lt;h4 id=&quot;hbase存储&quot;&gt;HBase存储&lt;/h4&gt;
-&lt;p&gt;使用Spark，把用户标签同步到HBase以供线上实时访问
-&lt;img src=&quot;/img/up6.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;es做为hbase的二级索引方便快速检索&quot;&gt;Es做为HBase的二级索引方便快速检索&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&quot;/img/up7.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;从etlhivhbasees整个链路的数据监控旧数据可怕&quot;&gt;从ETL/Hiv/HBase/Es整个链路的数据监控，旧数据可怕&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&quot;/img/up8.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Tue, 07 Jul 2020 16:18:00 +0800</pubDate>
-        <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html</guid>
         
         <category>用户</category>
         

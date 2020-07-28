@@ -54,6 +54,73 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html">用户画像之标签存储</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jul 7, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>用户</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="数据仓库">数据仓库</h4>
+<p>“数据􏱓库􏲄父”W.H.Inmon􏱖《Building the Data Warehouse》在一书􏰇􏰷定义数据􏱓仓库是“一个􏱥面􏰤向主题的、集成的、非易失的、随时􏰣变化的、用来支持􏲆管理人员决策的数据集合􏰬”。</p>
+<ul>
+  <li>面􏰤向主题:业􏰊务数据库中􏰷的数据主要􏲊对事务处􏲋理，各个业􏱇􏱥􏰊务系统之间􏰦􏰮􏲄􏰣是相互分离的，而􏱽数据􏱓仓库中􏰷的数据是􏲌按照一定主题进行组织的。</li>
+  <li>集成:数据仓􏱓库中􏰷存储的数据是从业􏰊务数据库中􏰷提取出来的，但􏱟并不是对原有数据的􏱂简单复􏲍制，而􏱽是经过了抽􏲎􏱗􏱞􏲏取、清􏲐理、转􏲑换 (ETL)等􏱣工作􏰔。业􏰊务数据库记􏱀录的是每􏱤一项􏰊业务处􏲋理的流水􏰸􏲒账。这􏲓些数据不适􏰬进行分析处理，进入数据􏱓库􏲄前需要􏲎􏱗一系列计算􏰢， 同时􏲔􏲕抛弃一些无关分析处理的数据。</li>
+  <li>非易􏲅失:􏰊业务数据库中􏰷一般􏲃􏲖存储短期数据，􏲗因此其数据是不稳定的，记􏱀的是􏰦􏰮􏰷数据变化的瞬态􏱪。数据􏱓仓库中􏰷的数据􏱝􏱿大多表示过􏱗去某􏱋一时刻的数据，主要用于查询、分析􏱼，不像􏰊业务系统中􏰦􏰮􏰷的数据库一样􏲎经常修改，一般􏲃数据􏱓仓库构􏰼建完成后主要用于􏰋访问􏱭，不进行修􏲘改􏱰删除。</li>
+  <li>随时􏰣变化:数据仓􏱓库关注􏱩的是历史􏲙数据，按􏲌时间􏰣顺序定期从􏰊业务库和􏱰日志􏱺库里面载􏲚入新的数据进行追􏲛加，带有时间属性􏰲。</li>
+</ul>
+
+<h4 id="标签分区存储">标签分区存储</h4>
+<p><img src="/img/up1.jpeg" width="600px" /></p>
+<ul>
+  <li>数字表示
+    <ul>
+      <li>0：用户没被打上该标签</li>
+      <li>1：用户被打上该标签，但是没有具体数值</li>
+      <li>具体数字：用户被打上该标签，有具体数值
+<img src="/img/up2.jpg" width="600px" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="标签以userid进行冗余存储">标签以UserID进行冗余存储</h4>
+<p><img src="/img/up3.jpg" width="600px" /></p>
+
+<h4 id="id-map">ID-MAP</h4>
+<ul>
+  <li>用户使用不同设备登录系统，或者同一设备登录多个用户</li>
+  <li>可以通过event_log、page_view_log等来获取登录时长、登录天数</li>
+  <li>userid与cookieId通常是多对多
+<img src="/img/up4.jpg" width="600px" /></li>
+</ul>
+
+<h4 id="mysql存储元数据管理">Mysql存储元数据管理</h4>
+<p><img src="/img/up5.jpg" width="600px" /></p>
+
+<h4 id="mysql存储结果集">Mysql存储结果集</h4>
+<p>比如用脚本通过Sqoop把Hive结果导入的mysql中，主要是离线，在线的建议用HBase</p>
+
+<h4 id="hbase存储">HBase存储</h4>
+<p>使用Spark，把用户标签同步到HBase以供线上实时访问
+<img src="/img/up6.jpg" width="600px" /></p>
+
+<h4 id="es做为hbase的二级索引方便快速检索">Es做为HBase的二级索引方便快速检索</h4>
+<p><img src="/img/up7.jpg" width="600px" /></p>
+
+<h4 id="从etlhivhbasees整个链路的数据监控旧数据可怕">从ETL/Hiv/HBase/Es整个链路的数据监控，旧数据可怕</h4>
+<p><img src="/img/up8.jpg" width="600px" /></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html">myBatis</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 30, 2020</span>
@@ -645,57 +712,6 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
     </div>
     <br />
     
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/24/O2O%E6%B4%BE%E5%8D%95.html">O2O派单</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Jun 24, 2020</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/24/O2O%E6%B4%BE%E5%8D%95.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>策略</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="策略">策略</h4>
-<ul>
-  <li>代驾偏向派单，因为司机就位或者返程的隐形+显性成本更高，导致抢单模式下，挑单严重，成单率底。</li>
-  <li>派单的业务基本价格都高些，就是用整体的收入，保证用户的高质量体验。包括偏远地区的调度，某种程度平台都需要补贴。</li>
-  <li>偏远订单，是应该用户加价、平台补贴、优质司机降成本，来保证公平。里程收费标准 和 调度费是两个维度的事情。</li>
-  <li>高峰期派单更好些，因为高峰期意味着下一单需求也旺盛，快速派其实对整体效率更高。派单其实只是抢单的一种特殊形式，高峰期也是秒抢</li>
-  <li>长途代驾，预约单非实时场景也是需要抢单。</li>
-  <li>抢单更自由的市场</li>
-  <li><a href="https://mp.weixin.qq.com/s/mbzr55b-0KrNXdrBTMcYcg">https://mp.weixin.qq.com/s/mbzr55b-0KrNXdrBTMcYcg</a></li>
-  <li>神秘的滴滴派单算法 <a href="https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng">https://mp.weixin.qq.com/s/xcai7k60yUUQTwrB2f3Dng</a>
-    <ul>
-      <li>距离贪心算法占75%左右订单</li>
-      <li>全局最优（基于时间贪心算法批量匹配，基于供需预测动态调整等待时间）</li>
-      <li>连环派单 即将订单指派给 即将结束服务 的司机，条件为如果司机的终点与订单位置很相近</li>
-    </ul>
-  </li>
-  <li><a href="https://mp.weixin.qq.com/s/glH946LRbqmchIi5mosn5w">https://mp.weixin.qq.com/s/glH946LRbqmchIi5mosn5w</a></li>
-</ul>
-
-<h4 id="算法">算法</h4>
-<ul>
-  <li>车辆路径问题（Vehicle Routing Problem, VRP）等 <a href="https://blog.csdn.net/weixin_43890937/article/details/103869603">https://blog.csdn.net/weixin_43890937/article/details/103869603</a></li>
-</ul>
-
-<h4 id="产品理论">产品理论</h4>
-<ul>
-  <li>司机调度与接单意愿 <a href="https://mp.weixin.qq.com/s/gV0Bm7aCziABaE-cdnJczg">https://mp.weixin.qq.com/s/gV0Bm7aCziABaE-cdnJczg</a></li>
-  <li>遗失物品与修改目的地 <a href="https://mp.weixin.qq.com/s/I5ofTQA11V4h2ApTGXvNVQ">https://mp.weixin.qq.com/s/I5ofTQA11V4h2ApTGXvNVQ</a></li>
-  <li>司机产品的四个关键问题 <a href="https://mp.weixin.qq.com/s/DGKyyP7khHy7HcVADIX4mQ">https://mp.weixin.qq.com/s/DGKyyP7khHy7HcVADIX4mQ</a></li>
-  <li>外卖派单 <a href="https://mp.weixin.qq.com/s/cwLC2Ukhqe2HQlK827TjBQ">https://mp.weixin.qq.com/s/cwLC2Ukhqe2HQlK827TjBQ</a></li>
-  <li>从架构到算法，详解美团外卖订单分配内部机制 <a href="https://mp.weixin.qq.com/s/84kj45NIx5SkbN7ed9c_Aw">https://mp.weixin.qq.com/s/84kj45NIx5SkbN7ed9c_Aw</a></li>
-</ul>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/24/O2O%E6%B4%BE%E5%8D%95.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
 
     <div style="text-align:center">
     
@@ -865,7 +881,7 @@ TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</li>
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 15 )</span>
+      <span class="label label-default">Java ( 16 )</span>
       </a><br />
 
       
