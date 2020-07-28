@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>O2O派单</title>
-  <meta name="description" content="策略  代驾偏向派单，因为司机就位或者返程的隐形+显性成本更高，导致抢单模式下，挑单严重，成单率底。  派单的业务基本价格都高些，就是用整体的收入，保证用户的高质量体验。包括偏远地区的调度，某种程度平台都需要补贴。  偏远订单，是应该用户加价、平台补贴、优质司机降成本，来保证公平。里程收费标准 和 调度费是两个维...">
+  <meta name="description" content="派单策略  代驾偏向派单，因为司机就位或者返程的隐形+显性成本更高，导致抢单模式下，挑单严重，成单率底。  派单的业务基本价格都高些，就是用整体的收入，保证用户的高质量体验。包括偏远地区的调度，某种程度平台都需要补贴。  偏远订单，是应该用户加价、平台补贴、优质司机降成本，来保证公平。里程收费标准 和 调度费是两...">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,7 +60,7 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h4 id="策略">策略</h4>
+    <h4 id="派单策略">派单策略</h4>
 <ul>
   <li>代驾偏向派单，因为司机就位或者返程的隐形+显性成本更高，导致抢单模式下，挑单严重，成单率底。</li>
   <li>派单的业务基本价格都高些，就是用整体的收入，保证用户的高质量体验。包括偏远地区的调度，某种程度平台都需要补贴。</li>
@@ -79,21 +79,15 @@
   <li><a href="https://mp.weixin.qq.com/s/glH946LRbqmchIi5mosn5w">https://mp.weixin.qq.com/s/glH946LRbqmchIi5mosn5w</a></li>
 </ul>
 
-<h4 id="算法">算法</h4>
-<ul>
-  <li>车辆路径问题（Vehicle Routing Problem, VRP）等 <a href="https://blog.csdn.net/weixin_43890937/article/details/103869603">https://blog.csdn.net/weixin_43890937/article/details/103869603</a></li>
-</ul>
-
 <h4 id="产品理论">产品理论</h4>
 <ul>
   <li>司机调度与接单意愿 <a href="https://mp.weixin.qq.com/s/gV0Bm7aCziABaE-cdnJczg">https://mp.weixin.qq.com/s/gV0Bm7aCziABaE-cdnJczg</a></li>
   <li>遗失物品与修改目的地 <a href="https://mp.weixin.qq.com/s/I5ofTQA11V4h2ApTGXvNVQ">https://mp.weixin.qq.com/s/I5ofTQA11V4h2ApTGXvNVQ</a></li>
   <li>司机产品的四个关键问题 <a href="https://mp.weixin.qq.com/s/DGKyyP7khHy7HcVADIX4mQ">https://mp.weixin.qq.com/s/DGKyyP7khHy7HcVADIX4mQ</a></li>
   <li>外卖派单 <a href="https://mp.weixin.qq.com/s/cwLC2Ukhqe2HQlK827TjBQ">https://mp.weixin.qq.com/s/cwLC2Ukhqe2HQlK827TjBQ</a></li>
-  <li>从架构到算法，详解美团外卖订单分配内部机制 <a href="https://mp.weixin.qq.com/s/84kj45NIx5SkbN7ed9c_Aw">https://mp.weixin.qq.com/s/84kj45NIx5SkbN7ed9c_Aw</a></li>
 </ul>
 
-<h4 id="代驾">代驾</h4>
+<h4 id="代驾体系">代驾体系</h4>
 <ul>
   <li>司机管理
     <ul>
@@ -129,6 +123,56 @@
       <li>等级：超时等待、点选多名司机、积分奖励、专属客服</li>
     </ul>
   </li>
+</ul>
+
+<h4 id="外卖派单">外卖派单</h4>
+<ul>
+  <li>基本模型
+    <ul>
+      <li>决策变量：订单任务集合、任务执行顺序、订单到达商户的时刻、订单的取货时刻、订单到达用户的时刻、订单到用户手里的时刻</li>
+      <li>目标：最小化超时率、最小化单均形势距离、最小化单均消耗时间（供给多了最关键）</li>
+      <li>约束条件：骑手位置、行驶速度、出餐时间、交付时间
+        <ul>
+          <li>订单送货要在取货之后</li>
+          <li>订单取货要在备货完成和骑手到达之后</li>
+          <li>同一个骑手所分配的多项任务的完成时间限制</li>
+          <li>一个订单的取送，要由同一名骑手完成</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>数据采集、机器学习，即时配送订单分配场景下的数据包括两类：
+    <ul>
+      <li>直接通过业务系统采集可获取的数据，例如订单数据、骑手负载数据、骑手状态数据等。</li>
+      <li>无法直接采集得到，需要预测或统计才能获取的数据，如商户出餐时间、用户驻留时间（骑手到达用户处将订单交付给用户的时间）、骑手配送能力等。</li>
+    </ul>
+  </li>
+  <li>
+    <p>就是我们必须对问题特点和结构进行深入分析，才能设计出性能优越的算法。
+  在运筹优化领域中的各类基础性算法也是这样的更多思路，如单纯形、梯度下降、遗传算法、模拟退火、动态规划等，
+  它们的本质其实是假定了问题具备某些特征（如动态规划的贝尔曼方程假设，遗传算法的 Building Blocks 假设等），
+  并利用这些假设进行算法设计。那么，针对配送调度的场景，这个问题可以被分解为两个层次：骑手路径优化和订单分配方案的优化。</p>
+  </li>
+  <li>
+    <p>仿真系统，系统能够模拟真实的配送过程和线上调度逻辑，并给出按照某种配送策略下的最终结果。
+  该模拟过程和线下的实际导航、地理数据完全一致，系统同时能够根据实际配送数据进行模型自学习，不断提升仿真精度。</p>
+  </li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>多读几遍</td>
+          <td>从架构到算法，详解美团外卖订单分配内部机制 <a href="https://mp.weixin.qq.com/s/84kj45NIx5SkbN7ed9c_Aw">https://mp.weixin.qq.com/s/84kj45NIx5SkbN7ed9c_Aw</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<h4 id="算法">算法</h4>
+<ul>
+  <li>车辆路径问题（Vehicle Routing Problem, VRP）等 <a href="https://blog.csdn.net/weixin_43890937/article/details/103869603">https://blog.csdn.net/weixin_43890937/article/details/103869603</a></li>
+  <li>二分图匹配算法（匈牙利算法、KM 算法）</li>
 </ul>
 
   </div>
