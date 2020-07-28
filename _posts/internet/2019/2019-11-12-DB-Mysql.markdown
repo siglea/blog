@@ -9,6 +9,10 @@ categories:
 - 技术
 ---
 #### 聚集索引与非聚集索引
+- 聚集索引（clustered index）就是按照每张表的主键构造一棵B+树，同时叶子节点中存放的即为整张表的行记录数据，也将聚集索引的叶子节点称为数据页。聚集索引的这个特性决定了索引组织表中数据也是索引的一部分 
+- 辅助索引（Secondary Index，也称非聚集索引），叶子节点并不包含行记录的全部数据。叶子节点除了包含键值以外，每个叶子节点中的索引行中还包含了指向主键的指针。
+- <https://mp.weixin.qq.com/s/nWiM87G1CBGUkX0_QkUf3g>
+
 #### 锁
 - 意向共享锁只是表级别的，与行级别的共享锁与排他锁没有任何关系，所以意向锁互相兼容之后交给行数进一步控制
 - 意向共享锁与意向排他锁主要是解决表级的"直接"共享锁与"直接"排他锁
@@ -21,6 +25,7 @@ categories:
 - InnoDB并发为什么这么高？MVCC <https://mp.weixin.qq.com/s/R3yuitWpHHGWxsUcE0qIRQ>
 - Select for update很容易死锁
     - 条件使用了非索引字段 <https://segmentfault.com/q/1010000018750238>
+    - 其他死锁 <https://mp.weixin.qq.com/s/nTlAL2WGhQCejRKoNvx6VQ>
 
 #### 索引原理(B+Tree)
 - BS树(Binary Search Tree二叉查找树) -> AVL(人名，平衡二叉树) Tree -> 红黑树 -> B-/B+Tree(平衡多路查找树) -> LSM

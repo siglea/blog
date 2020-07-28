@@ -149,6 +149,12 @@
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
 	<h4 id="聚集索引与非聚集索引">聚集索引与非聚集索引</h4>
+<ul>
+  <li>聚集索引（clustered index）就是按照每张表的主键构造一棵B+树，同时叶子节点中存放的即为整张表的行记录数据，也将聚集索引的叶子节点称为数据页。聚集索引的这个特性决定了索引组织表中数据也是索引的一部分</li>
+  <li>辅助索引（Secondary Index，也称非聚集索引），叶子节点并不包含行记录的全部数据。叶子节点除了包含键值以外，每个叶子节点中的索引行中还包含了指向主键的指针。</li>
+  <li><a href="https://mp.weixin.qq.com/s/nWiM87G1CBGUkX0_QkUf3g">https://mp.weixin.qq.com/s/nWiM87G1CBGUkX0_QkUf3g</a></li>
+</ul>
+
 <h4 id="锁">锁</h4>
 <ul>
   <li>意向共享锁只是表级别的，与行级别的共享锁与排他锁没有任何关系，所以意向锁互相兼容之后交给行数进一步控制</li>
@@ -169,6 +175,7 @@
   <li>Select for update很容易死锁
     <ul>
       <li>条件使用了非索引字段 <a href="https://segmentfault.com/q/1010000018750238">https://segmentfault.com/q/1010000018750238</a></li>
+      <li>其他死锁 <a href="https://mp.weixin.qq.com/s/nTlAL2WGhQCejRKoNvx6VQ">https://mp.weixin.qq.com/s/nTlAL2WGhQCejRKoNvx6VQ</a></li>
     </ul>
   </li>
 </ul>
