@@ -9,6 +9,33 @@ categories:
 - 技术
 ---
 
+https://blog.csdn.net/wangshuang1631/article/details/62894521
+https://www.cnblogs.com/leeSmall/p/9539370.html
+https://blog.csdn.net/lone7dehao/article/details/99584699
+HBT分片  https://www.cnblogs.com/tonylovett/p/5251471.html
+### 分片策略
+- MyCat的各种分片策略 <https://mp.weixin.qq.com/s/LHTpCPDdLK1TfDcPY7c5vQ>
+- MyCat的join
+    - 同库：全局表及ER表 <https://blog.csdn.net/Weixiaohuai/article/details/100900026>
+
+        ```xml
+         <!-- 1为开启全局表一致性检测、0为关闭 -->
+        <property name="useGlobleTableCheck">1</property> 
+        <table name="company" primaryKey="ID" type="global" dataNode="dn1,dn2,dn3" />
+        <!-- ER表 -->
+        <table name="customer" primaryKey="ID" dataNode="dn1,dn2" rule="sharding-by-intfile">
+            <childTable name="orders" primaryKey="ID" joinKey="customer_id" parentKey="id">
+                    <childTable name="order_items" joinKey="order_id" parentKey="id" />
+            </childTable>
+            <childTable name="customer_addr" primaryKey="ID" joinKey="customer_id" parentKey="id" />
+        </table>
+        ```
+    - 跨库：catlet跨库join <https://blog.csdn.net/Weixiaohuai/article/details/101557503>
+
+        ```sql
+        /*!mycat:catlet=io.mycat.catlets.ShareJoin*/select * from employee a, employee_detail b where a.id = b.id;
+        ```
+
 #### 主键避重问题
 - ID生成器
     - Twitter Snowflake

@@ -63,7 +63,41 @@
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="主键避重问题">主键避重问题</h4>
+	<p>https://blog.csdn.net/wangshuang1631/article/details/62894521
+https://www.cnblogs.com/leeSmall/p/9539370.html
+https://blog.csdn.net/lone7dehao/article/details/99584699
+HBT分片  https://www.cnblogs.com/tonylovett/p/5251471.html</p>
+<h3 id="分片策略">分片策略</h3>
+<ul>
+  <li>MyCat的各种分片策略 <a href="https://mp.weixin.qq.com/s/LHTpCPDdLK1TfDcPY7c5vQ">https://mp.weixin.qq.com/s/LHTpCPDdLK1TfDcPY7c5vQ</a></li>
+  <li>MyCat的join
+    <ul>
+      <li>
+        <p>同库：全局表及ER表 <a href="https://blog.csdn.net/Weixiaohuai/article/details/100900026">https://blog.csdn.net/Weixiaohuai/article/details/100900026</a></p>
+
+        <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="c">&lt;!-- 1为开启全局表一致性检测、0为关闭 --&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"useGlobleTableCheck"</span><span class="nt">&gt;</span>1<span class="nt">&lt;/property&gt;</span> 
+  <span class="nt">&lt;table</span> <span class="na">name=</span><span class="s">"company"</span> <span class="na">primaryKey=</span><span class="s">"ID"</span> <span class="na">type=</span><span class="s">"global"</span> <span class="na">dataNode=</span><span class="s">"dn1,dn2,dn3"</span> <span class="nt">/&gt;</span>
+  <span class="c">&lt;!-- ER表 --&gt;</span>
+  <span class="nt">&lt;table</span> <span class="na">name=</span><span class="s">"customer"</span> <span class="na">primaryKey=</span><span class="s">"ID"</span> <span class="na">dataNode=</span><span class="s">"dn1,dn2"</span> <span class="na">rule=</span><span class="s">"sharding-by-intfile"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;childTable</span> <span class="na">name=</span><span class="s">"orders"</span> <span class="na">primaryKey=</span><span class="s">"ID"</span> <span class="na">joinKey=</span><span class="s">"customer_id"</span> <span class="na">parentKey=</span><span class="s">"id"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;childTable</span> <span class="na">name=</span><span class="s">"order_items"</span> <span class="na">joinKey=</span><span class="s">"order_id"</span> <span class="na">parentKey=</span><span class="s">"id"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/childTable&gt;</span>
+      <span class="nt">&lt;childTable</span> <span class="na">name=</span><span class="s">"customer_addr"</span> <span class="na">primaryKey=</span><span class="s">"ID"</span> <span class="na">joinKey=</span><span class="s">"customer_id"</span> <span class="na">parentKey=</span><span class="s">"id"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/table&gt;</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>跨库：catlet跨库join <a href="https://blog.csdn.net/Weixiaohuai/article/details/101557503">https://blog.csdn.net/Weixiaohuai/article/details/101557503</a></p>
+
+        <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="cm">/*!mycat:catlet=io.mycat.catlets.ShareJoin*/</span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">employee</span> <span class="n">a</span><span class="p">,</span> <span class="n">employee_detail</span> <span class="n">b</span> <span class="k">where</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="主键避重问题">主键避重问题</h4>
 <ul>
   <li>ID生成器
     <ul>
