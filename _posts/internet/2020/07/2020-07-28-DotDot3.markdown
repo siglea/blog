@@ -19,3 +19,11 @@ DDD
     不过可以想办法遵循 redis 内部的分片算法把设计到的所有 key 分到同一个 slot
     - redis 的 setnx 实现内置的锁：
     要设置超时时间，防止抢占到锁的客户端因失败、崩溃或其他原因没有办法释放锁而造成死锁
+
+#### MongoDB
+- 概述 <https://mp.weixin.qq.com/s/hLPREeTvThUYuLe-VFOfOA>
+- 分片 <https://www.cnblogs.com/duanxz/p/10730121.html>
+- 扩容
+- MongoDB ，使用B-树，节点带数据
+- Mysql为什么不能使用内存映射
+- MongoDB VS MySQL <https://zhuanlan.zhihu.com/p/67350330>
