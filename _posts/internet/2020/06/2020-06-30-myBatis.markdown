@@ -8,6 +8,13 @@ tags:
 categories:
 - 技术
 ---
+#### MyBatis框架及原理
+- MyBatis 是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架，其主要就完成2件事情：
+    - 封装JDBC操作
+    - 利用反射打通Java类与SQL语句之间的相互转换
+    - MyBatis的主要设计目的就是让我们对执行SQL语句时对输入输出的数据管理更加方便，所以方便地写出SQL和方便地获取SQL的执行结果才是MyBatis的核心竞争力。
+- <https://www.cnblogs.com/adolfmc/p/8997281.html>
+
 #### myBatis #{}和${}的区别是什么? 
 1)#{}是预编译处理，${}是字符串替换。
 2)Mybatis 在处理#{}时，会将 sql 中的#{}替换为?号，调用 PreparedStatement 的 set 方法来赋值;

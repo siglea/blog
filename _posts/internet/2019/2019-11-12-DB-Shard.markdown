@@ -8,11 +8,6 @@ tags:
 categories:
 - 技术
 ---
-
-https://blog.csdn.net/wangshuang1631/article/details/62894521
-https://www.cnblogs.com/leeSmall/p/9539370.html
-https://blog.csdn.net/lone7dehao/article/details/99584699
-HBT分片  https://www.cnblogs.com/tonylovett/p/5251471.html
 ### 分片策略
 - MyCat的各种分片策略 <https://mp.weixin.qq.com/s/LHTpCPDdLK1TfDcPY7c5vQ>
 - MyCat的join
@@ -35,6 +30,8 @@ HBT分片  https://www.cnblogs.com/tonylovett/p/5251471.html
         ```sql
         /*!mycat:catlet=io.mycat.catlets.ShareJoin*/select * from employee a, employee_detail b where a.id = b.id;
         ```
+- MyCat 注解 <https://www.cnblogs.com/leeSmall/p/9539370.html>
+- MyCat 分页及不适合的场景 <https://blog.csdn.net/gaobudong1234/article/details/79581846>
 
 #### 主键避重问题
 - ID生成器
