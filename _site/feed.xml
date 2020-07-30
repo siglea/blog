@@ -5,16 +5,13 @@
     <description>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 30 Jul 2020 10:15:06 +0800</pubDate>
-    <lastBuildDate>Thu, 30 Jul 2020 10:15:06 +0800</lastBuildDate>
+    <pubDate>Thu, 30 Jul 2020 10:19:32 +0800</pubDate>
+    <lastBuildDate>Thu, 30 Jul 2020 10:19:32 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
         <title>DotDot3</title>
-        <description>&lt;p&gt;DDD
-mybatis
-mycat
-jmap dump&lt;/p&gt;
+        <description>&lt;p&gt;DDD&lt;/p&gt;
 </description>
         <pubDate>Tue, 28 Jul 2020 08:44:00 +0800</pubDate>
         <link>http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html</link>
@@ -64,21 +61,18 @@ jmap dump&lt;/p&gt;
       &lt;li&gt;热点隔离，热点活动等&lt;/li&gt;
       &lt;li&gt;集群隔离、机房隔离、读写隔离、动静隔离、资源隔离（CPU绑定等）&lt;/li&gt;
       &lt;li&gt;Hystrix隔离&lt;/li&gt;
-      &lt;li&gt;Servlet3，基于NIO的线程池及异步化
-```shell
-HystrixComand.Setter.
-  .withGroupKey(groupKey) # 全局服务分组
-  .andCommandKey(commandKey) # 全局服务
-  .andThreadPoolKey(threadPookKey) # 全局线程名称
-  .andThreadPoolPropertiesDefaults(threadPoolPropDefaults)
-  .andCommandPropertiesDefaults();&lt;/li&gt;
+      &lt;li&gt;Servlet3，基于NIO的线程池及异步化&lt;/li&gt;
     &lt;/ul&gt;
+
+    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  HystrixComand.Setter.
+      .withGroupKey&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;groupKey&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# 全局服务分组&lt;/span&gt;
+      .andCommandKey&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;commandKey&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# 全局服务&lt;/span&gt;
+      .andThreadPoolKey&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;threadPookKey&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# 全局线程名称&lt;/span&gt;
+      .andThreadPoolPropertiesDefaults&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;threadPoolPropDefaults&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+      .andCommandPropertiesDefaults&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
   &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;```&lt;/p&gt;
-
-&lt;ul&gt;
   &lt;li&gt;超时与重试&lt;/li&gt;
   &lt;li&gt;回滚&lt;/li&gt;
   &lt;li&gt;压测与预案

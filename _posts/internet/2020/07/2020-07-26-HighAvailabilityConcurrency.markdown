@@ -30,15 +30,16 @@ categories:
     - 集群隔离、机房隔离、读写隔离、动静隔离、资源隔离（CPU绑定等）
     - Hystrix隔离
     - Servlet3，基于NIO的线程池及异步化
-```shell
-HystrixComand.Setter.
-    .withGroupKey(groupKey) # 全局服务分组
-    .andCommandKey(commandKey) # 全局服务
-    .andThreadPoolKey(threadPookKey) # 全局线程名称
-    .andThreadPoolPropertiesDefaults(threadPoolPropDefaults)
-    .andCommandPropertiesDefaults();
 
-```
+    ```shell
+    HystrixComand.Setter.
+        .withGroupKey(groupKey) # 全局服务分组
+        .andCommandKey(commandKey) # 全局服务
+        .andThreadPoolKey(threadPookKey) # 全局线程名称
+        .andThreadPoolPropertiesDefaults(threadPoolPropDefaults)
+        .andCommandPropertiesDefaults();
+    
+    ```
     
 - 超时与重试 
 - 回滚

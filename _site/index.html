@@ -63,10 +63,7 @@
       
 
       <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>DDD
-mybatis
-mycat
-jmap dump</p>
+	<p>DDD</p>
 
       </div>
       <div style="height:50px;">
@@ -121,21 +118,18 @@ jmap dump</p>
       <li>热点隔离，热点活动等</li>
       <li>集群隔离、机房隔离、读写隔离、动静隔离、资源隔离（CPU绑定等）</li>
       <li>Hystrix隔离</li>
-      <li>Servlet3，基于NIO的线程池及异步化
-```shell
-HystrixComand.Setter.
-  .withGroupKey(groupKey) # 全局服务分组
-  .andCommandKey(commandKey) # 全局服务
-  .andThreadPoolKey(threadPookKey) # 全局线程名称
-  .andThreadPoolPropertiesDefaults(threadPoolPropDefaults)
-  .andCommandPropertiesDefaults();</li>
+      <li>Servlet3，基于NIO的线程池及异步化</li>
     </ul>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  HystrixComand.Setter.
+      .withGroupKey<span class="o">(</span>groupKey<span class="o">)</span> <span class="c"># 全局服务分组</span>
+      .andCommandKey<span class="o">(</span>commandKey<span class="o">)</span> <span class="c"># 全局服务</span>
+      .andThreadPoolKey<span class="o">(</span>threadPookKey<span class="o">)</span> <span class="c"># 全局线程名称</span>
+      .andThreadPoolPropertiesDefaults<span class="o">(</span>threadPoolPropDefaults<span class="o">)</span>
+      .andCommandPropertiesDefaults<span class="o">()</span><span class="p">;</span>
+    
+</code></pre></div>    </div>
   </li>
-</ul>
-
-<p>```</p>
-
-<ul>
   <li>超时与重试</li>
   <li>回滚</li>
   <li>压测与预案
