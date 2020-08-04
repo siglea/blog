@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>TCP/IP十问</title>
-  <meta name="description" content="https://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ">
+  <meta name="description" content="40张图解TCPhttps://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -60,7 +60,7 @@
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <p><a href="https://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ">https://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ</a></p>
+    <p>40张图解TCP<a href="https://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ">https://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ</a></p>
 
 <h4 id="tcp">TCP</h4>
 <ul>
@@ -253,9 +253,9 @@
   <li>比如服务器负载过高，从而无法响应任何业务，即连接无效，但是仍然是ESTABLISHED，KeepAlive机制检测不出</li>
   <li>其他一些复杂的情况比如路由器挂了，网线被拔除，keepalive也是失效的</li>
   <li>KeepAlive默认的参数设置的时间太长，如果频次过快放到服务端检测，服务端压力太大</li>
-  <li>KeepAlive 机制只是操作系统底层的一个被动机制，不应该被上层应用层使用，当系统关闭一个由KeepAlive 机制检查出来的死连接时，是不会主动通知上层应用的，只能通过调用相应IO操作的返回值中发现</li>
+  <li>KeepAlive 机制只是操作系统底层的一个被动机制，不应该被上层应用层使用，当系统关闭一个由KeepAlive 机制检查出来的死连接时，是不会主动通知上层应用的，只能通过调用相应IO操作的返回值中发现
+手把手教你实现 自适应的心跳保活机制 <a href="https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA">https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA</a></li>
 </ol>
-<p><a href="https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA">https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA</a></p>
 
 <h4 id="sync-flooding-攻击">SYNC Flooding 攻击</h4>
 <ul>
@@ -494,12 +494,12 @@ ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP
 <p><a href="https://www.cnblogs.com/iiiiher/p/8513748.html">https://www.cnblogs.com/iiiiher/p/8513748.html</a></p>
 
 <ul>
-  <li>相关协议之Ping/Traceroute</li>
-</ul>
-<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=157&amp;highlight=ping">http://www.52im.net/forum.php?mod=viewthread&amp;tid=157&amp;highlight=ping</a>
-<a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1973&amp;highlight=ping">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1973&amp;highlight=ping</a></p>
-
-<ul>
+  <li>相关协议之Ping/Traceroute
+    <ul>
+      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=157&amp;highlight=ping">http://www.52im.net/forum.php?mod=viewthread&amp;tid=157&amp;highlight=ping</a></li>
+      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1973&amp;highlight=ping">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1973&amp;highlight=ping</a></li>
+    </ul>
+  </li>
   <li>相关协议之DHCP</li>
 </ul>
 <p><a href="http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html">http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html</a></p>
