@@ -13,6 +13,10 @@ categories:
 - 辅助索引（Secondary Index，也称非聚集索引），叶子节点并不包含行记录的全部数据。叶子节点除了包含键值以外，每个叶子节点中的索引行中还包含了指向主键的指针。
 - <https://mp.weixin.qq.com/s/nWiM87G1CBGUkX0_QkUf3g>
 
+#### 乐观锁与悲观锁使用场景
+<https://www.jianshu.com/p/5a081ff5de58>
+<https://www.cnblogs.com/jtlgb/p/10833136.html>
+
 #### 锁
 - 意向共享锁只是表级别的，与行级别的共享锁与排他锁没有任何关系，所以意向锁互相兼容之后交给行数进一步控制
 - 意向共享锁与意向排他锁主要是解决表级的"直接"共享锁与"直接"排他锁
