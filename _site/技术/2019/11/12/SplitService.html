@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>DotDot3</title>
-  <meta name="description" content="DDD">
+  <title>微服务拆分原则</title>
+  <meta name="description" content="微服务拆分原则">
   <script src="/static/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="/static/bootstrap.min.css">
   <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -14,7 +14,7 @@
   <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2019/11/12/SplitService.html">
   <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -55,42 +55,43 @@
 <article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">DotDot3</h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-07-28T08:44:00+08:00" itemprop="datePublished">Jul 28, 2020</time></p>
+    <h1 class="post-title" itemprop="name headline">微服务拆分原则</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-12T10:25:00+08:00" itemprop="datePublished">Nov 12, 2019</time></p>
   </header>
 
   <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <p>DDD</p>
+    <h3 id="微服务拆分原则">微服务拆分原则</h3>
 
-<h4 id="redis-的并发竞争问题如何解决">Redis 的并发竞争问题如何解决</h4>
+<h3 id="领域驱动设计">领域驱动设计</h3>
+<p>https://zhuanlan.zhihu.com/p/32459776
+领域驱动设计的理解与实践
+https://zhuanlan.zhihu.com/p/149387477
+DDD快速上手
+https://zhuanlan.zhihu.com/p/92653606</p>
+
+<h3 id="微服务架构与实践">微服务架构与实践</h3>
 <ul>
-  <li>Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis 对于多个客户端连接并不存在竞争，但是在业务客户端对 Redis 进行并发访问时会发生连接超时、数据转换错误、阻塞、客户端关闭连接等问题，这些问题均是由于客户端连接混乱造成</li>
-  <li>解决方法：
+  <li>团队与文化
     <ul>
-      <li>客户端加锁（synchronized）</li>
-      <li>乐观锁（redis 的命令 watch）：
-  当执行多键值事务操作时，Redis 不仅要求这些键值需要落在同一个 Redis 实例上，还要求落在同一个 slot 上，所以 redis 的事务比较鸡肋
-  不过可以想办法遵循 redis 内部的分片算法把设计到的所有 key 分到同一个 slot</li>
-      <li>redis 的 setnx 实现内置的锁：
-  要设置超时时间，防止抢占到锁的客户端因失败、崩溃或其他原因没有办法释放锁而造成死锁</li>
+      <li>全功能团队</li>
+      <li>敏捷实践</li>
+    </ul>
+  </li>
+  <li>架构与技术
+    <ul>
+      <li>服务设计与实现</li>
+      <li>服务支撑组件</li>
+      <li>运维管理</li>
+    </ul>
+  </li>
+  <li>工程与实践
+    <ul>
+      <li>测试管理</li>
+      <li>持续集成</li>
+      <li>部署管理</li>
     </ul>
   </li>
 </ul>
-
-<h4 id="mongodb">MongoDB</h4>
-<ul>
-  <li>概述 <a href="https://mp.weixin.qq.com/s/hLPREeTvThUYuLe-VFOfOA">https://mp.weixin.qq.com/s/hLPREeTvThUYuLe-VFOfOA</a></li>
-  <li>分片 <a href="https://www.cnblogs.com/duanxz/p/10730121.html">https://www.cnblogs.com/duanxz/p/10730121.html</a></li>
-  <li>扩容</li>
-  <li>MongoDB ，使用B-树，节点带数据</li>
-  <li>Mysql为什么不能使用内存映射</li>
-  <li>MongoDB VS MySQL <a href="https://zhuanlan.zhihu.com/p/67350330">https://zhuanlan.zhihu.com/p/67350330</a></li>
-</ul>
-
-<h4 id="并发框架disruptor">并发框架Disruptor</h4>
-<p><a href="http://ifeve.com/lmax/">http://ifeve.com/lmax/</a>
-<a href="http://ifeve.com/disruptor/">http://ifeve.com/disruptor/</a></p>
-
 
   </div>
 </article>

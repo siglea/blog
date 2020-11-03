@@ -54,6 +54,558 @@
     
     <div class="post-contents">
       <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Elasticsearch-Summary.html"> Elasticsearch  Summary </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 4, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/04/Elasticsearch-Summary.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>数据库</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="前言">前言</h4>
+<ul>
+  <li>牛逼elasticsearch专栏 <a href="https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&amp;album_id=1340073242396114944&amp;__biz=MzI2NDY1MTA3OQ==&amp;scene=21#wechat_redirect">https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&amp;album_id=1340073242396114944&amp;__biz=MzI2NDY1MTA3OQ==&amp;scene=21#wechat_redirect</a></li>
+  <li>腾讯Elasticsearch海量规模背后的内核优化剖析 <a href="https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw">https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw</a></li>
+  <li>腾讯万亿级 Elasticsearch 内存效率提升技术解密 <a href="https://mp.weixin.qq.com/s/ipuIq_E5rOPPF7_XdS5PGQ">https://mp.weixin.qq.com/s/ipuIq_E5rOPPF7_XdS5PGQ</a></li>
+  <li>Elasticsearch 在各大互联网公司大量真实的应用案例！ <a href="https://mp.weixin.qq.com/s/Sntf8JoHYFSqkqRtcvVReQ">https://mp.weixin.qq.com/s/Sntf8JoHYFSqkqRtcvVReQ</a></li>
+</ul>
+
+<h4 id="基础入门">基础入门</h4>
+<ul>
+  <li>全文搜索引擎 Elasticsearch 入门教程 <a href="http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html">http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html</a></li>
+  <li>Elasticsearch之基础概念 <a href="https://www.jianshu.com/p/d68197bc7def">https://www.jianshu.com/p/d68197bc7def</a></li>
+  <li><a href="https://www.elastic.co/cn/products/elasticsearch">ec官网</a></li>
+</ul>
+
+<h4 id="提高elasticsearch性能的高级技巧">提高ElasticSearch性能的高级技巧</h4>
+<ol>
+  <li>node.master:false 和node.data: true ，优先确定好比例</li>
+  <li>bootstrap.mlockall:true ，由于ES主要是靠内存提高效率，因此需要锁定内存，防止进行Swapping，此时要求预留充足的HeapSize</li>
+  <li>通过设置 gateway.recover_after_nodes、gateway.expected_nodes、 gateway.recover_after_time 可以在集群重启的时候避免过多的分片交换，这可 能会让数据恢复从数个小时缩短为几秒钟</li>
+  <li>不要随意修改垃圾回收器(CMS)和各个线程池的大小。</li>
+  <li>Elasticsearch 默认被配置为使用单播发现，以防止节点无意中加入集群。只 有在同一台机器上运行的节点才会自动组成集群。最好使用单播代替组播
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>discovery.zen.ping.multicast.enabled:false
+discovery.zen.ping.unicast.hosts:[<span class="s2">"esmaster01"</span>,<span class="s2">"esmaster02"</span>,<span class="s2">"esmaster03"</span><span class="o">]</span>
+</code></pre></div>    </div>
+  </li>
+  <li>action.disable_delete_all_indices:true ，防止误删</li>
+  <li>调整force_merge参数，闲时合并小的segment到大的 <a href="https://blog.csdn.net/jiankunking/article/details/84667437">https://blog.csdn.net/jiankunking/article/details/84667437</a></li>
+  <li>冷数据定期进行 shrink 操作，以缩减存储; <a href="https://my.oschina.net/5icode/blog/2872151">https://my.oschina.net/5icode/blog/2872151</a></li>
+  <li>采取 curator 进行索引的生命周期管理 <a href="https://blog.csdn.net/laoyang360/article/details/85882832">https://blog.csdn.net/laoyang360/article/details/85882832</a></li>
+  <li>在索引重建过程中使用别名 <a href="https://blog.csdn.net/u010454030/article/details/84918103">https://blog.csdn.net/u010454030/article/details/84918103</a></li>
+  <li>Mapping 阶段充分结合各个字段的属性，是否需要检索、是否需要存储等</li>
+</ol>
+
+<p><a href="https://blog.csdn.net/xshy3412/article/details/51841270">https://blog.csdn.net/xshy3412/article/details/51841270</a>
+<a href="https://blog.csdn.net/u014646662/article/details/99293604/">https://blog.csdn.net/u014646662/article/details/99293604/</a></p>
+
+<h4 id="es-过滤filter-与-查询-query">es 过滤filter 与 查询 query</h4>
+<ul>
+  <li>filter，类似where语句，结构化检索
+    <ul>
+      <li>精准匹配 term是完全匹配，不能分词</li>
+      <li>range/exists/prefix/wildcard/regexp/type/ids/flzzy模糊</li>
+    </ul>
+  </li>
+  <li>query ，是用倒排索引进行搜索，全文检索
+    <ul>
+      <li>match query 分词全文检索</li>
+      <li>短语检索 match_phrase query</li>
+      <li>短语前缀检索 match_phrase_prefix</li>
+      <li>多字段匹配检索 muti_match</li>
+    </ul>
+  </li>
+  <li>符合检索：固定得分、bool组合、改变评分检索</li>
+  <li>特定检索：父子文档检索、GEo检索</li>
+  <li><a href="https://mp.weixin.qq.com/s/tiiveCW3W-oDIgxvlwsmXA">https://mp.weixin.qq.com/s/tiiveCW3W-oDIgxvlwsmXA</a></li>
+</ul>
+
+<h4 id="lucene-索引文件结构">Lucene 索引文件结构</h4>
+<ul>
+  <li>索引（index）
+  Lucene的索引由许多个文件组成，这些文件放在同一个目录下</li>
+  <li>段（segment）
+  一个Lucene的索引由多个段组成，段与段之间是独立的。添加新的文档时可以生成新的段，达到阈值（段的个数，段中包含的文件数等）时，不同的段可以合并。
+  在文件夹下，具有相同前缀的文件属于同一个段
+  segments.gen 和 segments_N（N表示一个具体数字，eg：segments_5）是段的元数据文件，他们保存了段的属性信息。</li>
+  <li>文档（document）
+  文档是建索引的基本单位，一个段中可以包含多篇文档
+  新添加的文档时单独保存在一个新生成的段中，随着段的合并，不同的文档会合并到至相同的段中。</li>
+  <li>域（Field）
+  一个文档有可由多个域（Field）组成，比如一篇新闻，有 标题，作者，正文等多个属性，这些属性可以看作是文档的域。
+  不同的域可以指定不同的索引方式，比如指定不同的分词方式，是否构建索引，是否存储等</li>
+  <li>词（Term）
+  词 是索引的最小单位，是经过词法分词和语言处理后的字符串</li>
+</ul>
+
+<h4 id="elasticsearch是如何选举出master的">Elasticsearch是如何选举出master的</h4>
+<ul>
+  <li>一次join，即是加入又是投票</li>
+  <li>相比于其他一致性方案，该方案没有term的概念（虽然有clusterState），所以在同一个选举周期内会出现NodeA 投票给了多个Node的情况。
+  这种情况会在广播的时候其中一个Master自动降级 <a href="https://blog.csdn.net/ailiandeziwei/article/details/87856210">https://blog.csdn.net/ailiandeziwei/article/details/87856210</a></li>
+  <li>ES针对当前集群中所有的Master Eligible Node进行选举得到master节点，为了避免出现Split-brain现象，ES选择了分布式系统常见的quorum（多数派）思想，也就是只有获得了超过半数选票的节点才能成为master。在ES中使用 discovery.zen.minimum_master_nodes 属性设置quorum，这个属性一般设置为 eligibleNodesNum / 2 + 1。</li>
+  <li>如何触发一次选举，当满足如下条件是，集群内就会发生一次master选举
+    <ul>
+      <li>当前master eligible（合格）节点不是master</li>
+      <li>当前master eligible节点与其它的节点通信无法发现master</li>
+      <li>集群中无法连接到master的master eligible节点数量已达到 discovery.zen.minimum_master_nodes 所设定的值</li>
+    </ul>
+  </li>
+  <li>如何选举，当某个节点决定要进行一次选举是，它会实现如下操作
+    <ul>
+      <li>寻找clusterStateVersion比自己高的master eligible的节点，向其发送选票</li>
+      <li>如果clusterStatrVersion一样，则计算自己能找到的master eligible节点（包括自己）中节点id最小的一个节点，向该节点发送选举投票</li>
+      <li>如果一个节点收到足够多的投票（即 minimum_master_nodes 的设置），并且它也向自己投票了，那么该节点成为master开始发布集群状态</li>
+      <li>超时就进入下一轮</li>
+    </ul>
+  </li>
+  <li>ZenDiscovery，节点发现组件(类似于Hadoop的ZK，或者RocketMq的nameserver)</li>
+  <li><a href="https://blog.csdn.net/ailiandeziwei/article/details/87856210">https://blog.csdn.net/ailiandeziwei/article/details/87856210</a></li>
+  <li><a href="https://www.cnblogs.com/dogs/p/11511458.html">https://www.cnblogs.com/dogs/p/11511458.html</a></li>
+</ul>
+
+<h4 id="es的核心概念">es的核心概念</h4>
+<ul>
+  <li>Index（索引-数据库），
+索引包含一堆有相似结构的文档数据，，比如可以有一个客户索引，商品分类索引，订单索引，索引有一个名称。一个index包含很多document，一个index就代表了一类类似的或者相同的document。比如说建立一个product index，商品索引，里面可能就存放了所有的商品数据，所有的商品document。</li>
+  <li>Type（类型-表），
+每个索引里都可以有一个或多个type，type是index中的一个逻辑数据分类，一个type下的document，都有相同的field。
+根据规划，Elastic 6.x 版只允许每个 Index 包含一个 Type，7.x 版将会彻底移除 Type</li>
+  <li>Document（文档-行），
+文档是es中的最小数据单元，一个document可以是一条客户数据，一条商品分类数据，一条订单数据，通常用JSON数据结构表示，每个index下的type中，都可以去存储多个document。</li>
+  <li>Field（字段-列），
+Field是Elasticsearch的最小单位。一个document里面有多个field，每个field就是一个数据字段。</li>
+  <li>mapping（映射-约束），
+数据如何存放到索引对象上，需要有一个映射配置，包括：数据类型、是否存储、是否分词等。这样就创建了一个名为blog的Index。Type不用单独创建，在创建Mapping 时指定就可以。Mapping用来定义Document中每个字段的类型，即所使用的 analyzer、是否索引等属性，非常关键等。</li>
+  <li>shard 分片，
+es中的shard用来解决节点的容量上限问题,通过将index分为多个分片(默认为一个也就是不分片),一个或多个node共同存储该index的所有数据实现水平拓展(类似于关系型数据库中的分表)它们共同持有该索引的所有数据,默认通过hash(文档id)决定数据的归属</li>
+  <li>replicas 副本，
+  replicas主要为了以下两个目的，
+  由于数据只有一份,如果一个node挂了,那存在上面的数据就都丢了,有了replicas,只要不是存储这条数据的node全挂了,数据就不会丢。
+  通过在所有replicas上并行搜索提高搜索性能.由于replicas上的数据是近实时的(near realtime),因此所有replicas都能提供搜索功能,通过设置合理的replicas数量可以极高的提高搜索吞吐量。
+  eg,如果指定了replicas=2,那么对于一条数据它共有三份,一份称为primary shard,另外两份称为 replicas shard. 这三个统称为replicas group(副本组)。</li>
+  <li>LSM (Log Structured Merge Trees)思想，Translog In-memory buffer <a href="https://www.cnblogs.com/luxiaoxun/p/13025019.html">https://www.cnblogs.com/luxiaoxun/p/13025019.html</a></li>
+  <li>为了解磁盘 IO 问题，Lucene 引入排索引的二级索引 FST [Finite State Transducer] 。原理上可以理解为前缀树，加速查询。</li>
+</ul>
+
+<h4 id="常用命令">常用命令</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl localhost:9200 <span class="c"># 默认来一下</span>
+<span class="o">{</span>
+  <span class="s2">"name"</span> : <span class="s2">"atntrTf"</span>,
+  <span class="s2">"cluster_name"</span> : <span class="s2">"elasticsearch"</span>,
+  <span class="s2">"cluster_uuid"</span> : <span class="s2">"tf9250XhQ6ee4h7YI11anA"</span>,
+  <span class="s2">"version"</span> : <span class="o">{</span>
+    <span class="s2">"number"</span> : <span class="s2">"5.5.1"</span>,
+    <span class="s2">"build_hash"</span> : <span class="s2">"19c13d0"</span>,
+    <span class="s2">"build_date"</span> : <span class="s2">"2017-07-18T20:44:24.823Z"</span>,
+    <span class="s2">"build_snapshot"</span> : <span class="nb">false</span>,
+    <span class="s2">"lucene_version"</span> : <span class="s2">"6.6.0"</span>
+  <span class="o">}</span>,
+  <span class="s2">"tagline"</span> : <span class="s2">"You Know, for Search"</span>
+<span class="o">}</span>
+
+<span class="c">#查看节点所有的Index</span>
+curl <span class="nt">-X</span> GET <span class="s1">'http://localhost:9200/_cat/indices?v'</span>
+
+<span class="c">#查看所有Type</span>
+curl <span class="s1">'localhost:9200/_mapping?pretty=true'</span>
+
+<span class="c">#新建Index</span>
+curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/weather'</span>
+<span class="o">{</span>
+  <span class="s2">"acknowledged"</span>:true,
+  <span class="s2">"shards_acknowledged"</span>:true
+<span class="o">}</span>
+
+<span class="c">#删除Index</span>
+curl <span class="nt">-X</span> DELETE <span class="s1">'localhost:9200/weather'</span>
+
+<span class="c"># 新建Index附件结构 Index:accounts Type:person</span>
+<span class="c"># 新建一个名称为accounts的 Index，里面有一个名称为person的 Type。person有三个字段。</span>
+curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/accounts'</span> <span class="nt">-d</span> <span class="s1">'
+{
+  "mappings": {
+    "person": {
+      "properties": {
+        "user": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        },
+        "title": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        },
+        "desc": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        }
+      }
+    }
+  }
+}'</span>
+
+<span class="c">#给指定Index指定的type增加Document</span>
+<span class="nv">$ </span>curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/accounts/person/1'</span> <span class="nt">-d</span> <span class="s1">'
+{
+  "user": "张三",
+  "title": "工程师",
+  "desc": "数据库管理"
+}'</span>
+<span class="o">{</span>
+  <span class="s2">"_index"</span>:<span class="s2">"accounts"</span>,
+  <span class="s2">"_type"</span>:<span class="s2">"person"</span>,
+  <span class="s2">"_id"</span>:<span class="s2">"1"</span>,
+  <span class="s2">"_version"</span>:1,
+  <span class="s2">"result"</span>:<span class="s2">"created"</span>,
+  <span class="s2">"_shards"</span>:<span class="o">{</span><span class="s2">"total"</span>:2,<span class="s2">"successful"</span>:1,<span class="s2">"failed"</span>:0<span class="o">}</span>,
+  <span class="s2">"created"</span>:true
+<span class="o">}</span>
+
+<span class="nv">$ </span>curl <span class="nt">-X</span> POST <span class="s1">'localhost:9200/accounts/person'</span> <span class="nt">-d</span> <span class="s1">'
+{
+  "user": "李四",
+  "title": "工程师",
+  "desc": "系统管理"
+}'</span>
+<span class="o">{</span>
+  <span class="s2">"_index"</span>:<span class="s2">"accounts"</span>,
+  <span class="s2">"_type"</span>:<span class="s2">"person"</span>,
+  <span class="s2">"_id"</span>:<span class="s2">"AV3qGfrC6jMbsbXb6k1p"</span>,
+  <span class="s2">"_version"</span>:1,
+  <span class="s2">"result"</span>:<span class="s2">"created"</span>,
+  <span class="s2">"_shards"</span>:<span class="o">{</span><span class="s2">"total"</span>:2,<span class="s2">"successful"</span>:1,<span class="s2">"failed"</span>:0<span class="o">}</span>,
+  <span class="s2">"created"</span>:true
+<span class="o">}</span>
+
+
+<span class="c">#查看指定Index指定的type的指定Document</span>
+curl <span class="s1">'localhost:9200/accounts/person/1?pretty=true'</span>
+<span class="o">{</span>
+  <span class="s2">"_index"</span> : <span class="s2">"accounts"</span>,
+  <span class="s2">"_type"</span> : <span class="s2">"person"</span>,
+  <span class="s2">"_id"</span> : <span class="s2">"1"</span>,
+  <span class="s2">"_version"</span> : 1,
+  <span class="s2">"found"</span> : <span class="nb">true</span>,
+  <span class="s2">"_source"</span> : <span class="o">{</span>
+    <span class="s2">"user"</span> : <span class="s2">"张三"</span>,
+    <span class="s2">"title"</span> : <span class="s2">"工程师"</span>,
+    <span class="s2">"desc"</span> : <span class="s2">"数据库管理"</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c">#查看指定Index指定的type的所有记录</span>
+<span class="nv">$ </span>curl <span class="s1">'localhost:9200/accounts/person/_search'</span>
+<span class="o">{</span>
+  <span class="s2">"took"</span>:2,
+  <span class="s2">"timed_out"</span>:false,
+  <span class="s2">"_shards"</span>:<span class="o">{</span><span class="s2">"total"</span>:5,<span class="s2">"successful"</span>:5,<span class="s2">"failed"</span>:0<span class="o">}</span>,
+  <span class="s2">"hits"</span>:<span class="o">{</span>
+    <span class="s2">"total"</span>:2,
+    <span class="s2">"max_score"</span>:1.0,
+    <span class="s2">"hits"</span>:[
+      <span class="o">{</span>
+        <span class="s2">"_index"</span>:<span class="s2">"accounts"</span>,
+        <span class="s2">"_type"</span>:<span class="s2">"person"</span>,
+        <span class="s2">"_id"</span>:<span class="s2">"AV3qGfrC6jMbsbXb6k1p"</span>,
+        <span class="s2">"_score"</span>:1.0,
+        <span class="s2">"_source"</span>: <span class="o">{</span>
+          <span class="s2">"user"</span>: <span class="s2">"李四"</span>,
+          <span class="s2">"title"</span>: <span class="s2">"工程师"</span>,
+          <span class="s2">"desc"</span>: <span class="s2">"系统管理"</span>
+        <span class="o">}</span>
+      <span class="o">}</span>,
+      <span class="o">{</span>
+        <span class="s2">"_index"</span>:<span class="s2">"accounts"</span>,
+        <span class="s2">"_type"</span>:<span class="s2">"person"</span>,
+        <span class="s2">"_id"</span>:<span class="s2">"1"</span>,
+        <span class="s2">"_score"</span>:1.0,
+        <span class="s2">"_source"</span>: <span class="o">{</span>
+          <span class="s2">"user"</span> : <span class="s2">"张三"</span>,
+          <span class="s2">"title"</span> : <span class="s2">"工程师"</span>,
+          <span class="s2">"desc"</span> : <span class="s2">"数据库管理，软件开发"</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">]</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c"># Elastic 默认一次返回10条结果，可以通过size字段改变这个设置</span>
+<span class="nv">$ </span>curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query" : { "match" : { "desc" : "管理" }},
+  "size": 1
+}'</span>
+
+<span class="c">#搜索指定Index指定的type的复合搜索条件的记录 from:偏移量 size:数据量</span>
+<span class="c">#该分页方式是假分页，会读取整体数据只显示size，数据量超过1万性能急剧下降</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query" : { "match" : { "desc" : "管理" }},
+  "from": 1,
+  "size": 1
+}'</span>
+
+<span class="c">#逻辑搜索 OR 关系</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query" : { "match" : { "desc" : "软件 系统" }}
+}'</span>
+
+<span class="c">#逻辑搜索 AND 关系</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "desc": "软件" } },
+        { "match": { "desc": "系统" } }
+      ]
+    }
+  }
+}'</span>
+
+<span class="c">#scroll分页查询</span>
+<span class="c">#区别于from size的方式的本质是采用类似Oracle的游标</span>
+curl <span class="nt">-XGET</span> <span class="s1">'localhost:9200/twitter/tweet/_search?scroll=1m'</span> <span class="nt">-d</span> <span class="s1">'
+{
+    "query": {
+        "match" : {
+            "title" : "elasticsearch"
+        }
+    }
+}
+'</span>
+
+curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/scroll?scroll=1m&amp;scroll_id=c2Nhbjs2OzM0NDg1ODpzRlBLc0FXNlNyNm5JWUc1'</span>
+
+</code></pre></div></div>
+
+<h4 id="相关原理">相关原理</h4>
+<ul>
+  <li>倒排索引
+    <ol>
+      <li>key =&gt; value-index =&gt; value</li>
+      <li>分词、过滤助动叹词、相似词合并</li>
+      <li>索引建立</li>
+    </ol>
+  </li>
+  <li>分布式
+    <ol>
+      <li>Elasticsearch也是会对数据进行切分，同时每一个分片会保存多个副本</li>
+      <li>数据写入和索引建立，都是先在master完成再同步到slave</li>
+      <li>选举策略和zk/redis集成都很类似(拜占庭将军问题)
+        <ol>
+          <li>master节点宕机了，那么会重新选举一个节点为master节点。</li>
+          <li>如果是非master节点宕机了，那么会由master节点，让那个宕机节点上的primary shard的身份转移到其他机器上的replica shard。
+修复了那个宕机机器，重启了之后，master节点会控制将缺失的replica shard分配过去，同步后续修改的数据之类的，让集群恢复正常。</li>
+        </ol>
+      </li>
+      <li>分布式查询操作类似Map/Reduce</li>
+      <li>NRT(Near RealTime)
+        <ul>
+          <li>默认是每隔1秒refresh一次的，所以es是准实时的，因为写入的数据1秒之后才能被看到。</li>
+          <li>-&gt; buffer -&gt; segment file -&gt; os cache -&gt; 磁盘</li>
+          <li>-&gt; trans_log -&gt; os cache -&gt; 磁盘</li>
+          <li>refresh、flush、translog、merge</li>
+        </ul>
+      </li>
+      <li>默认primary shard=5，replica=1共计10shard</li>
+      <li>es写数据过程
+        <ol>
+          <li>客户端选择一个node发送请求过去，这个node就是coordinating node（协调节点）</li>
+          <li>coordinating node，对document进行路由，将请求转发给对应的node（有primary shard）</li>
+          <li>实际的node上的primary shard处理请求，然后将数据同步到replica node</li>
+          <li>coordinating node，如果发现primary node和所有replica node都搞定之后，就返回响应结果给客户端</li>
+        </ol>
+      </li>
+      <li>es读取数据过程
+        <ol>
+          <li>客户端发送请求到任意一个node，成为coordinate node</li>
+          <li>coordinate node对document进行路由，将请求转发到对应的node，此时会使用round-robin随机轮询算法，在primary shard以及其所有replica中随机选择一个，让读请求负载均衡</li>
+          <li>接收请求的node返回document给coordinate node</li>
+          <li>coordinate node返回document给客户端</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="实战总结亿级性能">实战总结亿级性能</h4>
+<ul>
+  <li>用内存换速度
+ es的搜索引擎严重依赖于底层的filesystem cache，你如果给filesystem cache更多的内存，尽量让内存可以容纳所有的indx segment file索引数据文件，
+ 那么你搜索的时候就基本都是走内存的，性能会非常高。归根结底，你要让es性能要好，最佳的情况下，就是你的机器的内存，至少可以容纳你的总数据量的一半.</li>
+  <li>减少es中的无用字段的数据量(es+hbase)</li>
+  <li>数据预热，冷热分离，冗余数据</li>
+  <li>由应用服务器完成某些逻辑及运算操作</li>
+  <li>使用sroll api优化分页性能</li>
+</ul>
+
+<h5 id="实战案例">实战案例</h5>
+<ul>
+  <li>5台机器，每台机器是6核64G的，集群总内存是320G</li>
+  <li>es集群的日增量数据大概是2000万条，每天日增量数据大概是500MB，每月增量数据大概是6亿，15G。（数据总量大概是100G左右）</li>
+  <li>index数据量预估，shard个数预估（不支持后续增加shard需要重建),建议每个shard小于30G</li>
+</ul>
+
+<h4 id="参考资料">参考资料</h4>
+<ul>
+  <li>Elasticsearch 在各大互联网公司大量真实的应用案例！ ☆☆☆<a href="https://mp.weixin.qq.com/s/Sntf8JoHYFSqkqRtcvVReQ">https://mp.weixin.qq.com/s/Sntf8JoHYFSqkqRtcvVReQ</a></li>
+  <li>漫画讲原理 <a href="http://developer.51cto.com/art/201904/594615.htm">http://developer.51cto.com/art/201904/594615.htm</a></li>
+  <li>搜索引擎之倒排索引解读 <a href="https://www.jianshu.com/p/b3f987b0fbf1">https://www.jianshu.com/p/b3f987b0fbf1</a></li>
+  <li><a href="https://www.jianshu.com/p/3fa27dda63ab">java实战教程大数据技术之elasticsearch</a></li>
+  <li>腾讯Elasticsearch海量规模背后的内核优化剖析 <a href="https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw">https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw</a></li>
+  <li>腾讯万亿级 Elasticsearch 内存效率提升技术解密 <a href="https://mp.weixin.qq.com/s/ipuIq_E5rOPPF7_XdS5PGQ">https://mp.weixin.qq.com/s/ipuIq_E5rOPPF7_XdS5PGQ</a></li>
+</ul>
+
+<h4 id="lucene--nutch2002--solr2004--elasticsearch2010">lucene &amp; nutch（2002） &amp; Solr（2004）&amp;  Elasticsearch（2010）</h4>
+<ul>
+  <li>Lucene其实是一个提供全文文本搜索的函数库，它不是一个应用软件</li>
+  <li>Nutch = Lucene + 爬虫</li>
+  <li>Solr 是基于Lucene的一套完整的搜索服务属于Apache开源项目</li>
+  <li>Nutch是分布式爬虫系统，solr是搜索引擎</li>
+</ul>
+
+<h5 id="solr--elasticsearch">Solr &amp; Elasticsearch</h5>
+<ul>
+  <li>Solr 利用 Zookeeper 进行分布式管理，而 Elasticsearch 自身带有分布式协调管理功能;</li>
+  <li>Solr 支持更多格式的数据，而 Elasticsearch 仅支持json文件格式；</li>
+  <li>Solr 官方提供的功能更多，而 Elasticsearch 本身更注重于核心功能，高级功能多有第三方插件提供；</li>
+  <li>Solr 在传统的搜索应用中表现好于 Elasticsearch，但在处理实时搜索应用时效率明显低于 Elasticsearch。</li>
+</ul>
+
+<h5 id="关于nutch">关于Nutch</h5>
+<ul>
+  <li>Nutch诞生于2002年8月，是Apache旗下的一个用Java实现的开源搜索引擎项目，
+自Nutch1.2版本之后，Nutch已经从搜索引擎演化为网络爬虫，接着Nutch进一步演化为两大分支版本：1.X和2.X，
+这两大分支最大的区别在于2.X对底层的数据存储进行了抽象以支持各种底层存储技术。</li>
+  <li>1.x版本是基于Hadoop架构的，底层存储使用的是HDFS，而2.x通过使用Apache Gora，
+使得Nutch可以访问HBase、Accumulo、Cassandra、MySQL、DataFileAvroStore、AvroStore等NoSQL。</li>
+  <li>nutch主要用于采集网页，solr可以作为搜索服务器。nutch+solr可以搭建一个简单的搜索引擎。</li>
+  <li>简单地讲，nutch就是用于分布式采集数据源，solr用于建索引和搜索服务。</li>
+</ul>
+
+<h4 id="es-bulk-一次最大处理多少数据量">Es Bulk 一次最大处理多少数据量???</h4>
+<p>bulk 会把将要处理的数据载入内存中，所以数据量是有限制的 最佳的数据量不是一个确定的数值，它取决于你的硬件，你的文档大小以及复杂性，你的索
+引以及搜索的负载。
+一般建议是 1000-5000 个文档，如果你的文档很大，可以适当减少队列,大小建议是 5-15MB，
+默认不能超过 100M，可以在 es 的配置文件中修改这个值 http.max_content_length: 100mb</p>
+
+<h4 id="es-在高并发的情况下如何保证数据线程安全问题">ES 在高并发的情况下如何保证数据线程安全问题?</h4>
+<p>在读数据与写数据之间如果有其他线程进行写操作，就会出问题，es 使用版本控制才避免 这种问题
+在修改数据的时候指定版本号，操作一次版本号加 1</p>
+
+<h4 id="客户端在和集群连接时如何选择特定的节点执行请求的">客户端在和集群连接时，如何选择特定的节点执行请求的?</h4>
+<ul>
+  <li>TransportClient 利用 transport 模块远程连接一个 elasticsearch 集群。它并 不加入到集群中，只是简单的获得一个或者多个初始化的
+  transport 地址，并以 轮 询 的方式与这些地址进行通信</li>
+</ul>
+
+<h4 id="elasticsearch-对于大数据量上亿量级的聚合如何实现">Elasticsearch 对于大数据量(上亿量级)的聚合如何实现?</h4>
+<ul>
+  <li>Elasticsearch 提供的首个近似聚合是 cardinality 度量。它提供一个字段的基数， 即该字段的 distinct 或者 unique 值的数目。它是基于 HLL 算法的。
+  HLL 会先对 我们的输入作哈希运算，然后根据哈希运算的结果中的 bits 做概率估算从而得到 基数。其特点是:可配置的精度，用来控制内存的使用(更精确 = 更多内存); 
+  小的数据集精度是非常高的;我们可以通过配置参数，来设置去重需要的固定内 存使用量。无论数千还是数十亿的唯一值，内存使用量只与你配置的精确度相关。</li>
+</ul>
+
+<h4 id="es-管理的工具有哪些">ES 管理的工具有哪些?</h4>
+<ul>
+  <li>BigDesk Plugin、Elasticsearch Head Plugin 、Kibana</li>
+</ul>
+
+<h5 id="参考资料-1">参考资料</h5>
+<ul>
+  <li><a href="https://www.cnblogs.com/yinhaiming/articles/1542921.html">https://www.cnblogs.com/yinhaiming/articles/1542921.html</a></li>
+  <li><a href="https://www.cnblogs.com/fosilzhou/articles/4629220.html">https://www.cnblogs.com/fosilzhou/articles/4629220.html</a></li>
+  <li><a href="https://blog.csdn.net/xiaoyu714543065/article/details/10374191">https://blog.csdn.net/xiaoyu714543065/article/details/10374191</a></li>
+  <li><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-BigInsightsNutchSolr/">https://www.ibm.com/developerworks/cn/opensource/os-cn-BigInsightsNutchSolr/</a></li>
+  <li><a href="https://www.jianshu.com/p/366d9bd38d14">https://www.jianshu.com/p/366d9bd38d14</a></li>
+</ul>
+
+<h4 id="其他">其他</h4>
+<ul>
+  <li>ELK 系统，也就是日志分析系统。其中 E 就是 Elasticsearch，L 是 Logstash，是一个日志收集系统，K 是 Kibana，是一个数据可视化平台。</li>
+  <li>ElasticSearch + Hbase</li>
+  <li>Katta Hadoop contrib/index Lucandra HBasene</li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/04/Elasticsearch-Summary.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/05/29/youxiudemianyang.html">优秀的绵羊</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2019/05/29/youxiudemianyang.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>读书笔记</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="优秀的绵羊">优秀的绵羊</h3>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E9%9A%8F%E8%AE%B0/2019/05/29/youxiudemianyang.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html">商业</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html#disqus_thread"></a></span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="商业">商业</h3>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/n-1.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/gupiao-10-wen.html">股票十问</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 29, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/gupiao-10-wen.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>股票</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="股票">股票</h3>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2019/05/29/gupiao-10-wen.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
         <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/server-performance.html">服务器性能</a>
       </h2>
       <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
@@ -76,787 +628,6 @@
       </div>
       <div style="height:50px;">
 	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/server-performance.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/maven.html">maven使用</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/maven.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>构建</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="mvn-clean">mvn clean</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    mvn clean package <span class="nt">-Dmaven</span>.test.skip<span class="o">=</span><span class="nb">true</span>
-</code></pre></div></div>
-<h4 id="mvn-compile">mvn compile</h4>
-
-<h4 id="创建maven的普通java项目">创建Maven的普通java项目：</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate <span class="nt">-DgroupId</span><span class="o">=</span>com.siglea <span class="nt">-DartifactId</span><span class="o">=</span>demo
-</code></pre></div></div>
-<h4 id="创建maven的javaweb项目">创建Maven的javaWeb项目：</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   mvn archetype:generate <span class="nt">-DgroupId</span><span class="o">=</span>com.siglea <span class="nt">-DartifactId</span><span class="o">=</span>demoweb <span class="nt">-DarchetypeArtifactId</span><span class="o">=</span>maven-archetype-webapp  
-</code></pre></div></div>
-<h4 id="mvn-jettyrun">mvn jetty:run</h4>
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c">&lt;!-- https://mvnrepository.com/artifact/org.mortbay.jetty/jetty --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.mortbay.jetty<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>jetty<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>6.1.26<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-</code></pre></div></div>
-<h4 id="mvn-spring-bootrun">mvn spring-boot:run</h4>
-<h4 id="mvn-依赖冲突">mvn 依赖冲突</h4>
-<ul>
-  <li>第一声明者优先原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
-  <span class="c">&lt;!--  第一声明者优先原则 spring-beans-4.2.4 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>4.2.4.RELEASE<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-   
-<span class="c">&lt;!--   spring-beans-3.0.5 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>struts2-spring-plugin<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>2.3.24<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;/dependencies&gt;</span>
-</code></pre></div></div>
-
-<ul>
-  <li>路径近者优先原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>   
-    <span class="c">&lt;!--   spring-beans-3.0.5 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>struts2-spring-plugin<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>2.3.24<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-    <span class="c">&lt;!--  路径近者优先原则 spring-beans-4.2.4 --&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-  		<span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-  		<span class="nt">&lt;artifactId&gt;</span>spring-beans<span class="nt">&lt;/artifactId&gt;</span>
-  		<span class="nt">&lt;version&gt;</span>4.2.4.RELEASE<span class="nt">&lt;/version&gt;</span>
-  	<span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;/dependencies&gt;</span>
-</code></pre></div></div>
-<ul>
-  <li>排除依赖原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
-  		<span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-  		<span class="nt">&lt;artifactId&gt;</span>struts2-spring-plugin<span class="nt">&lt;/artifactId&gt;</span>
-  		<span class="nt">&lt;version&gt;</span>2.3.24<span class="nt">&lt;/version&gt;</span>
-  		<span class="nt">&lt;exclusions&gt;</span>
-  		  <span class="nt">&lt;exclusion&gt;</span>
-  		    <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-  		    <span class="nt">&lt;artifactId&gt;</span>spring-beans<span class="nt">&lt;/artifactId&gt;</span>
-  		  <span class="nt">&lt;/exclusion&gt;</span>
-  		<span class="nt">&lt;/exclusions&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></div></div>
-<ul>
-  <li>版本锁定原则</li>
-</ul>
-
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- 锁定版本，struts2-2.3.24、spring4.2.4、hibernate5.0.7 --&gt;</span>
-<span class="nt">&lt;properties&gt;</span>
-        <span class="nt">&lt;spring.version&gt;</span>4.2.4.RELEASE<span class="nt">&lt;/spring.version&gt;</span>
-        <span class="nt">&lt;hibernate.version&gt;</span>5.0.7.Final<span class="nt">&lt;/hibernate.version&gt;</span>
-        <span class="nt">&lt;struts.version&gt;</span>2.3.24<span class="nt">&lt;/struts.version&gt;</span>
-<span class="nt">&lt;/properties&gt;</span>
-<span class="nt">&lt;dependencyManagement&gt;</span>
-    <span class="nt">&lt;dependencies&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.apache.struts<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>struts2-core<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>${struts.version}<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>${spring.version}<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.hibernate<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>hibernate-core<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>${hibernate.version}<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-    <span class="nt">&lt;/dependencies&gt;</span>
-<span class="nt">&lt;/dependencyManagement&gt;</span>
-</code></pre></div></div>
-<h4 id="mvn-scope">mvn scope</h4>
-<ul>
-  <li>compile： 编译(✔️) 测试(✔️) 打包(✔️) 运行时(✔️)</li>
-  <li>provided：编译(✔️) 测试(✔️) 打包(✘) 运行时(✔️ 使用容器提供的jar,比如servlet.jar)</li>
-  <li>runtime： 编译(✘ 比如Jdbc的实现jar，编译时只需要接口定义️) 测试(✔️) 打包(✔️) 运行时(✔️)</li>
-  <li>test：    测试编译(✔️) 测试运行时(✔️) 打包(✘) 运行时(✘)</li>
-  <li>system：  类似于provided，只是不从远程下载jar,配合systemPath在本地寻找jar</li>
-</ul>
-
-<h4 id="遇到的错误1mvn-archetypegenerate">遇到的错误（1）mvn archetype:generate</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    [INFO] --- maven-archetype-plugin:3.0.1:generate (default-cli) @ standalone-pom ---
-    [WARNING] Error injecting: org.apache.maven.archetype.common.DefaultPomManager
-    java.lang.NoClassDefFoundError: org/jdom/JDOMException
-            at java.lang.Class.getDeclaredConstructors0(Native Method)
-    解决办法：删除 .m2/repository 对应报错的文件
-</code></pre></div></div>
-<h4 id="遇到的错误2-mvn-archetypecreate">遇到的错误（2） mvn archetype:create</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn archetype:create 修改为 mvn archetype:generate
-</code></pre></div></div>
-
-<h4 id="遇到的错误3mvn-site">遇到的错误（3）mvn site</h4>
-<p>java.lang.NoClassDefFoundError: org/apache/maven/doxia/siterenderer/DocumentContent
-解决办法：在pom.xml添加如下配置</p>
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;build&gt;</span>
-<span class="nt">&lt;pluginManagement&gt;</span>
-    <span class="nt">&lt;plugins&gt;</span>
-        <span class="nt">&lt;plugin&gt;</span>
-          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-          <span class="nt">&lt;artifactId&gt;</span>maven-site-plugin<span class="nt">&lt;/artifactId&gt;</span>
-          <span class="nt">&lt;version&gt;</span>3.3<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/plugin&gt;</span>
-        <span class="nt">&lt;plugin&gt;</span>
-          <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-          <span class="nt">&lt;artifactId&gt;</span>maven-project-info-reports-plugin<span class="nt">&lt;/artifactId&gt;</span>
-          <span class="nt">&lt;version&gt;</span>2.7<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/plugin&gt;</span>
-    <span class="nt">&lt;/plugins&gt;</span>
-    <span class="nt">&lt;/pluginManagement&gt;</span>
-<span class="nt">&lt;/build&gt;</span>
-</code></pre></div></div>
-
-<h3 id="好用的源地址pomxml-settingsxml中配置">好用的源地址(pom.xml settings.xml中配置)</h3>
-<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;mirrors&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>nexus-aliyun<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>Nexus aliyun<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://maven.aliyun.com/nexus/content/groups/public/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-   <span class="nt">&lt;id&gt;</span>maven2-repository.dev.java.net<span class="nt">&lt;/id&gt;</span>
-   <span class="nt">&lt;name&gt;</span>Java.net Repository for Maven<span class="nt">&lt;/name&gt;</span>
-   <span class="nt">&lt;url&gt;</span>http://download.java.net/maven/2/<span class="nt">&lt;/url&gt;</span>
-   <span class="nt">&lt;mirrorOf&gt;</span>central1<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r1<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://repo1.maven.org/maven2/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central2<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r3<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://repository.sonatype.org/content/groups/public/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central3<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r4<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://mirrors.ibiblio.org/pub/mirrors/maven2/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central4<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2.r2<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://repository.jboss.com/maven2/<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central5<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;mirror&gt;</span>
-    <span class="nt">&lt;id&gt;</span>java.net2<span class="nt">&lt;/id&gt;</span>
-    <span class="nt">&lt;name&gt;</span>java.net Repository hosting the jee6 artifacts<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://download.java.net/maven/2<span class="nt">&lt;/url&gt;</span>
-    <span class="nt">&lt;mirrorOf&gt;</span>central6<span class="nt">&lt;/mirrorOf&gt;</span>
-<span class="nt">&lt;/mirror&gt;</span>
-<span class="nt">&lt;/mirrors&gt;</span>
-</code></pre></div></div>
-<h4 id="参考链接">参考链接</h4>
-<p><a href="http://repo2.maven.org/maven2/">Maven库</a></p>
-
-<p><a href="http://mvnrepository.com/">Maven依赖查询</a></p>
-
-<p><a href="http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html">http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/maven.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html">markdown-github-jekyll</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>工具</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="jekyll安装">jekyll安装</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem <span class="nb">install </span>jekyll
-gem <span class="nb">install </span>jekyll-archives
-gem <span class="nb">install </span>jekyll-paginate
-gem <span class="nb">install </span>jekyll-sitemap
-gem <span class="nb">install </span>jekyll-seo
-</code></pre></div></div>
-<h4 id="jekyll常用命令">jekyll常用命令</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jekyll s <span class="c">#编译并运行本地服务</span>
-jekyll b <span class="c">#编译</span>
-</code></pre></div></div>
-<h4 id="jekyll环境常用命令">jekyll环境常用命令</h4>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rbenv local #查看或设置rbenv版本号
-</code></pre></div></div>
-<h4 id="markdown语法">MarkDown语法</h4>
-<p><a href="https://www.runoob.com/markdown/md-lists.html">https://www.runoob.com/markdown/md-lists.html</a></p>
-
-<p><a href="https://www.jianshu.com/p/191d1e21f7ed">https://www.jianshu.com/p/191d1e21f7ed</a></p>
-
-<hr />
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html">Http&https抓包</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>工具</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<h4 id="下载地址">下载地址</h4>
-<p><a href="https://www.charlesproxy.com/">https://www.charlesproxy.com/</a></p>
-
-<h4 id="破解charles">破解charles</h4>
-<p><a href="https://www.zzzmode.com/mytools/charles/">https://www.zzzmode.com/mytools/charles/</a></p>
-
-<h4 id="https抓取">Https抓取</h4>
-<p><a href="https://www.jianshu.com/p/ec0a38d9a8cf">https://www.jianshu.com/p/ec0a38d9a8cf</a></p>
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html" class="button readmore-button">Read More</a>
-      </div>
-    </div>
-    <br />
-    
-    <div class="post-contents">
-      <h2>
-        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html">TCP/IP十问</a>
-      </h2>
-      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 27, 2019</span>
-      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html#disqus_thread"></a></span>
-      
-      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
-      
-
-      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
-	<p>40张图解TCP<a href="https://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ">https://mp.weixin.qq.com/s/LZAAKkrbyu1tNEr0eaRsZQ</a></p>
-
-<h4 id="tcp">TCP</h4>
-<ul>
-  <li>TCP三要素：ip+端口、序列号（解决乱序）、窗口大小（流量控制）</li>
-  <li>TCP与UDP
-    <ul>
-      <li>TCP 首部长度较长，会有一定的开销，首部在没有使用「选项」字段时是24个字节（6个32位），含「选项」字段。
-    UDP 首部只有8个字节（2个32位），并且是固定不变的，开销较小。</li>
-      <li>为什么 UDP 头部没有「首部长度」字段，而 TCP 头部有「首部长度」字段呢？
-  原因是 TCP 有可变长的「选项」字段，而 UDP 头部长度则是不会变化的，无需多一个字段去记录 UDP 的首部长度。</li>
-      <li>为什么 UDP 头部有「包长度」字段，而 TCP 头部则没有「包长度」字段呢？
-  TCP数据的长度 = IP总长度-IP首位长度-TCP首部长度。实际上，UDP的长度也可以用这个方式计算，因此UDP包长度有点多余</li>
-    </ul>
-  </li>
-  <li>TCP建立连接
-    <ul>
-      <li>3次握手+4种状态：LISTEN、SYS_SEND、SYN_RCVD、ESTABLISHED。（第三次握手可以携带数据，是因为客户端已经明确知道连接建立了）</li>
-      <li>为什么是三次握手？不是两次、四次？
-        <ul>
-          <li>三次握手才可以阻止历史重复连接的初始化（主要原因）
-            <ul>
-              <li>如果是两次握手连接，就不能判断当前连接是否是历史连接，三次握手则可以在客户端（发送方）准备发送第三次报文时，客户端因有足够的上下文来判断当前连接是否是历史连接：</li>
-              <li>如果是历史连接（序列号过期或超时），则第三次握手发送的报文是 RST 报文，以此中止历史连接；</li>
-              <li>如果不是历史连接，则第三次发送的报文是 ACK 报文，通信双方就会成功建立连接；</li>
-            </ul>
-          </li>
-          <li>三次握手才可以同步双方的初始序列号</li>
-          <li>三次握手才可以避免资源浪费
-            <ul>
-              <li>如果只有「两次握手」，当客户端的 SYN 请求连接在网络中阻塞，客户端没有接收到 ACK 报文，就会重新发送 SYN ，由于没有第三次握手，服务器不清楚客户端是否收到了自己发送的建立连接的 ACK 确认信号，所以每收到一个 SYN 就只能先主动建立一个连接，这会造成什么情况呢？</li>
-              <li>如果客户端的 SYN 阻塞了，重复发送多次 SYN 报文，那么服务器在收到请求后就会建立多个冗余的无效链接，造成不必要的资源浪费。</li>
-            </ul>
-          </li>
-        </ul>
-      </li>
-      <li>什么是 SYN 攻击？
-        <ul>
-          <li>我们都知道 TCP 连接建立是需要三次握手，假设攻击者短时间伪造不同 IP 地址的 SYN 报文，服务端每接收到一个 SYN 报文，就进入SYN_RCVD 状态，但服务端发送出去的 ACK + SYN 报文，无法得到未知 IP 主机的 ACK 应答，久而久之就会占满服务端的 SYN 接收队列（未连接队列），使得服务器不能为正常用户服务。</li>
-        </ul>
-      </li>
-      <li>如何避免 SYN 攻击？
-        <ul>
-          <li>net.ipv4.tcp_syncookies = 1，同一个客户端发起的和自己的cookie绑到，服务端就不会生成太多的SYN_RECD连接</li>
-          <li>net.ipv4.tcp_max_syn_backlog，设置最大的SYN_REVD数字</li>
-          <li>net.ipv4.tcp_abort_on_overflow ，超出处理能力丢弃</li>
-          <li>net.core.netdev_max_backlog，设置最大队列处理数字</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>为什么客户端和服务端的初始序列号 ISN 是不相同的？
-    <ul>
-      <li>因为网络中的报文会延迟、会复制重发、也有可能丢失，这样会造成的不同连接之间产生互相影响，所以为了避免互相影响，客户端和服务端的初始序列号是随机且不同的。</li>
-    </ul>
-  </li>
-  <li>初始序列号 ISN 是如何随机产生的？
-    <ul>
-      <li>起始 ISN 是基于时钟的，每 4 毫秒 + 1，转一圈要 4.55 个小时。</li>
-      <li>RFC1948 中提出了一个较好的初始化序列号 ISN 随机生成算法。</li>
-      <li>ISN = M + F (localhost, localport, remotehost, remoteport)
-        <ul>
-          <li>M 是一个计时器，这个计时器每隔 4 毫秒加 1。</li>
-          <li>F 是一个 Hash 算法，根据源 IP、目的 IP、源端口、目的端口生成一个随机数值。要保证 Hash 算法不能被外部轻易推算得出，用 MD5 算法是一个比较好的选择。</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>既然 IP 层会分片，为什么 TCP 层还需要 MSS 呢？
-    <ul>
-      <li>MTU：一个网络包的最大长度，以太网中一般为 1500 字节；</li>
-      <li>MSS：除去 IP 和 TCP 头部之后，一个网络包所能容纳的 TCP 数据的最大长度；</li>
-      <li>如果TCP 的整个报文（头部 + 数据）交给 IP 层进行分片，会有什么异常呢？</li>
-      <li>当 IP 层有一个超过 MTU 大小的数据（TCP 头部 + TCP 数据）要发送，那么 IP 层就要进行分片，把数据分片成若干片，保证每一个分片都小于 MTU。把一份 IP 数据报进行分片以后，由目标主机的 IP 层来进行重新组装后，在交给上一层 TCP 传输层。</li>
-      <li>这看起来井然有序，但这存在隐患的，那么当如果一个 IP 分片丢失，整个 IP 报文的所有分片都得重传。</li>
-      <li>因为 IP 层本身没有超时重传机制，它由传输层的 TCP 来负责超时和重传。</li>
-      <li>当接收方发现 TCP 报文（头部 + 数据）的某一片丢失后，则不会响应 ACK 给对方，那么发送方的 TCP 在超时后，就会重发「整个 TCP 报文（头部 + 数据）」。</li>
-      <li>因此，可以得知由 IP 层进行分片传输，是非常没有效率的。</li>
-      <li>所以，为了达到最佳的传输效能 TCP 协议在建立连接的时候通常要协商双方的 MSS 值，当 TCP 层发现数据超过 MSS 时，则就先会进行分片，当然由它形成的 IP 包的长度也就不会大于 MTU ，自然也就不用 IP 分片了。</li>
-      <li>握手阶段协商 MSS，经过 TCP 层分片后，如果一个 TCP 分片丢失后，进行重发时也是以 MSS 为单位，而不用重传所有的分片，大大增加了重传的效率。</li>
-    </ul>
-  </li>
-  <li>TCP断开连接
-    <ul>
-      <li>4次握手和6种状态，客户端FIN_WAIT_1、FIN_WAIT_2、TIME_WAIT，服务端CLOSED_WAIT、LAST_ACK，CLOSE</li>
-    </ul>
-  </li>
-  <li>为什么 TIME_WAIT 等待的时间是 2MSL？
-    <ul>
-      <li>MSL 与 TTL 的区别：MSL 的单位是时间，而 TTL 是经过路由跳数。所以 MSL 应该要大于等于 TTL 消耗为 0 的时间，以确保报文已被自然消亡。</li>
-      <li>TIME_WAIT 等待 2 倍的 MSL，比较合理的解释是：网络中可能存在来自发送方的数据包，当这些发送方的数据包被接收方处理后又会向对方发送响应，所以一来一回需要等待 2 倍的时间。</li>
-      <li>在LAST-ACK状态，如果一直没有收到ACK，会发起重发。</li>
-      <li>TIME_WAIT太短会造成，服务端则会一直处在 LASE-ACK 状态。当客户端发起建立连接的 SYN 请求报文后，服务端会发送 RST 报文给客户端，连接建立的过程就会被终止。</li>
-    </ul>
-  </li>
-  <li>为什么需要 TIME_WAIT 状态？
-    <ul>
-      <li>防止具有相同「四元组」的「旧」数据包被收到；</li>
-      <li>保证「被动关闭连接」的一方能被正确的关闭，即保证最后的 ACK 能让被动关闭方接收，从而帮助其正常关闭；</li>
-    </ul>
-  </li>
-  <li>TIME_WAIT 过多有什么危害？
-    <ul>
-      <li>第一是内存资源占用；</li>
-      <li>第二是对端口资源的占用，一个 TCP 连接至少消耗一个本地端口；</li>
-    </ul>
-  </li>
-  <li>如何优化 TIME_WAIT？
-    <ul>
-      <li>net.ipv4.tcp_tw_reuse = 1 ; net.ipv4.tcp_timstamps=1;这个时间戳的字段是在 TCP 头部的「选项」里，用于记录 TCP 发送方的当前时间戳和从对端接收到的最新时间戳。
-  由于引入了时间戳，我们在前面提到的 2MSL 问题就不复存在了，因为重复的数据包会因为时间戳过期被自然丢弃。
-  温馨提醒：net.ipv4.tcp_tw_reuse要慎用，因为使用了它就必然要打开时间戳的支持 net.ipv4.tcp_timestamps，当客户端与服务端主机时间不同步时，客户端的发送的消息会被直接拒绝掉。小林在工作中就遇到过。。。排查了非常的久</li>
-      <li>net.ipv4.tcp_max_tw_buckets ; 这个值默认为 18000，当系统中处于 TIME_WAIT 的连接一旦超过这个值时，系统就会将所有的 TIME_WAIT 连接状态重置。这个方法过于暴力，而且治标不治本，带来的问题远比解决的问题多，不推荐使用。</li>
-      <li>程序中使用 SO_LINGER ,如果l_onoff为非 0， 且l_linger值为 0，那么调用close后，会立该发送一个RST标志给对端，该 TCP 连接将跳过四次挥手，也就跳过了TIME_WAIT状态，直接关闭。但这为跨越TIME_WAIT状态提供了一个可能，不过是一个非常危险的行为，不值得提倡。</li>
-    </ul>
-  </li>
-  <li>保活机制
-    <ul>
-      <li>tcp_keepalive_time=7200：表示保活时间是 7200 秒（2小时），也就 2 小时内如果没有任何连接相关的活动，则会启动保活机制</li>
-      <li>tcp_keepalive_intvl=75：表示每次检测间隔 75 秒；</li>
-      <li>tcp_keepalive_probes=9：表示检测 9 次无响应，认为对方是不可达的，从而中断本次的连接。</li>
-      <li>高效保活长连接：手把手教你实现 自适应的心跳保活机制 <a href="https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA">https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA</a></li>
-      <li>聊聊 TCP 长连接和心跳那些事 <a href="https://mp.weixin.qq.com/s/cwqAMPku-LwXAGM3Cqztig">https://mp.weixin.qq.com/s/cwqAMPku-LwXAGM3Cqztig</a></li>
-    </ul>
-  </li>
-  <li>listen 时候参数 backlog 的意义？
-    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int listen <span class="o">(</span>int socketfd, int backlog<span class="o">)</span>
-参数一 socketfd 为 socketfd 文件描述符
-参数二 backlog，这参数在历史有一定的变化
-在早期 Linux 内核 backlog 是 SYN 队列大小，也就是未完成的队列大小。
-在 Linux 内核 2.2 之后，backlog 变成 accept 队列，也就是已完成连接建立的队列长度，所以现在通常认为 backlog 是 accept 队列。
-</code></pre></div>    </div>
-  </li>
-  <li>粘包拆包，应用层拆包？
-    <ul>
-      <li>如果客户端连续不断的向服务端发送数据包时，服务端接收的数据会出现两个数据包粘在一起的情况，这就是TCP协议中经常会遇到的粘包以及拆包的问题。
-我们都知道TCP属于传输层的协议，传输层除了有TCP协议外还有UDP协议。那么UDP是否会发生粘包或拆包的现象呢？答案是不会。UDP是基于报文发送的，从UDP的帧结构可以看出，在UDP首部采用了16bit来指示UDP数据报文的长度，因此在应用层能很好的将不同的数据报文区分开，从而避免粘包和拆包的问题。而TCP是基于字节流的，虽然应用层和TCP传输层之间的数据交互是大小不等的数据块，但是TCP把这些数据块仅仅看成一连串无结构的字节流，没有边界；另外从TCP的帧结构也可以看出，在TCP的首部没有表示数据长度的字段，基于上面两点，在使用TCP传输数据时，才有粘包或者拆包现象发生的可能</li>
-      <li>SO_TCPNODELAY:NAGLE 算法通过将缓冲区内的小封包自动相连，组成较大的封包，阻止大量 小封包的发送阻塞网络，从而提高网络应用效率。但是对于时延敏感的应用场景需要关闭该优化算法。</li>
-      <li>拆包方案
-        <ul>
-          <li>客户端在发送数据包的时候，每个包都固定长度，比如1024个字节大小，如果客户端发送的数据长度不足1024个字节，则通过补充空格的方式补全到指定长度；</li>
-          <li>客户端在每个包的末尾使用固定的分隔符，例如\r\n，如果一个包被拆分了，则等待下一个包发送过来之后找到其中的\r\n，然后对其拆分后的头部部分与前一个包的剩余部分进行合并，这样就得到了一个完整的包；</li>
-          <li>将消息分为头部和消息体，在头部中保存有当前整个消息的长度，只有在读取到足够长度的消息之后才算是读到了一个完整的消息；</li>
-          <li>通过自定义协议进行粘包和拆包的处理。</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>使用了哪些算法？
-    <ul>
-      <li>重传算法</li>
-      <li>RTO计算</li>
-      <li>Nagle算法，累计够数据再发送</li>
-    </ul>
-  </li>
-  <li>netty 高性能
-    <ul>
-      <li>无锁设计、线程绑定，类似偏向锁读写操作会判断是否是之前绑定的线程，相比于同一个多列多个线程模式</li>
-      <li>用户可以实现其它的高性能序列化框架，例如 Thrift 的压缩二进制编解码框架。</li>
-      <li>小包封大包，防止网络阻塞</li>
-      <li>软中断 Hash 值和 CPU 绑定，也就是说将每个连接和 cpu 绑定，并通过这个 hash 值，来均衡软中断在多个 cpu 上，提升 网络并行处理性能。</li>
-    </ul>
-  </li>
-  <li>reactor和proactor模型
-    <ul>
-      <li>reactor：基于NIO技术，可读可写时通知应用；await阻塞等待</li>
-      <li>proactor：基于AIO技术，读完成时通知应用，写操作应用通知内核。真正的异步。</li>
-    </ul>
-  </li>
-  <li>Java nio 空轮询bug到底是什么，异常情况导致的fd集合为空时，selector仍然会轮训 <a href="https://mp.weixin.qq.com/s/-SoUVFB5DhaUZg_novolkg">https://mp.weixin.qq.com/s/-SoUVFB5DhaUZg_novolkg</a></li>
-</ul>
-
-<h4 id="tcp建立连接的本质含义是">TCP建立连接的本质含义是？</h4>
-<ol>
-  <li>确定通信整个链路的是否接通</li>
-  <li>告知彼此的第一个发送字节的初始序列号，建立连接后对每一个发送的字节都需要以初始序列号为原点进行编号。</li>
-  <li>TCP是双工的，所以建立连接后，两端都是互为客户端服务端</li>
-  <li>连接成功建立表示双方维护了一个可用连接的映射关系</li>
-  <li>建连三次握手，断连四次握手（可能是3三次）</li>
-</ol>
-<div align="left">
-<img src="/img/tcp_open_close.jpg" width="400px" />
-<img src="/img/1.png" width="400px" />
-<img src="/img/2.png" width="400px" />
-<img src="/img/3.png" width="400px" />
-</div>
-
-<h4 id="在tcp有keepalive机制的情况下为什么还要有应用层保活">在TCP有keepalive机制的情况下，为什么还要有应用层保活？</h4>
-<ol>
-  <li>TCP KeepAlive机制 的作用 是检测连接的有无（死活），但无法检测连接是否有效。“连接有效”的定义 = 双方具备发送 &amp; 接收消息的能力</li>
-  <li>比如服务器负载过高，从而无法响应任何业务，即连接无效，但是仍然是ESTABLISHED，KeepAlive机制检测不出</li>
-  <li>其他一些复杂的情况比如路由器挂了，网线被拔除，keepalive也是失效的</li>
-  <li>KeepAlive默认的参数设置的时间太长，如果频次过快放到服务端检测，服务端压力太大</li>
-  <li>KeepAlive 机制只是操作系统底层的一个被动机制，不应该被上层应用层使用，当系统关闭一个由KeepAlive 机制检查出来的死连接时，是不会主动通知上层应用的，只能通过调用相应IO操作的返回值中发现
-手把手教你实现 自适应的心跳保活机制 <a href="https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA">https://mp.weixin.qq.com/s/BsLAXegZOE6B9CzW31xIdA</a></li>
-</ol>
-
-<h4 id="sync-flooding-攻击">SYNC Flooding 攻击</h4>
-<ul>
-  <li><a href="https://blog.csdn.net/bigtree_3721/article/details/77619877">https://blog.csdn.net/bigtree_3721/article/details/77619877</a></li>
-</ul>
-
-<h4 id="应用层编程时socket写入成功的含义返回值有意义吗">应用层编程时socket写入成功的含义？返回值有意义吗？</h4>
-<ol>
-  <li>send/write只是表示把数据写入socket缓冲区，之后操作系统会遵循TCP协议规范进行发送，发送实际上没有失败状态而是收不到Ack，收不到Ack会触发重传。如果该连接有各种错误（诸如缓冲区满了、连接状态不对），在send/write时
-就会直接返回错误了，只要能写入成功，操作系统会按照缓冲区的先后顺序把数据发送出去。进入缓冲区的数据，如果重传多次仍然失败，会强制断连，之后重新建连之后会继续发送缓冲区的数据。</li>
-  <li>如果缓冲区已满（发送窗口为0）再次调用send发送数据时，若socket为阻塞的，send会一直阻塞到发送缓冲区中有空闲空间；若socket为非阻塞（切记不是异步），则会直接返回-1，并将errno设置为EAGAIN。</li>
-  <li>理论上连接建立之后，拿到合法seq，就可以一直传输数据直到有明确错误或者一直收不到Ack</li>
-  <li>I/O缓冲区在每个TCP套接字中单独存在；I/O缓冲区在创建套接字时自动生成；即使关闭套接字也会继续传送输出缓冲区中遗留的数据；关闭套接字将丢失输入缓冲区中的数据。</li>
-</ol>
-
-<h4 id="mfc-绑定窗口消息还是iocp">MFC 绑定窗口消息？还是IOCP????</h4>
-<ul>
-  <li>常见错误状态 <a href="https://blog.csdn.net/allens_zhou/article/details/47400833">https://blog.csdn.net/allens_zhou/article/details/47400833</a></li>
-</ul>
-
-<h4 id="seqack是序号要区别于控制位acksyn">Seq、Ack是序号要区别于控制位ACK、SYN</h4>
-<ol>
-  <li>两端分别产生Seq，Ack=Seq+1 ，Sequence Number（缩写为ISN：Inital Sequence Number）</li>
-  <li>解决乱序、重传、丢包等问题都依赖于Seq</li>
-  <li>ISN会和一个假的时钟绑在一起，这个时钟会在每4微秒对ISN做加一操作，直到超过2^32，又从0开始</li>
-  <li>在建立连接初始化Seq时，控制位SYN=1，否则都为0</li>
-  <li>控制位ACK=1，该数据包中的Ack才有用</li>
-  <li>重新建立连接之后seq都是要重新随机生成，因此收到上次残留的数据包会被忽略掉，重新建立连接之后缓存区中的数据应该也会清除</li>
-</ol>
-
-<h4 id="tcp状态详解">TCP状态详解</h4>
-<ul>
-  <li>LISTEN</li>
-  <li>SYN-SEND</li>
-  <li>SYN-REVEIVED</li>
-  <li>ESTABLISHED</li>
-  <li>FIN-WAIT-1</li>
-  <li>FIN-WAIT-2</li>
-  <li>CLOSING/CLOSE-WAIT</li>
-  <li>LAST-ACK</li>
-  <li>TIME_WAIT</li>
-  <li>CLOSED</li>
-</ul>
-
-<h4 id="大量time_wait解决办法">大量TIME_WAIT解决办法</h4>
-<ul>
-  <li><a href="http://coolnull.com/3605.html">http://coolnull.com/3605.html</a></li>
-  <li><a href="http://www.52im.net/thread-1007-1-1.html">http://www.52im.net/thread-1007-1-1.html</a></li>
-</ul>
-
-<h4 id="tcp重传机制超时重传错误重传">TCP重传机制（超时重传、错误重传）</h4>
-<ol>
-  <li><a href="https://coolshell.cn/articles/11564.html">https://coolshell.cn/articles/11564.html</a></li>
-  <li>经典重传
-根据超时时间重传(只传丢失的包或者丢失的包之后的全部重传)
-在定时器的Timeout内收不到ack，会按照1、2、4….64秒，逐渐延迟重传</li>
-  <li>快速重传Fast Retransmit
-接收方只ack连续的seq，比如1成功了，2丢了，收到了3、4、5，仍然ack=1+1，
-发送方连续收到3个相同的ack即可开始重传，但是还不能解决重传哪些包的问题。</li>
-  <li>Selective Acknowledgment (SACK) optional
-在快速重传的基础上，接收方在正常ack基础上，追加SACK（收到的不连续包的seq段），
-发送方是否重传哪个包，还是要依赖该包本身对应的ack，不能依赖SACK</li>
-  <li>Duplicate SACK又称D-SACK optional
-使用D-SACK来告诉发送方有哪些数据被重复接收了；可以让发送方知道，是发出去的包丢了，还是回来的ACK包丢了。</li>
-</ol>
-
-<h4 id="tcp-rttround-trip-time-----retransmission-timeout超时时间判断机制">TCP-RTT（Round Trip Time  -  Retransmission TimeOut）超时时间判断机制</h4>
-<ol>
-  <li>经典采样算法，最近几次RTT，平滑计算加权平均</li>
-  <li>Karn / Partridge 算法，忽略掉重传的RTT，只取正常的RTT，遇到重传RTO翻倍</li>
-  <li>Jacobson / Karels 算法，最新RTT与平滑过的RTT按照某种规则取值(目前使用的算法)
-    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SRTT <span class="o">=</span> SRTT + α <span class="o">(</span>RTT – SRTT<span class="o">)</span>  —— 计算平滑RTT
-DevRTT <span class="o">=</span> <span class="o">(</span>1-β<span class="o">)</span><span class="k">*</span>DevRTT + β<span class="k">*</span><span class="o">(</span>|RTT-SRTT|<span class="o">)</span> ——计算平滑RTT和真实的差距（加权移动平均）
-<span class="nv">RTO</span><span class="o">=</span> µ <span class="k">*</span> SRTT + ∂ <span class="k">*</span>DevRTT —— 神一样的公式
-（其中：在Linux下，α <span class="o">=</span> 0.125，β <span class="o">=</span> 0.25， μ <span class="o">=</span> 1，∂ <span class="o">=</span> 4 ——这就是算法中的“调得一手好参数”，nobody knows why, it just works…） 最后的这个算法在被用在今天的TCP协议中（Linux的源代码在：tcp_rtt_estimator）。
-</code></pre></div>    </div>
-  </li>
-</ol>
-
-<h4 id="tcp限流控制流控拥塞处理慢热启动算法拥塞避免算法快速恢复算法">TCP限流控制、流控、拥塞处理、慢热启动算法、拥塞避免算法、快速恢复算法</h4>
-<ol>
-  <li>滑动窗口，根据双方发送和接受数据的快慢，计算出一个“窗口”，窗口为0就不传输数据</li>
-  <li>如果窗口为0了，发送最多3次Zero Window Probe缩写为ZWP包，
-查询接受方的window size，如果3次都为0，就RST连接</li>
-  <li>Silly Window Syndrome翻译成中文就是“糊涂窗口综合症”。正如你上面看到的一样，如果我们的接收方太忙了，来不及取走Receive Windows里的数据，那么，就会导致发送方越来越小。到最后，如果接收方腾出几个字节并告诉发送方现在有几个字节的window，而我们的发送方会义无反顾地发送这几个字节。
-为解决这种情况，如果是接受端的问题，窗口缩减为0，中断连接
-如果是发送端的问题，采用Nagle算法，累计够数据再发送（会产生粘包，需要应用层解包处理）</li>
-  <li>拥塞处理Congestion Handling
-慢启动，逐渐加速，预警拥堵主动减速，拥塞发生快速恢复</li>
-  <li>慢启动发送，根据回复ack的快慢调节时间窗口</li>
-</ol>
-<p><a href="http://www.52im.net/thread-515-1-1.html">http://www.52im.net/thread-515-1-1.html</a></p>
-
-<h4 id="数据包一览与tcp-udpip包的最大长度">数据包一览与TCP 、UDP、IP包的最大长度</h4>
-<ul>
-  <li>对于UDP协议来说，UDP 包的大小就应该是 1500 - IP头(20) - UDP头(8) = 1472(Bytes)</li>
-  <li>对于TCP协议来说，TCP 包的大小就应该是 1500 - IP头(20) - TCP头(20) = 1460 (Bytes) 整个包的最大长度是由最大传输大小（MSS，Maxitum Segment Size）决定，MSS就是TCP数据包每次能够传
-输的最大数据分段。为了达到最佳的传输效能TCP协议在建立连接的时候通常要协商双方的MSS值，这个值TCP协议在实现的时候往往用MTU值代替（需
-要减去IP数据包包头的大小20Bytes和TCP数据段的包头20Bytes）所以往往MSS为1460。通讯双方会根据双方提供的MSS值得最小值
-确定为这次连接的最大MSS值。</li>
-  <li>IP层：对于IP协议来说，IP包的大小由MTU决定（IP数据包长度就是MTU-28（包头长度）。 MTU值越大，封包就越大，理论上可增加传送速率，但
-MTU值又不能设得太大，因为封包太大，传送时出现错误的机会大增。一般默认的设置，PPPoE连接的最高MTU值是1492, 而以太网
-（Ethernet）的最高MTU值则是1500,而在Internet上，默认的MTU大小是576字节</li>
-  <li><a href="https://www.cnblogs.com/jiangzhaowei/p/9273854.html">https://www.cnblogs.com/jiangzhaowei/p/9273854.html</a></li>
-  <li><a href="https://cloud.tencent.com/developer/article/1021196">https://cloud.tencent.com/developer/article/1021196</a></li>
-  <li><a href="http://www.ruanyifeng.com/blog/2017/06/tcp-protocol.html">http://www.ruanyifeng.com/blog/2017/06/tcp-protocol.html</a></li>
-  <li><a href="http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html">http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html</a></li>
-</ul>
-
-<p><img src="/img/4.jpg" width="600px" />
-<img src="/img/5.png" width="600px" /></p>
-
-<h4 id="控制位标志符详解">控制位标志符详解</h4>
-
-<h5 id="udp">UDP</h5>
-<p><img src="/img/udp.jpg" width="600px" /></p>
-
-<h5 id="tcp-1">TCP</h5>
-<p><img src="/img/6.png" width="600px" /></p>
-
-<ul>
-  <li>控制位：这六位有很重要的作用，TCP的连接、传输和断开都受这六个控制位的指挥。各位含义如下：
-    <ol>
-      <li>URG：紧急指针有效位。</li>
-      <li>ACK：只有当ACK=1时，确认序列号字段才有效（除了SYS=0时，ACK必须=1）；当ACK=0时，确认号字段无效。</li>
-      <li>PSH：标志位为1时，要求接受方尽快将数据段送达应用层。</li>
-      <li>RST：当RST值为1时，通知重新建立TCP连接。</li>
-      <li>SYN：同步序号位，TCP需要建立连接时将这个值设为1。</li>
-      <li>FIN：发送端完成发送任务，当TCP完成数据传输需要断开连接时，提出断开连接一方将这个值设为1。</li>
-    </ol>
-  </li>
-  <li><a href="https://blog.csdn.net/weixin_44907813/article/details/90444151">https://blog.csdn.net/weixin_44907813/article/details/90444151</a></li>
-  <li><a href="https://blog.csdn.net/summy_J/article/details/74849675">https://blog.csdn.net/summy_J/article/details/74849675</a></li>
-</ul>
-
-<h4 id="认证登录与安全">认证登录与安全</h4>
-<ul>
-  <li>TLS  Transport Layer Security</li>
-  <li>SSL  Secure Sockets Layer 安全套接层</li>
-  <li>图解SSL/TLS协议
-    <ol>
-      <li><a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html">http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html</a></li>
-      <li><a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html</a></li>
-      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=970&amp;highlight=%B0%B2%C8%AB">http://www.52im.net/forum.php?mod=viewthread&amp;tid=970&amp;highlight=%B0%B2%C8%AB</a></li>
-      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=310&amp;highlight=%B0%B2%C8%AB">http://www.52im.net/forum.php?mod=viewthread&amp;tid=310&amp;highlight=%B0%B2%C8%AB</a></li>
-      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=427&amp;highlight=%B0%B2%C8%AB">http://www.52im.net/forum.php?mod=viewthread&amp;tid=427&amp;highlight=%B0%B2%C8%AB</a></li>
-      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=327&amp;highlight=ssl">http://www.52im.net/forum.php?mod=viewthread&amp;tid=327&amp;highlight=ssl</a></li>
-      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=426">http://www.52im.net/forum.php?mod=viewthread&amp;tid=426</a></li>
-    </ol>
-  </li>
-  <li>建立连接，通过自定义的鉴权协议，传输token或者公钥，实现身份登录认证
-<a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2106&amp;highlight=%C8%CF%D6%A4">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2106&amp;highlight=%C8%CF%D6%A4</a></li>
-</ul>
-
-<h4 id="单台服务器并发tcp连接数到底可以有多少-">单台服务器并发TCP连接数到底可以有多少 ？</h4>
-<ul>
-  <li>只要资源够用，理论可以支持无限。</li>
-  <li>操作系统65535个端口限制，以及进程能打开的1024个文件描述符的限制(可修改)，其实并没有标志唯一链接</li>
-  <li><a href="https://mp.weixin.qq.com/s/OJKWVHgbJGPwCklMRE38DA">https://mp.weixin.qq.com/s/OJKWVHgbJGPwCklMRE38DA</a></li>
-  <li>C10K到C10M <a href="http://www.52im.net/thread-561-1-1.html">http://www.52im.net/thread-561-1-1.html</a></li>
-  <li>C10K问题本质上是操作系统的问题。对于Web1.0/2.0时代的操作系统而言， 传统的同步阻塞I/O模型都是一样的，处理的方式都是requests per second，并发10K和100的区别关键在于CPU。创建的进程线程多了，数据拷贝频繁（缓存I/O、内核将数据拷贝到用户进程空间、阻塞）， 进程/线程上下文切换消耗大， 导致操作系统崩溃，这就是C10K问题的本质！
-可见，解决C10K问题的关键就是尽可能减少这些CPU等核心计算资源消耗，从而榨干单台服务器的性能，突破C10K问题所描述的瓶颈。</li>
-  <li>Epoll就成为C10K killer、高并发、高性能、异步非阻塞这些技术的代名词了。FreeBSD推出了kqueue，Linux推出了epoll，Windows推出了IOCP，Solaris推出了/dev/poll。这些操作系统提供的功能就是为了解决C10K问题。epoll技术的编程模型就是异步非阻塞回调，也可以叫做Reactor，事件驱动，事件轮循（EventLoop）。Nginx，libevent，node.js这些就是Epoll时代的产物。</li>
-  <li>为什么QQ用的是UDP协议而不是TCP协议？也是因为早期TCP维护连接成本高，服务器贵死，就采用了UDP+应用层保活心跳之类的综合方案。</li>
-</ul>
-
-<h4 id="natp2p打洞">NAT、P2P（打洞）</h4>
-<ul>
-  <li>NAT（Network Address Translator），主要是IP地址的绑定（内部与公网）</li>
-  <li>NAPT（Network Address/Port Translator），主要是IP与端口共同绑定（内部与公网）</li>
-  <li>实现P2P必须基于NAT，而NAT需要软硬件设备支持</li>
-  <li>打洞原理是通过中间服务器S”伪装”连接，获取到P1与P2的公网IP+端口组合，然后P1与P2分别伪装S与彼此建立连接</li>
-  <li>打洞原理及TCP/UDP打洞流程<a href="https://www.cnblogs.com/GO-NO-1/p/7241556.html">https://www.cnblogs.com/GO-NO-1/p/7241556.html</a></li>
-  <li><a href="https://www.cnblogs.com/mq0036/p/4644776.html">https://www.cnblogs.com/mq0036/p/4644776.html</a></li>
-</ul>
-
-<h4 id="tcp-服务器集群搭建">tcp 服务器集群搭建</h4>
-<ul>
-  <li>【阿里】基于阿里TableStore Timeline 实现的IM</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/muS68_vtXTrIGd1JNmS50A">https://mp.weixin.qq.com/s/muS68_vtXTrIGd1JNmS50A</a></p>
-<ul>
-  <li>如何造一个“钉钉”？谈谈消息系统架构的实现</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/5-7qCF4P15PfEv3d-PylCw">https://mp.weixin.qq.com/s/5-7qCF4P15PfEv3d-PylCw</a>
-<a href="https://github.com/aliyun/tablestore-examples/tree/master/demos/ImChart">https://github.com/aliyun/tablestore-examples/tree/master/demos/ImChart</a></p>
-<ul>
-  <li>高并发IM系统架构优化实践</li>
-</ul>
-<p><a href="https://yq.aliyun.com/articles/66461?spm=a2c4e.11153940.0.0.7b2d55b2ztsBXG">https://yq.aliyun.com/articles/66461?spm=a2c4e.11153940.0.0.7b2d55b2ztsBXG</a></p>
-<ul>
-  <li>如何打造千万级Feed流系统</li>
-</ul>
-<p><a href="https://yq.aliyun.com/articles/224132?spm=a2c4e.11153940.0.0.7b2d55b2bjKqT9">https://yq.aliyun.com/articles/224132?spm=a2c4e.11153940.0.0.7b2d55b2bjKqT9</a></p>
-<ul>
-  <li>TableStore Timeline：轻松构建千万级IM和Feed流系统</li>
-</ul>
-<p><a href="https://yq.aliyun.com/articles/319138">https://yq.aliyun.com/articles/319138</a></p>
-<ul>
-  <li>亿级消息系统的核心存储：Tablestore发布Timeline 2.0模型</li>
-</ul>
-<p><a href="https://www.jianshu.com/p/cc61a80286cb">https://www.jianshu.com/p/cc61a80286cb</a></p>
-<ul>
-  <li>表格存储Tablestore权威指南</li>
-</ul>
-<p><a href="https://blog.csdn.net/cpongo1/article/details/89533133">https://blog.csdn.net/cpongo1/article/details/89533133</a></p>
-
-<h4 id="常用协议">常用协议</h4>
-<ul>
-  <li>MQTT（Message Queuing Telemetry Transport，消息队列遥测传输）是IBM开发的一个即时通讯协议，有可能成为物联网的重要组成部分。</li>
-  <li>XMPP</li>
-  <li>JSON</li>
-  <li>Protobuf 序列化后所生成的二进制消息非常紧凑，这得益于 Protobuf 采用的非常巧妙的 Encoding 方法。
-考察消息结构之前，让我首先要介绍一个叫做 Varint 的术语。Varint 是一种紧凑的表示数字的方法。它用一个或多个字节来表示一个数字，值越小的数字使用越少的字节数。这能减少用来表示数字的字节数。</li>
-</ul>
-
-<h4 id="其他">其他</h4>
-<ul>
-  <li>MSL：Maximum Segment Lifetime</li>
-  <li>MSS：Maximum Segment Size</li>
-  <li>MTU:  Maximum Transmission Unit</li>
-  <li>TCB：Transmission Control Block</li>
-  <li>
-    <p>TTL：Time To Live</p>
-  </li>
-  <li>相关协议之TCP与UDP</li>
-  <li><a href="http://www.52im.net/thread-580-1-1.html">http://www.52im.net/thread-580-1-1.html</a></li>
-  <li><a href="http://www.52im.net/thread-1160-1-1.html">http://www.52im.net/thread-1160-1-1.html</a></li>
-  <li>
-    <p><a href="http://www.52im.net/thread-279-1-1.html">http://www.52im.net/thread-279-1-1.html</a></p>
-  </li>
-  <li>相关协议之ICMP
-ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP）
-完全理解icmp协议</li>
-</ul>
-<p><a href="https://www.cnblogs.com/iiiiher/p/8513748.html">https://www.cnblogs.com/iiiiher/p/8513748.html</a></p>
-
-<ul>
-  <li>相关协议之Ping/Traceroute
-    <ul>
-      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=157&amp;highlight=ping">http://www.52im.net/forum.php?mod=viewthread&amp;tid=157&amp;highlight=ping</a></li>
-      <li><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=1973&amp;highlight=ping">http://www.52im.net/forum.php?mod=viewthread&amp;tid=1973&amp;highlight=ping</a></li>
-    </ul>
-  </li>
-  <li>相关协议之DHCP</li>
-</ul>
-<p><a href="http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html">http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html</a></p>
-
-<ul>
-  <li>查看TCP握手耗时 handshake: 0.022, SSL握手耗时 handshake: 0.064
-    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-w</span> <span class="s2">"TCP handshake: %{time_connect}, SSL handshake: %{time_appconnect}</span><span class="se">\n</span><span class="s2">"</span> <span class="nt">-so</span> /dev/null https://www.alipay.com
-</code></pre></div>    </div>
-  </li>
-  <li>HTTPS的七个误解</li>
-</ul>
-<p><a href="http://www.ruanyifeng.com/blog/2011/02/seven_myths_about_https.html">http://www.ruanyifeng.com/blog/2011/02/seven_myths_about_https.html</a></p>
-
-<ul>
-  <li>RSA算法原理</li>
-</ul>
-<p><a href="http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html">http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html</a></p>
-
-<ul>
-  <li>Http各个版本介绍</li>
-</ul>
-<p><a href="http://www.ruanyifeng.com/blog/2016/08/http.html">http://www.ruanyifeng.com/blog/2016/08/http.html</a></p>
-
-<h5 id="参考资料">参考资料</h5>
-
-<p><a href="http://www.52im.net/">即时通讯网</a></p>
-
-<p><a href="https://java-mzd.iteye.com/blog/1007577">TCP-IP的20问</a></p>
-
-<p><a href="https://www.jianshu.com/p/16c8c9e09feb">长连接及心跳保活原理简介</a></p>
-
-<p><a href="https://www.cnblogs.com/imstudy/p/5846363.html">为什么说基于TCP的移动端IM仍然需要心跳保活？</a></p>
-
-<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=195&amp;ctid=10">微信对网络影响的技术试验及分析（论文全文）</a></p>
-
-
-      </div>
-      <div style="height:50px;">
-	<a href="/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
@@ -930,6 +701,10 @@ ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP
       <a href="/page15" class="button page-button">15</a>
       
       
+      
+      <a href="/page16" class="button page-button">16</a>
+      
+      
 
       
       <a href="/page14" class="button page-button">&raquo;</a>
@@ -988,7 +763,7 @@ ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP
       
       
       <a  href="/tag/分布式">
-      <span class="label label-default">分布式 ( 15 )</span>
+      <span class="label label-default">分布式 ( 18 )</span>
       </a><br />
 
       
@@ -1030,7 +805,7 @@ ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP
       
       
       <a  href="/tag/java">
-      <span class="label label-default">Java ( 16 )</span>
+      <span class="label label-default">Java ( 19 )</span>
       </a><br />
 
       
@@ -1038,6 +813,20 @@ ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP
       
       <a  href="/tag/nosql">
       <span class="label label-default">NoSQL ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/大数据">
+      <span class="label label-default">大数据 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/安全">
+      <span class="label label-default">安全 ( 2 )</span>
       </a><br />
 
       
@@ -1087,13 +876,6 @@ ICMP：Internet Control Message Protocol（Tcp&lt;—&gt;Ack、IP&lt;—&gt;ICMP
       
       <a  href="/tag/mq">
       <span class="label label-default">MQ ( 1 )</span>
-      </a><br />
-
-      
-      
-      
-      <a  href="/tag/安全">
-      <span class="label label-default">安全 ( 1 )</span>
       </a><br />
 
       
