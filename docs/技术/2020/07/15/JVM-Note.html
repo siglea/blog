@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> Jvm（四）Note</title>
+  <meta name="description" content="Class文件">
+  <script src="/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/07/15/JVM-Note.html">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+</head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-86140592-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  <body>
+
+    <header class="site-header">
+  <div class="container" style="text-align:center">
+    <div class="navbar" style="margin-bottom:0;border:0">
+    <ul class="navbar-nav nav header-nav">
+    <li><a href="/index.html" class="button">首页</a></li>
+      <li><a href="/category/技术" class="button">技术</a></li>
+      <li><a href="/category/产品商业" class="button">产品商业</a></li>
+      <li><a href="/category/随记" class="button">随记</a></li>
+    </ul>
+    </div>
+  </div>
+
+</header>
+<div class="clearfix">
+
+
+    <div class="page-content">
+      <div class="container" style="padding-left:0;padding-right:0;">
+        <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline"> Jvm（四）Note</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-07-15T13:40:00+08:00" itemprop="datePublished">Jul 15, 2020</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h4 id="class文件">Class文件</h4>
+<p><img src="/img/class.jpg" width="600px" /></p>
+
+<ul>
+  <li>Magic Number：4字节，0xCAFEBABE</li>
+  <li>minor_version/major_version：JDK版本号，向下兼容</li>
+  <li>constant_pool_count/constant_pool：常量池（javap -verbose可以输出.class内容)</li>
+  <li>access_flags：表示class是类或者接口、是否public、是否abstract、是否final</li>
+  <li>this_class/super_class/interfaces_count/interfaces：</li>
+  <li>fields/fields_count，methods/methods_count</li>
+  <li>attributes/attributes_count：属性可以出现在class文件的很多地方，而不只是出现在attributes列表里。如果是attributes表里的属性，那么它就是对整个class文件所对应的类或者接口的描述；如果出现在fileds的某一项里，那么它就是对该字段额外信息的描述；如果出现在methods的某一项里，那么它就是对该方法额外信息的描述。
+    <ol>
+      <li>Code：使用在方法表里，Java代码编译成的字节码指令。
+        <ul>
+          <li>可以查看虚拟机字节码指令表 <a href="https://www.cnblogs.com/magexi/p/11822910.html">https://www.cnblogs.com/magexi/p/11822910.html</a></li>
+          <li>虚拟机规范一个方法不允许超过 65535条字节码指令</li>
+          <li>如果把一个Java程序中的信息分为代码(Code，方法体里面的Java代码)和元数据(Metadata，包括类、字段、方法定义及其他信息)，
+  那么在整个Class文件中，Code属性用于描述代码，所有的其他属性用于描述元数据。</li>
+        </ul>
+      </li>
+      <li>Exception</li>
+      <li>LineNumberTable：Java源码的行号与字节码指令的对应关系</li>
+      <li>LocalVariableTable属性：用于描述栈帧中局部变量表中的变量与Java源代码中定义的变量之间的关系。</li>
+      <li>SourceFile：源代码名字</li>
+      <li>ConstantValue属性：通知虚拟机自动为静态变量赋值</li>
+      <li>InnerClasses属性</li>
+      <li>Synthetic属性：代表此字段或方法并不是由Java源代码直接产生的，而是由编译器自行添加的（如:init)</li>
+      <li>StackMapTable属性：会在虚拟机类加载的字节码验证阶段被新类型检查验证器使用。</li>
+      <li>Signature：泛型</li>
+      <li>BootstrapMethods属性：用于保存invokeDynamic指令引用的引导方法限定符。</li>
+      <li>RuntimeVisibleAnnotations：为动态注解提供支持</li>
+    </ol>
+  </li>
+  <li>案例看下
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestClass</span><span class="o">{</span>
+  <span class="kd">private</span> <span class="kt">int</span> <span class="n">m</span> <span class="o">;</span>
+  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">inc</span><span class="o">(){</span>
+      <span class="k">return</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+    <p><img src="/img/class_code.jpg" width="600px" />
+<img src="/img/class_javap.jpg" width="600px" /></p>
+  </li>
+</ul>
+
+<h4 id="字节码指令集200多个不超过256">字节码指令集（200多个，不超过256）</h4>
+<ul>
+  <li>加载和存储指令：iload、istore、bipush等</li>
+  <li>运算指令：iadd、isub、imul、idiv、ior、iand等</li>
+  <li>类型转换指令：i2b、i2c、i2s等</li>
+  <li>对象创建与访问指令：new、newarray、putfield、getfield、arraylength等</li>
+  <li>操作栈管理指令：pop、dup、 swap等</li>
+  <li>控制转移指令：ifeq、iflt、ifle等</li>
+  <li>方法调用和返回指令：
+    <ul>
+      <li>invokevirtual：抽象/虚拟方法</li>
+      <li>invokeinterface：接口方法</li>
+      <li>invokespecial：init、私有、父类方法</li>
+      <li>invokestatic：静态方法</li>
+      <li>invokedynamic指令用于在运行时动态解析出调用点限定符所引用的方法，并执行该方法，
+  前4条调用指令的分派逻辑都固化在Java虚拟机内部，而invokedynamic指令的分派逻辑由用户所设定的引导方法决定的。</li>
+    </ul>
+  </li>
+  <li>异常处理指令：throw（catch用异常表来实现）</li>
+  <li>同步指令：monitorenter 、monitorexit</li>
+</ul>
+
+<h4 id="类加载机制">类加载机制</h4>
+<ul>
+  <li>加载
+    <ul>
+      <li>加载时机：new、invocke static；反射调用；子类依赖的父类；main类；jdk1.7后的动态语言支持REF_getStatic</li>
+      <li>除了上述5种场景，其他的方式都是被动引用（如：访问类常量、创建对象数组等），不会触发初始化。</li>
+      <li>加载渠道：zip包类(Jar/Ear/War)；网络类(Applet)；动态代理生成；JSP等</li>
+    </ul>
+  </li>
+  <li>验证
+    <ul>
+      <li>文件格式验证：版本号、类型、常量类型等</li>
+      <li>元数据验证：类继承实现是否正确完整等Java语言规范</li>
+      <li>字节码验证：字节码语义验证、安全验证、类型推断验证（StackMapTable优化了类型推断）</li>
+      <li>符号引用验证：为确保解析动作能正常运行，类名、访问权限等核实</li>
+    </ul>
+  </li>
+  <li>准备
+    <ul>
+      <li>为类变量分配内存，并设置初始化”零值”（final直接赋值）</li>
+    </ul>
+  </li>
+  <li>解析
+    <ul>
+      <li>把符号引用替换为直接引用</li>
+      <li>正式解析类、字段、方法，解析失败会出现IllegalAccessError、NoSuchFieldError、NoSuchMethodError</li>
+    </ul>
+  </li>
+  <li>初始化
+    <ul>
+      <li>clinit()方法执行、虚拟机保证该方法现成安全</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="破坏双亲委派">破坏双亲委派</h4>
+<ul>
+  <li>JDK1.2通过覆盖loadClass实现自定义加载器，之后应是把自己的加载逻辑放到findClass中</li>
+  <li>SPI机制通过 ThreadContextClassLoader的方式，父加载器可以实现委派下级进行加载。比如BootstrapClassLoader
+  需要使用到了classpath下的class，但是自己只能加载固定目录下，就需要委派AppClassLoader来替它加载</li>
+  <li>OSGI动态热部署等</li>
+</ul>
+
+<h4 id="虚拟机字节码执行引擎">虚拟机字节码执行引擎</h4>
+<ul>
+  <li>在不同的虚拟机实现里会有解释执行（解释器执行）和编译执行（通过即时编译器产生本地代码执行）两种方式。</li>
+  <li>运行时栈帧结构
+    <ul>
+      <li>每个线程包含多个栈帧</li>
+      <li>局部变量表
+        <ul>
+          <li>局部变量表的容量以变量槽(Variable Slot)为最小单位(32位/64位)</li>
+          <li>第0位，表示this</li>
+          <li>Slot可以被复用一变节省空间，比如把不用的对象=null，就可以把该对象占用的空间让出来，但是=null有可能被编译器优化擦出掉或者jvm会优化这种操作</li>
+          <li>局部变量需要明确初始化，不会给初始化”零值”</li>
+        </ul>
+      </li>
+      <li>操作栈</li>
+      <li>动态连接
+        <ul>
+          <li>Class文件中的符号引用在运行期间转换为直接引用，就是指动态连接</li>
+        </ul>
+      </li>
+      <li>返回地址
+        <ul>
+          <li>方法退出的过程实际上就等同于把当前栈帧出栈，因此退出时可能执行的操作有：
+  恢复上层方法的局部变量表和操作数栈，把返回值压入调用者栈帧的操作数栈中，
+  调整PC计时器的值以指向方法调用指令后面的一条指令等。</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>方法调用
+    <ul>
+      <li>方法调用阶段唯一的任务就是确定被调用的方法的版本，暂时还不涉及方法内部的具体运行过程。
+在程序运行时，进行方法调用是最普遍、最频繁的操作，但前面已经讲过，Class文件的编译过程中
+不包含传统编译中的连接步骤，一起方法调用在Class文件里面存储的都只是符号引用，而不是方法
+在实际运行时内存布局中的入口地址（直接引用）。这个特性给Java带来了更强大的动态扩展能力，
+但也使得Java方法调用过程变得相对复杂起来，需要再类加载期间，甚至到运行期间才能确定目标方法的直接引用。</li>
+      <li>编译器可知，运行期不可变</li>
+      <li>2大类方法
+        <ol>
+          <li>非虚方法：通过invokestatic/invokespecial调用的诸如静态、私有、构造、父类方法这4类，在解析阶段就确定了</li>
+          <li>虚方法：抽象，多态。
+            <ul>
+              <li>静态分派：方法重载</li>
+              <li>动态分派：方法重写
+                <ul>
+                  <li>动态单分派</li>
+                  <li>通过方法表来优化查找性能</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+  <li>动态性
+    <ul>
+      <li>何为动态语言？变量无类型而变量值才有类型。</li>
+      <li>Java动态性实现从JDK1.7开始 <a href="https://blog.csdn.net/zero__007/article/details/107304054">https://blog.csdn.net/zero__007/article/details/107304054</a>
+        <ul>
+          <li>java.lang.invoke包MethodHandler</li>
+          <li>invokedynamic字节码指令</li>
+          <li>Reflection与MethodHandle机制都是在模拟方法调用，Reflection是在Java代码层次，而MethodHandl是在模拟字节码层次</li>
+          <li>Reflection是重量级的能映射整个方法相关的信息，MethoudHandle仅仅是方法调用</li>
+          <li>Reflection是为Java语言服务的，MethodHandle是为所有Java虚拟机之上的语言服务</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span><span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">test0</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Throwable</span> <span class="o">{</span>
+        <span class="c1">// 通过MethodType的静态工厂方法构造 MethodType</span>
+        <span class="nc">MethodType</span> <span class="n">methodType</span> <span class="o">=</span> <span class="nc">MethodType</span><span class="o">.</span><span class="na">methodType</span><span class="o">(</span><span class="kt">void</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="c1">// 获取方法句柄</span>
+        <span class="nc">MethodHandle</span> <span class="n">methodHandle</span> <span class="o">=</span> <span class="nc">MethodHandles</span><span class="o">.</span><span class="na">lookup</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">findVirtual</span><span class="o">(</span><span class="nc">User</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"say"</span><span class="o">,</span> <span class="n">methodType</span><span class="o">);</span>
+        <span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">User</span><span class="o">();</span>
+        <span class="n">methodHandle</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="s">"zero"</span><span class="o">);</span>
+        <span class="c1">// invoke和invokeExact方法, invokeExact方法与直接调用底层方法是一样的</span>
+        <span class="n">methodHandle</span><span class="o">.</span><span class="na">invokeExact</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="s">"zero"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span><span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">useConstantCallSite</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Throwable</span> <span class="o">{</span>  
+        <span class="nc">MethodHandles</span><span class="o">.</span><span class="na">Lookup</span> <span class="n">lookup</span> <span class="o">=</span> <span class="nc">MethodHandles</span><span class="o">.</span><span class="na">lookup</span><span class="o">();</span>  
+        <span class="nc">MethodType</span> <span class="n">type</span> <span class="o">=</span> <span class="nc">MethodType</span><span class="o">.</span><span class="na">methodType</span><span class="o">(</span><span class="nc">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kt">int</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kt">int</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>  
+        <span class="nc">MethodHandle</span> <span class="n">mh</span> <span class="o">=</span> <span class="n">lookup</span><span class="o">.</span><span class="na">findVirtual</span><span class="o">(</span><span class="nc">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"substring"</span><span class="o">,</span> <span class="n">type</span><span class="o">);</span>
+        
+        <span class="nc">ConstantCallSite</span> <span class="n">callSite</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConstantCallSite</span><span class="o">(</span><span class="n">mh</span><span class="o">);</span>  
+        <span class="nc">MethodHandle</span> <span class="n">invoker</span> <span class="o">=</span> <span class="n">callSite</span><span class="o">.</span><span class="na">dynamicInvoker</span><span class="o">();</span>  
+        <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span> <span class="n">invoker</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="s">"Hello"</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>  
+    <span class="o">}</span> 
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>执行引擎
+    <ul>
+      <li>编译执行/解释执行</li>
+      <li>JIT编译(just-in-time compilation)狭义来说是当某段代码即将第一次被执行时进行编译,因而叫“即时编译”</li>
+      <li>基于栈的指令集 与 基于寄存器的指令集 （Android Dalvik VM)
+  <img src="/img/exec.jpg" width="600px" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="类加载及执行子系统案例">类加载及执行子系统案例</h4>
+<ul>
+  <li>tomcat
+    <ul>
+      <li>放置在 /common 目录中：类库可被 Tomcat 和所有的 Web 应用程序共同使用。CommonClassLoader</li>
+      <li>放置在 /server 目录中：类库可被 Tomcat 使用，对所有的 Web 应用程序都不可见。CatalinaClassLoader</li>
+      <li>放置在 /shared 目录中：类库可被所有的 Web 应用程序共同使用，但对 Tomcat 自己不可见。SharedClassLoader</li>
+      <li>放置在 /WebApp/WEB-INF 目录中：类库仅仅可以被此 Web 应用程序使用，对 Tomcat 和其他 Web 应用程序都不可见 WebAppClassLoader</li>
+    </ul>
+  </li>
+  <li>OSGi：灵活的类加载器架构
+    <ul>
+      <li>OSGi（Open Service Gateway Initiative） 是 OSGi 联盟（OSGi Alliance）制定的一个基于 Java 语言的动态模块化规范</li>
+    </ul>
+  </li>
+  <li>字节码生成技术与动态代理的实现
+    <ul>
+      <li>javac、Javassit、CGlib、ASM</li>
+      <li>JDK Proxy，也是生成字节码，用完删除了而已
+        <ul>
+          <li>Proxy.newProxyInstance()</li>
+          <li>sun.misc.ProxyGenerator.generateProxyClass()</li>
+          <li>System.getProperties().put(“sun.misc.ProxyGenerator.saveGeneratedFiles”, “true”);</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Retrotranslator 的作用是将 JDK 1.5 编译出来的 Class 文件转变为可以在 JDK 1.4 或 1.3 上部署的版本</li>
+</ul>
+
+<p><a href="https://blog.csdn.net/u013678930/article/details/51995251">https://blog.csdn.net/u013678930/article/details/51995251</a></p>
+
+<h4 id="早期编译期优化">早期（编译期）优化</h4>
+<ul>
+  <li>编译器类型
+    <ul>
+      <li>前端编译器：把java变为class，如Sun的Javac、Eclipse JDT中的增量式编译器(ECJ)</li>
+      <li>JIT编译器：运行时把 class字节码转变成机器码，如HotSpot VM的 C1、C2编译器</li>
+      <li>AOT编译器：直接把java编译成本地机器码，如GNU Compiler for the Java (GCJ)、Excelsior JET</li>
+    </ul>
+  </li>
+  <li>编译过程
+    <ul>
+      <li>解析与填充符号表过程</li>
+      <li>插入式注解处理器的注解处理过程</li>
+      <li>分析与字节码生成过程</li>
+    </ul>
+  </li>
+  <li>泛型与类型擦除(Signature、LocalVariableTypeTable从JDK1.6之后用于解决此特性带来的问题)</li>
+  <li>自动装箱、拆箱与遍历循环</li>
+  <li>Annotation Processor是javac的一个工具，它用来在编译时扫描和处理注解，通过Annotation Processor可以获取到注解和被注解类的相关信息，
+  然后根据注解自动生成Java代码，省去了手动编写，提高了编码效率。(javac -processor)
+    <ul>
+      <li>Hibernate Validator Annotation Processor</li>
+      <li>Project Lombok</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="晚期运行期优化">晚期运行期优化</h4>
+<ul>
+  <li>主流的虚拟机采用解释器与编译器并存的架构 (java -version  mixed mode)，为了再启动响应速度和运行效率之间达到最佳平衡，
+  hotSpot虚拟机还会逐渐启用分层编译（Tiered Compilation）的策略。
+    <ul>
+      <li>解释器，一遍运行一遍把字节码解释为本地机器码 [0层]</li>
+      <li>编译器，把字节码编译成为本地机器码并缓存起来
+        <ul>
+          <li>C1（Client Compiler），更高的编译速度   [1层]</li>
+          <li>C2 (Server Compiler)，更好的编译质量   [2层]</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>热点代码：在运行过程中会被即时编译器编译的代码 也就是HotSpot的名称来源
+    <ul>
+      <li>被多次调用的方法：由方法调用触发编译，也是标准的JIT编译方式
+        <ul>
+          <li>Invocation Counter，超过阈值触发JIT编译</li>
+          <li>C1默认：1500次 C2：10000次</li>
+          <li>-XX：CompileThreshold</li>
+          <li>可以设置衰减周期：CounterHalfLifeTime</li>
+        </ul>
+      </li>
+      <li>被对此执行的循环体：由循环体，关联出所在的方法，发生在方法执行过程中，因此被称为栈上替换OSR (On Stack Replacement)
+        <ul>
+          <li>Back Edge Counter，字节码遇到控制流向后跳转的指令后统计次数，为了触发OSR</li>
+          <li>CompileThreshold * OnStackReplacePercentage / 100</li>
+          <li>C1: 13995,C2：10700</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>热点探测的判断方法
+    <ul>
+      <li>基于采样（Sample Based Hot Spot Detection)，周期性检查各个线程的栈顶。缺点是受线程阻塞等因素影响会不准</li>
+      <li>基于计数器（Counter Based Hot Spot Detection)，统计方法的执行次数。缺点是无法知道调用关系。</li>
+    </ul>
+  </li>
+  <li>编译过程
+    <ul>
+      <li>C1
+        <ul>
+          <li>字节码 -&gt;方法内联、常量传播 -&gt; HIR High level Intermediate Representation (SSA Static Single Assignment形式)</li>
+          <li>HIR -&gt; 空置检查消除、范围检查消除 -&gt; LLR Low-Level Intermediate Representation</li>
+          <li>LIR -&gt; 寄存器分配、窥孔优化 -&gt; 本地机器码</li>
+        </ul>
+      </li>
+      <li>C2,相对于C1更加缓慢，提高代码质量，进一步减少本地代码的执行时间
+        <ul>
+          <li>无用代码消除 Dead Code Elimination</li>
+          <li>循环展开 Loop Unrolling</li>
+          <li>循环表达式外提 Loop Expression Hoisting</li>
+          <li>消除公共子表达式 Common Subexpression Elimination</li>
+          <li>常量传播 Constant Propagation</li>
+          <li>基本块重排序 Basic Block Reordering</li>
+          <li>范围检查消除 Range Check Elimiation</li>
+          <li>数组边界检查消除 Array Bounds Checking Elimination：JAVA数组的方位不是通过裸指针，所以每次都需要检查是否越界
+  可以通过数据流分析推断出取值范围，就可以把检查消除</li>
+          <li>逃逸分析 Escape Analysis
+            <ul>
+              <li>当一个对象在方法中被定义后，它可能被外部方法所引用
+                <ul>
+                  <li>JVM判断新创建的对象是否逃逸的依据有：一、对象被赋值给堆中对象的字段和类的静态变量。
+  二、对象被传进了不确定的代码中去运行。如果满足了以上情况的任意一种，那这个对象JVM就会判定为逃逸。
+  对于第一种情况，因为对象被放进堆中，则其它线程就可以对其进行访问，所以对象的使用情况，编译器就无法再进行追踪。
+  第二种情况相当于JVM在解析普通的字节码的时候，如果没有发生JIT即时编译，编译器是不能事先完整知道这段代码会对对象做什么操作。
+  保守一点，这个时候也只能把对象是当作是逃逸来处理。</li>
+                  <li><a href="https://zhuanlan.zhihu.com/p/59215831">https://zhuanlan.zhihu.com/p/59215831</a></li>
+                </ul>
+              </li>
+              <li>逃逸分析带来的好处：栈上分配，同步消除、标量替换
+                <ol>
+                  <li>同步消除。如果一个对象被发现只能从一个线程被访问到，那么对于这个对象的操作可以不考虑同步。</li>
+                  <li>将堆分配转化为栈分配。如果一个对象在子程序中被分配，要使指向该对象的指针永远不会逃逸，对象可能是栈分配的候选，而不是堆分配。</li>
+                  <li>分离对象或标量替换。有的对象可能不需要作为一个连续的内存结构存在也可以被访问到，那么对象的部分（或全部）可以不存储在内存，而是存储在CPU寄存器中。</li>
+                </ol>
+              </li>
+              <li>缺点：不确定逃逸对象的比例，反而会浪费性能</li>
+              <li>-XX:+DoEscapeAnalysis 开启逃逸分析，JDK1.7默认开启</li>
+              <li><a href="https://blog.csdn.net/w372426096/article/details/80333657">https://blog.csdn.net/w372426096/article/details/80333657</a></li>
+              <li><a href="https://blog.csdn.net/hollis_chuang/article/details/80922794">https://blog.csdn.net/hollis_chuang/article/details/80922794</a></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Java 与 C++ 编译器对比
+    <ul>
+      <li>Java编译器占用用户时间</li>
+      <li>Java语言是动态的类型安全语言，意味值需要频繁检测空指针、数字越界、类型转换，总体耗时</li>
+      <li>运行时多态选择频率远远大于C/C++</li>
+      <li>Java对象内存分配在只能再堆上，造成局部对象不能随之栈消失被回收</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="线程与内存模型">线程与内存模型</h4>
+<ul>
+  <li>缓存一致性 Cache Coherence，解决CPU高速缓存与主内存数据一致性。如MSI、FireFly等协议</li>
+  <li>指令重排 Instruction Reorder，与处理器乱序执行OutOfOrder Execution类似，使得处理器内部的运算单元尽可能被充分利用</li>
+  <li>Java内存模型：所有变量储存在主内存Main Memory、每条线程还有自己的工作内存Working Memory
+    <ul>
+      <li>read/load : 从主内存读取到工作内存</li>
+      <li>store/write ：从工作内存写入主内存</li>
+      <li>use：从工作内存传递给执行引擎</li>
+      <li>assign：工作引擎赋值给工作内存</li>
+      <li>lock/unlock：在主内存锁定或解锁变量</li>
+    </ul>
+  </li>
+  <li>volatile：
+    <ul>
+      <li>保证可见性：本质上volatile变量也可以存在不一致的情况，但由于每次使用前都要先刷新，执行引擎看不到不一致的情况</li>
+      <li>禁止指令重排：通过插入内存屏障指令来实现，因此写操作会比普通变量慢</li>
+      <li>非原子性的i++之类的操作仍然会出现问题</li>
+    </ul>
+  </li>
+  <li>long/double这种64位的数据，几乎所有虚拟机厂商都实现读写原子性，所以可以不需要声明为volatile</li>
+  <li>先行发生原则 happen before，只要遵循以下几个原则就是有顺序保障的，否则可能被重排。也就是说我们考虑并发问题
+  不要看先后发生的时间顺序，而一切以先行发生原则为准
+    <ul>
+      <li>程序次序规则 Program Order Rule</li>
+      <li>管程锁定规则 Monitor Lock Rule</li>
+      <li>volatile变量规则 Volatile Variable Rule</li>
+      <li>线程启动、终止、中断规则</li>
+      <li>对象终结规则 init 先于 finalize</li>
+      <li>传递性 Transitivity</li>
+    </ul>
+  </li>
+  <li>Java线程实现
+    <ul>
+      <li>JDK1.2之前，是用用户线程</li>
+      <li>JDK1.2及之后，是用操作系统的线程来实现</li>
+    </ul>
+  </li>
+  <li>Java线程调度
+    <ul>
+      <li>协同式线程调度 Cooperative Thread-Scheduling，线程执行时间由自己控制，会造成各种阻塞不让出资源</li>
+      <li>抢占式线程调度 Preemptive Threads Scheduling，由操作系统分配执行时间，Java使用该方式，可以指定线程优先级但是不一定起作用</li>
+    </ul>
+  </li>
+  <li>线程状态
+    <ul>
+      <li>新建 New：尚未启动的状态</li>
+      <li>运行 Runable，对应操作系统中的Running和Ready，可以是正在执行也可以是等待CPU分配时间</li>
+      <li>等待 Waiting
+        <ul>
+          <li>无限期等待：Object.wait/Thread.join/LockSupport.park</li>
+          <li>限期等待：Thread.sleep/Object.wait timeout/Thread.join timeout/LockSupport.parkNanos timeout/LockSupport.parkUntil timeout</li>
+        </ul>
+      </li>
+      <li>阻塞 Blocked
+        <ul>
+          <li>阻塞与等待的区别：阻塞是在等待这获取到一个排他锁，等待状态是在等待时间或者被唤醒</li>
+          <li>在程序等待进入同步区域的时候会进入该状态</li>
+        </ul>
+      </li>
+      <li>结束 Terminated</li>
+    </ul>
+  </li>
+  <li>线程安全的实现方法
+    <ul>
+      <li>互斥同步</li>
+      <li>非阻塞同步/乐观锁，乐观锁的实现依赖于”硬件指令集的发展”
+      - 测试并设置 Test-and-Set
+      - 获取并增加 Fetch-and-Increment
+      - 交换 Swap
+      - 比较并交换 CAS
+      - 加载链接/条件存储</li>
+      <li>无同步</li>
+    </ul>
+  </li>
+  <li>自旋锁，单纯自旋等待前面的锁定释放</li>
+  <li>偏向锁、轻量级锁、重量级锁</li>
+</ul>
+
+<p><img src="/img/lock_optimize.jpg" width="600px" /></p>
+
+<h4 id="总览">总览</h4>
+<ul>
+  <li><a href="https://www.cnblogs.com/linghu-java/category/855958.html">https://www.cnblogs.com/linghu-java/category/855958.html</a></li>
+</ul>
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+      </div>
+      <div class="clearfix">
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="container">
+
+    <h2 class="footer-heading">粉笔灰杂谈</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>粉笔灰杂谈</li>
+          <li><a href="mailto:siglea@sina.com">siglea@sina.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/siglea"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">siglea</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

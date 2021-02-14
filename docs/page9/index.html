@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>粉笔灰杂谈</title>
+  <meta name="description" content="关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。">
+  <script src="/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="canonical" href="http://localhost:4000/page9/">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+</head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-86140592-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  <body>
+
+    <header class="site-header">
+  <div class="container" style="text-align:center">
+    <div class="navbar" style="margin-bottom:0;border:0">
+    <ul class="navbar-nav nav header-nav">
+    <li><a href="/index.html" class="button">首页</a></li>
+      <li><a href="/category/技术" class="button">技术</a></li>
+      <li><a href="/category/产品商业" class="button">产品商业</a></li>
+      <li><a href="/category/随记" class="button">随记</a></li>
+    </ul>
+    </div>
+  </div>
+
+</header>
+<div class="clearfix">
+
+
+    <div class="page-content">
+      <div class="container" style="padding-left:0;padding-right:0;">
+        <div class="row" style="margin-bottom:30px">
+  <div class="home col-md-8">
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/12/08/Keepalived.html"> Keepalived </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 8, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/12/08/Keepalived.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="keepalived是什么">keepalived是什么</h3>
+<p>Keepalived软件起初是专为LVS负载均衡软件设计的，用来管理并监控LVS集群系统中各个服务节点的状态，后来又加入了可以实现高可用的VRRP功能。因此，Keepalived除了能够管理LVS软件外，还可以作为其他服务（例如：Nginx、Haproxy、MySQL等）的高可用解决方案软件。
+Keepalived软件主要是通过VRRP协议实现高可用功能的。VRRP是Virtual Router RedundancyProtocol(虚拟路由器冗余协议）的缩写，VRRP出现的目的就是为了解决静态路由单点故障问题的，它能够保证当个别节点宕机时，整个网络可以不间断地运行。
+所以，Keepalived 一方面具有配置管理LVS的功能，同时还具有对LVS下面节点进行健康检查的功能，另一方面也可实现系统网络服务的高可用功能。</p>
+
+<h3 id="keepalived工作原理">keepalived工作原理</h3>
+<p>keepalived是以VRRP协议为实现基础的，VRRP全称Virtual Router Redundancy Protocol，即虚拟路由冗余协议。
+虚拟路由冗余协议，可以认为是实现路由器高可用的协议，即将N台提供相同功能的路由器组成一个路由器组，这个组里面有一个master和多个backup，master上面有一个对外提供服务的vip（该路由器所在局域网内其他机器的默认路由为该vip），master会发组播，当backup收不到vrrp包时就认为master宕掉了，这时就需要根据VRRP的优先级来选举一个backup当master。这样的话就可以保证路由器的高可用了。
+keepalived主要有三个模块，分别是core、check和vrrp。core模块为keepalived的核心，负责主进程的启动、维护以及全局配置文件的加载和解析。check负责健康检查，包括常见的各种检查方式。vrrp模块是来实现VRRP协议的。</p>
+
+<h3 id="keepalived官网">keepalived官网</h3>
+<p><a href="http://www.keepalived.org">http://www.keepalived.org</a></p>
+
+<h3 id="常见容错机制">常见容错机制</h3>
+<ol>
+  <li>failover：失效转移
+Fail-Over的含义为“失效转移”，是一种备份操作模式，当主要组件异常时，其功能转移到备份组件。其要点在于有主有备，且主故障时备可启用，并设置为主。如Mysql的双Master模式，当正在使用的Master出现故障时，可以拿备Master做主使用</li>
+  <li>failfast：快速失败
+从字面含义看就是“快速失败”，尽可能的发现系统中的错误，使系统能够按照事先设定好的错误的流程执行，对应的方式是“fault-tolerant（错误容忍）”。以JAVA集合（Collection）的快速失败为例，当多个线程对同一个集合的内容进行操作时，就可能会产生fail-fast事件。例如：当某一个线程A通过iterator去遍历某集合的过程中，若该集合的内容被其他线程所改变了；那么线程A访问集合时，就会抛出ConcurrentModificationException异常（发现错误执行设定好的错误的流程），产生fail-fast事件。</li>
+  <li>failback：失效自动恢复
+Fail-over之后的自动恢复，在簇网络系统（有两台或多台服务器互联的网络）中，由于要某台服务器进行维修，需要网络资源和服务暂时重定向到备用系统。在此之后将网络资源和服务器恢复为由原始主机提供的过程，称为自动恢复</li>
+  <li>failsafe：失效安全
+Fail-Safe的含义为“失效安全”，即使在故障的情况下也不会造成伤害或者尽量减少伤害。维基百科上一个形象的例子是红绿灯的“冲突监测模块”当监测到错误或者冲突的信号时会将十字路口的红绿灯变为闪烁错误模式，而不是全部显示为绿灯。</li>
+</ol>
+
+<p><a href="https://www.cnblogs.com/clsn/p/8052649.html">https://www.cnblogs.com/clsn/p/8052649.html</a></p>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/12/08/Keepalived.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/WhereAreWomenFrom.html">女人的起源</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 1, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/WhereAreWomenFrom.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>极致思考</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="开言">开言</h4>
+<p>以这一篇做为这个版块的开始，之所以要增加【极致思考】这个版块，根本的原因是，我认为，大多数业务或者商业甚至物理定律是在有限的条件下有规律的发生（概率其实是规律的一种形式）。
+那么，如何能在极短的时间内发现有限的规律、发现事物本质就难能可贵了。所以，我想把自己对一些事物的自认为合理的猜测记录下来，以锻炼自己的思考力。</p>
+
+<h4 id="女人的起源">女人的起源</h4>
+<p>今天开车回家，在路上，无意间摸到了我副驾驶的座椅，我内心一惊，拥有这辆车5年多，我第一次感受到它。由于是真皮座椅，那一刻我忽然觉得它似乎有了生命，它是我的伴侣，它是我的”小途途”。
+这个奇妙的感觉，让我想到几年前，阅读了张小龙推荐的《女人的起源》一书，该书提出了一个有意思的问题：</p>
+<ol>
+  <li>人为何没有了毛发？
+ 书中的解释是：某个时段，人类为了躲避陆地大型凶兽，很长一段时间是生活在水中或浅海区域，因为大型凶兽多数怕水。在水中时间久了，毛发就脱落了。但是，水中会有蛇类，所以人类至今都会天生怕蛇。</li>
+  <li>女性为何有凸起的乳房？</li>
+  <li>男性为何有凸起的乳房？</li>
+</ol>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E9%9A%8F%E8%AE%B0/2019/12/01/WhereAreWomenFrom.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/Principles.html">《原则》Ray Dalio</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 1, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/Principles.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>读书笔记</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="原则">原则</h4>
+<ul>
+  <li>发现问题、分析问题、正视问题、找出解决问题的路径、彻底解决问题。</li>
+  <li>一部分人不知道自己不知道处于不自知，另一部分人知道自己不知道处于自知但是不行动，只有及少数自知并且不容忍自己的问题并加以行动。</li>
+  <li>如果你的见解不比一般人搞，你就不会是领导者；如果你的见解比他们更高，那就不必担心你做得事情不受欢迎。</li>
+  <li>创意择优（可信度加权决策）。</li>
+  <li>想方设法达成共识。（基于逻辑、数据、坦诚的沟通）</li>
+  <li>多次确认，不如把同一个事情交给多人来做。（比如财务）</li>
+  <li>做有意义的工作，发展有意义的人际关系。</li>
+  <li>切勿混淆慷慨和公平。</li>
+  <li>价值观 &gt; 能力 &gt; 技能。</li>
+</ul>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E9%9A%8F%E8%AE%B0/2019/12/01/Principles.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/HowToSuccess.html">为何我们不能获得真正的成功</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Dec 1, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E9%9A%8F%E8%AE%B0/2019/12/01/HowToSuccess.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>读书笔记</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<pre>
+成功者在成为成功者之前就像成功者一样行动。
+Winners act like winners before they become winners.
+
+你追求的是金钱和头衔，而不是经验和转变。人们不快乐在很大程度上是因为他们对什么是有价值的感到困惑。（威廉-欧文）
+
+因为成功和幸福一样，是无法追求的，它必须随着你的努力发生。
+
+大多数人不愿意接受失败，只有在我们愿意承受失败，我们才能真正成功。 （马克-曼森）
+为了维护已有的外在形象，不愿意接受失败，不愿意接受失败从无法从失败中汲取教训。
+大部分人只关注如何"打败别人"，结果一直在99%的平庸中度过。
+
+实验、失败、发现什么事有效的！
+
+失败能让你变得谦虚
+失败能加速你的成长
+失败能发展你的性格
+</pre>
+
+<p><a href="https://v.qq.com/x/cover/mzc00200d49qjv0/c3000j8caf6.html">https://v.qq.com/x/cover/mzc00200d49qjv0/c3000j8caf6.html</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E9%9A%8F%E8%AE%B0/2019/12/01/HowToSuccess.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html">多路复用select poll epoll</a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Nov 12, 2019</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<ul>
+  <li>需要反复看看 <a href="https://www.cnblogs.com/itxiaok/p/10357825.html">https://www.cnblogs.com/itxiaok/p/10357825.html</a></li>
+  <li>相比 select ，poll 有这些优点：
+  由于 poll 在 pollfd 里用 int fd 来表示文件描述符而不像 select 里用的 fd_set 来分别表示描述符，所以没有必须小于 1024 的限制，也没有数量限制；
+  由于 poll 用 events 表示期待的事件，通过修改 revents 来表示发生的事件，所以不需要像 select 在每次调用前重新设置描述符和期待的事件。
+  除此之外，poll 和 select 几乎相同。在 poll 返回后，需要遍历 fdarray 来检查各个 pollfd 里的 revents 是否发生了期待的事件；每次调用 poll 时，
+  把 fdarray 复制到内核空间。在描述符太多而每次准备好的较少时，poll 有同样的性能问题。</li>
+  <li>epoll 解决了 poll 和 select 的问题：
+    <ul>
+      <li>只在 epoll_ctl 的时候把数据复制到内核空间，这保证了每个描述符和事件一定只会被复制到内核空间一次；每次调用 epoll_wait 都不会复制新数据到内核空间。相比之下，select 每次调用都会把三个 fd_set 复制一遍；poll 每次调用都会把 fdarray 复制一遍。</li>
+      <li>epoll_wait 返回 n ，那么只需要做 n 次循环，可以保证遍历的每一次都是有意义的。相比之下，select 需要做至少 n 次至多 maxfdp1 次循环；poll 需要遍历完 fdarray 即做 nfds 次循环。</li>
+      <li>在内部实现上，epoll 使用了回调的方法。调用 epoll_ctl 时，就是注册了一个事件：在集合中放入文件描述符以及事件数据，并且加上一个回调函数。一旦文件描述符上的对应事件发生，就会调用回调函数，这个函数会把这个文件描述符加入到就绪队列上。当你调用 epoll_wait 时，它只是在查看就绪队列上是否有内容，有的话就返回给你的程序。select() poll() epoll_wait() 三个函数在操作系统看来，都是睡眠一会儿然后判断一会儿的循环，但是 select 和 poll 在醒着的时候要遍历整个文件描述符集合，而 epoll_wait 只是看看就绪队列是否为空而已。这是 epoll 高性能的理由，使得其 I/O 的效率不会像使用轮询的 select/poll 随着描述符增加而大大降低。</li>
+    </ul>
+  </li>
+  <li>Epoll的机理，我们便能很容易掌握epoll的用法了。一句话描述就是：三步曲。
+    <ol>
+      <li>epoll_create()系统调用。此调用返回一个句柄，之后所有的使用都依靠这个句柄来标识。</li>
+      <li>struct rb_root  rbr; 红黑树的根节点，这颗树中存储着所有添加到epoll中的需要监控的事件</li>
+      <li>struct list_head rdlist; 双链表中则存放着将要通过epoll_wait返回给用户的满足条件的事件</li>
+      <li>epoll_ctl()系统调用。通过此调用向epoll对象中添加、删除、修改感兴趣的事件，返回0标识成功，返回-1表示失败。</li>
+      <li>调用epoll_ctl向epoll对象中添加这100万个连接的套接字</li>
+      <li>而所有添加到epoll中的事件都会与设备(网卡)驱动程序建立回调关系，也就是说，当相应的事件发生时会调用这个回调方法。这个回调方法在内核中叫ep_poll_callback,它会将发生的事件添加到rdlist双链表中。</li>
+      <li>epoll_wait()系统调用。通过此调用收集在epoll监控中已经发生的事件。</li>
+    </ol>
+  </li>
+</ul>
+
+<h3 id="再次总结">再次总结</h3>
+<h4 id="历史">历史</h4>
+<ul>
+  <li>select出现是1984年在BSD里面实现的(为了减少数据拷贝带来的性能损坏，内核对被监控的fd_set集合大小做了限制，并且这个是通过宏控制的，大小不可改变(限制为1024))</li>
+  <li>14年之后也就是1997年才实现了poll，其实拖那么久也不是效率问题， 而是那个时代的硬件实在太弱，一台服务器处理1千多个链接简直就是神一样的存在了，select很长段时间已经满足需求</li>
+  <li>2002, 大神 Davide Libenzi 实现了epoll</li>
+</ul>
+
+<h4 id="区别">区别</h4>
+<ul>
+  <li>操作方式：select/poll依靠遍历，而epll靠回调</li>
+  <li>IO效率：由于操作方式，select/poll时间复杂度是O(n)，epoll是O(1)</li>
+  <li>数据结构：select(数组)、poll(链表)、epoll(哈希表)</li>
+  <li>最大连接数：由于数据结构的原因，poll/epoll突破了数量的限制，而select只支持1024(2048)</li>
+  <li>fd拷贝：select/poll都需要把fd集合从用户态拷贝到内核态，epoll没有描述符个数限制，使用一个文件描述符管理多个描述符，将用户关心的文件描述符的事件存放到内核的一个事件表中，这样在用户空间和内核空间的copy只需一次。</li>
+  <li>epoll是通过内核于用户空间mmap同一块内存实现了节省拷贝的动作。</li>
+</ul>
+
+<h4 id="源代码">源代码</h4>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// select</span>
+<span class="kt">int</span> <span class="nf">select</span><span class="o">(</span><span class="kt">int</span> <span class="n">maxfdp1</span><span class="o">,</span><span class="n">fd_set</span> <span class="o">*</span><span class="n">readset</span><span class="o">,</span><span class="n">fd_set</span> <span class="o">*</span><span class="n">writeset</span><span class="o">,</span><span class="n">fd_set</span> <span class="o">*</span><span class="n">exceptset</span><span class="o">,</span><span class="kd">const</span> <span class="n">struct</span> <span class="n">timeval</span> <span class="o">*</span><span class="n">timeout</span><span class="o">);</span>
+<span class="c1">// 主要问题在于在用户态创建fd_set然后拷贝到内核态，再由内核态装配数据后，在用户态中进行遍历</span>
+<span class="c1">// 并且每次都需要重新初始化fd_set</span>
+
+<span class="c1">// poll</span>
+<span class="kt">int</span> <span class="nf">poll</span><span class="o">(</span><span class="n">struct</span> <span class="n">pollfd</span> <span class="o">*</span><span class="n">fds</span><span class="o">,</span> <span class="n">nfds_t</span> <span class="n">nfds</span><span class="o">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="o">);</span>
+<span class="n">typedef</span> <span class="n">struct</span> <span class="n">pollfd</span> <span class="o">{</span>        
+<span class="kt">int</span> <span class="n">fd</span><span class="o">;</span>                         <span class="c1">// 需要被检测或选择的文件描述符        </span>
+<span class="kt">short</span> <span class="n">events</span><span class="o">;</span>                   <span class="c1">// 对文件描述符fd上感兴趣的事件        </span>
+<span class="kt">short</span> <span class="n">revents</span><span class="o">;</span>                  <span class="c1">// 文件描述符fd上当前实际发生的事件</span>
+<span class="o">}</span> 
+
+
+<span class="c1">// epoll</span>
+<span class="kt">int</span> <span class="nf">epoll_create</span><span class="o">(</span><span class="kt">int</span> <span class="n">size</span><span class="o">);</span> <span class="c1">//  函数创建一个epoll句柄，参数size表明内核要监听的描述符数量。调用成功时返回一个epoll句柄描述符，失败时返回-1。</span>
+<span class="kt">int</span> <span class="nf">epoll_ctl</span><span class="o">(</span><span class="kt">int</span> <span class="n">epfd</span><span class="o">,</span> <span class="kt">int</span> <span class="n">op</span><span class="o">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="o">,</span> <span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">*</span><span class="n">event</span><span class="o">);</span>
+    <span class="c1">// epfd 表示epoll句柄</span>
+    <span class="c1">// op 表示fd操作类型，有如下3种</span>
+        <span class="c1">// EPOLL_CTL_ADD   注册新的fd到epfd中</span>
+        <span class="c1">// EPOLL_CTL_MOD 修改已注册的fd的监听事件</span>
+        <span class="c1">// EPOLL_CTL_DEL 从epfd中删除一个fd</span>
+    <span class="c1">// fd 是要监听的描述符</span>
+    <span class="c1">// event 表示要监听的事件</span>
+<span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">{</span>
+    <span class="n">__uint32_t</span> <span class="n">events</span><span class="o">;</span>  <span class="cm">/* Epoll events */</span>    
+   <span class="n">epoll_data_t</span> <span class="n">data</span><span class="o">;</span>  <span class="cm">/* User data variable */</span>
+<span class="o">};</span>
+<span class="n">typedef</span> <span class="n">union</span> <span class="n">epoll_data</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="o">;</span>    <span class="kt">int</span> <span class="n">fd</span><span class="o">;</span>
+    <span class="n">__uint32_t</span> <span class="n">u32</span><span class="o">;</span>
+    <span class="n">__uint64_t</span> <span class="n">u64</span><span class="o">;</span>
+<span class="o">}</span> <span class="n">epoll_data_t</span><span class="o">;</span>
+<span class="kt">int</span> <span class="nf">epoll_wait</span><span class="o">(</span><span class="kt">int</span> <span class="n">epfd</span><span class="o">,</span> <span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">*</span> <span class="n">events</span><span class="o">,</span> <span class="kt">int</span> <span class="n">maxevents</span><span class="o">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="o">);</span>
+    <span class="c1">// epfd 是epoll句柄</span>
+    <span class="c1">// events 表示从内核得到的就绪事件集合</span>
+    <span class="c1">// maxevents 告诉内核events的大小</span>
+    <span class="c1">// timeout 表示等待的超时事件</span>
+</code></pre></div></div>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>IO多路复用的三种机制Select，Poll，Epoll <a href="https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA">https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA</a></li>
+  <li>IO模型及select、poll、epoll和kqueue的区别 <a href="https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A">https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A</a></li>
+  <li>Select，Poll，Epoll详解 <a href="https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg">https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg</a></li>
+  <li>大量代码 深入分析select&amp;poll&amp;epoll原理 <a href="https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g">https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g</a></li>
+</ul>
+
+<h3 id="简单总结三者区别">简单总结三者区别</h3>
+<ul>
+  <li>一切都与历史有关，都是历史发展造成差异</li>
+  <li>select最早出现（1983年在BSD里实现），由以下几个特点
+    <ol>
+      <li>无论效率如何确实实现了多路复用</li>
+      <li>原理也就是内核态监听最多1024个链接，任意一个链接有数据了，通知用户态去遍历所有链接获取数据</li>
+      <li>由于编程的原因把1024写在了linux的头文件FD_SETSIZE中</li>
+      <li>由于编程的原因数据直接写到了参数的地址上，导致需要每次需要重置参数</li>
+    </ol>
+  </li>
+  <li>poll 在1997年推出，修复select的两个问题（也是历史原因，当时机器硬件性能不高没有必要修复）
+    <ol>
+      <li>最大监听连接数修改为在 /proc/sys/fs/file-max 获取</li>
+      <li>内核通过修改pollfd.revents反馈其中的就绪时间</li>
+      <li>仍然需要遍历，效率仍然低，时间复杂度O(n)</li>
+    </ol>
+  </li>
+  <li>epoll，革新以上两种方式，内核只返回就绪的那一个链接，不需要遍历，所以效率提升了
+    <ol>
+      <li>epoll其实也需要调用epoll_wait不断轮询就绪链表，期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。</li>
+      <li>epoll对文件描述符的操作有两种模式：LT（level trigger）和ET（edge trigger）。LT模式是默认模式，LT模式与ET模式的区别如下：
+        <ul>
+          <li>LT模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。</li>
+          <li>ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。</li>
+          <li>LT模式，LT(level triggered)是缺省的工作方式，并且同时支持block和no-block socket。在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，内核还是会继续通知你的。</li>
+          <li>ET模式，ET(edge-triggered)是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知，直到你做了某些操作导致那个文件描述符不再为就绪状态了(比如，你在发送，接收或者接收请求，或者发送接收的数据少于一定量时导致了一个EWOULDBLOCK 错误）。但是请注意，如果一直不对这个fd作IO操作(从而导致它再次变成未就绪)，内核不会发送更多的通知(only once)。ET模式在很大程度上减少了epoll事件被重复触发的次数，因此效率要比LT模式高。epoll工作在ET模式的时候，必须使用非阻塞套接口，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。</li>
+          <li>在select/poll中，进程只有在调用一定的方法后，内核才对所有监视的文件描述符进行扫描，而epoll事先通过epoll_ctl()来注册一个文件描述符，一旦基于某个文件描述符就绪时，内核会采用类似callback的回调机制，迅速激活这个文件描述符，当进程调用epoll_wait()时便得到通知。(此处去掉了遍历文件描述符，而是通过监听回调的的机制。这正是epoll的魅力所在。)</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="参考资料">参考资料</h4>
+<ul>
+  <li><a href="https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A">https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA">https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA">https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A">https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A</a></li>
+  <li>C10K到C10M <a href="http://www.52im.net/thread-561-1-1.html">http://www.52im.net/thread-561-1-1.html</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+
+    <div style="text-align:center">
+    
+    <div class="pagination">
+      
+      <a href="/page8" class="button page-button">&laquo;</a>
+      
+
+      
+      
+      <a href="/page8" class="button page-button">1</a>
+      
+      
+      
+      <a href="/page2" class="button page-button">2</a>
+      
+      
+      
+      <a href="/page3" class="button page-button">3</a>
+      
+      
+      
+      <a href="/page4" class="button page-button">4</a>
+      
+      
+      
+      <a href="/page5" class="button page-button">5</a>
+      
+      
+      
+      <a href="/page6" class="button page-button">6</a>
+      
+      
+      
+      <a href="/page7" class="button page-button">7</a>
+      
+      
+      
+      <a href="/page8" class="button page-button">8</a>
+      
+      
+      
+      <a href="/page8" class="button current-page-button">9</a>
+      
+      
+      
+      <a href="/page10" class="button page-button">10</a>
+      
+      
+      
+      <a href="/page11" class="button page-button">11</a>
+      
+      
+      
+      <a href="/page12" class="button page-button">12</a>
+      
+      
+      
+      <a href="/page13" class="button page-button">13</a>
+      
+      
+      
+      <a href="/page14" class="button page-button">14</a>
+      
+      
+      
+      <a href="/page15" class="button page-button">15</a>
+      
+      
+      
+      <a href="/page16" class="button page-button">16</a>
+      
+      
+
+      
+      <a href="/page10" class="button page-button">&raquo;</a>
+      
+    </div>
+    
+    </div>
+  </div>
+
+    <div class="col-md-4">
+    <div class="post-contents">
+      <i class="fa fa-tags">&nbsp;&nbsp; Tags</i><br />
+      
+      
+      
+      <a  href="/tag/programming">
+      <span class="label label-default">programming ( 4 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/python">
+      <span class="label label-default">python ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/云服务">
+      <span class="label label-default">云服务 ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/工具">
+      <span class="label label-default">工具 ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/网络">
+      <span class="label label-default">网络 ( 9 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/构建">
+      <span class="label label-default">构建 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/分布式">
+      <span class="label label-default">分布式 ( 18 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/股票">
+      <span class="label label-default">股票 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/读书笔记">
+      <span class="label label-default">读书笔记 ( 4 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/数据库">
+      <span class="label label-default">数据库 ( 7 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/数据结构与算法">
+      <span class="label label-default">数据结构与算法 ( 10 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/linux">
+      <span class="label label-default">Linux ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/java">
+      <span class="label label-default">Java ( 19 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/nosql">
+      <span class="label label-default">NoSQL ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/大数据">
+      <span class="label label-default">大数据 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/安全">
+      <span class="label label-default">安全 ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/极致思考">
+      <span class="label label-default">极致思考 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/架构">
+      <span class="label label-default">架构 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/容器">
+      <span class="label label-default">容器 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/spring">
+      <span class="label label-default">Spring ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/微服务">
+      <span class="label label-default">微服务 ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/bigdata">
+      <span class="label label-default">BigData ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/mq">
+      <span class="label label-default">MQ ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/用户">
+      <span class="label label-default">用户 ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/tob">
+      <span class="label label-default">toB ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/策略">
+      <span class="label label-default">策略 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/方法论">
+      <span class="label label-default">方法论 ( 1 )</span>
+      </a><br />
+
+      
+    </div>
+    <br />
+    <div class="post-contents">
+      <h3>About Me</h3>
+      <img src="/img/me.jpg" style="margin:20px auto 0 auto;">
+      <p style="font-size:18px;margin-top:10px">I'm Siglea,That's All.</p>
+      <br />
+    </div>
+    </div>
+</div>
+      </div>
+      <div class="clearfix">
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="container">
+
+    <h2 class="footer-heading">粉笔灰杂谈</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>粉笔灰杂谈</li>
+          <li><a href="mailto:siglea@sina.com">siglea@sina.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/siglea"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">siglea</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
