@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> BigData </title>
+  <meta name="description" content="Hadoop官方教程 http://hadoop.apache.org/docs/r1.0.4/cn/quickstart.htmlHadoop基础知识  HDFS          NameNode：FsImage、Editlog（HDFS日志文件）      Secondary NameNode      D...">
+  <script src="/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+</head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-86140592-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  <body>
+
+    <header class="site-header">
+  <div class="container" style="text-align:center">
+    <div class="navbar" style="margin-bottom:0;border:0">
+    <ul class="navbar-nav nav header-nav">
+    <li><a href="/index.html" class="button">首页</a></li>
+      <li><a href="/category/技术" class="button">技术</a></li>
+      <li><a href="/category/产品商业" class="button">产品商业</a></li>
+      <li><a href="/category/随记" class="button">随记</a></li>
+    </ul>
+    </div>
+  </div>
+
+</header>
+<div class="clearfix">
+
+
+    <div class="page-content">
+      <div class="container" style="padding-left:0;padding-right:0;">
+        <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline"> BigData </h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-05-01T19:25:00+08:00" itemprop="datePublished">May 1, 2020</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <p>Hadoop官方教程 <a href="http://hadoop.apache.org/docs/r1.0.4/cn/quickstart.html">http://hadoop.apache.org/docs/r1.0.4/cn/quickstart.html</a>
+<img src="/img/bigdata.jpeg" width="600px" /></p>
+<h4 id="hadoop基础知识">Hadoop基础知识</h4>
+<ul>
+  <li>HDFS
+    <ul>
+      <li>NameNode：FsImage、Editlog（HDFS日志文件）</li>
+      <li>Secondary NameNode</li>
+      <li>DataNode</li>
+    </ul>
+  </li>
+  <li>MapReduce
+    <ul>
+      <li>JobTracker</li>
+      <li>TaskTracker
+        <ul>
+          <li>MapTask</li>
+          <li>ReduceTask</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>NameNodeHA方案
+    <ul>
+      <li>Secondary NN会定期的从NN中读取editlog，与自己存储的Image进行合并形成新的metadata image</li>
+      <li>backup NN实时得到editlog，当NN宕掉后，手动切换到Backup NN；</li>
+      <li>Avatar NameNode，这是Facebook提供的一种HA方案，将client访问hadoop的editlog放在NFS中，Standby NN能够实时拿到editlog；DataNode需要同时与Active NN和Standby NN report block信息；</li>
+      <li>Hadoop HA 是 Hadoop 2.x 中新添加的特性，包括 NameNode HA 和 ResourceManager HA。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="storm基础知识">Storm基础知识</h4>
+<ul>
+  <li>Nimbus：负责在集群里面发送代码，分配工作给机器，并且监控状态。全局只有一个。相当于master的角色。</li>
+  <li>Supervisor：监听分配给它那台机器的工作，根据需要启动/关闭工作进程Worker。每一个要运行Storm的机器上都要部署一个，并且，按照机器的配置设定上面分配的槽位数。</li>
+  <li>zookeeper：Storm重点依赖的外部资源。Nimbus和Supervisor甚至实际运行的Worker都是把心跳保存在Zookeeper上的。Nimbus也是根据Zookeerper上的心跳和任务运行状况，进行调度和任务分配的。两者之间的调度器。</li>
+  <li>Spout：在一个topology中产生源数据流的组件。通常情况下spout会从外部数据源中读取数据，然后转换为topology内部的源数据。Spout是一个主动的角色，其接口中有个nextTuple()函数，storm框架会不停地调用此函数，用户只要在其中生成源数据即可。</li>
+  <li>Bolt：在一个topology中接受数据然后执行处理的组件。Bolt可以执行过滤、函数操作、合并、写数据库等任何操作。Bolt是一个被动的角色，其接口中有个execute(Tuple input)函数,在接受到消息后会调用此函数，用户可以在其中执行自己想要的操作。</li>
+  <li>Topology：storm中运行的一个实时应用程序，因为各个组件间的消息流动形成逻辑上的一个拓扑结构。</li>
+  <li>Worker：具体处理组建逻辑的进程，</li>
+  <li>Task：不再与物理进程对应，是处理任务的线程，</li>
+  <li>Stream：源源不断传递的tuple就组成了stream。</li>
+  <li>Tuple:一次消息传递的基本单元。本来应该是一个key-value的map，但是由于各个组件间传递的tuple的字段名称已经事先定义好，所以tuple中只要按序填入各个value就行了，所以就是一个value list.</li>
+  <li>一个 spout 向拓扑提供数据，多个 bolt 完成统计任务</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">storm</span><span class="o">.</span><span class="na">analytics</span><span class="o">;</span>
+<span class="o">...</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TopologyStarter</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Logger</span><span class="o">.</span><span class="na">getRootLogger</span><span class="o">().</span><span class="na">removeAllAppenders</span><span class="o">();</span>
+        <span class="nc">TopologyBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TopologyBuilder</span><span class="o">();</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setSpout</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">UsersNavigationSpout</span><span class="o">(),</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">GetCategoryBolt</span><span class="o">(),</span><span class="mi">3</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">shuffleGrouping</span><span class="o">(</span><span class="s">"read-feed"</span><span class="o">);</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">UserHistoryBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"get-categ"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Fields</span><span class="o">(</span><span class="s">"user"</span><span class="o">));</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">ProductCategoriesCounterBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">fieldsGrouping</span><span class="o">(</span><span class="s">"user-history"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Fields</span><span class="o">(</span><span class="s">"product"</span><span class="o">));</span>
+        <span class="n">builder</span><span class="o">.</span><span class="na">setBolt</span><span class="o">(</span><span class="s">"news-notifier"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">NewsNotifierBolt</span><span class="o">(),</span><span class="mi">5</span><span class="o">)</span>
+               <span class="o">.</span><span class="na">shuffleGrouping</span><span class="o">(</span><span class="s">"product-categ-counter"</span><span class="o">);</span>
+
+        <span class="nc">Config</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Config</span><span class="o">();</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">setDebug</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-host"</span><span class="o">,</span><span class="no">REDIS_HOST</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"redis-port"</span><span class="o">,</span><span class="no">REDIS_PORT</span><span class="o">);</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"webserver"</span><span class="o">,</span> <span class="no">WEBSERVER</span><span class="o">);</span>
+
+        <span class="nc">LocalCluster</span> <span class="n">cluster</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LocalCluster</span><span class="o">();</span>
+        <span class="n">cluster</span><span class="o">.</span><span class="na">submitTopology</span><span class="o">(</span><span class="s">"analytics"</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span> <span class="n">builder</span><span class="o">.</span><span class="na">createTopology</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>  
+</code></pre></div></div>
+<ul>
+  <li>Storm教程 <a href="https://www.w3cschool.cn/storm/qk761jzb.html">https://www.w3cschool.cn/storm/qk761jzb.html</a></li>
+</ul>
+
+<h4 id="storm命名方式">Storm命名方式</h4>
+<ul>
+  <li>Storm暴风雨：其组件大多也以气象名词命名</li>
+  <li>spout龙卷：形象的理解是把原始数据卷进Storm流式计算中</li>
+  <li>bolt雷电：从spout或者其他bolt中接收数据进行处理或者输出</li>
+  <li>nimbus雨云：主控节点，存在单点问题，不过可以用watchdog来保证其可用性，fast-fail后马上就启动</li>
+  <li>topology拓扑：Storm的任务单元，形象的理解拓扑的点是spout或者bolt，之间的数据流是线，整个构成一个拓扑</li>
+</ul>
+
+<h4 id="storm为什么接kafka">storm为什么接Kafka</h4>
+<ul>
+  <li>系统解耦</li>
+  <li>storm没有自己的存储只负责计算</li>
+  <li>可以通过kafka控制流量</li>
+</ul>
+
+<h4 id="storm应用场景">Storm应用场景</h4>
+<ul>
+  <li>日志分析，例如应用系统产生大量的业务日志，这些例如网关系统的API调用情况日志，这些日志，不太适合马上存入数据库，需要进行加工，日志文件的量又非常大，所以没法直接统计，这时候可以通过Storm来进行分析。</li>
+  <li>大数据实时统计，互联网的数据量是海量的时候，没有办法在数据库层面直接SQL来进行统计，需要对于产生的数据，进行二次加工，然后产出结果，正好把实时变化的数据流到storm中处理一遍。</li>
+  <li>一淘-实时分析系统pora：实时分析用户的属性，并反馈给搜索引擎。最初，用户属性分析是通过每天在云梯上定时运行的MR job来完成的。为了满足实时性的要求，希望能够实时分析用户的行为日志，将最新的用户属性反馈给搜索引擎，能够为用户展现最贴近其当前需求的结果。</li>
+  <li>携程-网站性能监控：实时分析系统监控携程网的网站性能。利用HTML5提供的performance标准获得可用的指标，并记录日志。Storm集群实时分析日志和入库。使用DRPC聚合成报表，通过历史数据对比等判断规则，触发预警事件。</li>
+  <li>收集游戏中的数据，运营或者开发者可以在上线后几秒钟得到持续不断更新的游戏监控报告和分析结果，然后马上针对游戏的参数和平衡性进行调整。这样就能够大大缩短游戏迭代周期，加强游戏的生命力（实际上，zynga就是这么干的！虽然使用的不是Storm……Zynga研发之道探秘：用数据说话）</li>
+  <li>推荐系统：有时候在实时处理时会从mysql及hadoop中获取数据库中的信息，例如在电影推荐系统中，传入数据为：用户当前点播电影信息，从数据库中获取的是该用户之前的一些点播电影信息统计，例如点播最多的电影类型、最近点播的电影类型，及其社交关系中点播信息，结合本次点击及从数据库中获取的信息，生成推荐数据，推荐给该用户。并且该次点击记录将会更新其数据库中的参考信息，这样就是实现了简单的智能推荐。</li>
+</ul>
+
+<h4 id="hdfshive-与-hbasephoenix的区别">HDFS+Hive 与 HBase+Phoenix的区别</h4>
+<ul>
+  <li>Hive中的表是纯逻辑表，就只是表的定义等，即表的元数据。Hive本身不存储数据，它完全依赖HDFS和MapReduce。这样就可以将结构化的数据文件映射为为一张数据库表，并提供完整的SQL查询功能，并将SQL语句最终转换为MapReduce任务进行运行。 而HBase表是物理表，适合存放非结构化的数据。
+    <ol>
+      <li>两者分别是什么？
+        <ul>
+          <li>Apache Hive是数据仓库。通过Hive可以使用HQL语言查询存放在HDFS上的数据。HQL是一种类SQL语言，这种语言最终被转化为Map/Reduce. 虽然Hive提供了SQL查询功能，但是Hive不能够进行交互查询–因为它是基于MapReduce算法。</li>
+          <li>Apache Hbase Key/Value，基础单元是cell，它运行在HDFS之上。和Hive不一样，Hbase的能够在它的数据库上实时运行，而不是运行MapReduce任务。</li>
+        </ul>
+      </li>
+      <li>两者的特点
+        <ul>
+          <li>Hive帮助熟悉SQL的人运行MapReduce任务。因为它是JDBC兼容的。运行Hive查询会花费很长时间，因为它会默认遍历表中所有的数据。但可以通过Hive的分区来控制。因为这样一来文件大小是固定的，就这么大一块存储空间，从固定空间里查数据是很快的。</li>
+          <li>HBase通过存储key/value来工作。注意版本的功能。你可以用Hadoop作为静态数据仓库，HBase作为数据存储，放那些进行一些操作会改变的数据。</li>
+        </ul>
+      </li>
+      <li>限制
+        <ul>
+          <li>Hive目前不支持更新操作。另外，由于hive在hadoop上运行批量操作，它需要花费很长的时间，通常是几分钟到几个小时才可以获取到查询的结果。Hive必须提供预先定义好的schema将文件和目录映射到列，并且Hive与ACID不兼容。</li>
+          <li>HBase查询是通过特定的语言来编写的，这种语言需要重新学习。类SQL的功能可以通过Apache Phonenix实现，但这是以必须提供schema为代价的。另外，Hbase也并不是兼容所有的ACID特性，虽然它支持某些特性。最后但不是最重要的–为了运行Hbase，Zookeeper是必须的，zookeeper是一个用来进行分布式协调的服务，这些服务包括配置服务，维护元信息和命名空间服务。</li>
+        </ul>
+      </li>
+      <li>应用场景
+        <ul>
+          <li>Hive适合用来对一段时间内的数据进行分析查询，例如，用来计算趋势或者网站的日志。Hive不应该用来进行实时的查询。因为它需要很长时间才可以返回结果。</li>
+          <li>Hbase非常适合用来进行大数据的实时查询。Facebook用Hbase进行消息和实时的分析。它也可以用来统计Facebook的连接数。</li>
+        </ul>
+      </li>
+      <li>两者关系
+        <ul>
+          <li>Hive和Pig都可以与HBase组合使用，Hive和Pig还为HBase提供了高层语言支持，使得在HBase上进行数据统计处理变的非常简单</li>
+          <li>Hive与HBase，都是在Hadoop体系使用</li>
+        </ul>
+      </li>
+      <li>总结
+        <ul>
+          <li>Hive和Hbase是两种基于Hadoop的不同技术–Hive是一种类SQL的引擎，并且运行MapReduce任务，Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库。当然，这两种工具是可以同时使用的。就像用Google来搜索，用FaceBook进行社交一样，Hive可以用来进行统计查询，HBase可以用来进行实时查询，数据也可以从Hive写到Hbase，设置再从Hbase写回Hive。</li>
+        </ul>
+      </li>
+      <li>其他
+        <ul>
+          <li>Pig是接近脚本方式去描述MapReduce，Hive则用的是SQL。近似理解为SQL ON Hadoop</li>
+        </ul>
+      </li>
+      <li>Hive &amp; Mysql数据互导 sqoop</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="hadoop--spark--storm">Hadoop &amp; Spark &amp; Storm</h4>
+<ul>
+  <li>Hadoop，是实现了MapReduce的思想，将数据切片计算来处理大量的离线数据。Hadoop处理的数据必须是已经存放在HDFS上或者类似HBase的数据库中，所以Hadoop实现的时候是通过移动计算到这些存放数据的机器上来提高效率。
+适合于离线的批量数据处理适用于对实时性要求极低的场景。</li>
+  <li>Storm，可以用来处理源源不断流进来的消息，处理之后将结果写入到某个存储中去。实时性方面做得极好。(可以脱离Hadoop体系单独使用)</li>
+  <li>Spark，是一个基于内存计算的开源集群计算系统，目的是更快速的进行数据分析。Spark由加州伯克利大学AMP实验室Matei为主的小团队使用Scala开发，类似于Hadoop MapReduce的通用并行计算框架，Spark基于Map Reduce算法实现的分布式计算，拥有Hadoop MapReduce所具有的优点，但不同于MapReduce的是Job中间输出和结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的Map Reduce的算法。
+(可以简单理解为”另一种形式的MapReduce”或者是第二代”引擎”，需要在Hadoop体系使用)</li>
+</ul>
+
+<h4 id="flume--kafka--storm">flume &amp; kafka &amp; storm</h4>
+<ul>
+  <li>flume收集日志，推到kafka缓冲一下，storm消费计算，最终结果存储</li>
+  <li>基于Flume的美团日志收集系统 <a href="https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html">https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html</a></li>
+  <li>流式数据采集和计算 <a href="https://blog.csdn.net/yezonggang/article/details/85034069">https://blog.csdn.net/yezonggang/article/details/85034069</a></li>
+  <li>Flume+Kafka+Storm+Redis构建大数据实时处理系统：实时统计网站PV、UV+展示 <a href="https://blog.51cto.com/xpleaf/2104160">https://blog.51cto.com/xpleaf/2104160</a></li>
+</ul>
+
+<h4 id="搭建单机hadoop">搭建单机Hadoop</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 配置环境变量</span>
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/home/java/jdk1.8
+<span class="nb">export </span><span class="nv">JRE_HOME</span><span class="o">=</span>/home/java/jdk1.8/jre
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="nv">$JAVA_HOME</span>/lib/dt.jar:<span class="nv">$JAVA_HOME</span>/lib/tools.jar:<span class="nv">$JRE_HOME</span>/lib
+
+<span class="nb">export </span><span class="nv">HADOOP_HOME</span><span class="o">=</span>/home/hadoop/hadoop2.8
+<span class="nb">export </span><span class="nv">HADOOP_COMMON_LIB_NATIVE_DIR</span><span class="o">=</span><span class="nv">$HADOOP_HOME</span>/lib/native
+<span class="nb">export </span><span class="nv">HADOOP_OPTS</span><span class="o">=</span><span class="s2">"-Djava.library.path=</span><span class="nv">$HADOOP_HOME</span><span class="s2">/lib"</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>.:<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin:<span class="k">${</span><span class="nv">HADOOP_HOME</span><span class="k">}</span>/bin:<span class="nv">$PATH</span>
+
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hadoop  
+<span class="nb">mkdir</span>  /root/hadoop/tmp  
+<span class="nb">mkdir</span>  /root/hadoop/var  
+<span class="nb">mkdir</span>  /root/hadoop/dfs  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/name  
+<span class="nb">mkdir</span>  /root/hadoop/dfs/data
+
+<span class="c"># 3. 修改配置文件</span>
+vim core-site.xml
+vim hadoop-env.sh
+vim hdfs-site.xml
+vim mapred-site.xml
+
+<span class="c"># 4. 启动</span>
+bin/hadoop  namenode  <span class="nt">-format</span>
+start-dfs.sh
+start-yarn.sh
+</code></pre></div></div>
+
+<h4 id="搭建单机hbase">搭建单机HBase</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 搭建好Hadoop</span>
+<span class="c"># 2. 创建目录</span>
+<span class="nb">mkdir</span>  /root/hbase  
+<span class="nb">mkdir</span>  /root/hbase/tmp  
+<span class="nb">mkdir</span>  /root/hbase/pids
+<span class="c"># 3. 启动</span>
+./start-hbase.sh
+<span class="c"># 4. 常用命令</span>
+<span class="c"># 进入shell</span>
+hbase shell
+status
+version
+list <span class="c"># 列出HBase的所有的表</span>
+exists <span class="s1">'test'</span> <span class="c"># 是否存在test表</span>
+disable <span class="s1">'test'</span>
+drop <span class="s1">'test'</span>
+describe <span class="s1">'t_user'</span>
+
+create <span class="s1">'&lt;table name&gt;'</span>,<span class="s1">'&lt;column family&gt;'</span>   <span class="c"># 其中column family 就是列族的意思</span>
+create <span class="s1">'Student'</span>,<span class="s1">'Num'</span>,<span class="s1">'Name'</span>,<span class="s1">'Sex'</span>,<span class="s1">'Age'</span> <span class="c"># 列族可以指定 Version 及 TTL</span>
+
+put &lt;table&gt;,&lt;rowkey&gt;,&lt;family:column&gt;,&lt;value&gt;,&lt;timestamp&gt;
+put <span class="s1">'Student'</span>,<span class="s1">'1001'</span>,<span class="s1">'ZhangSan'</span>,male<span class="s1">','</span>23<span class="s1">'
+put '</span>t1<span class="s1">','</span>rowkey001<span class="s1">','</span>f1:col1<span class="s1">','</span>value01<span class="s1">' #可以指定列族及列
+delete '</span>Student<span class="s1">','</span>1001<span class="s1">','</span>Age<span class="s1">' # 删除1001的年龄列
+delete '</span>Student<span class="s1">','</span>1001<span class="s1">' # 删除1001所有列
+
+scan '</span>Student<span class="s1">' # 查询该表所有数据
+scan '</span>t1<span class="s1">',{LIMIT=&gt;5} # 扫描表t1的前5条数据
+scan  '</span>stu2<span class="s1">',{COLUMNS =&gt; '</span>cf1:age<span class="s1">', LIMMIT 10, STARTROW =&gt; '</span>xx<span class="s1">'} # 分页查询
+
+count '</span>t1<span class="s1">', {INTERVAL =&gt; 100, CACHE =&gt; 500} # 查询表t1中的行数，每100条显示一次，缓存区为500
+
+get '</span>Student<span class="s1">','</span>1001<span class="s1">' # 查看1001的数据
+get '</span>t1<span class="s1">','</span>rowkey001<span class="s1">', '</span>f1:col1<span class="s1">' # 查询表t1，rowkey001中的f1下的col1的值
+
+create '</span>Student<span class="s1">',{NAME=&gt;'</span>username<span class="s1">',VERSIONS=&gt;5} # 创建表的时候指定版本数
+get '</span>Student<span class="s1">','</span>1001<span class="s1">',{COLUMN=&gt;'</span>username<span class="s1">',VERSIONS=&gt;5} # 查询指定版本的数据
+
+alter '</span>test1<span class="s1">',{NAME=&gt;'</span>body<span class="s1">',TTL=&gt;'</span>15552000<span class="s1">'},{NAME=&gt;'</span>meta<span class="s1">', TTL=&gt;'</span>15552000<span class="s1">'} #指定TTL
+
+</span></code></pre></div></div>
+<h4 id="本地存储结构">本地存储结构</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># /hbase/data/default/stu/8ca25fe0d49972b2efb4c36537daf1a2/cf1/d89f620da4754e1092402b577f589f8a</span>
+data：目录即是Hbase自动生成的用来存储所有表数据的一个目录
+default：默认的一个namespace
+stu：就是一张表，其实就是一个文件夹
+8ca25fe0d49972b2efb4c36537daf1a2：就是stu这张表中的一个region
+cf1：就是这个region中第一个列簇所对应的一个store
+d89f620da4754e1092402b577f589f8a：这就是用来存储真实数据的hfile
+</code></pre></div></div>
+<h4 id="hbase二级索引方案">HBase二级索引方案</h4>
+<ul>
+  <li>基于Coprocessor方案
+    <ul>
+      <li>华为的hindex</li>
+      <li>Apache Phoenix</li>
+      <li>Phoenix二级索引特点：
+        <ul>
+          <li>Covered Indexes(覆盖索引) ：把关注的数据字段也附在索引表上，只需要通过索引表就能返回所要查询的数据（列）， 所以索引的列必须包含所需查询的列(SELECT的列和WHERE的列)。</li>
+          <li>Functional indexes(函数索引)： 索引不局限于列，支持任意的表达式来创建索引。</li>
+          <li>Global indexes(全局索引)：适用于读多写少场景。通过维护全局索引表，所有的更新和写操作都会引起索引的更新，写入性能受到影响。 在读数据时，Phoenix SQL会基于索引字段，执行快速查询。</li>
+          <li>Local indexes(本地索引)：适用于写多读少场景。 在数据写入时，索引数据和表数据都会存储在本地。在数据读取时， 由于无法预先确定region的位置，所以在读取数据时需要检查每个region（以找到索引数据），会带来一定性能（网络）开销。</li>
+        </ul>
+      </li>
+      <li>Lily HBase Indexer</li>
+      <li>Solr/es</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="只能基于rowkey查询关键看如何设计">只能基于rowkey查询，关键看如何设计</h4>
+<ul>
+  <li>不支持where条件查询只能按照rowkey来查询</li>
+  <li>RowFilter</li>
+</ul>
+
+<h4 id="hbase高可用-cp">HBase高可用 CP</h4>
+<p><a href="https://mp.weixin.qq.com/s/Mw-r2AhuIsHwArd4xJ-_fQ">https://mp.weixin.qq.com/s/Mw-r2AhuIsHwArd4xJ-_fQ</a></p>
+
+<h4 id="hmaster作用">HMaster作用</h4>
+<p>HMaster在功能上主要负责Table表和HRegion的管理工作，具体包括：</p>
+<ol>
+  <li>Master负责DDL操作，比如建表、删表，而RegionServer负责DML操作，比如数据的读写操作等。</li>
+  <li>管理HRegion服务器的负载均衡，调整HRegion分布；</li>
+  <li>在HRegion分裂后，负责新HRegion的分配；</li>
+  <li>在HRegion服务器停机后，负责失效HRegion服务器上的HRegion迁移。</li>
+</ol>
+
+<h4 id="hadoop-region寻址方式通过zookeepermeta">Hadoop Region寻址方式(通过zookeeper.META)</h4>
+<ul>
+  <li>第 1 步:Client请求ZK获取.META.所在的RegionServer的地址。</li>
+  <li>第 2 步:Client请求.META.所在的RegionServer获取访问数据所在的RegionServer地址，client会将.META.的相关信息cache下来，以便下一次快速访问。</li>
+  <li>第 3 步:Client请求数据所在的RegionServer，获取所需要的数据。</li>
+</ul>
+
+<h4 id="hbase的写入流程">HBase的写入流程</h4>
+<ul>
+  <li>获取 RegionServer</li>
+  <li>第 1 步:Client 获取数据写入的 Region 所在的 RegionServer</li>
+  <li>第 2 步:请求写 Hlog, Hlog 存储在 HDFS，当 RegionServer 出现异常，需要使用 Hlog 来恢复数据。</li>
+  <li>第 3 步:请求写 MemStore,只有当写 Hlog 和写 MemStore 都成功了才算请求写入完成。MemStore 后续会逐渐刷到 HDFS 中。</li>
+</ul>
+
+<h4 id="hbase全局内存控制">HBase全局内存控制</h4>
+<ol>
+  <li>这个全局的参数是控制内存整体的使用情况，当所有 memstore 占整个 heap 的最大比 例的时候，会触发刷盘的操作。这个参数是 hbase.regionserver.global.memstore.upperLimit，默认为整个 heap 内存的 40%。 但这并不意味着全局内存触发的刷盘操作会将所有的 MemStore 都进行输盘，而是通过 另外一个参数 hbase.regionserver.global.memstore.lowerLimit 来控制，默认是整个 heap 内存的 35%。当 flush 到所有 memstore 占整个 heap 内存的比率为 35%的时 候，就停止刷盘。这么做主要是为了减少刷盘对业务带来的影响，实现平滑系统负载的 目的。
+MemStore 达到上限</li>
+  <li>当 MemStore 的大小达到 hbase.hregion.memstore.flush.size 大小的时候会触发刷
+盘，默认 128M 大小
+RegionServer 的 Hlog 数量达到上限</li>
+  <li>前面说到 Hlog 为了保证 Hbase 数据的一致性，那么如果 Hlog 太多的话，会导致故障 恢复的时间太长，因此 Hbase 会对 Hlog 的最大个数做限制。当达到 Hlog 的最大个数 的时候，会强制刷盘。这个参数是 hase.regionserver.max.logs，默认是 32 个。
+手工触发</li>
+  <li>可以通过 hbase shell 或者 java api 手工触发 flush 的操作。
+关闭 RegionServer 触发</li>
+  <li>在正常关闭 RegionServer 会触发刷盘的操作，全部数据刷盘后就不需要再使用 Hlog 恢
+复数据。
+Region 使用 HLOG 恢复完数据后触发</li>
+  <li>:当 RegionServer 出现故障的时候，其上面的 Region 会迁移到其他正常的 RegionServer 上，在恢复完 Region 的数据后，会触发刷盘，当刷盘完成后才会提供给 业务访问。</li>
+</ol>
+
+<h4 id="hbase中zookeeper的作用">HBase中zookeeper的作用</h4>
+<ul>
+  <li>Zookeeper是HBase HA的解决方案，是整个集群的协调器，
+通过Zookeeper保证了至少有一个HMaster处于active状态，
+HMaster并不直接参与数据的读写操作，当我们使用HBase的API的时候，当我们想用HBase的API去读取数据的时候，我们并不需要知道HMaster的地址、也不需要知道RegionServer的地址，我们只需要知道Zookeeper集群的地址就可以了</li>
+  <li>HMaster启动将系统加载到Zookeeper，Zookeeper保存了HBase集群region的信息、meta的信息等等</li>
+  <li>维护着RegionServer的状态信息，知道哪些数据需要从哪些RegionServer去读取</li>
+  <li><a href="https://mp.weixin.qq.com/s/ryc4B7IMLyGhHsZAArS96w">https://mp.weixin.qq.com/s/ryc4B7IMLyGhHsZAArS96w</a></li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>用HBase实现亿级Feed <a href="https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ">https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ</a></li>
+  <li>HBase案例 <a href="https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw">https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw</a></li>
+  <li>HBase面试题 <a href="https://www.jianshu.com/p/9ecd4367e6d0">https://www.jianshu.com/p/9ecd4367e6d0</a></li>
+  <li>es结合Hbase <a href="https://zhuanlan.zhihu.com/p/87563468">https://zhuanlan.zhihu.com/p/87563468</a></li>
+  <li>Hbase和Cassandra比较 <a href="https://blog.csdn.net/aa5305123/article/details/83142514">https://blog.csdn.net/aa5305123/article/details/83142514</a></li>
+  <li>白话大数据 <a href="https://www.zhihu.com/question/27974418/answer/156227565">https://www.zhihu.com/question/27974418/answer/156227565</a></li>
+  <li>一步步搭建Hadoop体系 <a href="https://blog.csdn.net/qazwsxpcm/article/list/2?t=1">https://blog.csdn.net/qazwsxpcm/article/list/2?t=1</a></li>
+</ul>
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+      </div>
+      <div class="clearfix">
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="container">
+
+    <h2 class="footer-heading">粉笔灰杂谈</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>粉笔灰杂谈</li>
+          <li><a href="mailto:siglea@sina.com">siglea@sina.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/siglea"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">siglea</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

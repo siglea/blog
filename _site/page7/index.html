@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>粉笔灰杂谈</title>
+  <meta name="description" content="关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。">
+  <script src="/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="canonical" href="http://localhost:4000/page7/">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+</head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-86140592-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  <body>
+
+    <header class="site-header">
+  <div class="container" style="text-align:center">
+    <div class="navbar" style="margin-bottom:0;border:0">
+    <ul class="navbar-nav nav header-nav">
+    <li><a href="/index.html" class="button">首页</a></li>
+      <li><a href="/category/技术" class="button">技术</a></li>
+      <li><a href="/category/产品商业" class="button">产品商业</a></li>
+      <li><a href="/category/随记" class="button">随记</a></li>
+    </ul>
+    </div>
+  </div>
+
+</header>
+<div class="clearfix">
+
+
+    <div class="page-content">
+      <div class="container" style="padding-left:0;padding-right:0;">
+        <div class="row" style="margin-bottom:30px">
+  <div class="home col-md-8">
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"> Java SPI </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p>SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。
+Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。
+在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
+    <span class="kd">implements</span> <span class="nc">Iterable</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
+<span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
+            <span class="k">return</span> <span class="nc">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><a href="https://blog.csdn.net/sweatOtt/article/details/83055191">https://blog.csdn.net/sweatOtt/article/details/83055191</a></p>
+
+<p><a href="https://juejin.im/post/5af952fdf265da0b9e652de3">https://juejin.im/post/5af952fdf265da0b9e652de3</a></p>
+
+<p><a href="https://www.jianshu.com/p/46b42f7f593c">https://www.jianshu.com/p/46b42f7f593c</a></p>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html"> Dubbo </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>May 1, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h3 id="dubbo">Dubbo</h3>
+<ul>
+  <li>官网 <a href="http://dubbo.apache.org/">http://dubbo.apache.org/</a></li>
+  <li>start <a href="http://start.dubbo.io/">http://start.dubbo.io/</a></li>
+  <li>Dubbo实践 <a href="https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/">https://www.cnblogs.com/warehouse/tag/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/</a></li>
+  <li>通俗易懂的 Dubbo 教程 <a href="https://blog.csdn.net/Geffin/category_9931110.html">https://blog.csdn.net/Geffin/category_9931110.html</a></li>
+  <li>Java RMI &amp; Dubbo <a href="http://dubbo.apache.org/zh-cn/blog/dubbo-101.html">http://dubbo.apache.org/zh-cn/blog/dubbo-101.html</a></li>
+</ul>
+
+<h4 id="dubbo是什么">Dubbo是什么？</h4>
+<ul>
+  <li>dubbo是一个分布式框架，远程服务调用的分布式框架，其核心部分包含:
+    <ul>
+      <li>自动发现:基于注册中心目录服务，使服务消费方能动态的查找服务提供方，使地址透明，使服务提供方可以平滑增加或减少机器。</li>
+      <li>远程通讯:提供对多种基于⻓连接的NIO框架抽象封装，包括多种线程模型，序列化，以及“请求-响应”模式的信息交换方式。</li>
+      <li>集群容错:提供基于接口方法的透明远程过程调用，包括多协议支持，以及软负载均衡，失败容错，地址路由，动态配置等集群支持。</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="dubbo组成">Dubbo组成</h4>
+<ul>
+  <li>provider:暴露服务的服务提供方</li>
+  <li>consumer:调用远程服务的服务消费方</li>
+  <li>registry:服务注册于发现的注册中心</li>
+  <li>monitor:统计服务调用次数和调用时间的监控中心</li>
+  <li>container:服务运行容器</li>
+</ul>
+
+<h4 id="dubbo架构4大层10小层">Dubbo架构4大层10小层</h4>
+<p><img src="/img/dubbo1.jpg" width="600px" /></p>
+<ol>
+  <li>服务接口层（Service）</li>
+  <li>配置代理层（配置层、服务代理层、服务注册层）</li>
+  <li>路由监控（集群层、监控层）</li>
+  <li>
+    <p>传输层 （协议层由invoker转变为exporter、信息交换 异步/同步转、网络传输、序列化）
+<img src="/img/dubbo2.jpg" width="600px" /></p>
+  </li>
+  <li>服务接口层（Service）：该层是与实际业务逻辑相关的，根据服务提供方和服务消费方的业务设计对应的接口和实现。</li>
+  <li>配置层（Config）：对外配置接口，以ServiceConfig和ReferenceConfig为中心，可以直接new配置类，也可以通过spring解析配置生成配置类。</li>
+  <li>服务代理层（Proxy）：服务接口透明代理，生成服务的客户端Stub和服务器端Skeleton，以ServiceProxy为中心，扩展接口为ProxyFactory。</li>
+  <li>服务注册层（Registry）：封装服务地址的注册与发现，以服务URL为中心，扩展接口为RegistryFactory、Registry和RegistryService。可能没有服务注册中心，此时服务提供方直接暴露服务。</li>
+  <li>集群层（Cluster）：封装多个提供者的路由及负载均衡，并桥接注册中心，以Invoker为中心，扩展接口为Cluster、Directory、Router和LoadBalance。将多个服务提供方组合为一个服务提供方，实现对服务消费方来透明，只需要与一个服务提供方进行交互。</li>
+  <li>监控层（Monitor）：RPC调用次数和调用时间监控，以Statistics为中心，扩展接口为MonitorFactory、Monitor和MonitorService。</li>
+  <li>远程调用层（Protocol）：封将RPC调用，以Invocation和Result为中心，扩展接口为Protocol、Invoker和Exporter。Protocol是服务域，它是Invoker暴露和引用的主功能入口，它负责Invoker的生命周期管理。Invoker是实体域，它是Dubbo的核心模型，其它模型都向它靠扰，或转换成它，它代表一个可执行体，可向它发起invoke调用，它有可能是一个本地的实现，也可能是一个远程的实现，也可能一个集群实现。</li>
+  <li>信息交换层（Exchange）：封装请求响应模式，同步转异步，以Request和Response为中心，扩展接口为Exchanger、ExchangeChannel、ExchangeClient和ExchangeServer。</li>
+  <li>网络传输层（Transport）：抽象mina和netty为统一接口，以Message为中心，扩展接口为Channel、Transporter、Client、Server和Codec。</li>
+  <li>数据序列化层（Serialize）：可复用的一些工具，扩展接口为Serialization、 ObjectInput、ObjectOutput和ThreadPool。</li>
+</ol>
+
+<p><img src="/img/dubbo3.jpg" width="600px" /></p>
+
+<h4 id="dubbo-exporter是真正的发布">Dubbo Exporter是真正的发布</h4>
+<ul>
+  <li>Invoker经过协议层变成真正的服务暴露exporter
+<img src="/img/exporter.jpg" width="600px" /></li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Exporter&lt;?&gt; exporter <span class="o">=</span> protocol.export<span class="o">(</span>wrapperInvoker<span class="o">)</span>
+</code></pre></div></div>
+<ul>
+  <li>Dubbo 会在 Spring 实例化完 bean 之后，在刷新容器最后一步发布 ContextRefreshEvent 事件的时候，
+通知实现了 ApplicationListener 的 ServiceBean 类进行回调 onApplicationEvent 事件方法，
+Dubbo 会在这个方法中调用 ServiceBean 父类 ServiceConfig 的 export 方法，而该方法真正实现了服务的(异步或者非异步)发 布。</li>
+</ul>
+
+<h4 id="dubbo27新特性">Dubbo2.7新特性</h4>
+<ul>
+  <li>异步化改造
+    <ul>
+      <li>请求调用方式
+        <ul>
+          <li>oneway 指的是客户端发送消息后，不需要接受响应。对于那些不关心服务端响应的请求，比较适合使用 oneway 通信。</li>
+          <li>sync 是最常用的通信方式，也是默认的通信方法。</li>
+          <li>异步 future 在接收响应时，future.get() 会导致线程的阻塞;</li>
+          <li>异步 callback 通常会设置一个回调线程，当接收到响应时，自动执行，不会对当前线程造成阻塞。</li>
+        </ul>
+
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  AsyncService.sayHello<span class="o">(</span><span class="s2">"Han Meimei"</span><span class="o">)</span><span class="p">;</span>
+  Future&lt;String&gt; fooFuture <span class="o">=</span> RpcContext.getContext<span class="o">()</span>.getFuture<span class="o">()</span><span class="p">;</span>
+  fooFuture.get<span class="o">()</span><span class="p">;</span>
+  <span class="c"># 2.7 前后</span>
+  CompletableFuture&lt;String&gt; future <span class="o">=</span> asyncService.sayHiAsync<span class="o">(</span><span class="s2">"Han MeiMei"</span><span class="o">)</span><span class="p">;</span>
+  future.whenComplete<span class="o">((</span>retValue, exception<span class="o">)</span> -&gt; <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span>exception <span class="o">==</span> null<span class="o">)</span> <span class="o">{</span>
+          System.out.println<span class="o">(</span>retValue<span class="o">)</span><span class="p">;</span>
+      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+          exception.printStackTrace<span class="o">()</span><span class="p">;</span>
+      <span class="o">}</span>
+  <span class="o">})</span><span class="p">;</span>
+  <span class="c"># Dubbo 2.7 中使用了 JDK1.8 提供的 CompletableFuture 原生接口对自身的异步化做了改进。</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>三大中心改造
+    <ul>
+      <li>注册中心
+        <ul>
+          <li>简化到只做服务注册</li>
+        </ul>
+      </li>
+      <li>元数据中心
+        <ul>
+          <li>生产者端注册 30+ 参数，有接近一半是不需要作为注册中心进行传递；消费者端注册 25+ 参数，只有个别需要传递给注册中心。有了以上的理论分析，Dubbo 2.7 进行了大刀阔斧的改动，只将真正属于服务治理的数据发布到注册中心之中，大大降低了注册中心的负荷。
+同时，将全量的元数据发布到另外的组件中：元数据中心。元数据中心目前支持 redis（推荐），zookeeper。</li>
+        </ul>
+      </li>
+      <li>配置中心
+        <ul>
+          <li>衡量配置中心的必要性往往从三个角度出发：
+            <ul>
+              <li>分布式配置统一管理</li>
+              <li>动态变更推送</li>
+              <li>安全性</li>
+            </ul>
+          </li>
+          <li>Spring Cloud Config, Apollo, Nacos 等分布式配置中心组件都对上述功能有不同程度的支持。在 2.7 之前的版本中，在 zookeeper 中设置了部分节点：configurators，routers，用于管理部分配置和路由信息，它们可以理解为 Dubbo 配置中心的雏形。在 2.7 中，Dubbo 正式支持了配置中心，目前支持的几种注册中心 Zookeeper，Apollo，Nacos（2.7.1-release 支持）。</li>
+          <li>在 Dubbo 中，配置中心主要承担了两个作用
+            <ul>
+              <li>外部化配置。启动配置的集中式存储</li>
+              <li>服务治理。服务治理规则的存储与通知</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>服务治理增强，我更倾向于将 Dubbo 当做一个服务治理框架，而不仅仅是一个 RPC 框架。在 2.7 中，Dubbo 对其服务治理能力进行了增强，增加了标签路由的能力，并抽象出了应用路由和服务路由的概念。</li>
+  <li><a href="http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html">http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html</a></li>
+</ul>
+
+<h4 id="dubbo-哪些坑">Dubbo 哪些坑</h4>
+<ul>
+  <li>超时重试</li>
+  <li>子类继承父类的属性，反序列化丢失</li>
+  <li>首先需要说明的是，出现这个问题有一定的条件。如果Provider中的api和自定义Exception定义都是在一个api.jar中，那么是不会有任何问题的。但是如果自定义Exception是在一个单独的比如common.jar包中就会出现这个问题（此时api和model在另一个api.jar中）。</li>
+  <li><a href="https://www.jianshu.com/p/1a281eb505df?tdsourcetag=s_pctim_aiomsg">https://www.jianshu.com/p/1a281eb505df?tdsourcetag=s_pctim_aiomsg</a></li>
+  <li><a href="https://www.cnblogs.com/coding-night/articles/10656806.html">https://www.cnblogs.com/coding-night/articles/10656806.html</a></li>
+  <li><a href="https://blog.csdn.net/u013256816/article/details/102674846">https://blog.csdn.net/u013256816/article/details/102674846</a></li>
+</ul>
+
+<h4 id="dubbo-哪些漏洞">Dubbo 哪些漏洞？</h4>
+<ul>
+  <li>Apache Dubbo存在反序列化漏洞，当网站安装了Apache Dubbo并且启用http协议进行通信时，
+  攻击者可以向网站发送POST请求，在请求里可以执行一个反序列化的操作，由于没有任何安全校验，这个反序列化过程可以执行任意代码。
+  <a href="https://baijiahao.baidu.com/s?id=1658423152369425625&amp;wfr=spider&amp;for=pc">https://baijiahao.baidu.com/s?id=1658423152369425625&amp;wfr=spider&amp;for=pc</a></li>
+</ul>
+
+<h4 id="限流降级熔断方式">限流降级熔断方式</h4>
+<ul>
+  <li>限流
+    <ul>
+      <li>漏桶</li>
+      <li>令牌桶</li>
+    </ul>
+  </li>
+  <li>Dubbo服务之RPC扩展和本地Mock <a href="https://www.cnblogs.com/hyry/p/12067497.html">https://www.cnblogs.com/hyry/p/12067497.html</a></li>
+  <li>Dubbo Mock原理分析 <a href="https://mp.weixin.qq.com/s/T-4xS2LruSaBRxR8LhcrjQ">https://mp.weixin.qq.com/s/T-4xS2LruSaBRxR8LhcrjQ</a></li>
+  <li>Dubbo与断路器 Hystrix 的集成 <a href="https://blog.csdn.net/Geffin/article/details/105808745">https://blog.csdn.net/Geffin/article/details/105808745</a></li>
+  <li>限流降级神器-哨兵(sentinel)原理分析 <a href="https://mp.weixin.qq.com/s/g2hyp9CquEAvTe8QmPO-3g">https://mp.weixin.qq.com/s/g2hyp9CquEAvTe8QmPO-3g</a></li>
+  <li>Sentinel-与-Hystrix-的对比 <a href="https://github.com/alibaba/Sentinel/wiki/Sentinel-%E4%B8%8E-Hystrix-%E7%9A%84%E5%AF%B9%E6%AF%94">https://github.com/alibaba/Sentinel/wiki/Sentinel-%E4%B8%8E-Hystrix-%E7%9A%84%E5%AF%B9%E6%AF%94</a></li>
+  <li>Sentinel 为 Dubbo服务保驾护航 <a href="http://dubbo.apache.org/zh-cn/blog/sentinel-introduction-for-dubbo.html">http://dubbo.apache.org/zh-cn/blog/sentinel-introduction-for-dubbo.html</a></li>
+  <li>Hystrix两种隔离模式分析 <a href="https://www.jianshu.com/p/e1a4d3bdf7c4">https://www.jianshu.com/p/e1a4d3bdf7c4</a></li>
+</ul>
+
+<p><img src="/img/sh.jpg" width="600px" /></p>
+
+<h4 id="通过qos对服务进行动态控制">通过QoS对服务进行动态控制</h4>
+<p>在Dubbo中，QoS Quality of Service 这个概念被用于动态的对服务进行查询和控制。
+例如对获取当前提供和消费的所有服务，以及对服务进行动态的上下线，即从注册中心上进行注册和反注册操作。
+<a href="http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html">http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-qos.html</a></p>
+
+<h4 id="当一个服务接口有多种实现时怎么做">当一个服务接口有多种实现时怎么做?</h4>
+<p>当一个接口有多种实现时，可以用 group 属性来分组，服务提供方和消费方都指定同一个 group 即可</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dubbo:reference</span> <span class="na">interface=</span><span class="s">"com.xxx.MenuService"</span> <span class="na">group=</span><span class="s">"*"</span> <span class="na">merger=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;dubbo:method</span> <span class="na">name=</span><span class="s">"getMenuItems"</span> <span class="na">merger=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/dubbo:reference&gt;</span>
+</code></pre></div></div>
+
+<h4 id="服务上线怎么兼容旧版本">服务上线怎么兼容旧版本?</h4>
+<p>可以用版本号(version)过渡，多个不同版本的服务注册到注册中心，版本号不同的服务 相互间不引用。这个和服务分组的概念有一点类似。</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dubbo:service</span> <span class="na">interface=</span><span class="s">"com.foo.BarService"</span> <span class="na">version=</span><span class="s">"1.0.0"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;dubbo:service</span> <span class="na">interface=</span><span class="s">"com.foo.BarService"</span> <span class="na">version=</span><span class="s">"2.0.0"</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;dubbo:reference</span> <span class="na">id=</span><span class="s">"barService"</span> <span class="na">interface=</span><span class="s">"com.foo.BarService"</span> <span class="na">version=</span><span class="s">"1.0.0"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;dubbo:reference</span> <span class="na">id=</span><span class="s">"barService"</span> <span class="na">interface=</span><span class="s">"com.foo.BarService"</span> <span class="na">version=</span><span class="s">"2.0.0"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;dubbo:reference</span> <span class="na">id=</span><span class="s">"barService"</span> <span class="na">interface=</span><span class="s">"com.foo.BarService"</span> <span class="na">version=</span><span class="s">"*"</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+<p><a href="https://blog.csdn.net/taojin12/article/details/106869343">https://blog.csdn.net/taojin12/article/details/106869343</a></p>
+
+<h4 id="dubbo-的管理控制台能做什么">Dubbo 的管理控制台能做什么?</h4>
+<p>管理控制台主要包含:路由规则，动态配置，服务降级，访问控制，权重调整，负载均衡， 等管理功能。</p>
+
+<h4 id="dubbo-内置了四种负载均衡策略分别如下">Dubbo 内置了四种负载均衡策略，分别如下：</h4>
+<ul>
+  <li>RandomLoadBalance：随机负载均衡，随机负载均衡是 Dubbo 默认的负载均衡策略，顾名思义，就是从多个服务提供者中随机选择一个。
+  需要注意的是，Dubbo 的随机负载均衡并非是完全的随机，它有一个权重的概念，会按照权重来设置随机概率，举个例子，我们现在有两个服务提供者，一个的权重是100，另一个的权重是300，那么前者被分配的概率就为 25%，后者被分配的概率为 75%。
+  我们可以对服务提供者设置不同的权重，例如对性能较好的机器设置大权重，对差一点的机器设置小一点的权重。</li>
+  <li>RoundRobinLoadBalance：轮询负载均衡，即会轮询每一个服务提供者，依次对其进行调用。
+  轮询负载均衡也有权重的概念，可以严格按照我们设置的比例进行分配，这个是该算法的优点，不过，该算法的缺点也很明显，可能会存在较慢的机器，那么请求会在这台机器上进行累积，很容易导致整个系统变慢。</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChangeServiceImpl</span> <span class="kd">implements</span> <span class="nc">ChangeService</span> <span class="o">{</span>
+
+    <span class="nd">@Reference</span><span class="o">(</span><span class="n">loadbalance</span> <span class="o">=</span> <span class="s">"roundrobin"</span><span class="o">)</span>
+    <span class="nc">NameService</span> <span class="n">nameService</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">change</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">nameService</span><span class="o">.</span><span class="na">updateName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<ul>
+  <li>LeastActiveLoadBalance：最少活跃调用数负载均衡，最少活跃调用数负载均衡会将请求转发至活跃调用数最少的机器上，如果有两台机器活跃数相同，会采取随机负载均衡的策略。
+  什么是活跃调用数呢？每个服务维护一个活跃数计数器，该计数器存放机器未处理完的请求。当有请求产生时，会选择活跃数最小的机器去执行。
+  最少活跃调用数负载均衡可以令慢的机器收到更少的请求。</li>
+  <li>ConsistentHashLoadBalance：一致性哈希负载均衡，要了解这种负载均衡策略，我们首先得学习一下一致性哈希算法。不会一致性哈希算法的同学可以看一下我之前写的这篇博客，质量保证过硬：一致性哈希算法详解
+                                    一致性哈希可以保证相同参数的请求一定会发送到同一台机器上，即使有机器崩溃，由于一致性哈希算法的特性与虚拟节点的存在，发往该机器的请求会被发送到其它机器上，并不会引发剧烈变动。</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>缺省只对第一个参数Hash，如果要修改，请配置
+<span class="nt">&lt;dubbo:parameter</span> <span class="na">key=</span><span class="s">"hash.arguments"</span> <span class="na">value=</span><span class="s">"0,1"</span> <span class="nt">/&gt;</span>
+ 
+缺省用160份虚拟节点，如果要修改，请配置
+<span class="nt">&lt;dubbo:parameter</span> <span class="na">key=</span><span class="s">"hash.nodes"</span> <span class="na">value=</span><span class="s">"320"</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<ul>
+  <li><a href="http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html">http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html</a></li>
+</ul>
+
+<h4 id="dubbo集群容错">Dubbo集群容错</h4>
+<p>Dubbo默认内置了一些容错策略，如果还不能满足用户需求，我们可以自定义容错策略进行配置。Dubbo 内置了以下几种容错策略：</p>
+<ul>
+  <li>Failover(失败自动切换)，Failover 是 Dubbo 默认的容错策略。
+                 其实，Failover 是高可用的一个常用概念，服务器通常拥有主备两套机器配置，当主服务器出现故障时，会自动切换到备服务器中，从而保证了整体的高可用性。
+                 当调用失败时，会根据配置的重试次数，自动从其他可用地址中重新选择一个可用的地址进行调用，直到调用成功，或者是达到重试的上限位置。
+                 Failover 会自动对失败进行重试，但它也带来了一些副作用。首先，重试会增加开销，再者，重试会增加调用的响应时间，最后，在某些情况下，重试会造成资源的浪费。</li>
+  <li>Failsafe(失败安全)，Failsafe 在调用失败时，会忽略此错误，并记录一条日志，同时返回一个空结果，在上游看来调用是成功的。
+               Failsafe 即使失败了也不会影响整个调用流程，它的失败不影响核心业务的正确性，通常用于旁路系统或流程中，一般用于写入审计日志等操作。</li>
+  <li>Failfast(快速失败)，有一些业务场景中，其操作是非幂等的，不能重复调用。这种情况下，重试并不是一个好办法，需要用到 Failfast，调用失败立即报错，让调用方来决定下一步的操作并保证业务的幂等性。</li>
+  <li>Failback(失败自动恢复)，在 Failback 中，如果调用失败，则此次失败相当于 Failsafe，将返回一个空结果，但与 Failsafe 不同的是，Failback 策略会将这次调用加入内存中的失败列表中，对于这个列表中的失败调用，会在另一个线程中进行异步重试，重试如果再发生失败，则会忽略，即使重试调用成功，原来的调用方也感知不到了。因此它通常适合于对于实时性要求不高，且不需要返回值的一些异步操作。</li>
+  <li>Forking(并行调用)，Forking 在第一次调用就同时发起多个调用，只要其中一个调用成功，就认为成功。在资源充足，且对于失败的容忍度较低的场景下，可以采用此策略。</li>
+  <li>Broadcast(广播调用)，在某些场景下，我们可能需要对所有服务提供者进行操作，我们可以采用广播调用策略，会逐个调用所有提供者，只要任意有一个提供者出错，则认为此次调用出错。通常用于通知所有提供者更新缓存或日志等本地资源信息。</li>
+</ul>
+
+<h4 id="dubbo异步转同步">Dubbo异步转同步</h4>
+<ol>
+  <li>调用方请求远程服务之后，需要等待结果，此刻，请求线程应该阻塞</li>
+  <li>远程服务返回结果后，唤醒请求线程，调用方得到结果</li>
+</ol>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">Object</span> <span class="nf">get</span><span class="o">(</span><span class="kt">int</span> <span class="n">timeout</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">RemotingException</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">timeout</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="nc">Constants</span><span class="o">.</span><span class="na">DEFAULT_TIMEOUT</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">// isDone()方法就是判断Response是否有值(即是否有返回结果)</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">isDone</span><span class="o">())</span> <span class="o">{</span>
+            <span class="kt">long</span> <span class="n">start</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="k">while</span> <span class="o">(!</span><span class="n">isDone</span><span class="o">())</span> <span class="o">{</span>
+                    <span class="c1">// 超时等待</span>
+                    <span class="n">done</span><span class="o">.</span><span class="na">await</span><span class="o">(</span><span class="n">timeout</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">);</span>
+                    <span class="c1">// 如果有返回结果了，或者，超时了，就退出循环</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">isDone</span><span class="o">()</span> <span class="o">||</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="k">break</span><span class="o">;</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+                <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="c1">// 如果是超时了，就抛出异常</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="n">isDone</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">TimeoutException</span><span class="o">(</span><span class="n">sent</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="n">channel</span><span class="o">,</span> <span class="n">getTimeoutMessage</span><span class="o">(</span><span class="kc">false</span><span class="o">));</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="c1">// 远程服务正常返回结果，则返回给调用方</span>
+        <span class="k">return</span> <span class="nf">returnFromResponse</span><span class="o">();</span>
+<span class="o">}</span>
+<span class="kd">private</span> <span class="kt">void</span> <span class="nf">doReceived</span><span class="o">(</span><span class="nc">Response</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">res</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">done</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// 唤醒阻塞的线程</span>
+                <span class="n">done</span><span class="o">.</span><span class="na">signal</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">callback</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">invokeCallback</span><span class="o">(</span><span class="n">callback</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+<h4 id="dubbo之令牌验证">dubbo之令牌验证</h4>
+<ul>
+  <li>防止消费者绕过注册中心访问提供者</li>
+  <li>在注册中心控制权限，以决定要不要下发令牌给消费者</li>
+  <li>注册中心可灵活改变授权方式，而不需修改或升级提供者</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!--可以全局设置开启令牌验证--&gt;</span>
+
+<span class="c">&lt;!--随机token令牌，使用UUID生成--&gt;</span>
+<span class="nt">&lt;dubbo:provider</span> <span class="na">token=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!--固定token令牌，相当于密码--&gt;</span>
+<span class="nt">&lt;dubbo:provider</span>  <span class="na">token=</span><span class="s">"123456"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!--也可在服务级别设置：--&gt;</span>
+
+<span class="c">&lt;!--随机token令牌，使用UUID生成--&gt;</span>
+<span class="nt">&lt;dubbo:service</span> <span class="na">interface=</span><span class="s">"com.foo.BarService"</span> <span class="na">token=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!--固定token令牌，相当于密码--&gt;</span>
+<span class="nt">&lt;dubbo:service</span> <span class="na">interface=</span><span class="s">"com.foo.BarService"</span> <span class="na">token=</span><span class="s">"123456"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!--还可在协议级别设置：--&gt;</span>
+
+<span class="c">&lt;!--随机token令牌，使用UUID生成--&gt;</span>
+<span class="nt">&lt;dubbo:protocol</span> <span class="na">name=</span><span class="s">"dubbo"</span> <span class="na">token=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!--固定token令牌，相当于密码--&gt;</span>
+<span class="nt">&lt;dubbo:protocol</span> <span class="na">name=</span><span class="s">"dubbo"</span> <span class="na">token=</span><span class="s">"123456"</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<h4 id="负载均衡-集群容错-服务路由">负载均衡 集群容错 服务路由</h4>
+<ul>
+  <li>这3个概念容易混淆。他们都描述了怎么从多个 Provider 中选择一个来进行调用。那他们到底有什么区别呢?下面我来举一个简单的例子，把这几个概念阐述清楚吧。</li>
+  <li>有一个Dubbo的用户服务，在北京部署了10个，在上海部署了20个。一个杭州的服务消费方发起了一次调用，然后发生了以下的事情:</li>
+  <li>根据配置的路由规则，如果杭州发起的调用，会路由到比较近的上海的20个 Provider。</li>
+  <li>根据配置的随机负载均衡策略，在20个 Provider 中随机选择了一个来调用，假设随机到了第7个 Provider。</li>
+  <li>结果调用第7个 Provider 失败了。</li>
+  <li>根据配置的Failover集群容错模式，重试其他服务器。</li>
+  <li>重试了第13个 Provider，调用成功。</li>
+  <li>上面的第1，2，4步骤就分别对应了路由，负载均衡和集群容错。 Dubbo中，先通过路由，从多个 Provider 中按照路由规则，选出一个子集。再根据负载均衡从子集中选出一个 Provider 进行本次调用。如果调用失败了，根据集群容错策略，进行重试或定时重发或快速失败等。 可以看到Dubbo中的路由，负载均衡和集群容错发生在一次RPC调用的不同阶段。最先是路由，然后是负载均衡</li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html"> SpringCloud </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>微服务</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Spring</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<p><img src="/img/springcloud.jpg" width="600px" /></p>
+
+<h4 id="spring">Spring</h4>
+<ul>
+  <li>Eureka：服务治理组件，包括服务端的注册中心和客户端的服务发现机制；
+    <ul>
+      <li>Eureka Server的高可用实际上就是将自己作为服务向其他注册中心注册自己，这样就可以形成一组互相注册的服务注册中 心，以实现服务清单的互相同步，达到高可用效果
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 定义服务续约任务的调用间隔时间，默认30秒</span>
+eureka.instance.lease-renewal-interval-in-seconds<span class="o">=</span>30
+<span class="c"># 定义服务失效的时间，默认90秒 eureka.instance.lease-expiration-duration-in-seconds=90</span>
+</code></pre></div>        </div>
+      </li>
+      <li>该警告就是触发了Eureka Server的自我保护机制。Eureka Server在运行期间，会统计心跳失败的比例在15分钟之内是否低于 85%，如果出现低于的情况，Eureka Server会将当前的实例注册信息保护起来，让这些实例不会过期，尽可能保护这些注册信 息。但是，在这段保护期间内实例若出现问题，那么客戶端很容易拿到实际已经不存在的服务实例，会出现调用失败的情况，所 以客戶端必须要有容错机制，比如可以使用请求重试、断路器等机制
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 关闭保护机制，以确保注册中心可以将不用的实例正确剔除(本地调试可以使用，线上不推荐)</span>
+eureka.server.enable-self-preservation<span class="o">=</span><span class="nb">false</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>Ribbon：负载均衡的服务调用组件，具有多种负载均衡调用策略；</li>
+  <li>Hystrix：服务容错组件，实现了断路器模式，为依赖服务的出错和延迟提供了容错能力；</li>
+  <li>Feign：基于Ribbon和Hystrix的声明式服务调用组件；</li>
+  <li>Zuul：API网关组件，对请求提供路由及过滤功能。</li>
+  <li>Spring Cloud Bus
+用于传播集群状态变化的消息总线，使用轻量级消息代理链接分布式系统中的节点，可以用来动态刷新集群中的服务配置。
+Spring Cloud Bus 提供了跨多个实例刷新配置的功能。因此，在上面的示例中，如果我们刷新 Employee Producer1，则会自动刷新所有其他必需的模块。如果我们有多个微服务启动并运行，这特别有用。这是通过将所有微服务连接到单个消息代理来实现的。无论何时刷新实例，此事件都会订阅到侦听此代理的所有微服务，并且它们也会刷新。可以通过使用端点/总线/刷新来实现对任何单个实例的刷新。</li>
+  <li>Spring Cloud Consul
+基于Hashicorp Consul的服务治理组件。</li>
+  <li>Spring Cloud Security
+安全工具包，对Zuul代理中的负载均衡OAuth2客户端及登录认证进行支持。</li>
+  <li>Spring Cloud Sleuth
+Spring Cloud应用程序的分布式请求链路跟踪，支持使用Zipkin、HTrace和基于日志（例如ELK）的跟踪。</li>
+  <li>Spring Cloud Stream
+轻量级事件驱动微服务框架，可以使用简单的声明式模型来发送及接收消息，主要实现为Apache Kafka及RabbitMQ。</li>
+  <li>Spring Cloud Task
+用于快速构建短暂、有限数据处理任务的微服务框架，用于向应用中添加功能性和非功能性的特性。</li>
+  <li>Spring Cloud Zookeeper
+基于Apache Zookeeper的服务治理组件。</li>
+  <li>Spring Cloud Gateway
+API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是Spring Cloud官方推出的第二代网关框架，取代Zuul网关。网关作为流量的，在微服务系统中有着非常作用，网关常见的功能有路由转发、权限校验、限流控制等作用。
+使用了一个RouteLocatorBuilder的bean去创建路由，除了创建路由RouteLocatorBuilder可以让你添加各种predicates和filters，predicates断言的意思，顾名思义就是根据具体的请求的规则，由具体的route去处理，filters是各种过滤器，用来对请求做各种判断和修改。</li>
+  <li>Spring Cloud OpenFeign
+基于Ribbon和Hystrix的声明式服务调用组件，可以动态创建基于Spring MVC注解的接口实现用于服务调用，在Spring Cloud 2.0中已经取代Feign成为了一等公民。</li>
+  <li>什么是Spring Cloud Config?
+    <ul>
+      <li>在分布式系统中，由于服务数量巨多，为了方便服务配置文件统一管理，实时更新，所以需要分布式配置中心组件。在Spring Cloud中，有分布式配置中心组件spring cloud config ，它支持配置服务放在配置服务的内存中（即本地），也支持放在远程Git仓库中。在spring cloud config 组件中，分两个角色，一是config server，二是config client。
+  使用：（1）添加pom依赖（2）配置文件添加相关配置（3）启动类添加注解@EnableConfigServer</li>
+    </ul>
+
+    <p><img src="/img/springconfig.jpg" width="600px" /></p>
+  </li>
+  <li>Spring中使用@Autowired注解静态实例对象 <a href="https://blog.csdn.net/RogueFist/article/details/79575665">https://blog.csdn.net/RogueFist/article/details/79575665</a></li>
+  <li>多个ApplicationRunner，可以用@Order指定优先级串行执行的，如果优先级高的block了，后面的需要等着</li>
+</ul>
+
+<h3 id="关于微服务">关于微服务</h3>
+<ul>
+  <li>SOA(ESB)与微服务
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/30477325">https://zhuanlan.zhihu.com/p/30477325</a></li>
+      <li><a href="https://www.cnblogs.com/guanghe/p/10978349.html">https://www.cnblogs.com/guanghe/p/10978349.html</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA">https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA</a></li>
+    </ul>
+  </li>
+  <li>微服务哪些事
+    <ul>
+      <li><a href="https://windmt.com/2018/04/14/spring-cloud-0-microservices/">https://windmt.com/2018/04/14/spring-cloud-0-microservices/</a></li>
+      <li><a href="https://windmt.com/2018/04/14/spring-cloud-1-services-governance/">https://windmt.com/2018/04/14/spring-cloud-1-services-governance/</a></li>
+    </ul>
+  </li>
+  <li>SpringCloud &amp; Dubbo
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ">https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A">https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A</a></li>
+      <li><a href="http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html">阿里Dubbo与Spring Cloud</a></li>
+    </ul>
+  </li>
+  <li>RPC之thrift/gRPC
+    <ul>
+      <li><a href="https://blog.csdn.net/kesonyk/article/details/50924489">https://blog.csdn.net/kesonyk/article/details/50924489</a></li>
+      <li><a href="https://developer.51cto.com/art/201908/601617.htm">https://developer.51cto.com/art/201908/601617.htm</a></li>
+      <li><a href="https://segmentfault.com/a/1190000011478469">https://segmentfault.com/a/1190000011478469</a></li>
+      <li><a href="https://zhuanlan.zhihu.com/p/136112210">https://zhuanlan.zhihu.com/p/136112210</a></li>
+      <li>RPC与HTTP的关系 <a href="https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg">https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg</a></li>
+      <li>快速理解RPC技术——基本概念、原理和用途 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620</a></li>
+    </ul>
+  </li>
+  <li>WebService某种程度上也是一种RPC
+    <ul>
+      <li>WebService的历史 <a href="https://www.iteye.com/blog/andot-662787">https://www.iteye.com/blog/andot-662787</a></li>
+      <li>WebService的demo<a href="https://blog.csdn.net/weixin_42672054/article/details/81708464">https://blog.csdn.net/weixin_42672054/article/details/81708464</a></li>
+      <li>2000年左右出现xml，借此微软等联盟推出了基于XML的SOAP协议，实现各系统之间的通信</li>
+      <li>thrift/webservice等可以生成客户端代码，隐藏了底层通信细节，对象化了数据（否则需要自行解析）</li>
+      <li>thrift、dobbo等方式基于TCP实现，主要是性能方面的考虑吧</li>
+    </ul>
+  </li>
+  <li>hessian / sofa</li>
+</ul>
+
+<h3 id="just-do-springcloud">Just Do SpringCloud</h3>
+<ul>
+  <li>首选 <a href="https://windmt.com/tags/Spring-Cloud/">https://windmt.com/tags/Spring-Cloud/</a></li>
+  <li><a href="https://www.springcloud.cc/">springcloud.cc</a></li>
+  <li><a href="http://springcloud.fun">springcloud.fun</a></li>
+  <li><a href="https://www.zhihu.com/question/283286745/answer/763040709">大话SpringCloud</a></li>
+  <li><a href="https://www.geekdigging.com">https://www.geekdigging.com</a></li>
+</ul>
+
+<h3 id="常见组件">常见组件</h3>
+<ul>
+  <li>服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul、携程apollo
+    <ul>
+      <li><a href="https://www.jianshu.com/p/5c5753d2aeb0">Zookeeper保证的是CP，Eureka保证的是AP</a></li>
+    </ul>
+  </li>
+  <li>客户端负载均衡：Netflix Ribbon (提供云端负载均衡，有多种负载均衡策略可供选择，可配合服务发现和断路器使用。)
+    <ul>
+      <li>客户端负载均衡(Ribbon)服务实例的清单在客户端，客户端进行负载均衡算法分配。(从上面的知识我们已经知道了：客户端可以从Eureka Server中得到一份服务清单，在发送请求时通过负载均衡算法，在多个服务器之间选择一个进行访问)
+Zuul路由的业务，对业务进行了归类，并交给了对应的微服务。</li>
+      <li>服务端负载均衡(Nginx)服务实例的清单在服务端，服务器进行负载均衡算法分配,
+Nginx路由请求的压力，对请求进行平均后，交给了服务器处理。</li>
+      <li><a href="https://www.cnblogs.com/kongxianghai/p/8477781.html">撸一撸Spring Cloud Ribbon的原理-负载均衡策略</a></li>
+      <li>可以使用Ribbon + resetTemplate 或者直接使用 Feign（已经内置Ribbon）来实现客户端侧的负载均衡</li>
+    </ul>
+  </li>
+  <li>熔断器：Netflix Hystrix（Envoy)</li>
+  <li>Spring Cloud Feign：它基于 Netflix Feign 实现，整合了 Spring Cloud Ribbon 与 Spring Cloud Hystrix, 除了整合这两者的强大功能之外，它还提 供了声明式的服务调用(不再通过RestTemplate)。
+  生产环境一般使用restTemplate + ribbon</li>
+  <li>服务网关: Netflix Zuul  、 Spring Cloud GateWay
+    <ul>
+      <li>Zuul相当于一个分布式的大Servlet+Filter入口可进行路由及过滤等</li>
+      <li>Zuul也可以近似的理解为是SOA里的ESB，统一入口调用</li>
+      <li>Zuul也默认集成了Hystrix与Ribbon</li>
+    </ul>
+  </li>
+  <li>分布式配置：Spring Cloud Config (Chef)</li>
+  <li>时间消息总线：Spring Cloud Bus</li>
+  <li>链路追踪：Spring Cloud Sleuth 与 Twitter Zipkin</li>
+  <li>数据流：Spring Cloud Stream (数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。)</li>
+  <li>服务监控：Zabbix、Nagios、Metrics、Spectator</li>
+</ul>
+
+<h3 id="相关组件">相关组件</h3>
+<h4 id="zookeeper">zookeeper</h4>
+<ul>
+  <li>简单理解，zk就是一套简单的文件系统结构，本目录(节点)可以设置value及subNode,
+并且该节点可以设置不同的权限（默认/用户名+密码/ip/秘钥，这4种)</li>
+  <li>zk集群简单理解就是，基于ZAB一致性算法的变种keep alived集群</li>
+  <li>zk集群是CP模型，强一致性的，也就是说数据出现了不一致性（通常是节点挂了），整个服务集群就会Hold住等待数据一致，
+所以，这个缺点导致zk并不是最佳的注册中心，因为服务注册中心AP模型最好，部分服务有问题并不表示所有服务不可用。</li>
+  <li>zookeeper 命令 <a href="https://blog.csdn.net/feixiang2039/article/details/79810102">https://blog.csdn.net/feixiang2039/article/details/79810102</a></li>
+  <li>Curator实现的zk分布式锁 <a href="https://www.sohu.com/a/341386202_315839">https://www.sohu.com/a/341386202_315839</a></li>
+</ul>
+
+<h3 id="基于springcloud的开源项目">基于SpringCloud的开源项目</h3>
+
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html"> Nginx </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>网络</span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>分布式</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="location-优先级从高到低">location 优先级从高到低</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. location <span class="o">=</span>    <span class="c"># 精准匹配</span>
+2. location ^~   <span class="c"># 带参前缀匹配</span>
+3. location ~    <span class="c"># 正则匹配（区分大小写）</span>
+4. location ~<span class="k">*</span>   <span class="c"># 正则匹配（不区分大小写）</span>
+5. location /a   <span class="c"># 普通前缀匹配，优先级低于带参数前缀匹配。</span>
+6. location /    <span class="c"># 任何没有匹配成功的，都会匹配这里处理</span>
+</code></pre></div></div>
+<h4 id="location-示例">location 示例</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+location  <span class="o">=</span> / <span class="o">{</span>
+    <span class="c"># 只精准匹配 / 的查询.</span>
+  <span class="o">[</span> configuration A <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 匹配成功： / </span>
+
+location / <span class="o">{</span>
+    <span class="c"># 匹配任何请求，因为所有请求都是以”/“开始</span>
+    <span class="c"># 但是更长字符匹配或者正则表达式匹配会优先匹配</span>
+  <span class="o">[</span> configuration B <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c">#匹配成功：/index.html</span>
+
+location /documents <span class="o">{</span>
+    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
+    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
+  <span class="o">[</span> configuration C <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 匹配成功：/documents/document.html</span>
+<span class="c"># 匹配成功：/documents/abc</span>
+
+location ~ /documents/ABC <span class="o">{</span>
+    <span class="c"># 区分大小写的正则匹配</span>
+    <span class="c"># 匹配任何以 /documents/ 开头的地址，匹配符合以后，还要继续往下搜索/</span>
+    <span class="c"># 只有后面的正则表达式没有匹配到时，这一条才会采用这一条/</span>
+  <span class="o">[</span> configuration CC <span class="o">]</span> 
+<span class="o">}</span>
+
+location ^~ /images/ <span class="o">{</span>
+    <span class="c"># 匹配任何以 /images/ 开头的地址，匹配符合以后，立即停止往下搜索正则，采用这一条。/</span>
+  <span class="o">[</span> configuration D <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 成功匹配：/images/a.gif</span>
+
+location ~<span class="k">*</span> <span class="se">\.</span><span class="o">(</span>gif|jpg|jpeg<span class="o">)</span><span class="nv">$ </span><span class="o">{</span>
+    <span class="c"># 匹配所有以 .gif、.jpg 或 .jpeg 结尾的请求，不区分大小写</span>
+    <span class="c"># 然而，所有请求 /images/ 下的图片会被 [ config D ]  处理，因为 ^~ 到达不了这一条正则/</span>
+    <span class="o">[</span> configuration E <span class="o">]</span> 
+<span class="o">}</span>
+<span class="c"># 成功匹配：/documents/a.jpg</span>
+
+location /images/ <span class="o">{</span>
+    <span class="c"># 字符匹配到 /images/，继续往下，会发现 ^~ 存在/</span>
+  <span class="o">[</span> configuration F <span class="o">]</span> 
+<span class="o">}</span>
+
+location /images/abc <span class="o">{</span>
+    <span class="c"># 最长字符匹配到 /images/abc，继续往下，会发现 ^~ 存在/</span>
+    <span class="c"># F与G的放置顺序是没有关系的/</span>
+  <span class="o">[</span> configuration G <span class="o">]</span> 
+<span class="o">}</span>
+
+location ~ /images/abc/ <span class="o">{</span>
+    <span class="c"># 只有去掉 [ config D ] 才有效：先最长匹配 [ config G ] 开头的地址，继续往下搜索，匹配到这一条正则，采用/</span>
+    <span class="o">[</span> configuration H <span class="o">]</span> 
+<span class="o">}</span>
+</code></pre></div></div>
+<h4 id="命名-location">命名 location</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>location / <span class="o">{</span>
+    try_files <span class="nv">$uri</span> <span class="nv">$uri</span>/ @custom
+<span class="o">}</span>
+location @custom <span class="o">{</span>
+    <span class="c"># ...do something</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<h4 id="全局变量">全局变量</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$args</span> ： <span class="c">#这个变量等于请求行中的参数，同$query_string</span>
+<span class="nv">$content_length</span> ： 请求头中的Content-length字段。
+<span class="nv">$content_type</span> ： 请求头中的Content-Type字段。
+<span class="nv">$document_root</span> ： 当前请求在root指令中指定的值。
+<span class="nv">$host</span> ： 请求主机头字段，否则为服务器名称。
+<span class="nv">$http_user_agent</span> ： 客户端agent信息
+<span class="nv">$http_cookie</span> ： 客户端cookie信息
+<span class="nv">$limit_rate</span> ： 这个变量可以限制连接速率。
+<span class="nv">$request_method</span> ： 客户端请求的动作，通常为GET或POST。
+<span class="nv">$remote_addr</span> ： 客户端的IP地址。
+<span class="nv">$remote_port</span> ： 客户端的端口。
+<span class="nv">$remote_user</span> ： 已经经过Auth Basic Module验证的用户名。
+<span class="nv">$request_filename</span> ： 当前请求的文件路径，由root或alias指令与URI请求生成。
+<span class="nv">$scheme</span> ： HTTP方法（如http，https）。
+<span class="nv">$server_protocol</span> ： 请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
+<span class="nv">$server_addr</span> ： 服务器地址，在完成一次系统调用后可以确定这个值。
+<span class="nv">$server_name</span> ： 服务器名称。
+<span class="nv">$server_port</span> ： 请求到达服务器的端口号。
+<span class="nv">$request_uri</span> ： 包含请求参数的原始URI，不包含主机名，如：”/foo/bar.php?arg<span class="o">=</span>baz”。
+<span class="nv">$uri</span> ： 不带请求参数的当前URI，<span class="nv">$uri</span>不包含主机名，如”/foo/bar.html”。
+<span class="nv">$document_uri</span> ： 与<span class="nv">$uri</span>相同。
+</code></pre></div></div>
+<h4 id="rewrite规则">Rewrite规则</h4>
+<ul>
+  <li>rewrite功能就是，使用nginx提供的全局变量或自己设置的变量，结合正则表达式和标志位实现url重写以及重定向。rewrite只能放在server{},location{},if{}中，并且只能对域名后边的除去传递的参数外的字符串起作用，例如 http://seanlook.com/a/we/index.php?id=1&amp;u=str 只对/a/we/index.php重写。语法rewrite regex replacement [flag];</li>
+  <li>如果相对域名或参数字符串起作用，可以使用全局变量匹配，也可以使用proxy_pass反向代理。</li>
+  <li>表明看rewrite和location功能有点像，都能实现跳转，主要区别在于rewrite是在同一域名内更改获取资源的路径，而location是对一类路径做控制访问或反向代理，可以proxy_pass到其他机器。很多情况下rewrite也会写在location里，它们的执行顺序是：
+    <ul>
+      <li>执行server块的rewrite指令</li>
+      <li>执行location匹配</li>
+      <li>执行选定的location中的rewrite指令</li>
+    </ul>
+  </li>
+  <li>如果其中某步URI被重写，则重新循环执行1-3，直到找到真实存在的文件；循环超过10次，则返回500 Internal Server Error错误。</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>执行搜索
+这个规则的目的是为了执行搜索，搜索URL中包含的关键字。
+请求的URL //hqidi.com/search/some-search-keywords
+重写后URL //hqidi.com/search.php?p<span class="o">=</span>some-search-keywords
+重写规则         rewrite ^/search/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/search.php?p<span class="o">=</span><span class="nv">$1</span>?<span class="p">;</span>
+
+用户个人资料页面
+大多数运行访问者注册的动态网站都提供一个可以查看个人资料的页面，这个页面的URL包含用户的UID和用户名
+请求的URL //hqidi.com/user/47/dige
+重写后URL //hqidi.com/user.php?id<span class="o">=</span>47&amp;name<span class="o">=</span>dige
+重写规则         rewrite ^/user/<span class="o">([</span>0-9]+<span class="o">)</span>/<span class="o">(</span>.+<span class="o">)</span><span class="nv">$ </span>/user.php?id<span class="o">=</span><span class="nv">$1</span>&amp;name<span class="o">=</span><span class="nv">$2</span>?<span class="p">;</span>
+
+多个参数
+有些网站对字符串参数使用不同的语法，例如 通过斜线“/”来分隔非命名参数
+请求的URL //hqidi.com/index.php/param1/param2/param3
+重写后URL //hqidi.com/index.php?p1<span class="o">=</span>param1&amp;p2<span class="o">=</span>param2&amp;p3<span class="o">=</span>param3
+重写规则         rewrite ^/index.php/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span>/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/index.php?p1<span class="o">=</span><span class="nv">$1</span>&amp;p2<span class="o">=</span><span class="nv">$2</span>&amp;p3<span class="o">=</span><span class="nv">$3</span>?<span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>location 配置一 <a href="https://segmentfault.com/a/1190000022315733">https://segmentfault.com/a/1190000022315733</a></li>
+  <li>location 配置二 <a href="https://segmentfault.com/a/1190000022407797">https://segmentfault.com/a/1190000022407797</a></li>
+  <li>Nginx 架构原理科普 <a href="https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ">https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ</a></li>
+  <li>OpenResty 概要及原理科普 <a href="https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw">https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw</a></li>
+  <li>微服务网关 Kong 科普 <a href="https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g">https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/Nginx.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+    <div class="post-contents">
+      <h2>
+        <a class="post-link" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html"> Java ClassLoader </a>
+      </h2>
+      <span class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i>Apr 4, 2020</span>
+      <span class="post-meta" style="margin-left:50px;margin-right:50px;"><i class="fa fa-comment-o">&nbsp;&nbsp;</i><a style="color:#828282" href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html#disqus_thread"></a></span>
+      
+      <span class="post-meta" ><i class="fa fa-tags">&nbsp;&nbsp;</i>Java</span>
+      
+
+      <div class="post-content truncate" itemprop="articleBody" style="max-height:300px;margin-top:20px;">
+	<h4 id="java类加载过程">Java类加载过程</h4>
+<ul>
+  <li>加载
+    <ul>
+      <li>加载是类加载的第一个过程，在这个阶段，将完成一下三件事情：
+        <ul>
+          <li>通过一个类的全限定名获取该类的二进制流。</li>
+          <li>将该二进制流中的静态存储结构转化为方法去运行时数据结构。</li>
+          <li>在内存中生成该类的 java.lang.Class 对象，作为该类的数据访问入口。</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>验证
+    <ul>
+      <li>验证的目的是为了确保 Class 文件的字节流中的信息不回危害到虚拟机.在该阶段主要完成以下四钟验证:
+        <ul>
+          <li>文件格式验证：验证字节流是否符合 Class 文件的规范，如主次版本号是否在当前虚拟机范围内，常量池中的常量是否有不被支持的类型。</li>
+          <li>元数据验证:对字节码描述的信息进行语义分析，如这个类是否有父类，是否集成了不被继承的类等。</li>
+          <li>字节码验证：是整个验证过程中最复杂的一个阶段，通过验证数据流和控制流的分析，确定程序语义是否正确，主要针对方法体的验证。如：方法中的类型转换是否正确，跳转指令是否正确等。</li>
+          <li>符号引用验证：这个动作在后面的解析过程中发生，主要是为了确保解析动作能正确执行。</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>准备
+    <ul>
+      <li>准备阶段是为类的静态变量分配内存并将其初始化为默认值，这些内存都将在方法区中进行分配。准备阶段不分配类中的实例变量的内存，实例变量将会在对象实例化时随着对象一起分配在 Java 堆中。</li>
+    </ul>
+  </li>
+  <li>解析
+    <ul>
+      <li>该阶段主要完成符号引用到直接引用的转换动作。解析动作并不一定在初始化动作完成之前，也有可能在初始化之后。</li>
+    </ul>
+  </li>
+  <li>初始化
+    <ul>
+      <li>初始化时类加载的最后一步，前面的类加载过程，除了在加载阶段用户应用程序可以通过自定义类加载器参与之外，其余动作完全由虚拟机主导和控制。到了初始化阶段，才真正开始执行类中定义的 Java 程序代码。</li>
+    </ul>
+  </li>
+  <li>使用</li>
+  <li>卸载</li>
+</ul>
+
+<h4 id="类加载器步骤">类加载器步骤</h4>
+<ol>
+  <li>在特定目录找到.class文件，并读取</li>
+  <li>Java是模板系语言，读取.class文件之后，被实例化为对应的Class的对象</li>
+  <li>Class对象=类模板实例化，只有有类模板，新对象才能根据类模板进行实例化</li>
+</ol>
+
+<h4 id="3大内置类加载器">3大内置类加载器</h4>
+<ul>
+  <li>启动（Bootstrap）类加载器
+启动类加载器主要加载的是JVM自身需要的类，这个类加载使用C++语言实现的，是虚拟机自身的一部分，它负责将 <JAVA_HOME>/lib路径下的核心类库或-Xbootclasspath参数指定的路径下的jar包加载到内存中，注意必由于虚拟机是按照文件名识别加载jar包的，如rt.jar，如果文件名不被虚拟机识别，即使把jar包丢到lib目录下也是没有作用的(出于安全考虑，Bootstrap启动类加载器只加载包名为java、javax、sun等开头的类)。</JAVA_HOME></li>
+  <li>扩展（Extension）类加载器
+扩展类加载器是指Sun公司(已被Oracle收购)实现的sun.misc.Launcher$ExtClassLoader类，由Java语言实现的，是Launcher的静态内部类，它负责加载<JAVA_HOME>/lib/ext目录下或者由系统变量-Djava.ext.dir指定位路径中的类库，开发者可以直接使用标准扩展类加载器。</JAVA_HOME></li>
+  <li>系统（System）类加载器
+也称应用程序加载器是指 Sun公司实现的sun.misc.Launcher$AppClassLoader。它负责加载系统类路径java -classpath或-D java.class.path 指定路径下的类库，也就是我们经常用到的classpath路径，开发者可以直接使用系统类加载器，一般情况下该类加载是程序中默认的类加载器，通过ClassLoader#getSystemClassLoader()方法可以获取到该类加载器。</li>
+</ul>
+
+<h4 id="双亲委派模式">双亲委派模式</h4>
+<ul>
+  <li>工作原理的是，如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器，如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式</li>
+  <li>如果不想打破双亲委派模型，那么只需要重写findClass方法即可</li>
+  <li>如果想打破双亲委派模型，那么就重写整个loadClass方法</li>
+</ul>
+
+<h4 id="双亲委派模式优势">双亲委派模式优势</h4>
+<p>采用双亲委派模式的是好处是Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层级关可以避免类的重复加载，当父亲已经加载了该类时，就没有必要子ClassLoader再加载一次。其次是考虑到安全因素，java核心api中定义类型不会被随意替换，假设通过网络传递一个名为java.lang.Integer的类，通过双亲委托模式传递到启动类加载器，而启动类加载器在核心Java API发现这个名字的类，发现该类已被加载，并不会重新加载网络传递的过来的java.lang.Integer，而直接返回已加载过的Integer.class，这样便可以防止核心API库被随意篡改。可能你会想，如果我们在classpath路径下自定义一个名为java.lang.SingleInterge类(该类是胡编的)呢？该类并不存在java.lang中，经过双亲委托模式，传递到启动类加载器中，由于父类加载器路径下并没有该类，所以不会加载，将反向委托给子类加载器加载，最终会通过系统类加载器加载该类。但是这样做是不允许，因为java.lang是核心API包，需要访问权限，强制加载将会报出如下异常</p>
+
+<h4 id="其他">其他</h4>
+<ul>
+  <li>不同的加载器加载了同个类，在Jvm中相当于两个不同的Class对象</li>
+  <li>双亲委派模型的破坏者-线程上下文类加载器，在Java应用中存在着很多服务提供者接口（Service Provider Interface，SPI），这些接口允许第三方为它们提供实现，如常见的 SPI 有 JDBC、JNDI等，这些 SPI 的接口属于 Java 核心库，一般存在rt.jar包中，由Bootstrap类加载器加载，而 SPI 的第三方实现代码则是作为Java应用所依赖的 jar 包被存放在classpath路径下，由于SPI接口中的代码经常需要加载具体的第三方实现类并调用其相关方法，但SPI的核心接口类是由引导类加载器来加载的，而Bootstrap类加载器无法直接加载SPI的实现类，同时由于双亲委派模式的存在，Bootstrap类加载器也无法反向委托AppClassLoader加载器SPI的实现类。在这种情况下，我们就需要一种特殊的类加载器来加载第三方的类库，而线程上下文类加载器就是很好的选择。</li>
+  <li>参考<a href="https://blog.csdn.net/javazejian/article/details/73413292">https://blog.csdn.net/javazejian/article/details/73413292</a></li>
+  <li><a href="https://www.jianshu.com/p/b86ec26c19a3">https://www.jianshu.com/p/b86ec26c19a3</a></li>
+</ul>
+
+      </div>
+      <div style="height:50px;">
+	<a href="/%E6%8A%80%E6%9C%AF/2020/04/04/ClassLoader.html" class="button readmore-button">Read More</a>
+      </div>
+    </div>
+    <br />
+    
+
+    <div style="text-align:center">
+    
+    <div class="pagination">
+      
+      <a href="/page6" class="button page-button">&laquo;</a>
+      
+
+      
+      
+      <a href="/page6" class="button page-button">1</a>
+      
+      
+      
+      <a href="/page2" class="button page-button">2</a>
+      
+      
+      
+      <a href="/page3" class="button page-button">3</a>
+      
+      
+      
+      <a href="/page4" class="button page-button">4</a>
+      
+      
+      
+      <a href="/page5" class="button page-button">5</a>
+      
+      
+      
+      <a href="/page6" class="button page-button">6</a>
+      
+      
+      
+      <a href="/page6" class="button current-page-button">7</a>
+      
+      
+      
+      <a href="/page8" class="button page-button">8</a>
+      
+      
+      
+      <a href="/page9" class="button page-button">9</a>
+      
+      
+      
+      <a href="/page10" class="button page-button">10</a>
+      
+      
+      
+      <a href="/page11" class="button page-button">11</a>
+      
+      
+      
+      <a href="/page12" class="button page-button">12</a>
+      
+      
+      
+      <a href="/page13" class="button page-button">13</a>
+      
+      
+      
+      <a href="/page14" class="button page-button">14</a>
+      
+      
+      
+      <a href="/page15" class="button page-button">15</a>
+      
+      
+      
+      <a href="/page16" class="button page-button">16</a>
+      
+      
+
+      
+      <a href="/page8" class="button page-button">&raquo;</a>
+      
+    </div>
+    
+    </div>
+  </div>
+
+    <div class="col-md-4">
+    <div class="post-contents">
+      <i class="fa fa-tags">&nbsp;&nbsp; Tags</i><br />
+      
+      
+      
+      <a  href="/tag/programming">
+      <span class="label label-default">programming ( 4 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/python">
+      <span class="label label-default">python ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/云服务">
+      <span class="label label-default">云服务 ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/工具">
+      <span class="label label-default">工具 ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/网络">
+      <span class="label label-default">网络 ( 9 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/构建">
+      <span class="label label-default">构建 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/分布式">
+      <span class="label label-default">分布式 ( 18 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/股票">
+      <span class="label label-default">股票 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/读书笔记">
+      <span class="label label-default">读书笔记 ( 4 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/数据库">
+      <span class="label label-default">数据库 ( 7 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/数据结构与算法">
+      <span class="label label-default">数据结构与算法 ( 10 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/linux">
+      <span class="label label-default">Linux ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/java">
+      <span class="label label-default">Java ( 19 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/nosql">
+      <span class="label label-default">NoSQL ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/大数据">
+      <span class="label label-default">大数据 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/安全">
+      <span class="label label-default">安全 ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/极致思考">
+      <span class="label label-default">极致思考 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/架构">
+      <span class="label label-default">架构 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/容器">
+      <span class="label label-default">容器 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/spring">
+      <span class="label label-default">Spring ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/微服务">
+      <span class="label label-default">微服务 ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/bigdata">
+      <span class="label label-default">BigData ( 2 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/mq">
+      <span class="label label-default">MQ ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/用户">
+      <span class="label label-default">用户 ( 3 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/tob">
+      <span class="label label-default">toB ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/策略">
+      <span class="label label-default">策略 ( 1 )</span>
+      </a><br />
+
+      
+      
+      
+      <a  href="/tag/方法论">
+      <span class="label label-default">方法论 ( 1 )</span>
+      </a><br />
+
+      
+    </div>
+    <br />
+    <div class="post-contents">
+      <h3>About Me</h3>
+      <img src="/img/me.jpg" style="margin:20px auto 0 auto;">
+      <p style="font-size:18px;margin-top:10px">I'm Siglea,That's All.</p>
+      <br />
+    </div>
+    </div>
+</div>
+      </div>
+      <div class="clearfix">
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="container">
+
+    <h2 class="footer-heading">粉笔灰杂谈</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>粉笔灰杂谈</li>
+          <li><a href="mailto:siglea@sina.com">siglea@sina.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/siglea"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">siglea</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> Elasticsearch  Summary </title>
+  <meta name="description" content="前言  牛逼elasticsearch专栏 https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&amp;album_id=1340073242396114944&amp;__biz=MzI2NDY1MTA3OQ==&amp;scene=21#wechat...">
+  <script src="/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="canonical" href="http://localhost:4000/%E6%8A%80%E6%9C%AF/2019/11/04/Elasticsearch-Summary.html">
+  <link rel="alternate" type="application/rss+xml" title="粉笔灰杂谈" href="http://localhost:4000/feed.xml">
+</head>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-86140592-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  <body>
+
+    <header class="site-header">
+  <div class="container" style="text-align:center">
+    <div class="navbar" style="margin-bottom:0;border:0">
+    <ul class="navbar-nav nav header-nav">
+    <li><a href="/index.html" class="button">首页</a></li>
+      <li><a href="/category/技术" class="button">技术</a></li>
+      <li><a href="/category/产品商业" class="button">产品商业</a></li>
+      <li><a href="/category/随记" class="button">随记</a></li>
+    </ul>
+    </div>
+  </div>
+
+</header>
+<div class="clearfix">
+
+
+    <div class="page-content">
+      <div class="container" style="padding-left:0;padding-right:0;">
+        <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline"> Elasticsearch  Summary </h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-04T10:25:00+08:00" itemprop="datePublished">Nov 4, 2019</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h4 id="前言">前言</h4>
+<ul>
+  <li>牛逼elasticsearch专栏 <a href="https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&amp;album_id=1340073242396114944&amp;__biz=MzI2NDY1MTA3OQ==&amp;scene=21#wechat_redirect">https://mp.weixin.qq.com/mp/appmsgalbum?action=getalbum&amp;album_id=1340073242396114944&amp;__biz=MzI2NDY1MTA3OQ==&amp;scene=21#wechat_redirect</a></li>
+  <li>腾讯Elasticsearch海量规模背后的内核优化剖析 <a href="https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw">https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw</a></li>
+  <li>腾讯万亿级 Elasticsearch 内存效率提升技术解密 <a href="https://mp.weixin.qq.com/s/ipuIq_E5rOPPF7_XdS5PGQ">https://mp.weixin.qq.com/s/ipuIq_E5rOPPF7_XdS5PGQ</a></li>
+  <li>Elasticsearch 在各大互联网公司大量真实的应用案例！ <a href="https://mp.weixin.qq.com/s/Sntf8JoHYFSqkqRtcvVReQ">https://mp.weixin.qq.com/s/Sntf8JoHYFSqkqRtcvVReQ</a></li>
+</ul>
+
+<h4 id="基础入门">基础入门</h4>
+<ul>
+  <li>全文搜索引擎 Elasticsearch 入门教程 <a href="http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html">http://www.ruanyifeng.com/blog/2017/08/elasticsearch.html</a></li>
+  <li>Elasticsearch之基础概念 <a href="https://www.jianshu.com/p/d68197bc7def">https://www.jianshu.com/p/d68197bc7def</a></li>
+  <li><a href="https://www.elastic.co/cn/products/elasticsearch">ec官网</a></li>
+</ul>
+
+<h4 id="提高elasticsearch性能的高级技巧">提高ElasticSearch性能的高级技巧</h4>
+<ol>
+  <li>node.master:false 和node.data: true ，优先确定好比例</li>
+  <li>bootstrap.mlockall:true ，由于ES主要是靠内存提高效率，因此需要锁定内存，防止进行Swapping，此时要求预留充足的HeapSize</li>
+  <li>通过设置 gateway.recover_after_nodes、gateway.expected_nodes、 gateway.recover_after_time 可以在集群重启的时候避免过多的分片交换，这可 能会让数据恢复从数个小时缩短为几秒钟</li>
+  <li>不要随意修改垃圾回收器(CMS)和各个线程池的大小。</li>
+  <li>Elasticsearch 默认被配置为使用单播发现，以防止节点无意中加入集群。只 有在同一台机器上运行的节点才会自动组成集群。最好使用单播代替组播
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>discovery.zen.ping.multicast.enabled:false
+discovery.zen.ping.unicast.hosts:[<span class="s2">"esmaster01"</span>,<span class="s2">"esmaster02"</span>,<span class="s2">"esmaster03"</span><span class="o">]</span>
+</code></pre></div>    </div>
+  </li>
+  <li>action.disable_delete_all_indices:true ，防止误删</li>
+  <li>调整force_merge参数，闲时合并小的segment到大的 <a href="https://blog.csdn.net/jiankunking/article/details/84667437">https://blog.csdn.net/jiankunking/article/details/84667437</a></li>
+  <li>冷数据定期进行 shrink 操作，以缩减存储; <a href="https://my.oschina.net/5icode/blog/2872151">https://my.oschina.net/5icode/blog/2872151</a></li>
+  <li>采取 curator 进行索引的生命周期管理 <a href="https://blog.csdn.net/laoyang360/article/details/85882832">https://blog.csdn.net/laoyang360/article/details/85882832</a></li>
+  <li>在索引重建过程中使用别名 <a href="https://blog.csdn.net/u010454030/article/details/84918103">https://blog.csdn.net/u010454030/article/details/84918103</a></li>
+  <li>Mapping 阶段充分结合各个字段的属性，是否需要检索、是否需要存储等</li>
+</ol>
+
+<p><a href="https://blog.csdn.net/xshy3412/article/details/51841270">https://blog.csdn.net/xshy3412/article/details/51841270</a>
+<a href="https://blog.csdn.net/u014646662/article/details/99293604/">https://blog.csdn.net/u014646662/article/details/99293604/</a></p>
+
+<h4 id="es-过滤filter-与-查询-query">es 过滤filter 与 查询 query</h4>
+<ul>
+  <li>filter，类似where语句，结构化检索
+    <ul>
+      <li>精准匹配 term是完全匹配，不能分词</li>
+      <li>range/exists/prefix/wildcard/regexp/type/ids/flzzy模糊</li>
+    </ul>
+  </li>
+  <li>query ，是用倒排索引进行搜索，全文检索
+    <ul>
+      <li>match query 分词全文检索</li>
+      <li>短语检索 match_phrase query</li>
+      <li>短语前缀检索 match_phrase_prefix</li>
+      <li>多字段匹配检索 muti_match</li>
+    </ul>
+  </li>
+  <li>符合检索：固定得分、bool组合、改变评分检索</li>
+  <li>特定检索：父子文档检索、GEo检索</li>
+  <li><a href="https://mp.weixin.qq.com/s/tiiveCW3W-oDIgxvlwsmXA">https://mp.weixin.qq.com/s/tiiveCW3W-oDIgxvlwsmXA</a></li>
+</ul>
+
+<h4 id="lucene-索引文件结构">Lucene 索引文件结构</h4>
+<ul>
+  <li>索引（index）
+  Lucene的索引由许多个文件组成，这些文件放在同一个目录下</li>
+  <li>段（segment）
+  一个Lucene的索引由多个段组成，段与段之间是独立的。添加新的文档时可以生成新的段，达到阈值（段的个数，段中包含的文件数等）时，不同的段可以合并。
+  在文件夹下，具有相同前缀的文件属于同一个段
+  segments.gen 和 segments_N（N表示一个具体数字，eg：segments_5）是段的元数据文件，他们保存了段的属性信息。</li>
+  <li>文档（document）
+  文档是建索引的基本单位，一个段中可以包含多篇文档
+  新添加的文档时单独保存在一个新生成的段中，随着段的合并，不同的文档会合并到至相同的段中。</li>
+  <li>域（Field）
+  一个文档有可由多个域（Field）组成，比如一篇新闻，有 标题，作者，正文等多个属性，这些属性可以看作是文档的域。
+  不同的域可以指定不同的索引方式，比如指定不同的分词方式，是否构建索引，是否存储等</li>
+  <li>词（Term）
+  词 是索引的最小单位，是经过词法分词和语言处理后的字符串</li>
+</ul>
+
+<h4 id="elasticsearch是如何选举出master的">Elasticsearch是如何选举出master的</h4>
+<ul>
+  <li>一次join，即是加入又是投票</li>
+  <li>相比于其他一致性方案，该方案没有term的概念（虽然有clusterState），所以在同一个选举周期内会出现NodeA 投票给了多个Node的情况。
+  这种情况会在广播的时候其中一个Master自动降级 <a href="https://blog.csdn.net/ailiandeziwei/article/details/87856210">https://blog.csdn.net/ailiandeziwei/article/details/87856210</a></li>
+  <li>ES针对当前集群中所有的Master Eligible Node进行选举得到master节点，为了避免出现Split-brain现象，ES选择了分布式系统常见的quorum（多数派）思想，也就是只有获得了超过半数选票的节点才能成为master。在ES中使用 discovery.zen.minimum_master_nodes 属性设置quorum，这个属性一般设置为 eligibleNodesNum / 2 + 1。</li>
+  <li>如何触发一次选举，当满足如下条件是，集群内就会发生一次master选举
+    <ul>
+      <li>当前master eligible（合格）节点不是master</li>
+      <li>当前master eligible节点与其它的节点通信无法发现master</li>
+      <li>集群中无法连接到master的master eligible节点数量已达到 discovery.zen.minimum_master_nodes 所设定的值</li>
+    </ul>
+  </li>
+  <li>如何选举，当某个节点决定要进行一次选举是，它会实现如下操作
+    <ul>
+      <li>寻找clusterStateVersion比自己高的master eligible的节点，向其发送选票</li>
+      <li>如果clusterStatrVersion一样，则计算自己能找到的master eligible节点（包括自己）中节点id最小的一个节点，向该节点发送选举投票</li>
+      <li>如果一个节点收到足够多的投票（即 minimum_master_nodes 的设置），并且它也向自己投票了，那么该节点成为master开始发布集群状态</li>
+      <li>超时就进入下一轮</li>
+    </ul>
+  </li>
+  <li>ZenDiscovery，节点发现组件(类似于Hadoop的ZK，或者RocketMq的nameserver)</li>
+  <li><a href="https://blog.csdn.net/ailiandeziwei/article/details/87856210">https://blog.csdn.net/ailiandeziwei/article/details/87856210</a></li>
+  <li><a href="https://www.cnblogs.com/dogs/p/11511458.html">https://www.cnblogs.com/dogs/p/11511458.html</a></li>
+</ul>
+
+<h4 id="es的核心概念">es的核心概念</h4>
+<ul>
+  <li>Index（索引-数据库），
+索引包含一堆有相似结构的文档数据，，比如可以有一个客户索引，商品分类索引，订单索引，索引有一个名称。一个index包含很多document，一个index就代表了一类类似的或者相同的document。比如说建立一个product index，商品索引，里面可能就存放了所有的商品数据，所有的商品document。</li>
+  <li>Type（类型-表），
+每个索引里都可以有一个或多个type，type是index中的一个逻辑数据分类，一个type下的document，都有相同的field。
+根据规划，Elastic 6.x 版只允许每个 Index 包含一个 Type，7.x 版将会彻底移除 Type</li>
+  <li>Document（文档-行），
+文档是es中的最小数据单元，一个document可以是一条客户数据，一条商品分类数据，一条订单数据，通常用JSON数据结构表示，每个index下的type中，都可以去存储多个document。</li>
+  <li>Field（字段-列），
+Field是Elasticsearch的最小单位。一个document里面有多个field，每个field就是一个数据字段。</li>
+  <li>mapping（映射-约束），
+数据如何存放到索引对象上，需要有一个映射配置，包括：数据类型、是否存储、是否分词等。这样就创建了一个名为blog的Index。Type不用单独创建，在创建Mapping 时指定就可以。Mapping用来定义Document中每个字段的类型，即所使用的 analyzer、是否索引等属性，非常关键等。</li>
+  <li>shard 分片，
+es中的shard用来解决节点的容量上限问题,通过将index分为多个分片(默认为一个也就是不分片),一个或多个node共同存储该index的所有数据实现水平拓展(类似于关系型数据库中的分表)它们共同持有该索引的所有数据,默认通过hash(文档id)决定数据的归属</li>
+  <li>replicas 副本，
+  replicas主要为了以下两个目的，
+  由于数据只有一份,如果一个node挂了,那存在上面的数据就都丢了,有了replicas,只要不是存储这条数据的node全挂了,数据就不会丢。
+  通过在所有replicas上并行搜索提高搜索性能.由于replicas上的数据是近实时的(near realtime),因此所有replicas都能提供搜索功能,通过设置合理的replicas数量可以极高的提高搜索吞吐量。
+  eg,如果指定了replicas=2,那么对于一条数据它共有三份,一份称为primary shard,另外两份称为 replicas shard. 这三个统称为replicas group(副本组)。</li>
+  <li>LSM (Log Structured Merge Trees)思想，Translog In-memory buffer <a href="https://www.cnblogs.com/luxiaoxun/p/13025019.html">https://www.cnblogs.com/luxiaoxun/p/13025019.html</a></li>
+  <li>为了解磁盘 IO 问题，Lucene 引入排索引的二级索引 FST [Finite State Transducer] 。原理上可以理解为前缀树，加速查询。</li>
+</ul>
+
+<h4 id="常用命令">常用命令</h4>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl localhost:9200 <span class="c"># 默认来一下</span>
+<span class="o">{</span>
+  <span class="s2">"name"</span> : <span class="s2">"atntrTf"</span>,
+  <span class="s2">"cluster_name"</span> : <span class="s2">"elasticsearch"</span>,
+  <span class="s2">"cluster_uuid"</span> : <span class="s2">"tf9250XhQ6ee4h7YI11anA"</span>,
+  <span class="s2">"version"</span> : <span class="o">{</span>
+    <span class="s2">"number"</span> : <span class="s2">"5.5.1"</span>,
+    <span class="s2">"build_hash"</span> : <span class="s2">"19c13d0"</span>,
+    <span class="s2">"build_date"</span> : <span class="s2">"2017-07-18T20:44:24.823Z"</span>,
+    <span class="s2">"build_snapshot"</span> : <span class="nb">false</span>,
+    <span class="s2">"lucene_version"</span> : <span class="s2">"6.6.0"</span>
+  <span class="o">}</span>,
+  <span class="s2">"tagline"</span> : <span class="s2">"You Know, for Search"</span>
+<span class="o">}</span>
+
+<span class="c">#查看节点所有的Index</span>
+curl <span class="nt">-X</span> GET <span class="s1">'http://localhost:9200/_cat/indices?v'</span>
+
+<span class="c">#查看所有Type</span>
+curl <span class="s1">'localhost:9200/_mapping?pretty=true'</span>
+
+<span class="c">#新建Index</span>
+curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/weather'</span>
+<span class="o">{</span>
+  <span class="s2">"acknowledged"</span>:true,
+  <span class="s2">"shards_acknowledged"</span>:true
+<span class="o">}</span>
+
+<span class="c">#删除Index</span>
+curl <span class="nt">-X</span> DELETE <span class="s1">'localhost:9200/weather'</span>
+
+<span class="c"># 新建Index附件结构 Index:accounts Type:person</span>
+<span class="c"># 新建一个名称为accounts的 Index，里面有一个名称为person的 Type。person有三个字段。</span>
+curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/accounts'</span> <span class="nt">-d</span> <span class="s1">'
+{
+  "mappings": {
+    "person": {
+      "properties": {
+        "user": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        },
+        "title": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        },
+        "desc": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        }
+      }
+    }
+  }
+}'</span>
+
+<span class="c">#给指定Index指定的type增加Document</span>
+<span class="nv">$ </span>curl <span class="nt">-X</span> PUT <span class="s1">'localhost:9200/accounts/person/1'</span> <span class="nt">-d</span> <span class="s1">'
+{
+  "user": "张三",
+  "title": "工程师",
+  "desc": "数据库管理"
+}'</span>
+<span class="o">{</span>
+  <span class="s2">"_index"</span>:<span class="s2">"accounts"</span>,
+  <span class="s2">"_type"</span>:<span class="s2">"person"</span>,
+  <span class="s2">"_id"</span>:<span class="s2">"1"</span>,
+  <span class="s2">"_version"</span>:1,
+  <span class="s2">"result"</span>:<span class="s2">"created"</span>,
+  <span class="s2">"_shards"</span>:<span class="o">{</span><span class="s2">"total"</span>:2,<span class="s2">"successful"</span>:1,<span class="s2">"failed"</span>:0<span class="o">}</span>,
+  <span class="s2">"created"</span>:true
+<span class="o">}</span>
+
+<span class="nv">$ </span>curl <span class="nt">-X</span> POST <span class="s1">'localhost:9200/accounts/person'</span> <span class="nt">-d</span> <span class="s1">'
+{
+  "user": "李四",
+  "title": "工程师",
+  "desc": "系统管理"
+}'</span>
+<span class="o">{</span>
+  <span class="s2">"_index"</span>:<span class="s2">"accounts"</span>,
+  <span class="s2">"_type"</span>:<span class="s2">"person"</span>,
+  <span class="s2">"_id"</span>:<span class="s2">"AV3qGfrC6jMbsbXb6k1p"</span>,
+  <span class="s2">"_version"</span>:1,
+  <span class="s2">"result"</span>:<span class="s2">"created"</span>,
+  <span class="s2">"_shards"</span>:<span class="o">{</span><span class="s2">"total"</span>:2,<span class="s2">"successful"</span>:1,<span class="s2">"failed"</span>:0<span class="o">}</span>,
+  <span class="s2">"created"</span>:true
+<span class="o">}</span>
+
+
+<span class="c">#查看指定Index指定的type的指定Document</span>
+curl <span class="s1">'localhost:9200/accounts/person/1?pretty=true'</span>
+<span class="o">{</span>
+  <span class="s2">"_index"</span> : <span class="s2">"accounts"</span>,
+  <span class="s2">"_type"</span> : <span class="s2">"person"</span>,
+  <span class="s2">"_id"</span> : <span class="s2">"1"</span>,
+  <span class="s2">"_version"</span> : 1,
+  <span class="s2">"found"</span> : <span class="nb">true</span>,
+  <span class="s2">"_source"</span> : <span class="o">{</span>
+    <span class="s2">"user"</span> : <span class="s2">"张三"</span>,
+    <span class="s2">"title"</span> : <span class="s2">"工程师"</span>,
+    <span class="s2">"desc"</span> : <span class="s2">"数据库管理"</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c">#查看指定Index指定的type的所有记录</span>
+<span class="nv">$ </span>curl <span class="s1">'localhost:9200/accounts/person/_search'</span>
+<span class="o">{</span>
+  <span class="s2">"took"</span>:2,
+  <span class="s2">"timed_out"</span>:false,
+  <span class="s2">"_shards"</span>:<span class="o">{</span><span class="s2">"total"</span>:5,<span class="s2">"successful"</span>:5,<span class="s2">"failed"</span>:0<span class="o">}</span>,
+  <span class="s2">"hits"</span>:<span class="o">{</span>
+    <span class="s2">"total"</span>:2,
+    <span class="s2">"max_score"</span>:1.0,
+    <span class="s2">"hits"</span>:[
+      <span class="o">{</span>
+        <span class="s2">"_index"</span>:<span class="s2">"accounts"</span>,
+        <span class="s2">"_type"</span>:<span class="s2">"person"</span>,
+        <span class="s2">"_id"</span>:<span class="s2">"AV3qGfrC6jMbsbXb6k1p"</span>,
+        <span class="s2">"_score"</span>:1.0,
+        <span class="s2">"_source"</span>: <span class="o">{</span>
+          <span class="s2">"user"</span>: <span class="s2">"李四"</span>,
+          <span class="s2">"title"</span>: <span class="s2">"工程师"</span>,
+          <span class="s2">"desc"</span>: <span class="s2">"系统管理"</span>
+        <span class="o">}</span>
+      <span class="o">}</span>,
+      <span class="o">{</span>
+        <span class="s2">"_index"</span>:<span class="s2">"accounts"</span>,
+        <span class="s2">"_type"</span>:<span class="s2">"person"</span>,
+        <span class="s2">"_id"</span>:<span class="s2">"1"</span>,
+        <span class="s2">"_score"</span>:1.0,
+        <span class="s2">"_source"</span>: <span class="o">{</span>
+          <span class="s2">"user"</span> : <span class="s2">"张三"</span>,
+          <span class="s2">"title"</span> : <span class="s2">"工程师"</span>,
+          <span class="s2">"desc"</span> : <span class="s2">"数据库管理，软件开发"</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">]</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c"># Elastic 默认一次返回10条结果，可以通过size字段改变这个设置</span>
+<span class="nv">$ </span>curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query" : { "match" : { "desc" : "管理" }},
+  "size": 1
+}'</span>
+
+<span class="c">#搜索指定Index指定的type的复合搜索条件的记录 from:偏移量 size:数据量</span>
+<span class="c">#该分页方式是假分页，会读取整体数据只显示size，数据量超过1万性能急剧下降</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query" : { "match" : { "desc" : "管理" }},
+  "from": 1,
+  "size": 1
+}'</span>
+
+<span class="c">#逻辑搜索 OR 关系</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query" : { "match" : { "desc" : "软件 系统" }}
+}'</span>
+
+<span class="c">#逻辑搜索 AND 关系</span>
+curl <span class="s1">'localhost:9200/accounts/person/_search'</span>  <span class="nt">-d</span> <span class="s1">'
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "desc": "软件" } },
+        { "match": { "desc": "系统" } }
+      ]
+    }
+  }
+}'</span>
+
+<span class="c">#scroll分页查询</span>
+<span class="c">#区别于from size的方式的本质是采用类似Oracle的游标</span>
+curl <span class="nt">-XGET</span> <span class="s1">'localhost:9200/twitter/tweet/_search?scroll=1m'</span> <span class="nt">-d</span> <span class="s1">'
+{
+    "query": {
+        "match" : {
+            "title" : "elasticsearch"
+        }
+    }
+}
+'</span>
+
+curl <span class="nt">-X</span> GET  <span class="s1">'localhost:9200/_search/scroll?scroll=1m&amp;scroll_id=c2Nhbjs2OzM0NDg1ODpzRlBLc0FXNlNyNm5JWUc1'</span>
+
+</code></pre></div></div>
+
+<h4 id="相关原理">相关原理</h4>
+<ul>
+  <li>倒排索引
+    <ol>
+      <li>key =&gt; value-index =&gt; value</li>
+      <li>分词、过滤助动叹词、相似词合并</li>
+      <li>索引建立</li>
+    </ol>
+  </li>
+  <li>分布式
+    <ol>
+      <li>Elasticsearch也是会对数据进行切分，同时每一个分片会保存多个副本</li>
+      <li>数据写入和索引建立，都是先在master完成再同步到slave</li>
+      <li>选举策略和zk/redis集成都很类似(拜占庭将军问题)
+        <ol>
+          <li>master节点宕机了，那么会重新选举一个节点为master节点。</li>
+          <li>如果是非master节点宕机了，那么会由master节点，让那个宕机节点上的primary shard的身份转移到其他机器上的replica shard。
+修复了那个宕机机器，重启了之后，master节点会控制将缺失的replica shard分配过去，同步后续修改的数据之类的，让集群恢复正常。</li>
+        </ol>
+      </li>
+      <li>分布式查询操作类似Map/Reduce</li>
+      <li>NRT(Near RealTime)
+        <ul>
+          <li>默认是每隔1秒refresh一次的，所以es是准实时的，因为写入的数据1秒之后才能被看到。</li>
+          <li>-&gt; buffer -&gt; segment file -&gt; os cache -&gt; 磁盘</li>
+          <li>-&gt; trans_log -&gt; os cache -&gt; 磁盘</li>
+          <li>refresh、flush、translog、merge</li>
+        </ul>
+      </li>
+      <li>默认primary shard=5，replica=1共计10shard</li>
+      <li>es写数据过程
+        <ol>
+          <li>客户端选择一个node发送请求过去，这个node就是coordinating node（协调节点）</li>
+          <li>coordinating node，对document进行路由，将请求转发给对应的node（有primary shard）</li>
+          <li>实际的node上的primary shard处理请求，然后将数据同步到replica node</li>
+          <li>coordinating node，如果发现primary node和所有replica node都搞定之后，就返回响应结果给客户端</li>
+        </ol>
+      </li>
+      <li>es读取数据过程
+        <ol>
+          <li>客户端发送请求到任意一个node，成为coordinate node</li>
+          <li>coordinate node对document进行路由，将请求转发到对应的node，此时会使用round-robin随机轮询算法，在primary shard以及其所有replica中随机选择一个，让读请求负载均衡</li>
+          <li>接收请求的node返回document给coordinate node</li>
+          <li>coordinate node返回document给客户端</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="实战总结亿级性能">实战总结亿级性能</h4>
+<ul>
+  <li>用内存换速度
+ es的搜索引擎严重依赖于底层的filesystem cache，你如果给filesystem cache更多的内存，尽量让内存可以容纳所有的indx segment file索引数据文件，
+ 那么你搜索的时候就基本都是走内存的，性能会非常高。归根结底，你要让es性能要好，最佳的情况下，就是你的机器的内存，至少可以容纳你的总数据量的一半.</li>
+  <li>减少es中的无用字段的数据量(es+hbase)</li>
+  <li>数据预热，冷热分离，冗余数据</li>
+  <li>由应用服务器完成某些逻辑及运算操作</li>
+  <li>使用sroll api优化分页性能</li>
+</ul>
+
+<h5 id="实战案例">实战案例</h5>
+<ul>
+  <li>5台机器，每台机器是6核64G的，集群总内存是320G</li>
+  <li>es集群的日增量数据大概是2000万条，每天日增量数据大概是500MB，每月增量数据大概是6亿，15G。（数据总量大概是100G左右）</li>
+  <li>index数据量预估，shard个数预估（不支持后续增加shard需要重建),建议每个shard小于30G</li>
+</ul>
+
+<h4 id="参考资料">参考资料</h4>
+<ul>
+  <li>Elasticsearch 在各大互联网公司大量真实的应用案例！ ☆☆☆<a href="https://mp.weixin.qq.com/s/Sntf8JoHYFSqkqRtcvVReQ">https://mp.weixin.qq.com/s/Sntf8JoHYFSqkqRtcvVReQ</a></li>
+  <li>漫画讲原理 <a href="http://developer.51cto.com/art/201904/594615.htm">http://developer.51cto.com/art/201904/594615.htm</a></li>
+  <li>搜索引擎之倒排索引解读 <a href="https://www.jianshu.com/p/b3f987b0fbf1">https://www.jianshu.com/p/b3f987b0fbf1</a></li>
+  <li><a href="https://www.jianshu.com/p/3fa27dda63ab">java实战教程大数据技术之elasticsearch</a></li>
+  <li>腾讯Elasticsearch海量规模背后的内核优化剖析 <a href="https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw">https://mp.weixin.qq.com/s/OGY2FB1FfyPBHeG-kKX_Xw</a></li>
+  <li>腾讯万亿级 Elasticsearch 内存效率提升技术解密 <a href="https://mp.weixin.qq.com/s/ipuIq_E5rOPPF7_XdS5PGQ">https://mp.weixin.qq.com/s/ipuIq_E5rOPPF7_XdS5PGQ</a></li>
+</ul>
+
+<h4 id="lucene--nutch2002--solr2004--elasticsearch2010">lucene &amp; nutch（2002） &amp; Solr（2004）&amp;  Elasticsearch（2010）</h4>
+<ul>
+  <li>Lucene其实是一个提供全文文本搜索的函数库，它不是一个应用软件</li>
+  <li>Nutch = Lucene + 爬虫</li>
+  <li>Solr 是基于Lucene的一套完整的搜索服务属于Apache开源项目</li>
+  <li>Nutch是分布式爬虫系统，solr是搜索引擎</li>
+</ul>
+
+<h5 id="solr--elasticsearch">Solr &amp; Elasticsearch</h5>
+<ul>
+  <li>Solr 利用 Zookeeper 进行分布式管理，而 Elasticsearch 自身带有分布式协调管理功能;</li>
+  <li>Solr 支持更多格式的数据，而 Elasticsearch 仅支持json文件格式；</li>
+  <li>Solr 官方提供的功能更多，而 Elasticsearch 本身更注重于核心功能，高级功能多有第三方插件提供；</li>
+  <li>Solr 在传统的搜索应用中表现好于 Elasticsearch，但在处理实时搜索应用时效率明显低于 Elasticsearch。</li>
+</ul>
+
+<h5 id="关于nutch">关于Nutch</h5>
+<ul>
+  <li>Nutch诞生于2002年8月，是Apache旗下的一个用Java实现的开源搜索引擎项目，
+自Nutch1.2版本之后，Nutch已经从搜索引擎演化为网络爬虫，接着Nutch进一步演化为两大分支版本：1.X和2.X，
+这两大分支最大的区别在于2.X对底层的数据存储进行了抽象以支持各种底层存储技术。</li>
+  <li>1.x版本是基于Hadoop架构的，底层存储使用的是HDFS，而2.x通过使用Apache Gora，
+使得Nutch可以访问HBase、Accumulo、Cassandra、MySQL、DataFileAvroStore、AvroStore等NoSQL。</li>
+  <li>nutch主要用于采集网页，solr可以作为搜索服务器。nutch+solr可以搭建一个简单的搜索引擎。</li>
+  <li>简单地讲，nutch就是用于分布式采集数据源，solr用于建索引和搜索服务。</li>
+</ul>
+
+<h4 id="es-bulk-一次最大处理多少数据量">Es Bulk 一次最大处理多少数据量???</h4>
+<p>bulk 会把将要处理的数据载入内存中，所以数据量是有限制的 最佳的数据量不是一个确定的数值，它取决于你的硬件，你的文档大小以及复杂性，你的索
+引以及搜索的负载。
+一般建议是 1000-5000 个文档，如果你的文档很大，可以适当减少队列,大小建议是 5-15MB，
+默认不能超过 100M，可以在 es 的配置文件中修改这个值 http.max_content_length: 100mb</p>
+
+<h4 id="es-在高并发的情况下如何保证数据线程安全问题">ES 在高并发的情况下如何保证数据线程安全问题?</h4>
+<p>在读数据与写数据之间如果有其他线程进行写操作，就会出问题，es 使用版本控制才避免 这种问题
+在修改数据的时候指定版本号，操作一次版本号加 1</p>
+
+<h4 id="客户端在和集群连接时如何选择特定的节点执行请求的">客户端在和集群连接时，如何选择特定的节点执行请求的?</h4>
+<ul>
+  <li>TransportClient 利用 transport 模块远程连接一个 elasticsearch 集群。它并 不加入到集群中，只是简单的获得一个或者多个初始化的
+  transport 地址，并以 轮 询 的方式与这些地址进行通信</li>
+</ul>
+
+<h4 id="elasticsearch-对于大数据量上亿量级的聚合如何实现">Elasticsearch 对于大数据量(上亿量级)的聚合如何实现?</h4>
+<ul>
+  <li>Elasticsearch 提供的首个近似聚合是 cardinality 度量。它提供一个字段的基数， 即该字段的 distinct 或者 unique 值的数目。它是基于 HLL 算法的。
+  HLL 会先对 我们的输入作哈希运算，然后根据哈希运算的结果中的 bits 做概率估算从而得到 基数。其特点是:可配置的精度，用来控制内存的使用(更精确 = 更多内存); 
+  小的数据集精度是非常高的;我们可以通过配置参数，来设置去重需要的固定内 存使用量。无论数千还是数十亿的唯一值，内存使用量只与你配置的精确度相关。</li>
+</ul>
+
+<h4 id="es-管理的工具有哪些">ES 管理的工具有哪些?</h4>
+<ul>
+  <li>BigDesk Plugin、Elasticsearch Head Plugin 、Kibana</li>
+</ul>
+
+<h5 id="参考资料-1">参考资料</h5>
+<ul>
+  <li><a href="https://www.cnblogs.com/yinhaiming/articles/1542921.html">https://www.cnblogs.com/yinhaiming/articles/1542921.html</a></li>
+  <li><a href="https://www.cnblogs.com/fosilzhou/articles/4629220.html">https://www.cnblogs.com/fosilzhou/articles/4629220.html</a></li>
+  <li><a href="https://blog.csdn.net/xiaoyu714543065/article/details/10374191">https://blog.csdn.net/xiaoyu714543065/article/details/10374191</a></li>
+  <li><a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-BigInsightsNutchSolr/">https://www.ibm.com/developerworks/cn/opensource/os-cn-BigInsightsNutchSolr/</a></li>
+  <li><a href="https://www.jianshu.com/p/366d9bd38d14">https://www.jianshu.com/p/366d9bd38d14</a></li>
+</ul>
+
+<h4 id="其他">其他</h4>
+<ul>
+  <li>ELK 系统，也就是日志分析系统。其中 E 就是 Elasticsearch，L 是 Logstash，是一个日志收集系统，K 是 Kibana，是一个数据可视化平台。</li>
+  <li>ElasticSearch + Hbase</li>
+  <li>Katta Hadoop contrib/index Lucandra HBasene</li>
+</ul>
+
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+      </div>
+      <div class="clearfix">
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="container">
+
+    <h2 class="footer-heading">粉笔灰杂谈</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>粉笔灰杂谈</li>
+          <li><a href="mailto:siglea@sina.com">siglea@sina.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/siglea"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">siglea</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>关于产品、技术、商业的一些见解，顺便记录一下自己的生活感悟和读书笔记。</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
