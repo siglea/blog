@@ -1,4 +1,4 @@
-I"]<p>Recently I’m learning to create a Rails 5 api only application with an android mobile application. I want to send a activation email after user registered from the android app, and I found there is a free Mailgun add-on on Heroku. It’s perfect choice to start to play with because you can send up to 100 messages/hour without being charged. The documentation is good enough but I do found several steps confusing.</p>
+I"p<p>Recently I’m learning to create a Rails 5 api only application with an android mobile application. I want to send a activation email after user registered from the android app, and I found there is a free Mailgun add-on on Heroku. It’s perfect choice to start to play with because you can send up to 100 messages/hour without being charged. The documentation is good enough but I do found several steps confusing.</p>
 
 <p>Firstly, you need to create a Mailgun account and add your credit card information, otherwise you can’t send to recipents other than authorized ones(which means test only).</p>
 
@@ -6,7 +6,7 @@
 
 <p>After your custom domain is active, configure your development environment and make sure it works. In my case I use smtp instead of api call, the settings are for example:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  config.action_mailer.delivery_method = :smtp
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
 	:address =&gt; "smtp.mailgun.org",
 	:port =&gt; 587,

@@ -1,7 +1,7 @@
-I"�<p>Recently I’ve been working in backend which connects to another API, you may need to send a specific format of JSON data which is not the same as database resource.</p>
+I"<p>Recently I’ve been working in backend which connects to another API, you may need to send a specific format of JSON data which is not the same as database resource.</p>
 
 <h2 id="create-a-serializable-resource">Create A Serializable Resource</h2>
-<p>Currently I’m using <a href="https://github.com/rails-api/active_model_serializers/tree/0-10-stable">active_model_serializers 0.10.0</a>. From the documentation we know <code class="highlighter-rouge">ActiveModel::Serializer</code> wraps a serializable resource, to create a serializable resource we need to create a plain old Ruby object inherits <code class="highlighter-rouge">ActiveModelSerializers::Model</code>, then create a corresponding serializer.</p>
+<p>Currently I’m using <a href="https://github.com/rails-api/active_model_serializers/tree/0-10-stable">active_model_serializers 0.10.0</a>. From the documentation we know <code class="language-plaintext highlighter-rouge">ActiveModel::Serializer</code> wraps a serializable resource, to create a serializable resource we need to create a plain old Ruby object inherits <code class="language-plaintext highlighter-rouge">ActiveModelSerializers::Model</code>, then create a corresponding serializer.</p>
 
 <p>For example:</p>
 <div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyModel</span> <span class="o">&lt;</span> <span class="no">ActiveModelSerializers</span><span class="o">::</span><span class="no">Model</span>
@@ -22,7 +22,7 @@
 </code></pre></div></div>
 
 <h2 id="handling-nested-json">Handling Nested JSON</h2>
-<p>You can use <code class="highlighter-rouge">has_many</code>, <code class="highlighter-rouge">has_one</code> method in <code class="highlighter-rouge">ActiveModel::Serializer</code> to handle nested json, although it doesn’t mean the same with Rails model relations.</p>
+<p>You can use <code class="language-plaintext highlighter-rouge">has_many</code>, <code class="language-plaintext highlighter-rouge">has_one</code> method in <code class="language-plaintext highlighter-rouge">ActiveModel::Serializer</code> to handle nested json, although it doesn’t mean the same with Rails model relations.</p>
 
 <p>For example:</p>
 <div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyModel</span> <span class="o">&lt;</span> <span class="no">ActiveModelSerializers</span><span class="o">::</span><span class="no">Model</span>
@@ -45,7 +45,7 @@
   <span class="n">has_many</span> <span class="ss">:related_models</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p><code class="highlighter-rouge">ActiveModelSerializers::Serializer</code> will automatically look for a serializer named <code class="highlighter-rouge">RelatedModelSerializer</code>.</p>
+<p><code class="language-plaintext highlighter-rouge">ActiveModelSerializers::Serializer</code> will automatically look for a serializer named <code class="language-plaintext highlighter-rouge">RelatedModelSerializer</code>.</p>
 
 <h2 id="reference">Reference</h2>
 <p>Find more explainations in   https://github.com/rails-api/active_model_serializers/tree/0-10-stable#what-does-a-serializable-resource-look-like</p>
