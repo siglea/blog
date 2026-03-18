@@ -18,7 +18,7 @@ layout: default
 	{{ post.content }}
       </div>
       <div style="height:50px;">
-	<a href="{{ post.url }}" class="button readmore-button">Read More</a>
+	<a href="{{ post.url | prepend: site.baseurl }}" class="button readmore-button">Read More</a>
       </div>
     </div>
     <br />
