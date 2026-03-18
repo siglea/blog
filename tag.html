@@ -1,0 +1,122 @@
+---
+layout: default
+title: 标签
+---
+
+<div class="row" style="margin-bottom:30px">
+    <div class="home col-md-8">
+        <h1>文章标签</h1>
+        <p>共 {{ site.tags | size }} 个标签</p>
+        <hr>
+        
+        <div class="tags-cloud" style="margin: 30px 0;">
+            {% for tag in site.tags %}
+            {% assign tag_name = tag | first %}
+            {% assign posts = tag | last %}
+            {% assign font_size = posts | size | times: 2 | plus: 12 %}
+            {% if font_size > 24 %}{% assign font_size = 24 %}{% endif %}
+            <a href="{{ site.baseurl }}/tag/{{ tag_name | slugify }}/" 
+               style="display: inline-block; margin: 8px; padding: 8px 16px; 
+                      background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); 
+                      color: white; border-radius: 20px; text-decoration: none; 
+                      font-size: {{ font_size }}px; transition: all 0.3s ease;
+                      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);"
+               onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99, 102, 241, 0.4)'"
+               onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 8px rgba(99, 102, 241, 0.3)'">
+                {{ tag_name }}
+                <span style="opacity: 0.9; font-size: 0.8em;">({{ posts | size }})</span>
+            </a>
+            {% endfor %}
+        </div>
+
+        <hr style="margin: 40px 0;">
+        
+        <h2>标签文章列表</h2>
+        {% for tag in site.tags %}
+        {% assign tag_name = tag | first %}
+        {% assign posts = tag | last %}
+        <div class="tag-section" style="margin-bottom: 40px; padding: 20px; background: var(--bg-card); border-radius: 12px;">
+            <h3 id="tag-{{ tag_name | slugify }}" style="margin-bottom: 15px;">
+                <a href="{{ site.baseurl }}/tag/{{ tag_name | slugify }}/" style="color: var(--primary-color);">
+                    <i class="fas fa-tag"></i> {{ tag_name }}
+                </a>
+                <span class="badge" style="background-color: var(--accent-color);">{{ posts | size }} 篇</span>
+            </h3>
+            <ul class="posts" style="list-style: none; padding: 0;">
+                {% for post in posts limit:5 %}
+                <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+                    <span class="post-date" style="color: var(--text-muted); margin-right: 15px;">
+                        {{ post.date | date: "%Y-%m-%d" }}
+                    </span>
+                    <a class="post-link" href="{{ post.url | prepend: site.baseurl }}" 
+                       style="color: var(--text-primary); text-decoration: none; font-weight: 500;">
+                        {{ post.title }}
+                    </a>
+                </li>
+                {% endfor %}
+                {% if posts.size > 5 %}
+                <li style="list-style: none; margin-top: 15px; text-align: center;">
+                    <a href="{{ site.baseurl }}/tag/{{ tag_name | slugify }}/" 
+                       style="color: var(--primary-color); text-decoration: none; padding: 8px 16px; 
+                              border: 1px solid var(--primary-color); border-radius: 20px; display: inline-block;">
+                        查看更多 ({{ posts.size | minus: 5 }} 篇) →
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="post-contents" style="position: sticky; top: 20px;">
+            <h3><i class="fas fa-cloud"></i> 标签云</h3>
+            <div class="tags-mini-cloud" style="margin-top: 15px; line-height: 2;">
+                {% for tag in site.tags %}
+                {% assign tag_name = tag | first %}
+                {% assign posts = tag | last %}
+                <a href="#tag-{{ tag_name | slugify }}" 
+                   style="display: inline-block; margin: 3px; padding: 4px 10px; 
+                          background-color: var(--bg-tertiary); border-radius: 12px; 
+                          text-decoration: none; color: var(--text-secondary); font-size: 0.9em;">
+                    {{ tag_name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <br />
+        <div class="post-contents">
+            <h3>About Me</h3>
+            <img src="{{ site.baseurl }}/img/me.jpg" style="margin:20px auto 0 auto; max-width: 100%; border-radius: 8px;">
+            <p style="font-size:18px;margin-top:10px">I'm Siglea,That's All.</p>
+            <br />
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default social-network" style="background-color:#0078ba" target="_blank" onclick=''><i class="fa fa-linkedin" style="font-size:20px;color:white;"></i></button>
+                <button type="button" class="btn btn-default social-network" style="background-color:#DD4B38" target="_blank" onclick=''><i class="fa fa-google-plus" style="font-size:20px;color:white;"></i></button>
+                <button type="button" class="btn btn-default social-network" style="background-color:#F60" target="_blank" onclick=''><i class="fa fa-soundcloud" style="font-size:20px;color:white;"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #6366f1;
+    --accent-color: #8b5cf6;
+    --bg-card: var(--bg-secondary, #f8fafc);
+    --bg-tertiary: #f1f5f9;
+    --border-color: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+}
+
+.tag-section:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.posts li:last-child {
+    border-bottom: none !important;
+}
+</style>

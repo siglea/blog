@@ -85,50 +85,42 @@ title: 首页
       <i class="fas fa-layer-group"></i>
       探索分类
     </h2>
+    <a href="{{ site.baseurl }}/category" class="view-all-link">
+      查看全部 <i class="fas fa-arrow-right"></i>
+    </a>
   </div>
 
   <div class="categories-grid">
-    <a href="{{ site.baseurl }}/category/backend" class="category-card backend">
+    <a href="{{ site.baseurl }}/category/技术/" class="category-card tech">
       <div class="category-icon">
-        <i class="fas fa-server"></i>
+        <i class="fas fa-code"></i>
       </div>
       <div class="category-info">
-        <h3>后端开发</h3>
-        <p>Java、Spring、微服务架构</p>
-        <span class="post-count">{{ site.categories['backend'] | size }} 篇文章</span>
+        <h3>技术</h3>
+        <p>编程、架构、工具</p>
+        <span class="post-count">{{ site.categories['技术'] | size }} 篇文章</span>
       </div>
     </a>
 
-    <a href="{{ site.baseurl }}/category/architecture" class="category-card architecture">
+    <a href="{{ site.baseurl }}/category/产品商业/" class="category-card business">
       <div class="category-icon">
-        <i class="fas fa-sitemap"></i>
+        <i class="fas fa-briefcase"></i>
       </div>
       <div class="category-info">
-        <h3>系统架构</h3>
-        <p>分布式系统、高并发设计</p>
-        <span class="post-count">{{ site.categories['architecture'] | size }} 篇文章</span>
+        <h3>产品商业</h3>
+        <p>产品思维、商业模式</p>
+        <span class="post-count">{{ site.categories['产品商业'] | size }} 篇文章</span>
       </div>
     </a>
 
-    <a href="{{ site.baseurl }}/category/devops" class="category-card devops">
+    <a href="{{ site.baseurl }}/category/随记/" class="category-card notes">
       <div class="category-icon">
-        <i class="fas fa-cogs"></i>
+        <i class="fas fa-book"></i>
       </div>
       <div class="category-info">
-        <h3>DevOps</h3>
-        <p>CI/CD、容器化、监控</p>
-        <span class="post-count">{{ site.categories['devops'] | size }} 篇文章</span>
-      </div>
-    </a>
-
-    <a href="{{ site.baseurl }}/category/ai" class="category-card ai">
-      <div class="category-icon">
-        <i class="fas fa-brain"></i>
-      </div>
-      <div class="category-info">
-        <h3>AI & 机器学习</h3>
-        <p>深度学习、NLP、大数据</p>
-        <span class="post-count">{{ site.categories['ai'] | size }} 篇文章</span>
+        <h3>随记</h3>
+        <p>读书笔记、随笔</p>
+        <span class="post-count">{{ site.categories['随记'] | size }} 篇文章</span>
       </div>
     </a>
   </div>

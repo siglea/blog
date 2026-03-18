@@ -8,3 +8,5 @@ gem "jekyll-archives"
 gem "jekyll-theme-cayman"
 gem "kramdown"
 gem "rouge"
+
+gem "jekyll-feed", "~> 0.17.0"
