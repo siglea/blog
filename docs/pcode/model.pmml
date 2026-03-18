@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PMML xmlns="http://www.dmg.org/PMML-4_3" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.3">
+    <Header>
+        <Application name="JPMML-SparkML" version="1.5.4"/>
+        <Timestamp>2023-03-23T11:03:36Z</Timestamp>
+    </Header>
+    <DataDictionary>
+        <DataField name="V2" optype="continuous" dataType="double"/>
+        <DataField name="V4" optype="continuous" dataType="double"/>
+        <DataField name="V6" optype="continuous" dataType="double"/>
+        <DataField name="V9" optype="continuous" dataType="double"/>
+        <DataField name="V10" optype="continuous" dataType="double"/>
+        <DataField name="V12" optype="continuous" dataType="double"/>
+        <DataField name="V14" optype="continuous" dataType="double"/>
+        <DataField name="V15" optype="continuous" dataType="double"/>
+        <DataField name="V16" optype="continuous" dataType="double"/>
+        <DataField name="V20" optype="continuous" dataType="double"/>
+        <DataField name="V21" optype="continuous" dataType="double"/>
+        <DataField name="V22" optype="continuous" dataType="double"/>
+        <DataField name="V24" optype="continuous" dataType="double"/>
+        <DataField name="V26" optype="continuous" dataType="double"/>
+        <DataField name="Amount" optype="continuous" dataType="double"/>
+        <DataField name="_label" optype="categorical" dataType="double">
+            <Value value="0"/>
+            <Value value="1"/>
+        </DataField>
+    </DataDictionary>
+    <TransformationDictionary/>
+    <MiningModel functionName="classification" algorithmName="XGBoost (GBTree)" x-mathContext="float">
+        <MiningSchema>
+            <MiningField name="_label" usageType="target"/>
+            <MiningField name="V2"/>
+            <MiningField name="V4"/>
+            <MiningField name="V6"/>
+            <MiningField name="V9"/>
+            <MiningField name="V10"/>
+            <MiningField name="V12"/>
+            <MiningField name="V14"/>
+            <MiningField name="V15"/>
+            <MiningField name="V16"/>
+            <MiningField name="V20"/>
+            <MiningField name="V21"/>
+            <MiningField name="V22"/>
+            <MiningField name="V24"/>
+            <MiningField name="V26"/>
+            <MiningField name="Amount"/>
+        </MiningSchema>
+        <Segmentation multipleModelMethod="modelChain" x-missingPredictionTreatment="returnMissing">
+            <Segment id="1">
+                <True/>
+                <MiningModel functionName="regression" x-mathContext="float">
+                    <MiningSchema>
+                        <MiningField name="V2"/>
+                        <MiningField name="V9"/>
+                        <MiningField name="V12"/>
+                        <MiningField name="V16"/>
+                        <MiningField name="V21"/>
+                        <MiningField name="V22"/>
+                        <MiningField name="V24"/>
+                        <MiningField name="V4"/>
+                        <MiningField name="V6"/>
+                        <MiningField name="V10"/>
+                        <MiningField name="V14"/>
+                        <MiningField name="V15"/>
+                        <MiningField name="V20"/>
+                        <MiningField name="V26"/>
+                        <MiningField name="Amount"/>
+                    </MiningSchema>
+                    <Output>
+                        <OutputField name="xgbValue" optype="continuous" dataType="float" isFinalResult="false"/>
+                    </Output>
+                    <LocalTransformations>
+                        <DerivedField name="float(V4)" optype="continuous" dataType="float">
+                            <FieldRef field="V4"/>
+                        </DerivedField>
+                        <DerivedField name="float(V6)" optype="continuous" dataType="float">
+                            <FieldRef field="V6"/>
+                        </DerivedField>
+                        <DerivedField name="float(V10)" optype="continuous" dataType="float">
+                            <FieldRef field="V10"/>
+                        </DerivedField>
+                        <DerivedField name="float(V14)" optype="continuous" dataType="float">
+                            <FieldRef field="V14"/>
+                        </DerivedField>
+                        <DerivedField name="float(V15)" optype="continuous" dataType="float">
+                            <FieldRef field="V15"/>
+                        </DerivedField>
+                        <DerivedField name="float(V20)" optype="continuous" dataType="float">
+                            <FieldRef field="V20"/>
+                        </DerivedField>
+                        <DerivedField name="float(V26)" optype="continuous" dataType="float">
+                            <FieldRef field="V26"/>
+                        </DerivedField>
+                        <DerivedField name="float(Amount)" optype="continuous" dataType="float">
+                            <FieldRef field="Amount"/>
+                        </DerivedField>
+                    </LocalTransformations>
+                    <Segmentation multipleModelMethod="sum">
+                        <Segment id="1">
+                            <True/>
+                            <TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+<MiningSchema>
+    <MiningField name="float(V4)"/>
+    <MiningField name="float(V6)"/>
+    <MiningField name="float(V14)"/>
+    <MiningField name="float(V20)"/>
+    <MiningField name="float(V26)"/>
+</MiningSchema>
+<Node id="0" defaultChild="2">
+    <True/>
+    <Node id="1" defaultChild="4">
+        <SimplePredicate field="float(V14)" operator="lessThan" value="-2.7745426"/>
+        <Node id="3" defaultChild="6">
+            <SimplePredicate field="float(V4)" operator="lessThan" value="2.0837052"/>
+            <Node id="5" score="-0.58775514">
+                <SimplePredicate field="float(V4)" operator="lessThan" value="1.8504707"/>
+            </Node>
+            <Node id="6" score="-0.15">
+                <SimplePredicate field="float(V4)" operator="greaterOrEqual" value="1.8504707"/>
+            </Node>
+        </Node>
+        <Node id="4" defaultChild="8">
+            <SimplePredicate field="float(V4)" operator="greaterOrEqual" value="2.0837052"/>
+            <Node id="7" defaultChild="10">
+                <SimplePredicate field="float(V26)" operator="lessThan" value="-0.2576155"/>
+                <Node id="9" score="-0.4758621">
+                    <SimplePredicate field="float(V6)" operator="lessThan" value="-1.8771335"/>
+                </Node>
+                <Node id="10" score="0.24000001">
+                    <SimplePredicate field="float(V6)" operator="greaterOrEqual" value="-1.8771335"/>
+                </Node>
+            </Node>
+            <Node id="8" defaultChild="12">
+                <SimplePredicate field="float(V26)" operator="greaterOrEqual" value="-0.2576155"/>
+                <Node id="11" defaultChild="14">
+                    <SimplePredicate field="float(V6)" operator="lessThan" value="0.7013197"/>
+                    <Node id="13" score="0.5368421">
+                        <SimplePredicate field="float(V20)" operator="lessThan" value="1.7038867"/>
+                    </Node>
+                    <Node id="14" score="0.120000005">
+                        <SimplePredicate field="float(V20)" operator="greaterOrEqual" value="1.7038867"/>
+                    </Node>
+                </Node>
+                <Node id="12" score="-0.3">
+                    <SimplePredicate field="float(V6)" operator="greaterOrEqual" value="0.7013197"/>
+                </Node>
+            </Node>
+        </Node>
+    </Node>
+    <Node id="2" score="-0.5993512">
+        <SimplePredicate field="float(V14)" operator="greaterOrEqual" value="-2.7745426"/>
+    </Node>
+</Node>
+                            </TreeModel>
+                        </Segment>
+                        <Segment id="2">
+                            <True/>
+                            <TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+<MiningSchema>
+    <MiningField name="V12"/>
+    <MiningField name="V16"/>
+    <MiningField name="float(V6)"/>
+    <MiningField name="float(V10)"/>
+    <MiningField name="float(V20)"/>
+    <MiningField name="float(V26)"/>
+    <MiningField name="float(Amount)"/>
+</MiningSchema>
+<LocalTransformations>
+    <DerivedField name="float(V12)" optype="continuous" dataType="float">
+        <FieldRef field="V12"/>
+    </DerivedField>
+    <DerivedField name="float(V16)" optype="continuous" dataType="float">
+        <FieldRef field="V16"/>
+    </DerivedField>
+</LocalTransformations>
+<Node id="0" defaultChild="2">
+    <True/>
+    <Node id="1" defaultChild="4">
+        <SimplePredicate field="float(V12)" operator="lessThan" value="-3.6526344"/>
+        <Node id="3" defaultChild="6">
+            <SimplePredicate field="float(V10)" operator="lessThan" value="-1.827533"/>
+            <Node id="5" defaultChild="10">
+                <SimplePredicate field="float(V26)" operator="lessThan" value="-0.27237037"/>
+                <Node id="9" score="-0.029033212">
+                    <SimplePredicate field="float(Amount)" operator="lessThan" value="0.007993244"/>
+                </Node>
+                <Node id="10" score="-0.36422372">
+                    <SimplePredicate field="float(Amount)" operator="greaterOrEqual" value="0.007993244"/>
+                </Node>
+            </Node>
+            <Node id="6" defaultChild="12">
+                <SimplePredicate field="float(V26)" operator="greaterOrEqual" value="-0.27237037"/>
+                <Node id="11" defaultChild="14">
+                    <SimplePredicate field="float(V20)" operator="lessThan" value="1.7038867"/>
+                    <Node id="13" score="0.4164324">
+                        <SimplePredicate field="float(V6)" operator="lessThan" value="-1.0810169"/>
+                    </Node>
+                    <Node id="14" score="0.12007382">
+                        <SimplePredicate field="float(V6)" operator="greaterOrEqual" value="-1.0810169"/>
+                    </Node>
+                </Node>
+                <Node id="12" score="0.098638445">
+                    <SimplePredicate field="float(V20)" operator="greaterOrEqual" value="1.7038867"/>
+                </Node>
+            </Node>
+        </Node>
+        <Node id="4" defaultChild="8">
+            <SimplePredicate field="float(V10)" operator="greaterOrEqual" value="-1.827533"/>
+            <Node id="7" score="0.112477936">
+                <SimplePredicate field="float(V16)" operator="lessThan" value="-1.615877"/>
+            </Node>
+            <Node id="8" score="-0.45675886">
+                <SimplePredicate field="float(V16)" operator="greaterOrEqual" value="-1.615877"/>
+            </Node>
+        </Node>
+    </Node>
+    <Node id="2" score="-0.4640338">
+        <SimplePredicate field="float(V12)" operator="greaterOrEqual" value="-3.6526344"/>
+    </Node>
+</Node>
+                            </TreeModel>
+                        </Segment>
+                        <Segment id="3">
+                            <True/>
+                            <TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+<MiningSchema>
+    <MiningField name="V9"/>
+    <MiningField name="float(V4)"/>
+    <MiningField name="float(V6)"/>
+    <MiningField name="float(V14)"/>
+    <MiningField name="float(V26)"/>
+    <MiningField name="float(Amount)"/>
+</MiningSchema>
+<LocalTransformations>
+    <DerivedField name="float(V9)" optype="continuous" dataType="float">
+        <FieldRef field="V9"/>
+    </DerivedField>
+</LocalTransformations>
+<Node id="0" defaultChild="2">
+    <True/>
+    <Node id="1" defaultChild="4">
+        <SimplePredicate field="float(V14)" operator="lessThan" value="-2.916127"/>
+        <Node id="3" score="-0.39347216">
+            <SimplePredicate field="float(V4)" operator="lessThan" value="1.8583523"/>
+        </Node>
+        <Node id="4" defaultChild="6">
+            <SimplePredicate field="float(V4)" operator="greaterOrEqual" value="1.8583523"/>
+            <Node id="5" defaultChild="8">
+                <SimplePredicate field="float(V26)" operator="lessThan" value="-0.22682685"/>
+                <Node id="7" defaultChild="12">
+                    <SimplePredicate field="float(V9)" operator="lessThan" value="-0.3850999"/>
+                    <Node id="11" score="-0.37256855">
+                        <SimplePredicate field="float(Amount)" operator="lessThan" value="0.011635643"/>
+                    </Node>
+                    <Node id="12" score="0.12514347">
+                        <SimplePredicate field="float(Amount)" operator="greaterOrEqual" value="0.011635643"/>
+                    </Node>
+                </Node>
+                <Node id="8" score="0.1717315">
+                    <SimplePredicate field="float(V9)" operator="greaterOrEqual" value="-0.3850999"/>
+                </Node>
+            </Node>
+            <Node id="6" defaultChild="10">
+                <SimplePredicate field="float(V26)" operator="greaterOrEqual" value="-0.22682685"/>
+                <Node id="9" score="0.3620389">
+                    <SimplePredicate field="float(V6)" operator="lessThan" value="0.7013197"/>
+                </Node>
+                <Node id="10" score="-0.17490128">
+                    <SimplePredicate field="float(V6)" operator="greaterOrEqual" value="0.7013197"/>
+                </Node>
+            </Node>
+        </Node>
+    </Node>
+    <Node id="2" score="-0.4028348">
+        <SimplePredicate field="float(V14)" operator="greaterOrEqual" value="-2.916127"/>
+    </Node>
+</Node>
+                            </TreeModel>
+                        </Segment>
+                        <Segment id="4">
+                            <True/>
+                            <TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+<MiningSchema>
+    <MiningField name="V2"/>
+    <MiningField name="V24"/>
+    <MiningField name="float(V4)"/>
+    <MiningField name="float(V6)"/>
+    <MiningField name="float(V14)"/>
+    <MiningField name="float(V15)"/>
+    <MiningField name="float(V26)"/>
+</MiningSchema>
+<LocalTransformations>
+    <DerivedField name="float(V2)" optype="continuous" dataType="float">
+        <FieldRef field="V2"/>
+    </DerivedField>
+    <DerivedField name="float(V24)" optype="continuous" dataType="float">
+        <FieldRef field="V24"/>
+    </DerivedField>
+</LocalTransformations>
+<Node id="0" defaultChild="2">
+    <True/>
+    <Node id="1" defaultChild="4">
+        <SimplePredicate field="float(V14)" operator="lessThan" value="-3.0629284"/>
+        <Node id="3" score="-0.35717973">
+            <SimplePredicate field="float(V4)" operator="lessThan" value="1.8621897"/>
+        </Node>
+        <Node id="4" defaultChild="6">
+            <SimplePredicate field="float(V4)" operator="greaterOrEqual" value="1.8621897"/>
+            <Node id="5" defaultChild="8">
+                <SimplePredicate field="float(V26)" operator="lessThan" value="-0.22716174"/>
+                <Node id="7" defaultChild="12">
+                    <SimplePredicate field="float(V24)" operator="lessThan" value="0.03655049"/>
+                    <Node id="11" score="-0.019601667">
+                        <SimplePredicate field="float(V2)" operator="lessThan" value="3.9153113"/>
+                    </Node>
+                    <Node id="12" score="-0.30868182">
+                        <SimplePredicate field="float(V2)" operator="greaterOrEqual" value="3.9153113"/>
+                    </Node>
+                </Node>
+                <Node id="8" score="0.12696601">
+                    <SimplePredicate field="float(V24)" operator="greaterOrEqual" value="0.03655049"/>
+                </Node>
+            </Node>
+            <Node id="6" defaultChild="10">
+                <SimplePredicate field="float(V26)" operator="greaterOrEqual" value="-0.22716174"/>
+                <Node id="9" defaultChild="14">
+                    <SimplePredicate field="float(V6)" operator="lessThan" value="0.7013197"/>
+                    <Node id="13" defaultChild="16">
+                        <SimplePredicate field="float(V26)" operator="lessThan" value="-0.18648331"/>
+                        <Node id="15" score="7.0986775E-4">
+                            <SimplePredicate field="float(V15)" operator="lessThan" value="-0.09783332"/>
+                        </Node>
+                        <Node id="16" score="0.22839688">
+                            <SimplePredicate field="float(V15)" operator="greaterOrEqual" value="-0.09783332"/>
+                        </Node>
+                    </Node>
+                    <Node id="14" score="0.34809977">
+                        <SimplePredicate field="float(V26)" operator="greaterOrEqual" value="-0.18648331"/>
+                    </Node>
+                </Node>
+                <Node id="10" score="-0.14844932">
+                    <SimplePredicate field="float(V6)" operator="greaterOrEqual" value="0.7013197"/>
+                </Node>
+            </Node>
+        </Node>
+    </Node>
+    <Node id="2" score="-0.36829895">
+        <SimplePredicate field="float(V14)" operator="greaterOrEqual" value="-3.0629284"/>
+    </Node>
+</Node>
+                            </TreeModel>
+                        </Segment>
+                        <Segment id="5">
+                            <True/>
+                            <TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+<MiningSchema>
+    <MiningField name="V21"/>
+    <MiningField name="V22"/>
+    <MiningField name="float(V10)"/>
+    <MiningField name="float(V14)"/>
+    <MiningField name="float(V15)"/>
+    <MiningField name="float(V26)"/>
+    <MiningField name="float(Amount)"/>
+</MiningSchema>
+<LocalTransformations>
+    <DerivedField name="float(V21)" optype="continuous" dataType="float">
+        <FieldRef field="V21"/>
+    </DerivedField>
+    <DerivedField name="float(V22)" optype="continuous" dataType="float">
+        <FieldRef field="V22"/>
+    </DerivedField>
+</LocalTransformations>
+<Node id="0" defaultChild="2">
+    <True/>
+    <Node id="1" defaultChild="4">
+        <SimplePredicate field="float(V14)" operator="lessThan" value="-3.116914"/>
+        <Node id="3" defaultChild="6">
+            <SimplePredicate field="float(V10)" operator="lessThan" value="-1.8577441"/>
+            <Node id="5" defaultChild="10">
+                <SimplePredicate field="float(V26)" operator="lessThan" value="-0.27237037"/>
+                <Node id="9" score="0.04893875">
+                    <SimplePredicate field="float(V15)" operator="lessThan" value="-0.6338494"/>
+                </Node>
+                <Node id="10" score="-0.24414517">
+                    <SimplePredicate field="float(V15)" operator="greaterOrEqual" value="-0.6338494"/>
+                </Node>
+            </Node>
+            <Node id="6" defaultChild="12">
+                <SimplePredicate field="float(V26)" operator="greaterOrEqual" value="-0.27237037"/>
+                <Node id="11" defaultChild="14">
+                    <SimplePredicate field="float(V22)" operator="lessThan" value="-0.52203083"/>
+                    <Node id="13" score="-0.1353181">
+                        <SimplePredicate field="float(Amount)" operator="lessThan" value="1.6271764E-4"/>
+                    </Node>
+                    <Node id="14" score="0.29392907">
+                        <SimplePredicate field="float(Amount)" operator="greaterOrEqual" value="1.6271764E-4"/>
+                    </Node>
+                </Node>
+                <Node id="12" score="0.31901047">
+                    <SimplePredicate field="float(V22)" operator="greaterOrEqual" value="-0.52203083"/>
+                </Node>
+            </Node>
+        </Node>
+        <Node id="4" defaultChild="8">
+            <SimplePredicate field="float(V10)" operator="greaterOrEqual" value="-1.8577441"/>
+            <Node id="7" score="-0.33853534">
+                <SimplePredicate field="float(V21)" operator="lessThan" value="0.014683362"/>
+            </Node>
+            <Node id="8" score="-0.016281554">
+                <SimplePredicate field="float(V21)" operator="greaterOrEqual" value="0.014683362"/>
+            </Node>
+        </Node>
+    </Node>
+    <Node id="2" score="-0.34669605">
+        <SimplePredicate field="float(V14)" operator="greaterOrEqual" value="-3.116914"/>
+    </Node>
+</Node>
+                            </TreeModel>
+                        </Segment>
+                    </Segmentation>
+                </MiningModel>
+            </Segment>
+            <Segment id="2">
+                <True/>
+                <RegressionModel functionName="classification" normalizationMethod="logit" x-mathContext="float">
+                    <MiningSchema>
+                        <MiningField name="_label" usageType="target"/>
+                        <MiningField name="xgbValue"/>
+                    </MiningSchema>
+                    <Output>
+                        <OutputField name="pmml(_result_index)" optype="categorical" dataType="double" isFinalResult="false"/>
+                        <OutputField name="_result_index" optype="continuous" dataType="double" feature="transformedValue">
+                            <MapValues outputColumn="data:output" dataType="double">
+<FieldColumnPair field="pmml(_result_index)" column="data:input"/>
+<InlineTable>
+    <row>
+        <data:input>0</data:input>
+        <data:output>0</data:output>
+    </row>
+    <row>
+        <data:input>1</data:input>
+        <data:output>1</data:output>
+    </row>
+</InlineTable>
+                            </MapValues>
+                        </OutputField>
+                        <OutputField name="_xgb_probability(0)" optype="continuous" dataType="double" feature="probability" value="0"/>
+                        <OutputField name="_xgb_probability(1)" optype="continuous" dataType="double" feature="probability" value="1"/>
+                    </Output>
+                    <RegressionTable intercept="0.0" targetCategory="1">
+                        <NumericPredictor name="xgbValue" coefficient="1.0"/>
+                    </RegressionTable>
+                    <RegressionTable intercept="0.0" targetCategory="0"/>
+                </RegressionModel>
+            </Segment>
+        </Segmentation>
+    </MiningModel>
+</PMML>
