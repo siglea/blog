@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>排序算法概述</title>
+  <meta name="description" content="冒泡排序从左开始比较，大的往右换或从右开始比较，小的往左换重复上一步骤鸡尾排序也叫双向冒泡或者定向冒泡，从左开始比较，大的往右换与从右开始比较，小的往左换同时进行选择排序与冒泡排序相比减少了多余的交换找出最小的元素放在最左侧，接着找第二小的...直到最后排完(不稳定)快速排序选中一个基准元素X，小于X放在左侧，大...">
+  <script src="/blog/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/blog/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/blog/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/blog/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/blog/css/main.css">
+  <link rel="stylesheet" href="/blog/css/syntax.css">
+  <link rel="canonical" href="http://0.0.0.0:4000/blog/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html">
+  <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="http://0.0.0.0:4000/blog/feed.xml">
+</head>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header class="site-header">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="/blog/" class="brand-link">
+        <i class="fas fa-code"></i>
+        <span>Code & Coffee</span>
+      </a>
+      
+        <p class="brand-subtitle">全栈架构师的数字花园</p>
+      
+    </div>
+
+    <ul class="navbar-nav">
+      <li><a href="/blog/" class="nav-link ">
+        <i class="fas fa-home"></i> 首页
+      </a></li>
+      <li><a href="/blog/category/技术/" class="nav-link">
+        <i class="fas fa-code"></i> 技术
+      </a></li>
+      <li><a href="/blog/category/产品商业/" class="nav-link">
+        <i class="fas fa-briefcase"></i> 产品商业
+      </a></li>
+      <li><a href="/blog/category/随记/" class="nav-link">
+        <i class="fas fa-book"></i> 随记
+      </a></li>
+      <li><a href="/blog/category" class="nav-link">
+        <i class="fas fa-folder-open"></i> 分类
+      </a></li>
+      <li><a href="/blog/tag" class="nav-link">
+        <i class="fas fa-tags"></i> 标签
+      </a></li>
+      <li><a href="/blog/about" class="nav-link">
+        <i class="fas fa-user"></i> 关于
+      </a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button id="theme-toggle" class="theme-toggle" title="切换主题">
+        <i class="fas fa-moon"></i>
+      </button>
+      <button id="search-toggle" class="search-toggle" title="搜索">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 搜索框 -->
+  <div id="search-overlay" class="search-overlay">
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="搜索文章..." class="search-input">
+      <button id="search-close" class="search-close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+</header>
+
+<style>
+  .nav-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+
+    i {
+      color: var(--primary-color);
+    }
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+
+  .brand-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: var(--spacing-xs) 0 0 0;
+  }
+
+  .navbar-nav {
+    display: flex;
+    gap: var(--spacing-lg);
+    list-style: none;
+    margin: 0;
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+
+      &:hover, &.active {
+        background: var(--bg-card);
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .nav-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+  }
+
+  .theme-toggle, .search-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: none;
+    z-index: 1000;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 100px;
+  }
+
+  .search-overlay.active {
+    display: flex;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 var(--spacing-xl);
+    position: relative;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: var(--spacing-lg);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    outline: none;
+    transition: border-color var(--transition-fast);
+
+    &:focus {
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-close {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+
+  .search-results {
+    margin-top: var(--spacing-lg);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 768px) {
+    .navbar {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .navbar-nav {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--spacing-sm);
+    }
+
+    .nav-brand {
+      align-items: center;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  // 主题切换
+  document.getElementById('theme-toggle')?.addEventListener('click', function() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    const icon = this.querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  });
+
+  // 搜索功能
+  document.getElementById('search-toggle')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.add('active');
+    document.getElementById('search-input').focus();
+  });
+
+  document.getElementById('search-close')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.remove('active');
+  });
+
+  // ESC 键关闭搜索
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.getElementById('search-overlay').classList.remove('active');
+    }
+  });
+</script>
+
+
+  <main class="main-content">
+    <div class="container">
+      <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">排序算法概述</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-05-31T11:25:00+08:00" itemprop="datePublished">May 31, 2020</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h4 id="冒泡排序">冒泡排序</h4>
+<pre>
+从左开始比较，大的往右换
+或
+从右开始比较，小的往左换
+重复上一步骤
+</pre>
+<h4 id="鸡尾排序">鸡尾排序</h4>
+<pre>
+也叫双向冒泡或者定向冒泡，
+从左开始比较，大的往右换
+与
+从右开始比较，小的往左换
+同时进行
+</pre>
+<h4 id="选择排序">选择排序</h4>
+<pre>
+与冒泡排序相比减少了多余的交换
+找出最小的元素放在最左侧，接着找第二小的...直到最后排完(不稳定)
+</pre>
+<h4 id="快速排序">快速排序</h4>
+<pre>
+选中一个基准元素X，小于X放在左侧，大于X放在右侧，分而治之，不断重复
+</pre>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">QuickSort</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">arr</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span><span class="mi">4</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">1</span><span class="o">};</span>
+        <span class="n">quickSort</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">arr</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">arr</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">quickSort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">arr</span><span class="o">,</span> <span class="kt">int</span> <span class="n">startIndex</span><span class="o">,</span> <span class="kt">int</span> <span class="n">endIndex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 递归结束条件：startIndex大等于endIndex的时候</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">startIndex</span> <span class="o">&gt;=</span> <span class="n">endIndex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">// 得到基准元素位置</span>
+        <span class="kt">int</span> <span class="n">pivotIndex</span> <span class="o">=</span> <span class="n">partition</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span> <span class="n">startIndex</span><span class="o">,</span> <span class="n">endIndex</span><span class="o">);</span>
+        <span class="c1">// 用分治法递归数列的两部分</span>
+        <span class="n">quickSort</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span> <span class="n">startIndex</span><span class="o">,</span> <span class="n">pivotIndex</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+        <span class="n">quickSort</span><span class="o">(</span><span class="n">arr</span><span class="o">,</span> <span class="n">pivotIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">endIndex</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">partition</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">arr</span><span class="o">,</span> <span class="kt">int</span> <span class="n">startIndex</span><span class="o">,</span> <span class="kt">int</span> <span class="n">endIndex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 取第一个位置的元素作为基准元素</span>
+        <span class="kt">int</span> <span class="n">pivot</span> <span class="o">=</span> <span class="n">arr</span><span class="o">[</span><span class="n">startIndex</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">left</span> <span class="o">=</span> <span class="n">startIndex</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="n">endIndex</span><span class="o">;</span>
+        <span class="c1">// 坑的位置，初始等于pivot的位置</span>
+        <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">startIndex</span><span class="o">;</span>
+        <span class="c1">//大循环在左右指针重合或者交错时结束</span>
+        <span class="k">while</span> <span class="o">(</span> <span class="n">right</span> <span class="o">&gt;=</span> <span class="n">left</span>  <span class="o">){</span>
+            <span class="c1">//right指针从右向左进行比较</span>
+            <span class="k">while</span> <span class="o">(</span> <span class="n">right</span> <span class="o">&gt;=</span> <span class="n">left</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">arr</span><span class="o">[</span><span class="n">right</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">pivot</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">]</span> <span class="o">=</span> <span class="n">arr</span><span class="o">[</span><span class="n">right</span><span class="o">];</span>
+                    <span class="n">index</span> <span class="o">=</span> <span class="n">right</span><span class="o">;</span>
+                    <span class="n">left</span><span class="o">++;</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">right</span><span class="o">--;</span>
+            <span class="o">}</span>
+            <span class="c1">//left指针从左向右进行比较</span>
+            <span class="k">while</span> <span class="o">(</span> <span class="n">right</span> <span class="o">&gt;=</span> <span class="n">left</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">pivot</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">arr</span><span class="o">[</span><span class="n">right</span><span class="o">]</span> <span class="o">=</span> <span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">];</span>
+                    <span class="n">index</span> <span class="o">=</span> <span class="n">left</span><span class="o">;</span>
+                    <span class="n">right</span><span class="o">--;</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">left</span><span class="o">++;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="n">arr</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">pivot</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">index</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    
+<span class="o">}</span>
+</code></pre></div></div>
+<h4 id="插入排序">插入排序</h4>
+<pre>
+从左侧开始设定一个有序区，从第二个元素开始去有序找自己的位置插入进去
+</pre>
+<h4 id="希尔排序">希尔排序</h4>
+<pre>
+按照跨度分成若干"小数组"，进行插入排序
+逐渐缩小跨度为1，即完成
+</pre>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ShellSort</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="kt">int</span> <span class="o">[]</span> <span class="n">array</span><span class="o">){</span>
+        <span class="c1">//希尔排序的增量</span>
+        <span class="kt">int</span> <span class="n">d</span><span class="o">=</span><span class="n">array</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">d</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">//使用希尔增量的方式，即每次折半</span>
+            <span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="o">;</span>
+            <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">x</span><span class="o">&lt;</span><span class="n">d</span><span class="o">;</span><span class="n">x</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="c1">//开始跨度内的插入排序</span>
+                <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="n">x</span><span class="o">+</span><span class="n">d</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">array</span><span class="o">.</span><span class="na">length</span><span class="o">;</span><span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="kt">int</span> <span class="n">temp</span><span class="o">=</span><span class="n">array</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+                    <span class="kt">int</span> <span class="n">j</span><span class="o">;</span>
+                    <span class="k">for</span><span class="o">(</span><span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="n">d</span><span class="o">;</span><span class="n">j</span><span class="o">&gt;=</span><span class="mi">0</span><span class="o">&amp;&amp;</span><span class="n">array</span><span class="o">[</span><span class="n">j</span><span class="o">]&gt;</span><span class="n">temp</span><span class="o">;</span><span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="o">-</span><span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">array</span><span class="o">[</span><span class="n">j</span><span class="o">+</span><span class="n">d</span><span class="o">]=</span><span class="n">array</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+                    <span class="o">}</span>
+                    <span class="n">array</span><span class="o">[</span><span class="n">j</span><span class="o">+</span><span class="n">d</span><span class="o">]=</span><span class="n">temp</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">array</span> <span class="o">=</span> <span class="o">{</span><span class="mi">5</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">9</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">11</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">10</span><span class="o">};</span>
+        <span class="n">sort</span><span class="o">(</span><span class="n">array</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">array</span><span class="o">));</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<h4 id="归并排序比武排序">归并排序(比武排序)</h4>
+<pre>
+由一组数字分为两组，逐渐分为只包含2个元素的小组
+开始比较大小，左小右大
+比较完毕之后，开始合并，合并的时候按照小大顺序把2个小组合并成1个有序大组，直到最后1个最大有序组
+</pre>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MergeSort</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">array</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">9</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">7</span> <span class="o">};</span>
+        <span class="n">mergeSort</span><span class="o">(</span><span class="n">array</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">array</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">array</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="kd">static</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">mergeSort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">array</span><span class="o">,</span> <span class="kt">int</span> <span class="n">start</span><span class="o">,</span> <span class="kt">int</span> <span class="n">end</span><span class="o">){</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">end</span><span class="o">){</span>
+            <span class="c1">//折半成两个小集合，分别进行递归</span>
+            <span class="kt">int</span> <span class="n">mid</span><span class="o">=(</span><span class="n">start</span><span class="o">+</span><span class="n">end</span><span class="o">)/</span><span class="mi">2</span><span class="o">;</span>
+            <span class="n">mergeSort</span><span class="o">(</span><span class="n">array</span><span class="o">,</span> <span class="n">start</span><span class="o">,</span> <span class="n">mid</span><span class="o">);</span>
+            <span class="n">mergeSort</span><span class="o">(</span><span class="n">array</span><span class="o">,</span> <span class="n">mid</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">end</span><span class="o">);</span>
+            <span class="c1">//把两个有序小集合，归并成一个大集合</span>
+            <span class="n">merge</span><span class="o">(</span><span class="n">array</span><span class="o">,</span> <span class="n">start</span><span class="o">,</span> <span class="n">mid</span><span class="o">,</span> <span class="n">end</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="kd">static</span> <span class="kd">private</span> <span class="kt">void</span> <span class="nf">merge</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">array</span><span class="o">,</span> <span class="kt">int</span> <span class="n">start</span><span class="o">,</span> <span class="kt">int</span> <span class="n">mid</span><span class="o">,</span> <span class="kt">int</span> <span class="n">end</span><span class="o">){</span>
+        <span class="c1">//开辟额外大集合，设置指针</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">tempArray</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="o">+</span><span class="mi">1</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">p1</span><span class="o">=</span><span class="n">start</span><span class="o">,</span> <span class="n">p2</span><span class="o">=</span><span class="n">mid</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span>
+        <span class="c1">//比较两个小集合的元素，依次放入大集合</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">p1</span><span class="o">&lt;=</span><span class="n">mid</span> <span class="o">&amp;&amp;</span> <span class="n">p2</span><span class="o">&lt;=</span><span class="n">end</span><span class="o">){</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">array</span><span class="o">[</span><span class="n">p1</span><span class="o">]&lt;=</span><span class="n">array</span><span class="o">[</span><span class="n">p2</span><span class="o">])</span>
+                <span class="n">tempArray</span><span class="o">[</span><span class="n">p</span><span class="o">++]=</span><span class="n">array</span><span class="o">[</span><span class="n">p1</span><span class="o">++];</span>
+            <span class="k">else</span>
+                <span class="n">tempArray</span><span class="o">[</span><span class="n">p</span><span class="o">++]=</span><span class="n">array</span><span class="o">[</span><span class="n">p2</span><span class="o">++];</span>
+        <span class="o">}</span>
+        <span class="c1">//左侧小集合还有剩余，依次放入大集合尾部</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">p1</span><span class="o">&lt;=</span><span class="n">mid</span><span class="o">)</span>
+            <span class="n">tempArray</span><span class="o">[</span><span class="n">p</span><span class="o">++]=</span><span class="n">array</span><span class="o">[</span><span class="n">p1</span><span class="o">++];</span>
+        <span class="c1">//右侧小集合还有剩余，依次放入大集合尾部</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">p2</span><span class="o">&lt;=</span><span class="n">end</span><span class="o">)</span>
+            <span class="n">tempArray</span><span class="o">[</span><span class="n">p</span><span class="o">++]=</span><span class="n">array</span><span class="o">[</span><span class="n">p2</span><span class="o">++];</span>
+        <span class="c1">//把大集合的元素复制回原数组</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">tempArray</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+            <span class="n">array</span><span class="o">[</span><span class="n">i</span><span class="o">+</span><span class="n">start</span><span class="o">]=</span><span class="n">tempArray</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<h4 id="计数排序">计数排序</h4>
+<pre>
+建立【元素都为0】的空数组，开始遍历待排序数组
+如果待排元素值等于空数组的位置角标，则【元素+1】
+</pre>
+<h4 id="桶排序">桶排序</h4>
+<pre>
+计数排序的升级版，计数排序每个索引只能记录一个值，
+索引升级为桶（比如桶范围2.0-3.5）
+此时，一个桶里就可以放多个数据范围内的数据
+</pre>
+<h4 id="基数排序按位排序">基数排序（按位排序）</h4>
+<pre>
+提取每个元素的最后一位进行计数排序
+再提取倒数第二位进行计数排序
+直到最前一位
+比如：单词排序，长度不一的末尾用0代替
+</pre>
+<h4 id="堆排序">堆排序</h4>
+<pre>
+主要利用二叉堆是完全二叉堆这样的数据结构的特性
+把无序数组构建成二叉堆。
+循环删除堆顶元素，移到集合尾部，调节堆产生新的堆顶。
+
+二叉堆虽然是一颗完全二叉树，但它的存储方式并不是链式存储，而是顺序存储。换句话说，二叉堆的所有节点都存储在数组当中。
+利用大顶堆，删除顶点放于数组未部，此后二叉堆自我调整选出新的堆顶
+</pre>
+<ul>
+  <li><a href="https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg">https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg</a></li>
+</ul>
+
+<p><img src="/img/sort.jpg" width="600px" /></p>
+
+<h4 id="参考-httpsmpweixinqqcomsteogqlslb6ap4aqrx7ttza">参考 <a href="https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA">https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA</a></h4>
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-grid">
+      <div class="footer-section">
+        <h3 class="footer-title">Code & Coffee</h3>
+        <p class="footer-description">探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
+</p>
+        <div class="footer-author">
+          <p>由 <strong>架构师小灰</strong> 创作</p>
+          <p>© 2026 All rights reserved.</p>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">快速导航</h4>
+        <ul class="footer-links">
+          <li><a href="/blog/">首页</a></li>
+          <li><a href="/blog/category/技术/">技术</a></li>
+          <li><a href="/blog/category/产品商业/">产品商业</a></li>
+          <li><a href="/blog/category/随记/">随记</a></li>
+          <li><a href="/blog/category">分类</a></li>
+          <li><a href="/blog/tag">标签云</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">关注我</h4>
+        <div class="social-links">
+          
+          <a href="https://github.com/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-github"></i>
+            <span>GitHub</span>
+          </a>
+          
+          
+          <a href="https://linkedin.com/in/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-linkedin"></i>
+            <span>LinkedIn</span>
+          </a>
+          
+          
+          <a href="https://twitter.com/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-twitter"></i>
+            <span>Twitter</span>
+          </a>
+          
+          <a href="/blog/feed.xml" target="_blank">
+            <i class="fas fa-rss"></i>
+            <span>RSS</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">最新文章</h4>
+        <ul class="recent-posts">
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+            <small>07-28</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+            <small>07-26</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+            <small>07-20</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+            <small>07-18</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/15/JVM-Note.html"> Jvm（四）Note</a>
+            <small>07-15</small>
+          </li>
+          
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        本站使用 <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> 生成，
+        主题基于现代化设计，采用 <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a> 免费托管
+      </p>
+      <div class="theme-toggle-footer">
+        <button id="theme-toggle-footer" class="theme-toggle">
+          <i class="fas fa-moon"></i>
+          <span>切换主题</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: var(--spacing-2xl) 0;
+    margin-top: var(--spacing-2xl);
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-xl);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .footer-section {
+    .footer-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-subtitle {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-lg);
+      color: var(--text-primary);
+    }
+
+    .footer-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .footer-author {
+      p {
+        margin: var(--spacing-xs) 0;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--spacing-sm);
+
+      a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+
+        &:hover {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  .social-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+
+      &:hover {
+        color: var(--primary-color);
+      }
+
+      i {
+        font-size: 1.25rem;
+        width: 20px;
+      }
+    }
+  }
+
+  .recent-posts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 1px solid var(--border-color);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: block;
+        font-weight: 500;
+        margin-bottom: var(--spacing-xs);
+        transition: color var(--transition-fast);
+
+        &:hover {
+          color: var(--primary-color);
+        }
+      }
+
+      small {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--spacing-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin: 0;
+
+      a {
+        color: var(--primary-color);
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .theme-toggle-footer {
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        padding: var(--spacing-xs) var(--spacing-md);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        font-size: 0.875rem;
+
+        &:hover {
+          background: var(--primary-color);
+          color: white;
+          border-color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-xl);
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--spacing-lg);
+    }
+  }
+</style>
+
+<script>
+  // Footer theme toggle
+  document.getElementById('theme-toggle-footer')?.addEventListener('click', function() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    const icon = this.querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  });
+</script>
+
+
+  <!-- 现代化JavaScript功能 -->
+  <script>
+    // 主题切换功能
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // 从本地存储加载主题
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // 懒加载和动画
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fade-in-up');
+        }
+      });
+    }, observerOptions);
+
+    // 观察所有卡片元素
+    document.querySelectorAll('.post-card, .card').forEach(card => {
+      observer.observe(card);
+    });
+
+    // 代码块复制功能
+    document.querySelectorAll('pre').forEach(block => {
+      const button = document.createElement('button');
+      button.className = 'copy-button';
+      button.innerHTML = '<i class="fas fa-copy"></i>';
+      button.title = '复制代码';
+
+      button.addEventListener('click', () => {
+        const code = block.querySelector('code');
+        if (code) {
+          navigator.clipboard.writeText(code.textContent).then(() => {
+            button.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+              button.innerHTML = '<i class="fas fa-copy"></i>';
+            }, 2000);
+          });
+        }
+      });
+
+      block.style.position = 'relative';
+      block.appendChild(button);
+    });
+  </script>
+
+  <style>
+    .copy-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      padding: 5px 8px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 12px;
+    }
+
+    .copy-button:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .main-content {
+      min-height: calc(100vh - 200px);
+      padding: var(--spacing-2xl) 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-xl);
+    }
+  </style>
+</body>
+</html>

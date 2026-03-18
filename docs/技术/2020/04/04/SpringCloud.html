@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> SpringCloud </title>
+  <meta name="description" content="Spring  Eureka：服务治理组件，包括服务端的注册中心和客户端的服务发现机制；          Eureka Server的高可用实际上就是将自己作为服务向其他注册中心注册自己，这样就可以形成一组互相注册的服务注册中 心，以实现服务清单的互相同步，达到高可用效果        # 定义服务续约任务的调...">
+  <script src="/blog/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/blog/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/blog/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/blog/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/blog/css/main.css">
+  <link rel="stylesheet" href="/blog/css/syntax.css">
+  <link rel="canonical" href="http://0.0.0.0:4000/blog/%E6%8A%80%E6%9C%AF/2020/04/04/SpringCloud.html">
+  <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="http://0.0.0.0:4000/blog/feed.xml">
+</head>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header class="site-header">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="/blog/" class="brand-link">
+        <i class="fas fa-code"></i>
+        <span>Code & Coffee</span>
+      </a>
+      
+        <p class="brand-subtitle">全栈架构师的数字花园</p>
+      
+    </div>
+
+    <ul class="navbar-nav">
+      <li><a href="/blog/" class="nav-link ">
+        <i class="fas fa-home"></i> 首页
+      </a></li>
+      <li><a href="/blog/category/技术/" class="nav-link">
+        <i class="fas fa-code"></i> 技术
+      </a></li>
+      <li><a href="/blog/category/产品商业/" class="nav-link">
+        <i class="fas fa-briefcase"></i> 产品商业
+      </a></li>
+      <li><a href="/blog/category/随记/" class="nav-link">
+        <i class="fas fa-book"></i> 随记
+      </a></li>
+      <li><a href="/blog/category" class="nav-link">
+        <i class="fas fa-folder-open"></i> 分类
+      </a></li>
+      <li><a href="/blog/tag" class="nav-link">
+        <i class="fas fa-tags"></i> 标签
+      </a></li>
+      <li><a href="/blog/about" class="nav-link">
+        <i class="fas fa-user"></i> 关于
+      </a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button id="theme-toggle" class="theme-toggle" title="切换主题">
+        <i class="fas fa-moon"></i>
+      </button>
+      <button id="search-toggle" class="search-toggle" title="搜索">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 搜索框 -->
+  <div id="search-overlay" class="search-overlay">
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="搜索文章..." class="search-input">
+      <button id="search-close" class="search-close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+</header>
+
+<style>
+  .nav-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+
+    i {
+      color: var(--primary-color);
+    }
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+
+  .brand-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: var(--spacing-xs) 0 0 0;
+  }
+
+  .navbar-nav {
+    display: flex;
+    gap: var(--spacing-lg);
+    list-style: none;
+    margin: 0;
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+
+      &:hover, &.active {
+        background: var(--bg-card);
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .nav-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+  }
+
+  .theme-toggle, .search-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: none;
+    z-index: 1000;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 100px;
+  }
+
+  .search-overlay.active {
+    display: flex;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 var(--spacing-xl);
+    position: relative;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: var(--spacing-lg);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    outline: none;
+    transition: border-color var(--transition-fast);
+
+    &:focus {
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-close {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+
+  .search-results {
+    margin-top: var(--spacing-lg);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 768px) {
+    .navbar {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .navbar-nav {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--spacing-sm);
+    }
+
+    .nav-brand {
+      align-items: center;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  // 主题切换
+  document.getElementById('theme-toggle')?.addEventListener('click', function() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    const icon = this.querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  });
+
+  // 搜索功能
+  document.getElementById('search-toggle')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.add('active');
+    document.getElementById('search-input').focus();
+  });
+
+  document.getElementById('search-close')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.remove('active');
+  });
+
+  // ESC 键关闭搜索
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.getElementById('search-overlay').classList.remove('active');
+    }
+  });
+</script>
+
+
+  <main class="main-content">
+    <div class="container">
+      <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline"> SpringCloud </h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-04-04T19:25:00+08:00" itemprop="datePublished">Apr 4, 2020</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <p><img src="/img/springcloud.jpg" width="600px" /></p>
+
+<h4 id="spring">Spring</h4>
+<ul>
+  <li>Eureka：服务治理组件，包括服务端的注册中心和客户端的服务发现机制；
+    <ul>
+      <li>Eureka Server的高可用实际上就是将自己作为服务向其他注册中心注册自己，这样就可以形成一组互相注册的服务注册中 心，以实现服务清单的互相同步，达到高可用效果
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 定义服务续约任务的调用间隔时间，默认30秒</span>
+eureka.instance.lease-renewal-interval-in-seconds<span class="o">=</span>30
+<span class="c"># 定义服务失效的时间，默认90秒 eureka.instance.lease-expiration-duration-in-seconds=90</span>
+</code></pre></div>        </div>
+      </li>
+      <li>该警告就是触发了Eureka Server的自我保护机制。Eureka Server在运行期间，会统计心跳失败的比例在15分钟之内是否低于 85%，如果出现低于的情况，Eureka Server会将当前的实例注册信息保护起来，让这些实例不会过期，尽可能保护这些注册信 息。但是，在这段保护期间内实例若出现问题，那么客戶端很容易拿到实际已经不存在的服务实例，会出现调用失败的情况，所 以客戶端必须要有容错机制，比如可以使用请求重试、断路器等机制
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 关闭保护机制，以确保注册中心可以将不用的实例正确剔除(本地调试可以使用，线上不推荐)</span>
+eureka.server.enable-self-preservation<span class="o">=</span><span class="nb">false</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>Ribbon：负载均衡的服务调用组件，具有多种负载均衡调用策略；</li>
+  <li>Hystrix：服务容错组件，实现了断路器模式，为依赖服务的出错和延迟提供了容错能力；</li>
+  <li>Feign：基于Ribbon和Hystrix的声明式服务调用组件；</li>
+  <li>Zuul：API网关组件，对请求提供路由及过滤功能。</li>
+  <li>Spring Cloud Bus
+用于传播集群状态变化的消息总线，使用轻量级消息代理链接分布式系统中的节点，可以用来动态刷新集群中的服务配置。
+Spring Cloud Bus 提供了跨多个实例刷新配置的功能。因此，在上面的示例中，如果我们刷新 Employee Producer1，则会自动刷新所有其他必需的模块。如果我们有多个微服务启动并运行，这特别有用。这是通过将所有微服务连接到单个消息代理来实现的。无论何时刷新实例，此事件都会订阅到侦听此代理的所有微服务，并且它们也会刷新。可以通过使用端点/总线/刷新来实现对任何单个实例的刷新。</li>
+  <li>Spring Cloud Consul
+基于Hashicorp Consul的服务治理组件。</li>
+  <li>Spring Cloud Security
+安全工具包，对Zuul代理中的负载均衡OAuth2客户端及登录认证进行支持。</li>
+  <li>Spring Cloud Sleuth
+Spring Cloud应用程序的分布式请求链路跟踪，支持使用Zipkin、HTrace和基于日志（例如ELK）的跟踪。</li>
+  <li>Spring Cloud Stream
+轻量级事件驱动微服务框架，可以使用简单的声明式模型来发送及接收消息，主要实现为Apache Kafka及RabbitMQ。</li>
+  <li>Spring Cloud Task
+用于快速构建短暂、有限数据处理任务的微服务框架，用于向应用中添加功能性和非功能性的特性。</li>
+  <li>Spring Cloud Zookeeper
+基于Apache Zookeeper的服务治理组件。</li>
+  <li>Spring Cloud Gateway
+API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是Spring Cloud官方推出的第二代网关框架，取代Zuul网关。网关作为流量的，在微服务系统中有着非常作用，网关常见的功能有路由转发、权限校验、限流控制等作用。
+使用了一个RouteLocatorBuilder的bean去创建路由，除了创建路由RouteLocatorBuilder可以让你添加各种predicates和filters，predicates断言的意思，顾名思义就是根据具体的请求的规则，由具体的route去处理，filters是各种过滤器，用来对请求做各种判断和修改。</li>
+  <li>Spring Cloud OpenFeign
+基于Ribbon和Hystrix的声明式服务调用组件，可以动态创建基于Spring MVC注解的接口实现用于服务调用，在Spring Cloud 2.0中已经取代Feign成为了一等公民。</li>
+  <li>什么是Spring Cloud Config?
+    <ul>
+      <li>在分布式系统中，由于服务数量巨多，为了方便服务配置文件统一管理，实时更新，所以需要分布式配置中心组件。在Spring Cloud中，有分布式配置中心组件spring cloud config ，它支持配置服务放在配置服务的内存中（即本地），也支持放在远程Git仓库中。在spring cloud config 组件中，分两个角色，一是config server，二是config client。
+  使用：（1）添加pom依赖（2）配置文件添加相关配置（3）启动类添加注解@EnableConfigServer</li>
+    </ul>
+
+    <p><img src="/img/springconfig.jpg" width="600px" /></p>
+  </li>
+  <li>Spring中使用@Autowired注解静态实例对象 <a href="https://blog.csdn.net/RogueFist/article/details/79575665">https://blog.csdn.net/RogueFist/article/details/79575665</a></li>
+  <li>多个ApplicationRunner，可以用@Order指定优先级串行执行的，如果优先级高的block了，后面的需要等着</li>
+</ul>
+
+<h3 id="关于微服务">关于微服务</h3>
+<ul>
+  <li>SOA(ESB)与微服务
+    <ul>
+      <li><a href="https://zhuanlan.zhihu.com/p/30477325">https://zhuanlan.zhihu.com/p/30477325</a></li>
+      <li><a href="https://www.cnblogs.com/guanghe/p/10978349.html">https://www.cnblogs.com/guanghe/p/10978349.html</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA">https://mp.weixin.qq.com/s/9YxdCkl98kZq_Bh_DqwCmA</a></li>
+    </ul>
+  </li>
+  <li>微服务哪些事
+    <ul>
+      <li><a href="https://windmt.com/2018/04/14/spring-cloud-0-microservices/">https://windmt.com/2018/04/14/spring-cloud-0-microservices/</a></li>
+      <li><a href="https://windmt.com/2018/04/14/spring-cloud-1-services-governance/">https://windmt.com/2018/04/14/spring-cloud-1-services-governance/</a></li>
+    </ul>
+  </li>
+  <li>SpringCloud &amp; Dubbo
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ">https://mp.weixin.qq.com/s/qDiSn29uqSpA0yaM07nmbQ</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A">https://mp.weixin.qq.com/s/GSLXRnl0pg5ynVwbQcon7A</a></li>
+      <li><a href="http://www.ityouknow.com/springcloud/2017/11/20/dubbo-update-again.html">阿里Dubbo与Spring Cloud</a></li>
+    </ul>
+  </li>
+  <li>RPC之thrift/gRPC
+    <ul>
+      <li><a href="https://blog.csdn.net/kesonyk/article/details/50924489">https://blog.csdn.net/kesonyk/article/details/50924489</a></li>
+      <li><a href="https://developer.51cto.com/art/201908/601617.htm">https://developer.51cto.com/art/201908/601617.htm</a></li>
+      <li><a href="https://segmentfault.com/a/1190000011478469">https://segmentfault.com/a/1190000011478469</a></li>
+      <li><a href="https://zhuanlan.zhihu.com/p/136112210">https://zhuanlan.zhihu.com/p/136112210</a></li>
+      <li>RPC与HTTP的关系 <a href="https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg">https://mp.weixin.qq.com/s/0RXTUWHXDmMddsPVWej2Qg</a></li>
+      <li>快速理解RPC技术——基本概念、原理和用途 <a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2620</a></li>
+    </ul>
+  </li>
+  <li>WebService某种程度上也是一种RPC
+    <ul>
+      <li>WebService的历史 <a href="https://www.iteye.com/blog/andot-662787">https://www.iteye.com/blog/andot-662787</a></li>
+      <li>WebService的demo<a href="https://blog.csdn.net/weixin_42672054/article/details/81708464">https://blog.csdn.net/weixin_42672054/article/details/81708464</a></li>
+      <li>2000年左右出现xml，借此微软等联盟推出了基于XML的SOAP协议，实现各系统之间的通信</li>
+      <li>thrift/webservice等可以生成客户端代码，隐藏了底层通信细节，对象化了数据（否则需要自行解析）</li>
+      <li>thrift、dobbo等方式基于TCP实现，主要是性能方面的考虑吧</li>
+    </ul>
+  </li>
+  <li>hessian / sofa</li>
+</ul>
+
+<h3 id="just-do-springcloud">Just Do SpringCloud</h3>
+<ul>
+  <li>首选 <a href="https://windmt.com/tags/Spring-Cloud/">https://windmt.com/tags/Spring-Cloud/</a></li>
+  <li><a href="https://www.springcloud.cc/">springcloud.cc</a></li>
+  <li><a href="http://springcloud.fun">springcloud.fun</a></li>
+  <li><a href="https://www.zhihu.com/question/283286745/answer/763040709">大话SpringCloud</a></li>
+  <li><a href="https://www.geekdigging.com">https://www.geekdigging.com</a></li>
+</ul>
+
+<h3 id="常见组件">常见组件</h3>
+<ul>
+  <li>服务配置中心（注册发现）：Netflix的Eureka、Apache的zookeeper、Spring家族的Spring Cloud Consul、携程apollo
+    <ul>
+      <li><a href="https://www.jianshu.com/p/5c5753d2aeb0">Zookeeper保证的是CP，Eureka保证的是AP</a></li>
+    </ul>
+  </li>
+  <li>客户端负载均衡：Netflix Ribbon (提供云端负载均衡，有多种负载均衡策略可供选择，可配合服务发现和断路器使用。)
+    <ul>
+      <li>客户端负载均衡(Ribbon)服务实例的清单在客户端，客户端进行负载均衡算法分配。(从上面的知识我们已经知道了：客户端可以从Eureka Server中得到一份服务清单，在发送请求时通过负载均衡算法，在多个服务器之间选择一个进行访问)
+Zuul路由的业务，对业务进行了归类，并交给了对应的微服务。</li>
+      <li>服务端负载均衡(Nginx)服务实例的清单在服务端，服务器进行负载均衡算法分配,
+Nginx路由请求的压力，对请求进行平均后，交给了服务器处理。</li>
+      <li><a href="https://www.cnblogs.com/kongxianghai/p/8477781.html">撸一撸Spring Cloud Ribbon的原理-负载均衡策略</a></li>
+      <li>可以使用Ribbon + resetTemplate 或者直接使用 Feign（已经内置Ribbon）来实现客户端侧的负载均衡</li>
+    </ul>
+  </li>
+  <li>熔断器：Netflix Hystrix（Envoy)</li>
+  <li>Spring Cloud Feign：它基于 Netflix Feign 实现，整合了 Spring Cloud Ribbon 与 Spring Cloud Hystrix, 除了整合这两者的强大功能之外，它还提 供了声明式的服务调用(不再通过RestTemplate)。
+  生产环境一般使用restTemplate + ribbon</li>
+  <li>服务网关: Netflix Zuul  、 Spring Cloud GateWay
+    <ul>
+      <li>Zuul相当于一个分布式的大Servlet+Filter入口可进行路由及过滤等</li>
+      <li>Zuul也可以近似的理解为是SOA里的ESB，统一入口调用</li>
+      <li>Zuul也默认集成了Hystrix与Ribbon</li>
+    </ul>
+  </li>
+  <li>分布式配置：Spring Cloud Config (Chef)</li>
+  <li>时间消息总线：Spring Cloud Bus</li>
+  <li>链路追踪：Spring Cloud Sleuth 与 Twitter Zipkin</li>
+  <li>数据流：Spring Cloud Stream (数据流操作开发包，封装了与Redis,Rabbit、Kafka等发送接收消息。)</li>
+  <li>服务监控：Zabbix、Nagios、Metrics、Spectator</li>
+</ul>
+
+<h3 id="相关组件">相关组件</h3>
+<h4 id="zookeeper">zookeeper</h4>
+<ul>
+  <li>简单理解，zk就是一套简单的文件系统结构，本目录(节点)可以设置value及subNode,
+并且该节点可以设置不同的权限（默认/用户名+密码/ip/秘钥，这4种)</li>
+  <li>zk集群简单理解就是，基于ZAB一致性算法的变种keep alived集群</li>
+  <li>zk集群是CP模型，强一致性的，也就是说数据出现了不一致性（通常是节点挂了），整个服务集群就会Hold住等待数据一致，
+所以，这个缺点导致zk并不是最佳的注册中心，因为服务注册中心AP模型最好，部分服务有问题并不表示所有服务不可用。</li>
+  <li>zookeeper 命令 <a href="https://blog.csdn.net/feixiang2039/article/details/79810102">https://blog.csdn.net/feixiang2039/article/details/79810102</a></li>
+  <li>Curator实现的zk分布式锁 <a href="https://www.sohu.com/a/341386202_315839">https://www.sohu.com/a/341386202_315839</a></li>
+</ul>
+
+<h3 id="基于springcloud的开源项目">基于SpringCloud的开源项目</h3>
+
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-grid">
+      <div class="footer-section">
+        <h3 class="footer-title">Code & Coffee</h3>
+        <p class="footer-description">探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
+</p>
+        <div class="footer-author">
+          <p>由 <strong>架构师小灰</strong> 创作</p>
+          <p>© 2026 All rights reserved.</p>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">快速导航</h4>
+        <ul class="footer-links">
+          <li><a href="/blog/">首页</a></li>
+          <li><a href="/blog/category/技术/">技术</a></li>
+          <li><a href="/blog/category/产品商业/">产品商业</a></li>
+          <li><a href="/blog/category/随记/">随记</a></li>
+          <li><a href="/blog/category">分类</a></li>
+          <li><a href="/blog/tag">标签云</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">关注我</h4>
+        <div class="social-links">
+          
+          <a href="https://github.com/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-github"></i>
+            <span>GitHub</span>
+          </a>
+          
+          
+          <a href="https://linkedin.com/in/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-linkedin"></i>
+            <span>LinkedIn</span>
+          </a>
+          
+          
+          <a href="https://twitter.com/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-twitter"></i>
+            <span>Twitter</span>
+          </a>
+          
+          <a href="/blog/feed.xml" target="_blank">
+            <i class="fas fa-rss"></i>
+            <span>RSS</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">最新文章</h4>
+        <ul class="recent-posts">
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+            <small>07-28</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+            <small>07-26</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+            <small>07-20</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+            <small>07-18</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/15/JVM-Note.html"> Jvm（四）Note</a>
+            <small>07-15</small>
+          </li>
+          
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        本站使用 <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> 生成，
+        主题基于现代化设计，采用 <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a> 免费托管
+      </p>
+      <div class="theme-toggle-footer">
+        <button id="theme-toggle-footer" class="theme-toggle">
+          <i class="fas fa-moon"></i>
+          <span>切换主题</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: var(--spacing-2xl) 0;
+    margin-top: var(--spacing-2xl);
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-xl);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .footer-section {
+    .footer-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-subtitle {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-lg);
+      color: var(--text-primary);
+    }
+
+    .footer-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .footer-author {
+      p {
+        margin: var(--spacing-xs) 0;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--spacing-sm);
+
+      a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+
+        &:hover {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  .social-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+
+      &:hover {
+        color: var(--primary-color);
+      }
+
+      i {
+        font-size: 1.25rem;
+        width: 20px;
+      }
+    }
+  }
+
+  .recent-posts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 1px solid var(--border-color);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: block;
+        font-weight: 500;
+        margin-bottom: var(--spacing-xs);
+        transition: color var(--transition-fast);
+
+        &:hover {
+          color: var(--primary-color);
+        }
+      }
+
+      small {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--spacing-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin: 0;
+
+      a {
+        color: var(--primary-color);
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .theme-toggle-footer {
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        padding: var(--spacing-xs) var(--spacing-md);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        font-size: 0.875rem;
+
+        &:hover {
+          background: var(--primary-color);
+          color: white;
+          border-color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-xl);
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--spacing-lg);
+    }
+  }
+</style>
+
+<script>
+  // Footer theme toggle
+  document.getElementById('theme-toggle-footer')?.addEventListener('click', function() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    const icon = this.querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  });
+</script>
+
+
+  <!-- 现代化JavaScript功能 -->
+  <script>
+    // 主题切换功能
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // 从本地存储加载主题
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // 懒加载和动画
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fade-in-up');
+        }
+      });
+    }, observerOptions);
+
+    // 观察所有卡片元素
+    document.querySelectorAll('.post-card, .card').forEach(card => {
+      observer.observe(card);
+    });
+
+    // 代码块复制功能
+    document.querySelectorAll('pre').forEach(block => {
+      const button = document.createElement('button');
+      button.className = 'copy-button';
+      button.innerHTML = '<i class="fas fa-copy"></i>';
+      button.title = '复制代码';
+
+      button.addEventListener('click', () => {
+        const code = block.querySelector('code');
+        if (code) {
+          navigator.clipboard.writeText(code.textContent).then(() => {
+            button.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+              button.innerHTML = '<i class="fas fa-copy"></i>';
+            }, 2000);
+          });
+        }
+      });
+
+      block.style.position = 'relative';
+      block.appendChild(button);
+    });
+  </script>
+
+  <style>
+    .copy-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      padding: 5px 8px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 12px;
+    }
+
+    .copy-button:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .main-content {
+      min-height: calc(100vh - 200px);
+      padding: var(--spacing-2xl) 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-xl);
+    }
+  </style>
+</body>
+</html>

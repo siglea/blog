@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>DB Mysql</title>
+  <meta name="description" content="聚集索引与非聚集索引  聚集索引（clustered index）就是按照每张表的主键构造一棵B+树，同时叶子节点中存放的即为整张表的行记录数据，也将聚集索引的叶子节点称为数据页。聚集索引的这个特性决定了索引组织表中数据也是索引的一部分  辅助索引（Secondary Index，也称非聚集索引），叶子节点并不包...">
+  <script src="/blog/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/blog/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/blog/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/blog/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/blog/css/main.css">
+  <link rel="stylesheet" href="/blog/css/syntax.css">
+  <link rel="canonical" href="http://0.0.0.0:4000/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Mysql.html">
+  <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="http://0.0.0.0:4000/blog/feed.xml">
+</head>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header class="site-header">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="/blog/" class="brand-link">
+        <i class="fas fa-code"></i>
+        <span>Code & Coffee</span>
+      </a>
+      
+        <p class="brand-subtitle">全栈架构师的数字花园</p>
+      
+    </div>
+
+    <ul class="navbar-nav">
+      <li><a href="/blog/" class="nav-link ">
+        <i class="fas fa-home"></i> 首页
+      </a></li>
+      <li><a href="/blog/category/技术/" class="nav-link">
+        <i class="fas fa-code"></i> 技术
+      </a></li>
+      <li><a href="/blog/category/产品商业/" class="nav-link">
+        <i class="fas fa-briefcase"></i> 产品商业
+      </a></li>
+      <li><a href="/blog/category/随记/" class="nav-link">
+        <i class="fas fa-book"></i> 随记
+      </a></li>
+      <li><a href="/blog/category" class="nav-link">
+        <i class="fas fa-folder-open"></i> 分类
+      </a></li>
+      <li><a href="/blog/tag" class="nav-link">
+        <i class="fas fa-tags"></i> 标签
+      </a></li>
+      <li><a href="/blog/about" class="nav-link">
+        <i class="fas fa-user"></i> 关于
+      </a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button id="theme-toggle" class="theme-toggle" title="切换主题">
+        <i class="fas fa-moon"></i>
+      </button>
+      <button id="search-toggle" class="search-toggle" title="搜索">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 搜索框 -->
+  <div id="search-overlay" class="search-overlay">
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="搜索文章..." class="search-input">
+      <button id="search-close" class="search-close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+</header>
+
+<style>
+  .nav-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+
+    i {
+      color: var(--primary-color);
+    }
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+
+  .brand-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: var(--spacing-xs) 0 0 0;
+  }
+
+  .navbar-nav {
+    display: flex;
+    gap: var(--spacing-lg);
+    list-style: none;
+    margin: 0;
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+
+      &:hover, &.active {
+        background: var(--bg-card);
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .nav-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+  }
+
+  .theme-toggle, .search-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: none;
+    z-index: 1000;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 100px;
+  }
+
+  .search-overlay.active {
+    display: flex;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 var(--spacing-xl);
+    position: relative;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: var(--spacing-lg);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    outline: none;
+    transition: border-color var(--transition-fast);
+
+    &:focus {
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-close {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+
+  .search-results {
+    margin-top: var(--spacing-lg);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 768px) {
+    .navbar {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .navbar-nav {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--spacing-sm);
+    }
+
+    .nav-brand {
+      align-items: center;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  // 主题切换
+  document.getElementById('theme-toggle')?.addEventListener('click', function() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    const icon = this.querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  });
+
+  // 搜索功能
+  document.getElementById('search-toggle')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.add('active');
+    document.getElementById('search-input').focus();
+  });
+
+  document.getElementById('search-close')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.remove('active');
+  });
+
+  // ESC 键关闭搜索
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.getElementById('search-overlay').classList.remove('active');
+    }
+  });
+</script>
+
+
+  <main class="main-content">
+    <div class="container">
+      <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">DB Mysql</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-12T10:25:00+08:00" itemprop="datePublished">Nov 12, 2019</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h4 id="聚集索引与非聚集索引">聚集索引与非聚集索引</h4>
+<ul>
+  <li>聚集索引（clustered index）就是按照每张表的主键构造一棵B+树，同时叶子节点中存放的即为整张表的行记录数据，也将聚集索引的叶子节点称为数据页。聚集索引的这个特性决定了索引组织表中数据也是索引的一部分</li>
+  <li>辅助索引（Secondary Index，也称非聚集索引），叶子节点并不包含行记录的全部数据。叶子节点除了包含键值以外，每个叶子节点中的索引行中还包含了指向主键的指针。</li>
+  <li><a href="https://mp.weixin.qq.com/s/nWiM87G1CBGUkX0_QkUf3g">https://mp.weixin.qq.com/s/nWiM87G1CBGUkX0_QkUf3g</a></li>
+</ul>
+
+<h4 id="乐观锁与悲观锁使用场景">乐观锁与悲观锁使用场景</h4>
+<p><a href="https://www.jianshu.com/p/5a081ff5de58">https://www.jianshu.com/p/5a081ff5de58</a>
+<a href="https://www.cnblogs.com/jtlgb/p/10833136.html">https://www.cnblogs.com/jtlgb/p/10833136.html</a></p>
+
+<h4 id="锁">锁</h4>
+<ul>
+  <li>意向共享锁只是表级别的，与行级别的共享锁与排他锁没有任何关系，所以意向锁互相兼容之后交给行数进一步控制</li>
+  <li>意向共享锁与意向排他锁主要是解决表级的”直接”共享锁与”直接”排他锁</li>
+  <li>添加意向锁的方式
+    <ul>
+      <li>手动
+        <ul>
+          <li>SELECT column FROM table … LOCK IN SHARE MODE;</li>
+          <li>SELECT column FROM table … FOR UPDATE;</li>
+        </ul>
+      </li>
+      <li>自动：加行数的时候，数据库引擎自动添加</li>
+    </ul>
+  </li>
+  <li>意向锁终于讲清楚了 <a href="https://juejin.im/post/5b85124f5188253010326360">https://juejin.im/post/5b85124f5188253010326360</a></li>
+  <li>InnoDB并发为什么这么高？MVCC <a href="https://mp.weixin.qq.com/s/R3yuitWpHHGWxsUcE0qIRQ">https://mp.weixin.qq.com/s/R3yuitWpHHGWxsUcE0qIRQ</a></li>
+  <li>Select for update很容易死锁
+    <ul>
+      <li>条件使用了非索引字段 <a href="https://segmentfault.com/q/1010000018750238">https://segmentfault.com/q/1010000018750238</a></li>
+      <li>其他死锁 <a href="https://mp.weixin.qq.com/s/nTlAL2WGhQCejRKoNvx6VQ">https://mp.weixin.qq.com/s/nTlAL2WGhQCejRKoNvx6VQ</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="索引原理btree">索引原理(B+Tree)</h4>
+<ul>
+  <li>BS树(Binary Search Tree二叉查找树) -&gt; AVL(人名，平衡二叉树) Tree -&gt; 红黑树 -&gt; B-/B+Tree(平衡多路查找树) -&gt; LSM
+    <ul>
+      <li><a href="http://www.sohu.com/a/280609547_818692">http://www.sohu.com/a/280609547_818692</a>
+        <ul>
+          <li>既然hash比B+树更快，为啥mysql还用B+树来存索引吗？
+            <ol>
+              <li>这和业务场景有关。如果只选一个数据，那确实是hash更快。但是数据库中经常会选择多条，这时候由于B+树索引有序，并且又有链表相连，它的查询效率比hash就快很多了。</li>
+              <li>而且数据库中的索引一般是在磁盘上，数据量大的情况可能无法一次装入内存，B+树的设计可以允许数据分批加载，同时树的高度较低，提高查找效率。</li>
+              <li>与B数相比，如果是多条的话，B树需要做局部的中序遍历，可能要跨层访问。而B+树由于所有数据都在叶子结点，不用跨层，同时由于有链表结构，只需要找到首尾，通过链表就能把所有数据取出来了。</li>
+            </ol>
+          </li>
+          <li>AVLTree 在windowsNT内核中广泛使用，写少读多</li>
+          <li>红黑树适合于内存索引查找 比如Map、Set <a href="https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag">https://mp.weixin.qq.com/s/cnDx8lJ6fXHgLZWsqjWrag</a></li>
+          <li>B树尤其是多路B数主要用在文件存储系统,文件系统和数据库的索引都是存在硬盘上的，并且如果数据量大的话，不一定能一次性加载到内存中。
+用B树可以一路一路的查找</li>
+          <li>红黑树常用于存储内存中的有序数据，增删很快，b+树常用于文件系统和数据库索引，因为b树的子节点大于红黑树，红黑树只能有2个子节点，b树子节点大于2，子节点树多这一特点保证了存储相同大小的数据，树的高度更小，数据局部更加紧凑，而硬盘读取有局部加载的优化（把要读取数据和周围的数据一起预先读取），b树相邻数据物理上更加紧凑这一特点符合硬盘进行io优化的特性。</li>
+        </ul>
+      </li>
+      <li>更加详细的应用范围<a href="https://www.cnblogs.com/tiancai/p/9024351.html">https://www.cnblogs.com/tiancai/p/9024351.html</a></li>
+      <li>完美总结B+树<a href="https://mp.weixin.qq.com/s/YMbRJwyjutGMD1KpI_fS0A">https://mp.weixin.qq.com/s/YMbRJwyjutGMD1KpI_fS0A</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="各种优化">各种优化</h4>
+<ul>
+  <li><a href="https://www.jianshu.com/p/efaa9005a598">https://www.jianshu.com/p/efaa9005a598</a></li>
+  <li><a href="https://www.jb51.net/article/136701.htm">https://www.jb51.net/article/136701.htm</a></li>
+  <li><a href="https://www.cnblogs.com/houss/p/10598901.html">https://www.cnblogs.com/houss/p/10598901.html</a></li>
+  <li><a href="https://coolshell.cn/articles/1846.html">https://coolshell.cn/articles/1846.html</a>
+    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="err">优化</span><span class="mi">1</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化前</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="n">a</span> <span class="k">inner</span> <span class="k">join</span> <span class="p">(</span><span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">t_third_device</span> <span class="k">where</span> <span class="n">third</span><span class="o">=</span><span class="s1">'kuaishou'</span> <span class="k">limit</span> <span class="mi">300000</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="n">b</span> <span class="k">on</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span> <span class="o">#</span> <span class="err">优化后</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="常用指标">常用指标</h4>
+<ul>
+  <li>QPS   (2w/s与机器配置及数据量有关)</li>
+  <li>TPS   (1w/s)</li>
+  <li>并发数</li>
+  <li>连接数</li>
+  <li>缓存命中率</li>
+  <li>慢查询
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>slow_query_log=on
+slow_query_log_file=存放目录
+long_query_time=0.1秒
+log_queries_not_using_indexes=on
+</code></pre></div>    </div>
+  </li>
+  <li>主从延迟
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show slave status;
+Seconds_Behind_Master
+</code></pre></div>    </div>
+  </li>
+  <li>死锁
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set global innodb_print_all_deadlocks=on; 
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="mysql-wal技术-write-ahead-logging">Mysql WAL技术 Write-Ahead Logging</h4>
+
+<p>在计算机领域，WAL（Write-ahead logging，预写式日志）是数据库系统提供原子性和持久化的一系列技术。
+   在使用WAL的系统中，所有的修改都先被写入到日志中，然后再被应用到系统状态中。通常包含redo和undo两部分信息。
+   为什么需要使用WAL，然后包含redo和undo信息呢？举个例子，如果一个系统直接将变更应用到系统状态中，那么在机器掉电重启之后系统需要知道操作是成功了，
+   还是只有部分成功或者是失败了（为了恢复状态）。如果使用了WAL，那么在重启之后系统可以通过比较日志和系统状态来决定是继续完成操作还是撤销操作。 
+   什么是WAL？<a href="https://www.cnblogs.com/hzmark/p/wal.html">https://www.cnblogs.com/hzmark/p/wal.html</a></p>
+
+<h4 id="innodb与myisamindex-sequence-access-method">InnoDB与MyISAM(Index Sequence Access Method)</h4>
+<ul>
+  <li>核心区别在于事务，InnoDb是基于MVCC（Mutli Version Concurrency Control）实现了一套细粒度的高性能的事务控制
+MyISAM仅仅实现了基于表锁实现了很粗粒度的事务（也就适用于日志后台存储、CMS后台系统、配置相关、Mysql系统库里的某些系统表也使用到了）
+    <ul>
+      <li>4个隔离级别透彻分析 <a href="https://www.jianshu.com/p/db334404d909">https://www.jianshu.com/p/db334404d909</a></li>
+      <li>Mysql中MVCC的使用及原理详解 <a href="https://blog.csdn.net/w2064004678/article/details/83012387">https://blog.csdn.net/w2064004678/article/details/83012387</a></li>
+    </ul>
+  </li>
+  <li>索引结构不同
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew">https://mp.weixin.qq.com/s/_X_3LW7hcUbguVYAG78-ew</a></li>
+    </ul>
+  </li>
+  <li>其他不同
+    <ul>
+      <li><a href="https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg">https://mp.weixin.qq.com/s/V6_hTkhr6QvDrQ0LRsyPrg</a></li>
+      <li><a href="https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A">https://mp.weixin.qq.com/s/UjOQIgf2rENqlmfE-ECR-A</a></li>
+    </ul>
+  </li>
+  <li>引擎不同的几个方面：Storage mechanism、Locking levels、Indexing、Capabilities and functions</li>
+</ul>
+
+<h4 id="innodb引擎的4大特性">InnoDB引擎的4大特性</h4>
+<p>https://www.cnblogs.com/zhs0/p/10528520.html</p>
+<ul>
+  <li>插入缓冲（insert buffer)，只对于非聚集索引（非唯一）的插入和更新有效，对于每一次的插入不是写到索引页中，而是先判断插入的非聚集索引页是否在缓冲池中，如果在则直接插入；若不在，则先放到Insert Buffer 中，再按照一定的频率进行合并操作，再写回disk。这样通常能将多个插入合并到一个操作中，目的还是为了减少随机IO带来性能损耗。</li>
+  <li>二次写(double write)
+    <ul>
+      <li>InnoDB默认DB page为 16KB，而文件系统、磁盘、扇区对应的page小于该数字，因此，一次DB page可能被多次写入才能真正写入成功</li>
+      <li>在写数据时，会在共享表空间写一份数据，之后再同步到磁盘</li>
+      <li>在应用（apply）重做日志前，用户需要一个页的副本，当写入失效发生时，先通过页的副本来还原该页，再进行重做，这就是double write</li>
+      <li><a href="https://www.cnblogs.com/chenpingzhao/p/4876282.html">https://www.cnblogs.com/chenpingzhao/p/4876282.html</a></li>
+    </ul>
+  </li>
+  <li>自适应哈希索引(ahi)，innodb会监控表上多个索引页的查询。如果观察到建立哈希索引可以带来速度提升，则自动建立哈希索引，称之为自适应哈希索引（Adaptive Hash Index，AHI）。
+  主要是精确等值查找，对范围查找搜索不生效</li>
+  <li>预读(read ahead)，数据预加载</li>
+</ul>
+
+<h5 id="共享表空间-独立表空间">共享表空间 、独立表空间</h5>
+<ul>
+  <li>共享表空间： Innodb的所有数据保存在一个单独的表空间里面，而这个表空间可以由很多个文件组成，一个表可以跨多个文件存在，所以其大小限制不再是文件大小的限制，而是其自身的限制。从Innodb的官方文档中可以看到，其表空间的最大限制为64TB，也就是说，Innodb的单表限制基本上也在64TB左右了，当然这个大小是包括这个表的所有索引等其他相关数据。</li>
+  <li>独占表空间:  每一个表都将会生成以独立的文件方式来进行存储，每一个表都有一个.frm表描述文件，还有一个.ibd文件。 其中这个文件包括了单独一个表的数据内容以及索引内容，默认情况下它的存储位置也是在表的位置之中。</li>
+</ul>
+
+<h5 id="聚集索引-与-非聚集索引">聚集索引 与 非聚集索引</h5>
+<ul>
+  <li><a href="https://blog.csdn.net/riemann_/article/details/90324846">https://blog.csdn.net/riemann_/article/details/90324846</a></li>
+</ul>
+
+<h4 id="faq">FAQ</h4>
+<ul>
+  <li>
+    <p>问题：INT(M)中M究竟有何用？</p>
+
+    <p>int类型占四个字节，一个字节8比特位，也就是4*8=32比特位，可以表示的数字个数是2的32次方个(2^32)。声明一个int类型的数据，长度便已经固定，那么这个M究竟有何用？
+  结论：INT(M)中的M与数据存储长度没有关系，只是标识数据显示长度，在显示时不足无数会自动填充0进行补齐，必须配合AutoFill使用。</p>
+  </li>
+  <li>
+    <p>MySQL 中 InnoDB 引擎的行锁是通过加在什么上完成(或称实现) 的?</p>
+
+    <p>InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。
+  InnoDB 这 种行锁实现特点意味着:只有通过索引条件检索数据，InnoDB 才使用行级 锁，否则，InnoDB 将使用表锁!</p>
+  </li>
+  <li>各种锁
+    <ul>
+      <li>本质都为了实现数据一致性及各种事务控制</li>
+      <li>悲观锁：读取数据时就加锁排他</li>
+      <li>乐观锁：读取数据不加锁，更新时处理（比如版本号机制、CAS compare and swap算法）</li>
+      <li>共享锁(share lock)、排它锁（exclusive lock）、意向共享锁、意向排它锁 意向共享锁和意向排他锁锁定的是表。
+  <a href="https://www.jianshu.com/p/c456f726e9c7">https://www.jianshu.com/p/c456f726e9c7</a></li>
+    </ul>
+  </li>
+  <li>数据库三范式
+    <ul>
+      <li>表中的每个字段不可分割</li>
+      <li>表有且只有一个主键，也即是每个表只是描述一件事</li>
+      <li>不存在对非主键列的依赖传递，比如userId,userName不要同时出现在order中，有时为了查询效率也冗余个别字段</li>
+    </ul>
+  </li>
+  <li>一张表，里面有 ID 自增主键，当 insert 了 17 条记录之后，删除了第 15,16,17 条记录， 再把 Mysql 重启，再 insert 一条记录，这条记录的 ID 是 18 还是 15 ?
+  (1)如果表的类型是 MyISAM，那么是 18
+      因为 MyISAM 表会把自增主键的最大 ID 记录到数据文件里，重启 MySQL 自增主键的最大 ID 也不会丢失
+  (2)如果表的类型是 InnoDB，那么是 15
+      InnoDB 表只是把自增主键的最大 ID 记录到内存中，所以重启数据库或者是对表进行 OPTIMIZE 操作，都会导致最大 ID 丢失</li>
+  <li>
+    <p>如何区分 FLOAT 和 DOUBLE?</p>
+
+    <p>以下是 FLOAT 和 DOUBLE 的区别:
+  浮点数以 8 位精度存储在 FLOAT 中，并且有四个字节。 浮点数存储在 DOUBLE 中，精度为 18 位，有八个字节。</p>
+  </li>
+  <li>
+    <p>区分 CHAR_LENGTH 和 LENGTH?</p>
+
+    <p>CHAR_LENGTH 是字符数，而 LENGTH 是字节数。Latin 字符的这两个数据是相同的，但是对 于 Unicode 和其他编码，它们是不同的。</p>
+  </li>
+  <li>
+    <p>federated 表是什么?</p>
+
+    <p>federated 表，允许访问位于其他服务器数据库上的表。
+  <a href="https://blog.csdn.net/qq_33578833/article/details/80177115">https://blog.csdn.net/qq_33578833/article/details/80177115</a></p>
+  </li>
+  <li>
+    <p>可以使用多少列创建索引?</p>
+
+    <p>任何标准表最多可以创建 16 个索引列。</p>
+  </li>
+</ul>
+
+<h4 id="其他">其他</h4>
+<ul>
+  <li>Mysql主从同步 <a href="https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw">https://mp.weixin.qq.com/s/ZNkYhwWPpsF532B3rwN_Kw</a></li>
+  <li>Mysql+Keepalived实现双高可用 <a href="https://www.cnblogs.com/kevingrace/p/6710136.html">https://www.cnblogs.com/kevingrace/p/6710136.html</a></li>
+  <li>PROCEDURE ANALYSE</li>
+  <li>全文索引</li>
+  <li>分区表 <a href="https://www.jianshu.com/p/b61d767f4ff5">https://www.jianshu.com/p/b61d767f4ff5</a></li>
+  <li>UTF-8编码占几个字节 <a href="https://blog.csdn.net/bluetjs/article/details/52936943">https://blog.csdn.net/bluetjs/article/details/52936943</a></li>
+</ul>
+
+<p><a href="https://database.51cto.com/art/201910/604128.htm">数据库规范</a></p>
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-grid">
+      <div class="footer-section">
+        <h3 class="footer-title">Code & Coffee</h3>
+        <p class="footer-description">探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
+</p>
+        <div class="footer-author">
+          <p>由 <strong>架构师小灰</strong> 创作</p>
+          <p>© 2026 All rights reserved.</p>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">快速导航</h4>
+        <ul class="footer-links">
+          <li><a href="/blog/">首页</a></li>
+          <li><a href="/blog/category/技术/">技术</a></li>
+          <li><a href="/blog/category/产品商业/">产品商业</a></li>
+          <li><a href="/blog/category/随记/">随记</a></li>
+          <li><a href="/blog/category">分类</a></li>
+          <li><a href="/blog/tag">标签云</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">关注我</h4>
+        <div class="social-links">
+          
+          <a href="https://github.com/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-github"></i>
+            <span>GitHub</span>
+          </a>
+          
+          
+          <a href="https://linkedin.com/in/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-linkedin"></i>
+            <span>LinkedIn</span>
+          </a>
+          
+          
+          <a href="https://twitter.com/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-twitter"></i>
+            <span>Twitter</span>
+          </a>
+          
+          <a href="/blog/feed.xml" target="_blank">
+            <i class="fas fa-rss"></i>
+            <span>RSS</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">最新文章</h4>
+        <ul class="recent-posts">
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+            <small>07-28</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+            <small>07-26</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+            <small>07-20</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+            <small>07-18</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/15/JVM-Note.html"> Jvm（四）Note</a>
+            <small>07-15</small>
+          </li>
+          
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        本站使用 <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> 生成，
+        主题基于现代化设计，采用 <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a> 免费托管
+      </p>
+      <div class="theme-toggle-footer">
+        <button id="theme-toggle-footer" class="theme-toggle">
+          <i class="fas fa-moon"></i>
+          <span>切换主题</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: var(--spacing-2xl) 0;
+    margin-top: var(--spacing-2xl);
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-xl);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .footer-section {
+    .footer-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-subtitle {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-lg);
+      color: var(--text-primary);
+    }
+
+    .footer-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .footer-author {
+      p {
+        margin: var(--spacing-xs) 0;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--spacing-sm);
+
+      a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+
+        &:hover {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  .social-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+
+      &:hover {
+        color: var(--primary-color);
+      }
+
+      i {
+        font-size: 1.25rem;
+        width: 20px;
+      }
+    }
+  }
+
+  .recent-posts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 1px solid var(--border-color);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: block;
+        font-weight: 500;
+        margin-bottom: var(--spacing-xs);
+        transition: color var(--transition-fast);
+
+        &:hover {
+          color: var(--primary-color);
+        }
+      }
+
+      small {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--spacing-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin: 0;
+
+      a {
+        color: var(--primary-color);
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .theme-toggle-footer {
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        padding: var(--spacing-xs) var(--spacing-md);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        font-size: 0.875rem;
+
+        &:hover {
+          background: var(--primary-color);
+          color: white;
+          border-color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-xl);
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--spacing-lg);
+    }
+  }
+</style>
+
+<script>
+  // Footer theme toggle
+  document.getElementById('theme-toggle-footer')?.addEventListener('click', function() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    const icon = this.querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  });
+</script>
+
+
+  <!-- 现代化JavaScript功能 -->
+  <script>
+    // 主题切换功能
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // 从本地存储加载主题
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // 懒加载和动画
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fade-in-up');
+        }
+      });
+    }, observerOptions);
+
+    // 观察所有卡片元素
+    document.querySelectorAll('.post-card, .card').forEach(card => {
+      observer.observe(card);
+    });
+
+    // 代码块复制功能
+    document.querySelectorAll('pre').forEach(block => {
+      const button = document.createElement('button');
+      button.className = 'copy-button';
+      button.innerHTML = '<i class="fas fa-copy"></i>';
+      button.title = '复制代码';
+
+      button.addEventListener('click', () => {
+        const code = block.querySelector('code');
+        if (code) {
+          navigator.clipboard.writeText(code.textContent).then(() => {
+            button.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+              button.innerHTML = '<i class="fas fa-copy"></i>';
+            }, 2000);
+          });
+        }
+      });
+
+      block.style.position = 'relative';
+      block.appendChild(button);
+    });
+  </script>
+
+  <style>
+    .copy-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      padding: 5px 8px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 12px;
+    }
+
+    .copy-button:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .main-content {
+      min-height: calc(100vh - 200px);
+      padding: var(--spacing-2xl) 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-xl);
+    }
+  </style>
+</body>
+</html>

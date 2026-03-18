@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> Jvm（一）垃圾回收机制与调优 </title>
+  <meta name="description" content="垃圾回收器组合 7种  Parallel Old &amp; Parallel Scavenge New 高吞吐量 （1种）  G1 （1种）  Serial Old （5种）                                                      &amp; CMS Old &...">
+  <script src="/blog/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/blog/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/blog/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/blog/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/blog/css/main.css">
+  <link rel="stylesheet" href="/blog/css/syntax.css">
+  <link rel="canonical" href="http://0.0.0.0:4000/blog/%E6%8A%80%E6%9C%AF/2019/11/04/JVM-GC.html">
+  <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="http://0.0.0.0:4000/blog/feed.xml">
+</head>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header class="site-header">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="/blog/" class="brand-link">
+        <i class="fas fa-code"></i>
+        <span>Code & Coffee</span>
+      </a>
+      
+        <p class="brand-subtitle">全栈架构师的数字花园</p>
+      
+    </div>
+
+    <ul class="navbar-nav">
+      <li><a href="/blog/" class="nav-link ">
+        <i class="fas fa-home"></i> 首页
+      </a></li>
+      <li><a href="/blog/category/技术/" class="nav-link">
+        <i class="fas fa-code"></i> 技术
+      </a></li>
+      <li><a href="/blog/category/产品商业/" class="nav-link">
+        <i class="fas fa-briefcase"></i> 产品商业
+      </a></li>
+      <li><a href="/blog/category/随记/" class="nav-link">
+        <i class="fas fa-book"></i> 随记
+      </a></li>
+      <li><a href="/blog/category" class="nav-link">
+        <i class="fas fa-folder-open"></i> 分类
+      </a></li>
+      <li><a href="/blog/tag" class="nav-link">
+        <i class="fas fa-tags"></i> 标签
+      </a></li>
+      <li><a href="/blog/about" class="nav-link">
+        <i class="fas fa-user"></i> 关于
+      </a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button id="theme-toggle" class="theme-toggle" title="切换主题">
+        <i class="fas fa-moon"></i>
+      </button>
+      <button id="search-toggle" class="search-toggle" title="搜索">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 搜索框 -->
+  <div id="search-overlay" class="search-overlay">
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="搜索文章..." class="search-input">
+      <button id="search-close" class="search-close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+</header>
+
+<style>
+  .nav-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+
+    i {
+      color: var(--primary-color);
+    }
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+
+  .brand-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: var(--spacing-xs) 0 0 0;
+  }
+
+  .navbar-nav {
+    display: flex;
+    gap: var(--spacing-lg);
+    list-style: none;
+    margin: 0;
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+
+      &:hover, &.active {
+        background: var(--bg-card);
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .nav-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+  }
+
+  .theme-toggle, .search-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: none;
+    z-index: 1000;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 100px;
+  }
+
+  .search-overlay.active {
+    display: flex;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 var(--spacing-xl);
+    position: relative;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: var(--spacing-lg);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    outline: none;
+    transition: border-color var(--transition-fast);
+
+    &:focus {
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-close {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+
+  .search-results {
+    margin-top: var(--spacing-lg);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 768px) {
+    .navbar {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .navbar-nav {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--spacing-sm);
+    }
+
+    .nav-brand {
+      align-items: center;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  // 主题切换
+  document.getElementById('theme-toggle')?.addEventListener('click', function() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    const icon = this.querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  });
+
+  // 搜索功能
+  document.getElementById('search-toggle')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.add('active');
+    document.getElementById('search-input').focus();
+  });
+
+  document.getElementById('search-close')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.remove('active');
+  });
+
+  // ESC 键关闭搜索
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.getElementById('search-overlay').classList.remove('active');
+    }
+  });
+</script>
+
+
+  <main class="main-content">
+    <div class="container">
+      <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline"> Jvm（一）垃圾回收机制与调优 </h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2019-11-04T19:25:00+08:00" itemprop="datePublished">Nov 4, 2019</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h4 id="垃圾回收器组合-7种">垃圾回收器组合 7种</h4>
+<ul>
+  <li>Parallel Old &amp; Parallel Scavenge New 高吞吐量 （1种）</li>
+  <li>G1 （1种）</li>
+  <li>Serial Old （5种）
+    <ul>
+      <li>
+        <table>
+          <tbody>
+            <tr>
+              <td>&amp; CMS Old &amp; (Serial</td>
+              <td> </td>
+              <td>ParNew 2种)</td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+      <li>&amp; Serial</li>
+      <li>&amp; ParNew</li>
+      <li>&amp; Parallel Scavenge New</li>
+    </ul>
+  </li>
+  <li>CMS短停顿 与 Scavenge 高吞吐不可一组</li>
+</ul>
+
+<h4 id="垃圾回收器">垃圾回收器</h4>
+<ul>
+  <li>Serial收集器（复制算法): 新生代单线程收集器，标记和清理都是单线程，优点是简单高效；</li>
+  <li>ParNew收集器 (复制算法): 新生代收并行集器，实际上是Serial收集器的多线程版本，在多核CPU环境下有着比Serial更好的表现；</li>
+  <li>Parallel Scavenge收集器 (复制算法): 新生代并行收集器，追求高吞吐量，高效利用 CPU。吞吐量 = 用户线程时间/(用户线程时间+GC线程时间)，高吞吐量可以高效率的利用CPU时间，尽快完成程序的运算任务，适合后台应用等对交互相应要求不高的场景；</li>
+  <li>Serial Old收集器 (标记-整理算法): 老年代单线程收集器，Serial收集器的老年代版本；</li>
+  <li>Parallel Old收集器 (标记-整理算法)： 老年代并行收集器，吞吐量优先，Parallel Scavenge收集器的老年代版本；</li>
+  <li>CMS(Concurrent Mark Sweep)收集器（标记-清除算法）： 老年代并行收集器，以获取最短回收停顿时间为目标的收集器，具有高并发、低停顿的特点，追求最短GC回收停顿时间。</li>
+  <li>G1(Garbage First)收集器 (标记-整理算法)： Java堆并行收集器，G1收集器是JDK1.7提供的一个新收集器，G1收集器基于“标记-整理”算法实现，也就是说不会产生内存碎片。
+  此外，G1收集器不同于之前的收集器的一个重要特点是：G1回收的范围是整个Java堆(包括新生代，老年代)，而前六种收集器回收的范围仅限于新生代或老年代。
+  可以通过配置参数设置可控的停顿时间。可以设置G1HeapRegionSize为2的指数，尽可能是分为2048份。会根据算法判断出哪个region回收价值最高，而优先回收。
+  Mixed GC不是full GC，它只能回收部分老年代的Region，如果mixed GC实在无法跟上程序分配内存的速度，导致老年代填满无法继续进行Mixed GC，就会使用serial old GC（full GC）来收集整个GC heap。所以我们可以知道，G1是不提供full GC的。</li>
+  <li>ZGC,在64位的JVM中使用，用color point标记出Finalizable、 Remapped、Marked1、Marked0几种状态，可以节省遍历RememberSet的时间，也可执行不同的逻辑；
+  region大小不同，对象大小不同用的Page不同，方便整理回收；大部分对象标记和对象转移都是可以和应用线程并发。
+    <ul>
+      <li><a href="https://www.jianshu.com/p/4e4fd0dd5d25">https://www.jianshu.com/p/4e4fd0dd5d25</a></li>
+      <li><a href="https://www.jianshu.com/p/60d9e125dcf3">https://www.jianshu.com/p/60d9e125dcf3</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="分代垃圾回收器是怎么工作的">分代垃圾回收器是怎么工作的？</h4>
+<ul>
+  <li>分代回收器有两个分区：老生代和新生代，新生代默认的空间占比总空间的 1/3，老生代的默认占比是 2/3。</li>
+  <li>新生代使用的是复制算法，新生代里有 3 个分区：Eden、To Survivor、From Survivor，它们的默认占比是  8:1:1，它的执行流程如下：</li>
+  <li>把 Eden + From Survivor 存活的对象放入 To Survivor 区；
+清空 Eden 和 From Survivor 分区；
+From Survivor 和 To Survivor 分区交换，From Survivor 变 To Survivor，To Survivor 变 From Survivor。
+每次在 From Survivor 到 To Survivor 移动时都存活的对象，年龄就 +1，当年龄到达 15（默认配置是 15）时，升级为老生代。大对象也会直接进入老生代。</li>
+  <li>老生代当空间占用到达某个值之后就会触发全局垃圾收回，一般使用标记整理的执行算法。以上这些循环往复就构成了整个分代垃圾回收的整体执行流程。</li>
+</ul>
+
+<h4 id="gc的收集算法实战中是集中算法组合使用">GC的收集算法（实战中是集中算法组合使用）</h4>
+<ul>
+  <li>标记-复制：复制到新区域，回收老区域
+  Serial New、Parallel New、Parallel Scavenge New、G1</li>
+  <li>标记-清除
+  CMS (产生碎片，默认选择Serial配合最后整理)</li>
+  <li>标记-整理：移动到一侧，找边界然后清理边界外的所有空间
+  Serial Old、Parallel Old、G1</li>
+</ul>
+
+<h4 id="分代为了更高效的区别回收g1的分区region也是为了发挥多核并发优势">分代（为了更高效的区别回收，G1的分区region也是为了发挥多核并发优势）</h4>
+<ul>
+  <li>Young Generation
+  Eden 伊甸园
+  Survivor 幸存者（from/to，S0/S1)</li>
+  <li>Tenured/Old Generation</li>
+  <li>Permanent Generation (Java8之前）</li>
+  <li>Metaspace (Java8之后）</li>
+</ul>
+
+<h4 id="安全点安全空间">安全点、安全空间</h4>
+<p><img src="/img/gc1.jpg" width="600px" />
+<img src="/img/gc2.jpg" width="600px" />
+<img src="/img/gc3.jpg" width="600px" /></p>
+
+<h4 id="空间分配担保">空间分配担保</h4>
+<p><img src="/img/gc4.jpg" width="600px" /></p>
+
+<h4 id="gc收集器">GC收集器</h4>
+<ul>
+  <li>Serial（串行）收集器
+  新生代、老生代</li>
+  <li>Parallel（并行）收集器
+  新生代、老生代</li>
+  <li>Parallel Scavenge New （GC自适应的调节策略GC Ergonomics）
+  新生代、通过调整相关参数，比如新生代的大小，达到以合适的时间和耗时，达到高吞吐量
+  吞吐量 = 运行用户代码时间 /（运行用户代码时间 + 垃圾收集时间）</li>
+  <li>CMS（Concurrent Mark Sweep 并发）收集器 （并发低停顿收集器 Concurrent Low Pause Collector）
+  老生代</li>
+  <li>G1（并发）收集器（优先回收价值最大的Region（这也就是Garbage-First名称的来由）
+  新生代、老生代</li>
+  <li>JDK11的ZGC <a href="https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw">https://mp.weixin.qq.com/s/KUCs_BJUNfMMCO1T3_WAjw</a></li>
+</ul>
+
+<h4 id="参考">参考</h4>
+<ul>
+  <li>JVM的4种垃圾回收算法、垃圾回收机制与总结 <a href="https://zhuanlan.zhihu.com/p/54851319">https://zhuanlan.zhihu.com/p/54851319</a></li>
+  <li>7种JVM垃圾收集器特点，优劣势、及使用场景 <a href="https://zhuanlan.zhihu.com/p/58896728">https://zhuanlan.zhihu.com/p/58896728</a></li>
+  <li>深入理解JVM，7种垃圾收集器 <a href="http://blog.itpub.net/69917606/viewspace-2656882">http://blog.itpub.net/69917606/viewspace-2656882</a></li>
+  <li>深入详解JVM内存模型与JVM参数详细配置 <a href="https://zhuanlan.zhihu.com/p/58896619">https://zhuanlan.zhihu.com/p/58896619</a>
+    <ul>
+      <li>堆内存（Heap）此内存区域的唯一目的就是存放对象实例（new的对象），几乎所有的对象实例都在这里分配内存。</li>
+      <li>方法区（Method Area）方法区也称”永久代“，它用于存储虚拟机加载的类信息、常量、静态变量、是各个线程共享的内存区域。</li>
+      <li>虚拟机栈(JVM Stack) Java虚拟机栈是线程私有，生命周期与线程相同。创建线程的时候就会创建一个java虚拟机栈。
+虚拟机执行java程序的时候，每个方法都会创建一个栈帧，栈帧存放在java虚拟机栈中，通过压栈出栈的方式进行方法调用。
+栈帧又分为一下几个区域：局部变量表、操作数栈、动态连接、方法出口等。</li>
+      <li>本地方法栈(Native Stack) 本地方法栈（Native Method Stacks）与虚拟机栈所发挥的作用是非常相似的，其区别不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的Native方法服务。</li>
+      <li>程序计数器（PC Register）
+程序计数器就是记录当前线程执行程序的位置，改变计数器的值来确定执行的下一条指令，比如循环、分支、方法跳转、异常处理，线程恢复都是依赖程序计数器来完成。
+Java虚拟机多线程是通过线程轮流切换并分配处理器执行时间的方式实现的。为了线程切换能恢复到正确的位置，每条线程都需要一个独立的程序计数器，所以它是线程私有的。</li>
+      <li>直接内存
+直接内存并不是虚拟机内存的一部分，也不是Java虚拟机规范中定义的内存区域。jdk1.4中新加入的NIO，引入了通道与缓冲区的IO方式，它可以调用Native方法直接分配堆外内存，这个堆外内存就是本机内存，不会影响到堆内存的大小。</li>
+    </ul>
+  </li>
+  <li>JVM性能调优的6大步骤，及关键调优参数详解 <a href="https://zhuanlan.zhihu.com/p/58897189">https://zhuanlan.zhihu.com/p/58897189</a></li>
+  <li>深入剖析JVM：G1收集器+回收流程+推荐用例 <a href="https://zhuanlan.zhihu.com/p/59861022">https://zhuanlan.zhihu.com/p/59861022</a></li>
+</ul>
+
+<h4 id="java-参数">java 参数</h4>
+<ul>
+  <li>查看JVM使用的默认的垃圾收集器 <a href="https://www.cnblogs.com/grey-wolf/p/9217497.html">https://www.cnblogs.com/grey-wolf/p/9217497.html</a></li>
+  <li>JVM 参数 <a href="https://blog.csdn.net/liyongbing1122/article/details/88716400">https://blog.csdn.net/liyongbing1122/article/details/88716400</a></li>
+</ul>
+
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-grid">
+      <div class="footer-section">
+        <h3 class="footer-title">Code & Coffee</h3>
+        <p class="footer-description">探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
+</p>
+        <div class="footer-author">
+          <p>由 <strong>架构师小灰</strong> 创作</p>
+          <p>© 2026 All rights reserved.</p>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">快速导航</h4>
+        <ul class="footer-links">
+          <li><a href="/blog/">首页</a></li>
+          <li><a href="/blog/category/技术/">技术</a></li>
+          <li><a href="/blog/category/产品商业/">产品商业</a></li>
+          <li><a href="/blog/category/随记/">随记</a></li>
+          <li><a href="/blog/category">分类</a></li>
+          <li><a href="/blog/tag">标签云</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">关注我</h4>
+        <div class="social-links">
+          
+          <a href="https://github.com/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-github"></i>
+            <span>GitHub</span>
+          </a>
+          
+          
+          <a href="https://linkedin.com/in/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-linkedin"></i>
+            <span>LinkedIn</span>
+          </a>
+          
+          
+          <a href="https://twitter.com/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-twitter"></i>
+            <span>Twitter</span>
+          </a>
+          
+          <a href="/blog/feed.xml" target="_blank">
+            <i class="fas fa-rss"></i>
+            <span>RSS</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">最新文章</h4>
+        <ul class="recent-posts">
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+            <small>07-28</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+            <small>07-26</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+            <small>07-20</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+            <small>07-18</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/15/JVM-Note.html"> Jvm（四）Note</a>
+            <small>07-15</small>
+          </li>
+          
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        本站使用 <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> 生成，
+        主题基于现代化设计，采用 <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a> 免费托管
+      </p>
+      <div class="theme-toggle-footer">
+        <button id="theme-toggle-footer" class="theme-toggle">
+          <i class="fas fa-moon"></i>
+          <span>切换主题</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: var(--spacing-2xl) 0;
+    margin-top: var(--spacing-2xl);
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-xl);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .footer-section {
+    .footer-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-subtitle {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-lg);
+      color: var(--text-primary);
+    }
+
+    .footer-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .footer-author {
+      p {
+        margin: var(--spacing-xs) 0;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--spacing-sm);
+
+      a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+
+        &:hover {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  .social-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+
+      &:hover {
+        color: var(--primary-color);
+      }
+
+      i {
+        font-size: 1.25rem;
+        width: 20px;
+      }
+    }
+  }
+
+  .recent-posts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 1px solid var(--border-color);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: block;
+        font-weight: 500;
+        margin-bottom: var(--spacing-xs);
+        transition: color var(--transition-fast);
+
+        &:hover {
+          color: var(--primary-color);
+        }
+      }
+
+      small {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--spacing-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin: 0;
+
+      a {
+        color: var(--primary-color);
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .theme-toggle-footer {
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        padding: var(--spacing-xs) var(--spacing-md);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        font-size: 0.875rem;
+
+        &:hover {
+          background: var(--primary-color);
+          color: white;
+          border-color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-xl);
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--spacing-lg);
+    }
+  }
+</style>
+
+<script>
+  // Footer theme toggle
+  document.getElementById('theme-toggle-footer')?.addEventListener('click', function() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    const icon = this.querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  });
+</script>
+
+
+  <!-- 现代化JavaScript功能 -->
+  <script>
+    // 主题切换功能
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // 从本地存储加载主题
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // 懒加载和动画
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fade-in-up');
+        }
+      });
+    }, observerOptions);
+
+    // 观察所有卡片元素
+    document.querySelectorAll('.post-card, .card').forEach(card => {
+      observer.observe(card);
+    });
+
+    // 代码块复制功能
+    document.querySelectorAll('pre').forEach(block => {
+      const button = document.createElement('button');
+      button.className = 'copy-button';
+      button.innerHTML = '<i class="fas fa-copy"></i>';
+      button.title = '复制代码';
+
+      button.addEventListener('click', () => {
+        const code = block.querySelector('code');
+        if (code) {
+          navigator.clipboard.writeText(code.textContent).then(() => {
+            button.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+              button.innerHTML = '<i class="fas fa-copy"></i>';
+            }, 2000);
+          });
+        }
+      });
+
+      block.style.position = 'relative';
+      block.appendChild(button);
+    });
+  </script>
+
+  <style>
+    .copy-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      padding: 5px 8px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 12px;
+    }
+
+    .copy-button:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .main-content {
+      min-height: calc(100vh - 200px);
+      padding: var(--spacing-2xl) 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-xl);
+    }
+  </style>
+</body>
+</html>

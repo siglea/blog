@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>DotDot2</title>
+  <meta name="description" content="分布式控制方案  中心化的副本控制协议，也就是主从模式  primary-secondary协议，也就是leader/follower（数据切片分段存储）  去中心化的副本控制协议，也就是Gossip或者zk选举阶段高可用、一致性、扩展性、性能  由于存储分散切片存储，实现了高可用，          物理机br...">
+  <script src="/blog/static/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="/blog/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/blog/static/font-awesome-4.6.3/css/font-awesome.min.css">
+  <script src="/blog/static/bootstrap.min.js"></script>
+  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <link rel="stylesheet" href="/blog/css/main.css">
+  <link rel="stylesheet" href="/blog/css/syntax.css">
+  <link rel="canonical" href="http://0.0.0.0:4000/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">
+  <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="http://0.0.0.0:4000/blog/feed.xml">
+</head>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header class="site-header">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="/blog/" class="brand-link">
+        <i class="fas fa-code"></i>
+        <span>Code & Coffee</span>
+      </a>
+      
+        <p class="brand-subtitle">全栈架构师的数字花园</p>
+      
+    </div>
+
+    <ul class="navbar-nav">
+      <li><a href="/blog/" class="nav-link ">
+        <i class="fas fa-home"></i> 首页
+      </a></li>
+      <li><a href="/blog/category/技术/" class="nav-link">
+        <i class="fas fa-code"></i> 技术
+      </a></li>
+      <li><a href="/blog/category/产品商业/" class="nav-link">
+        <i class="fas fa-briefcase"></i> 产品商业
+      </a></li>
+      <li><a href="/blog/category/随记/" class="nav-link">
+        <i class="fas fa-book"></i> 随记
+      </a></li>
+      <li><a href="/blog/category" class="nav-link">
+        <i class="fas fa-folder-open"></i> 分类
+      </a></li>
+      <li><a href="/blog/tag" class="nav-link">
+        <i class="fas fa-tags"></i> 标签
+      </a></li>
+      <li><a href="/blog/about" class="nav-link">
+        <i class="fas fa-user"></i> 关于
+      </a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button id="theme-toggle" class="theme-toggle" title="切换主题">
+        <i class="fas fa-moon"></i>
+      </button>
+      <button id="search-toggle" class="search-toggle" title="搜索">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 搜索框 -->
+  <div id="search-overlay" class="search-overlay">
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="搜索文章..." class="search-input">
+      <button id="search-close" class="search-close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+</header>
+
+<style>
+  .nav-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+
+    i {
+      color: var(--primary-color);
+    }
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+
+  .brand-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: var(--spacing-xs) 0 0 0;
+  }
+
+  .navbar-nav {
+    display: flex;
+    gap: var(--spacing-lg);
+    list-style: none;
+    margin: 0;
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+
+      &:hover, &.active {
+        background: var(--bg-card);
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .nav-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+  }
+
+  .theme-toggle, .search-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: none;
+    z-index: 1000;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 100px;
+  }
+
+  .search-overlay.active {
+    display: flex;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 var(--spacing-xl);
+    position: relative;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: var(--spacing-lg);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    outline: none;
+    transition: border-color var(--transition-fast);
+
+    &:focus {
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-close {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+
+  .search-results {
+    margin-top: var(--spacing-lg);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 768px) {
+    .navbar {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .navbar-nav {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--spacing-sm);
+    }
+
+    .nav-brand {
+      align-items: center;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  // 主题切换
+  document.getElementById('theme-toggle')?.addEventListener('click', function() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    const icon = this.querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  });
+
+  // 搜索功能
+  document.getElementById('search-toggle')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.add('active');
+    document.getElementById('search-input').focus();
+  });
+
+  document.getElementById('search-close')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.remove('active');
+  });
+
+  // ESC 键关闭搜索
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.getElementById('search-overlay').classList.remove('active');
+    }
+  });
+</script>
+
+
+  <main class="main-content">
+    <div class="container">
+      <div class="row">
+  <div class="col-md-1 col-xs-0"></div>
+    <div class="col-md-10 col-xs-12">
+<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">DotDot2</h1>
+    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2020-07-20T09:46:00+08:00" itemprop="datePublished">Jul 20, 2020</time></p>
+  </header>
+
+  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+    <h4 id="分布式控制方案">分布式控制方案</h4>
+<ul>
+  <li>中心化的副本控制协议，也就是主从模式</li>
+  <li>primary-secondary协议，也就是leader/follower（数据切片分段存储）</li>
+  <li>去中心化的副本控制协议，也就是Gossip或者zk选举阶段</li>
+</ul>
+
+<h4 id="高可用一致性扩展性性能">高可用、一致性、扩展性、性能</h4>
+<ul>
+  <li>由于存储分散切片存储，实现了高可用，
+    <ol>
+      <li>物理机broker分主从</li>
+      <li>物理机broker不分主从，但是数据切片的存储分主从</li>
+    </ol>
+  </li>
+  <li>存储分片实现一致性，通过不同的协议
+    <ol>
+      <li>主从同步协议</li>
+      <li>去中心化gossip协议</li>
+    </ol>
+  </li>
+  <li>节点是否对等？写入是否同步副本？写入是代理还是直连？读取是读主还是读副？读取是代理还是直连？扩容自动数据迁移？</li>
+  <li>zk分leader/follower，是，写入代理给leader，读任意，直连，扩容自动数据迁移，选举CP广播AP
+  (zk的follower有可能数据不是最新的，如果需要最新的可以调用sync()方法，
+  zk数据结构是DataTree，也就是以path为key的Map)</li>
+  <li>redis-cluster，分主备集群，主集群节点无主次，每个节点负责不同的slot，备集群从主集群同步数据，读写都是直连主集群节点或者被Move，
+  扩容使用redis-trib.rb，CP</li>
+  <li>
+    <p>HBase，分主备集群，主集群节点无主次，每个节点RegionServer负责不同的Region，备集群从主集群同步数据，读写都是通过zk找到目标regionServer，
+  CP (HMaster可以理解为是zk的扩展，RegionServer挂掉需要恢复所以牺牲了可用性保证强一致性)</p>
+  </li>
+  <li>kafka分leader/follower，是，写入直接给leader，读leader，直连leader，扩容需要使用kafka-reassign-partitions.sh完成reblance
+  (区别理解kafka中的leader/follower，本质是Partition数据的leader与follower会分布在不同的broker机器上，不会造成机器资源的不平衡
+  kafka client通过向任意broker发送metadata req来获取partition得leader)</li>
+  <li>rocketMq分主/次，异步复制/同步双写，写入直连Master，对任意，直连，扩容通过updateTopic进行
+  (物理机broker有主从，物理机是主就是分片message的主)</li>
+  <li>es分primary/replica，是，写入协调节给primary，读任意，协调节点协调，扩容自动数据迁移，CA
+  (此处的primary是指根据document路由而得到的primary shard，不是指单独的机器)</li>
+  <li>cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据，扩容自动数据迁移，AP
+  (一致性hash确定分区，依靠协调节点）</li>
+</ul>
+
+<p><img src="/img/biu.jpg" width="600px" /></p>
+
+<h4 id="cassandra">cassandra</h4>
+<ul>
+  <li>Gossip协议 <a href="https://www.jianshu.com/p/f1c251614bad?tdsourcetag=s_pcqq_aiomsg">https://www.jianshu.com/p/f1c251614bad?tdsourcetag=s_pcqq_aiomsg</a></li>
+</ul>
+
+<h4 id="raidredundant-array-of-independent-disks独立冗余磁盘阵列">RAID(Redundant Array of Independent Disks,独立冗余磁盘阵列)</h4>
+<ul>
+  <li>磁盘本地的互备容错高可用 <a href="https://blog.csdn.net/Mr_Yang__/article/details/85228465">https://blog.csdn.net/Mr_Yang__/article/details/85228465</a></li>
+</ul>
+
+<h4 id="dubbo-monitor-实现原理">Dubbo Monitor 实现原理?</h4>
+<ul>
+  <li>Consumer 端在发起调用之前会先走 filter 链;provider 端在接收到请求时也是 先走 filter 链，然后才进行真正的业务逻辑处理。
+默认情况下，在 consumer 和 provider 的 filter 链中都会有 Monitorfilter。
+    <ol>
+      <li>MonitorFilter 向 DubboMonitor 发送数据</li>
+      <li>DubboMonitor 将数据进行聚合后(默认聚合 1min 中的统计数据)暂存到 ConcurrentMap&lt;Statistics, AtomicReference&gt; statisticsMap，然后使用一个 含有 3 个线程(线程名字:DubboMonitorSendTimer)的线程池每隔 1min 钟， 调用 SimpleMonitorService 遍历发送 statisticsMap 中的统计数据，每发送完毕 一个，就重置当前的 Statistics 的 AtomicReference</li>
+      <li>SimpleMonitorService 将这些聚合数据塞入 BlockingQueue queue 中(队 列大写为 100000)</li>
+      <li>SimpleMonitorService 使用一个后台线程(线程名为: DubboMonitorAsyncWriteLogThread)将 queue 中的数据写入文件(该线程以 死循环的形式来写)</li>
+      <li>SimpleMonitorService 还会使用一个含有 1 个线程(线程名字: DubboMonitorTimer)的线程池每隔 5min 钟，将文件中的统计数据画成图表</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="dubbo-spi-和-java-spi-区别">Dubbo SPI 和 Java SPI 区别?</h4>
+<ul>
+  <li>JDK SPI
+JDK 标准的 SPI 会一次性加载所有的扩展实现，如果有的扩展吃实话很耗时，但 也没用上，很浪费资源。
+所以只希望加载某个的实现，就不现实了</li>
+  <li>DUBBO SPI
+    <ol>
+      <li>对 Dubbo 进行扩展，不需要改动 Dubbo 的源码</li>
+      <li>延迟加载，可以一次只加载自己想要加载的扩展实现。</li>
+      <li>增加了对扩展点 IOC 和 AOP 的支持，一个扩展点可以直接 setter 注入其 它扩展点。</li>
+      <li>Dubbo 的扩展机制能很好的支持第三方 IoC 容器，默认支持 Spring Bean。</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="dubbo-如何优雅停机">Dubbo 如何优雅停机?</h4>
+<p>Dubbo 是通过 JDK 的 ShutdownHook 来完成优雅停机的，所以如果使用 kill -9 PID 等强制关闭指令，是不会执行优雅停机的，只有通过 kill PID 时，才 会执行。</p>
+
+<h4 id="rabbitmq-消息基于什么传输">RabbitMQ 消息基于什么传输?</h4>
+<p>由于 TCP 连接的创建和销毁开销较大，且并发数受系统资源限制，会造成性能瓶 颈。RabbitMQ 使用信道的方式来传输数据。信道是建立在真实的 TCP 连接内的 虚拟连接，且每条 TCP 连接上的信道数量没有限制。</p>
+
+<h4 id="zookeeper-对于-kafka-的作用是什么">Zookeeper 对于 Kafka 的作用是什么?</h4>
+<p>Zookeeper 是一个开放源码的、高性能的协调服务，它用于 Kafka 的分布式应用。 Zookeeper 主要用于在集群中不同节点之间进行通信
+在 Kafka 中，它被用于提交偏移量，因此如果节点在任何情况下都失败了，它都 可以从之前提交的偏移量中获取
+除此之外，它还执行其他活动，如: leader 检测、分布式同步、配置管理、识别新 节点何时离开或连接、集群、节点实时状态等等。</p>
+
+<h4 id="kafka-消费者如何不自动提交偏移量由应用提交">kafka 消费者如何不自动提交偏移量，由应用提交?</h4>
+<p>将 auto.commit.offset 设为 false，然后在处理一批消息后 commitSync() 或者 异步提交 commitAsync()</p>
+
+<h4 id="pipeline-有什么好处为什么要用-pipeline">Pipeline 有什么好处，为什么要用 pipeline?</h4>
+<p>答:可以将多次 IO 往返的时间缩减为一次，前提是 pipeline 执行的指令之间没有 因果相关性。使用 redis-benchmark 进行压测的时候可以发现影响 redis 的 QPS 峰值的一个重要因素是 pipeline 批次指令的数目。</p>
+<h4 id="jedis-与-redisson-对比有什么优缺点">Jedis 与 Redisson 对比有什么优缺点?</h4>
+<p>答:Jedis 是 Redis 的 Java 实现的客户端，其 API 提供了比较全面的 Redis 命令 的支持;Redisson 实现了分布式和可扩展的 Java 数据结构，和 Jedis 相比，功能 较为简单，不支持字符串操作，不支持排序、事务、管道、分区等 Redis 特性。 Redisson 的宗旨是促进使用者对 Redis 的关注分离，从而让使用者能够将精力更 集中地放在处理业务逻辑上。</p>
+
+<h4 id="说说-redis-哈希槽的概念">说说 Redis 哈希槽的概念?</h4>
+<p>答:Redis 集群没有使用一致性 hash,而是引入了哈希槽的概念，Redis 集群有 16384 个哈希槽，每个 key 通过 CRC16 校验后对 16384 取模来决定放置哪个槽， 集群的每个节点负责一部分 hash 槽。</p>
+
+<h4 id="假如-redis-里面有-1-亿个-key其中有-10w-个-key-是以-某个固定的已知的前缀开头的如果将它们全部找出来">假如 Redis 里面有 1 亿个 key，其中有 10w 个 key 是以 某个固定的已知的前缀开头的，如果将它们全部找出来?</h4>
+<p>答:使用 keys 指令可以扫出指定模式的 key 列表。
+对方接着追问:如果这个 redis 正在给线上的业务提供服务，那使用 keys 指令会 有什么问题?
+这个时候你要回答 redis 关键的一个特性:redis 的单线程的。keys 指令会导致线 程阻塞一段时间，线上服务会停顿，直到指令执行完毕，服务才能恢复。这个时 候可以使用 scan 指令，scan 指令可以无阻塞的提取出指定模式的 key 列表，但 是会有一定的重复概率，在客户端做一次去重就可以了，但是整体所花费的时间 会比直接用 keys 指令长。</p>
+
+<h4 id="mysql-blob-和-text-有什么区别">Mysql BLOB 和 TEXT 有什么区别?</h4>
+<ul>
+  <li>BLOB 是一个二进制对象，可以容纳可变数量的数据。TEXT 是一个不区分大小写 的 BLOB。</li>
+  <li>BLOB 和 TEXT 类型之间的唯一区别在于对 BLOB 值进行排序和比较时区分大小 写，对 TEXT 值不区分大小写。</li>
+</ul>
+
+<h4 id="可以使用多少列创建索引">可以使用多少列创建索引?</h4>
+<p>任何标准表最多可以创建 16 个索引列。</p>
+
+<h4 id="now和-current_date有什么区别">NOW()和 CURRENT_DATE()有什么区别?</h4>
+<p>NOW()命令用于显示当前年份，月份，日期，小时，分钟和秒。 CURRENT_DATE()仅显示当前年份，月份和日期。</p>
+
+<h4 id="完整性约束包括哪些">完整性约束包括哪些?</h4>
+<p>数据完整性(Data Integrity)是指数据的精确(Accuracy)和可靠性(Reliability)。
+分为以下四类:</p>
+<ol>
+  <li>实体完整性:规定表的每一行在表中是惟一的实体。</li>
+  <li>域完整性:是指表中的列必须满足某种特定的数据类型约束，其中约束又包括 取值范围、精度等规定。</li>
+  <li>参照完整性:是指两个表的主关键字和外关键字的数据应一致，保证了表之间 的数据的一致性，防止了数据丢失或无意义的数据在数据库中扩散。</li>
+  <li>用户定义的完整性:不同的关系数据库系统根据其应用环境的不同，往往还需 要一些特殊的约束条件。用户定义的完整性即是针对某个特定关系数据库的约束 条件，它反映某一具体应用必须满足的语义要求。
+与表有关的约束:包括列约束(NOT NULL(非空约束))和表约束(PRIMARY KEY、 foreign key、check、UNIQUE) 。</li>
+</ol>
+
+<h4 id="说说对-sql-语句优化有哪些方法选择几条">说说对 SQL 语句优化有哪些方法?(选择几条)</h4>
+<ol>
+  <li>Where 子句中:where 表之间的连接必须写在其他 Where 条件之前，那些可 以过滤掉最大数量记录的条件必须写在 Where 子句的末尾.HAVING 最后。</li>
+  <li>用 EXISTS 替代 IN、用 NOT EXISTS 替代 NOT IN。</li>
+  <li>避免在索引列上使用计算</li>
+  <li>避免在索引列上使用 IS NULL 和 IS NOT NULL</li>
+  <li>对查询进行优化，应尽量避免全表扫描，首先应考虑在 where 及 order by 涉 及的列上建立索引。</li>
+  <li>应尽量避免在 where 子句中对字段进行 null 值判断，否则将导致引擎放弃 使用索引而进行全表扫描</li>
+  <li>应尽量避免在 where 子句中对字段进行表达式操作，这将导致引擎放弃使用 索引而进行全表扫描</li>
+</ol>
+
+<h4 id="活锁">活锁:</h4>
+<ul>
+  <li>任务或者执行者没有被阻塞，由于某些条件没有满足，导致一直重复尝试， 失败，尝试，失败。
+  活锁和死锁的区别在于，处于活锁的实体是在不断的改变状态，所谓的“活”， 而 处于死锁的实体表现为等待;活锁有可能自行解开，死锁则不能。</li>
+  <li>消息重试。当某个消息处理失败的时候，一直重试，但重试由于某种原因，比如消息格式不对，导致解析失败，而它又被重试。这种时候一般是将不可修复的错误不要重试，或者是重试次数限定</li>
+  <li>相互协作的线程彼此响应从而修改自己状态，导致无法执行下去。比如两个很有礼貌的人在同一条路上相遇，彼此给对方让路，但是又在同一条路上遇到了。互相之间反复的避让下去。这种时候可以选择一个随机退让，使得具备一定的随机性</li>
+</ul>
+
+<h4 id="饥饿">饥饿:</h4>
+<ul>
+  <li>一个或者多个线程因为种种原因无法获得所需要的资源，导致一直无法执 行的状态。Java 中导致饥饿的原因:
+    <ol>
+      <li>高优先级线程吞噬所有的低优先级线程的 CPU 时间。</li>
+      <li>线程被永久堵塞在一个等待进入同步块的状态，因为其他线程总是能在它之前 持续地对该同步块进行访问。</li>
+      <li>线程在等待一个本身也处于永久等待完成的对象(比如调用这个对象的 wait 方 法)，因为其他线程总是被持续地获得唤醒。</li>
+      <li>解决方法:引入公平锁</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="java-concurrency-api-中的-lock-接口lock-interface-是什么对比同步它有什么优势">Java Concurrency API 中的 Lock 接口(Lock interface) 是什么?对比同步它有什么优势?</h4>
+<ul>
+  <li>Lock 接口比同步方法和同步块提供了更具扩展性的锁操作。 他们允许更灵活的结构，可以具有完全不同的性质，并且可以支持多个相关类的 条件对象。</li>
+  <li>它的优势有:</li>
+  <li>可以使锁更公平</li>
+  <li>可以使线程在等待锁的时候响应中断 可以让线程尝试获取锁，并在无法获取锁的时候立即返回或者等待一段时间 可以在不同的范围，以不同的顺序获取和释放锁</li>
+  <li>整体上来说 Lock 是 synchronized 的扩展版，Lock 提供了无条件的、可轮询的 (tryLock 方法)、定时的(tryLock 带参方法)、可中断的(lockInterruptibly)、可多 条件队列的(newCondition 方法)锁操作。另外 Lock 的实现类基本都支持非公平 锁(默认)和公平锁，synchronized 只支持非公平锁，当然，在大部分情况下，非 公平锁是高效的选择。</li>
+</ul>
+
+<h4 id="synchronizedmap-和-concurrenthashmap-有什么区-别">SynchronizedMap 和 ConcurrentHashMap 有什么区 别?</h4>
+<ul>
+  <li>SynchronizedMap 一次锁住整张表来保证线程安全，所以每次只能有一个线程来 访为 map。</li>
+  <li>ConcurrentHashMap 使用分段锁来保证在多线程下的性能。 ConcurrentHashMap 中则是一次锁住一个桶。ConcurrentHashMap 默认将 hash 表分为 16 个桶，诸如 get,put,remove 等常用操作只锁当前需要用到的桶。 这样，原来只能一个线程进入，现在却能同时有 16 个写线程执行，并发性能的提 升是显而易见的。</li>
+  <li>另外 ConcurrentHashMap 使用了一种不同的迭代方式。在这种迭代方式中，当 iterator 被创建后集合再发生改变就不再是抛出 ConcurrentModificationException，取而代之的是在改变时 new 新的数据从而 不影响原有的数据 ，iterator 完成后再将头指针替换为新的数据 ，这样 iterator 线程可以使用原来老的数据，而写线程也可以并发的完成改变。</li>
+</ul>
+
+<h4 id="你如何确保-main方法所在的线程是-java-程序最后结束-的线程">你如何确保 main()方法所在的线程是 Java 程序最后结束 的线程?</h4>
+<p>我们可以使用 Thread 类的 join()方法来确保所有程序创建的线程在 main()方法退 出前结束。</p>
+
+<h4 id="为什么-wait-notify和-notifyall-必须在同步方法或-者同步块中被调用">为什么 wait(), notify()和 notifyAll ()必须在同步方法或 者同步块中被调用?</h4>
+<p>当一个线程需要调用对象的 wait()方法的时候，这个线程必须拥有该对象的锁，接 着它就会释放这个对象锁并进入等待状态直到其他线程调用这个对象上的 notify() 方法。同样的，当一个线程需要调用对象的 notify()方法时，它会释放这个对象的 锁，以便其他在等待的线程就可以得到这个对象锁。由于所有的这些方法都需要 线程持有对象的锁，这样就只能通过同步来实现，所以他们只能在同步方法或者 同步块中被调用。</p>
+
+<h4 id="为什么-thread-类的-sleep和-yield-方法是静态的">为什么 Thread 类的 sleep()和 yield ()方法是静态的?</h4>
+<p>Thread 类的 sleep()和 yield()方法将在当前正在执行的线程上运行。所以在其他 处于等待状态的线程上调用这些方法是没有意义的。这就是为什么这些方法是静 态的。它们可以在当前正在执行的线程中工作，并避免程序员错误的认为可以在 其他非运行线程调用这些方法。</p>
+
+<h4 id="spring-security">Spring Security</h4>
+<ul>
+  <li>Spring Security 两种资源放行策略，千万别用错了！ <a href="https://www.imooc.com/article/305184">https://www.imooc.com/article/305184</a></li>
+  <li>盘点 Spring Security 框架中的八大经典设计模式 <a href="https://mp.weixin.qq.com/s/d2o9QpK1EfBMRR8zfHhv2g">https://mp.weixin.qq.com/s/d2o9QpK1EfBMRR8zfHhv2g</a></li>
+</ul>
+
+<h4 id="对账">对账</h4>
+<ul>
+  <li>对账 <a href="http://www.woshipm.com/it/1262137.html">http://www.woshipm.com/it/1262137.html</a></li>
+  <li>如何做一个对账系统，纯洁的微笑 <a href="https://www.cnblogs.com/ityouknow/p/7015879.html">https://www.cnblogs.com/ityouknow/p/7015879.html</a></li>
+</ul>
+
+  </div>
+</article>
+
+</div>
+<div class="col-md-1 col-xs-0"></div>
+</div>
+
+<div class="clearfix"></div>
+	
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-grid">
+      <div class="footer-section">
+        <h3 class="footer-title">Code & Coffee</h3>
+        <p class="footer-description">探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
+</p>
+        <div class="footer-author">
+          <p>由 <strong>架构师小灰</strong> 创作</p>
+          <p>© 2026 All rights reserved.</p>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">快速导航</h4>
+        <ul class="footer-links">
+          <li><a href="/blog/">首页</a></li>
+          <li><a href="/blog/category/技术/">技术</a></li>
+          <li><a href="/blog/category/产品商业/">产品商业</a></li>
+          <li><a href="/blog/category/随记/">随记</a></li>
+          <li><a href="/blog/category">分类</a></li>
+          <li><a href="/blog/tag">标签云</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">关注我</h4>
+        <div class="social-links">
+          
+          <a href="https://github.com/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-github"></i>
+            <span>GitHub</span>
+          </a>
+          
+          
+          <a href="https://linkedin.com/in/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-linkedin"></i>
+            <span>LinkedIn</span>
+          </a>
+          
+          
+          <a href="https://twitter.com/siglea" target="_blank" rel="noopener">
+            <i class="fab fa-twitter"></i>
+            <span>Twitter</span>
+          </a>
+          
+          <a href="/blog/feed.xml" target="_blank">
+            <i class="fas fa-rss"></i>
+            <span>RSS</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-subtitle">最新文章</h4>
+        <ul class="recent-posts">
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+            <small>07-28</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+            <small>07-26</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+            <small>07-20</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+            <small>07-18</small>
+          </li>
+          
+          <li>
+            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/15/JVM-Note.html"> Jvm（四）Note</a>
+            <small>07-15</small>
+          </li>
+          
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        本站使用 <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> 生成，
+        主题基于现代化设计，采用 <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a> 免费托管
+      </p>
+      <div class="theme-toggle-footer">
+        <button id="theme-toggle-footer" class="theme-toggle">
+          <i class="fas fa-moon"></i>
+          <span>切换主题</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: var(--spacing-2xl) 0;
+    margin-top: var(--spacing-2xl);
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-xl);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .footer-section {
+    .footer-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-subtitle {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-lg);
+      color: var(--text-primary);
+    }
+
+    .footer-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .footer-author {
+      p {
+        margin: var(--spacing-xs) 0;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--spacing-sm);
+
+      a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+
+        &:hover {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  .social-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+
+      &:hover {
+        color: var(--primary-color);
+      }
+
+      i {
+        font-size: 1.25rem;
+        width: 20px;
+      }
+    }
+  }
+
+  .recent-posts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 1px solid var(--border-color);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: block;
+        font-weight: 500;
+        margin-bottom: var(--spacing-xs);
+        transition: color var(--transition-fast);
+
+        &:hover {
+          color: var(--primary-color);
+        }
+      }
+
+      small {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--spacing-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin: 0;
+
+      a {
+        color: var(--primary-color);
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .theme-toggle-footer {
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        padding: var(--spacing-xs) var(--spacing-md);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        font-size: 0.875rem;
+
+        &:hover {
+          background: var(--primary-color);
+          color: white;
+          border-color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-xl);
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--spacing-lg);
+    }
+  }
+</style>
+
+<script>
+  // Footer theme toggle
+  document.getElementById('theme-toggle-footer')?.addEventListener('click', function() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    const icon = this.querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  });
+</script>
+
+
+  <!-- 现代化JavaScript功能 -->
+  <script>
+    // 主题切换功能
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // 从本地存储加载主题
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // 懒加载和动画
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fade-in-up');
+        }
+      });
+    }, observerOptions);
+
+    // 观察所有卡片元素
+    document.querySelectorAll('.post-card, .card').forEach(card => {
+      observer.observe(card);
+    });
+
+    // 代码块复制功能
+    document.querySelectorAll('pre').forEach(block => {
+      const button = document.createElement('button');
+      button.className = 'copy-button';
+      button.innerHTML = '<i class="fas fa-copy"></i>';
+      button.title = '复制代码';
+
+      button.addEventListener('click', () => {
+        const code = block.querySelector('code');
+        if (code) {
+          navigator.clipboard.writeText(code.textContent).then(() => {
+            button.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+              button.innerHTML = '<i class="fas fa-copy"></i>';
+            }, 2000);
+          });
+        }
+      });
+
+      block.style.position = 'relative';
+      block.appendChild(button);
+    });
+  </script>
+
+  <style>
+    .copy-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      padding: 5px 8px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 12px;
+    }
+
+    .copy-button:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .main-content {
+      min-height: calc(100vh - 200px);
+      padding: var(--spacing-2xl) 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-xl);
+    }
+  </style>
+</body>
+</html>
