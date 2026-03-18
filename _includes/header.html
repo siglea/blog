@@ -1,56 +1,25 @@
 <header class="site-header">
   <nav class="navbar">
     <div class="nav-brand">
-      <a href="{{ site.baseurl }}/" class="brand-link">
-        <i class="fas fa-code"></i>
-        <span>{{ site.title }}</span>
-      </a>
-      {% if site.subtitle %}
-        <p class="brand-subtitle">{{ site.subtitle }}</p>
-      {% endif %}
+      <a href="{{ site.baseurl }}/" class="brand-link">{{ site.title }}</a>
     </div>
 
     <ul class="navbar-nav">
-      <li><a href="{{ site.baseurl }}/" class="nav-link {% if page.url == '/' %}active{% endif %}">
-        <i class="fas fa-home"></i> 首页
-      </a></li>
-      <li><a href="{{ site.baseurl }}/category/技术/" class="nav-link">
-        <i class="fas fa-code"></i> 技术
-      </a></li>
-      <li><a href="{{ site.baseurl }}/category/产品商业/" class="nav-link">
-        <i class="fas fa-briefcase"></i> 产品商业
-      </a></li>
-      <li><a href="{{ site.baseurl }}/category/随记/" class="nav-link">
-        <i class="fas fa-book"></i> 随记
-      </a></li>
-      <li><a href="{{ site.baseurl }}/category" class="nav-link">
-        <i class="fas fa-folder-open"></i> 分类
-      </a></li>
-      <li><a href="{{ site.baseurl }}/tag" class="nav-link">
-        <i class="fas fa-tags"></i> 标签
-      </a></li>
-      <li><a href="{{ site.baseurl }}/about" class="nav-link">
-        <i class="fas fa-user"></i> 关于
-      </a></li>
+      <li><a href="{{ site.baseurl }}/" class="nav-link {% if page.url == '/' %}active{% endif %}">首页</a></li>
+      <li><a href="{{ site.baseurl }}/category/技术/" class="nav-link">技术</a></li>
+      <li><a href="{{ site.baseurl }}/category/产品商业/" class="nav-link">产品商业</a></li>
+      <li><a href="{{ site.baseurl }}/category/随记/" class="nav-link">随记</a></li>
+      <li><a href="{{ site.baseurl }}/category" class="nav-link">分类</a></li>
+      <li><a href="{{ site.baseurl }}/tag" class="nav-link">标签</a></li>
+      <li><a href="{{ site.baseurl }}/about" class="nav-link">关于</a></li>
     </ul>
-
-    <div class="nav-actions">
-      <button id="theme-toggle" class="theme-toggle" title="切换主题">
-        <i class="fas fa-moon"></i>
-      </button>
-      <button id="search-toggle" class="search-toggle" title="搜索">
-        <i class="fas fa-search"></i>
-      </button>
-    </div>
   </nav>
 
   <!-- 搜索框 -->
   <div id="search-overlay" class="search-overlay">
     <div class="search-container">
       <input type="text" id="search-input" placeholder="搜索文章..." class="search-input">
-      <button id="search-close" class="search-close">
-        <i class="fas fa-times"></i>
-      </button>
+      <button id="search-close" class="search-close">×</button>
     </div>
     <div id="search-results" class="search-results"></div>
   </div>

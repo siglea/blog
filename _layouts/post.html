@@ -1,24 +1,56 @@
 ---
 layout: default
 ---
-<div class="row">
-  <div class="col-md-1 col-xs-0"></div>
-    <div class="col-md-10 col-xs-12">
-<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
 
+<article class="post-article" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
     <h1 class="post-title" itemprop="name headline">{{ page.title }}</h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time>{% if page.author %} • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ page.author }}</span></span>{% endif %}</p>
+    <p class="post-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%Y年%m月%d日" }}</time>
+      {% if page.author %}
+      <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">{{ page.author }}</span>
+      </span>
+      {% endif %}
+      {% if page.categories %}
+      <span class="post-categories">
+        {% for category in page.categories %}
+        <a href="{{ site.baseurl }}/category/{{ category }}/">{{ category }}</a>{% unless forloop.last %}, {% endunless %}
+        {% endfor %}
+      </span>
+      {% endif %}
+    </p>
   </header>
 
-  <div class="post-content" style="margin:15px;" itemprop="articleBody">
+  <div class="post-content" itemprop="articleBody">
     {{ content }}
   </div>
+
+  <footer class="post-footer">
+    {% if page.tags %}
+    <div class="post-tags">
+      <span>标签：</span>
+      {% for tag in page.tags %}
+      <a href="{{ site.baseurl }}/tag/{{ tag }}/" class="tag">{{ tag }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="post-nav">
+      {% if page.previous %}
+      <div class="prev-post">
+        <span>上一篇：</span>
+        <a href="{{ page.previous.url | prepend: site.baseurl }}">{{ page.previous.title }}</a>
+      </div>
+      {% endif %}
+
+      {% if page.next %}
+      <div class="next-post">
+        <span>下一篇：</span>
+        <a href="{{ page.next.url | prepend: site.baseurl }}">{{ page.next.title }}</a>
+      </div>
+      {% endif %}
+    </div>
+  </footer>
 </article>
-
-</div>
-<div class="col-md-1 col-xs-0"></div>
-</div>
-
-<div class="clearfix"></div>
 	

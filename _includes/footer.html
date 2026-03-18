@@ -1,80 +1,35 @@
 <footer class="site-footer">
-  <div class="footer-content">
-    <div class="footer-grid">
-      <div class="footer-section">
-        <h3 class="footer-title">{{ site.title }}</h3>
-        <p class="footer-description">{{ site.description }}</p>
-        <div class="footer-author">
-          <p>由 <strong>{{ site.author }}</strong> 创作</p>
-          <p>© {{ site.time | date: '%Y' }} All rights reserved.</p>
-        </div>
-      </div>
-
-      <div class="footer-section">
-        <h4 class="footer-subtitle">快速导航</h4>
-        <ul class="footer-links">
-          <li><a href="{{ site.baseurl }}/">首页</a></li>
-          <li><a href="{{ site.baseurl }}/category/技术/">技术</a></li>
-          <li><a href="{{ site.baseurl }}/category/产品商业/">产品商业</a></li>
-          <li><a href="{{ site.baseurl }}/category/随记/">随记</a></li>
-          <li><a href="{{ site.baseurl }}/category">分类</a></li>
-          <li><a href="{{ site.baseurl }}/tag">标签云</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-section">
-        <h4 class="footer-subtitle">关注我</h4>
-        <div class="social-links">
-          {% if site.github_username %}
-          <a href="https://github.com/{{ site.github_username }}" target="_blank" rel="noopener">
-            <i class="fab fa-github"></i>
-            <span>GitHub</span>
-          </a>
-          {% endif %}
-          {% if site.social.linkedin %}
-          <a href="https://linkedin.com/in/{{ site.social.linkedin }}" target="_blank" rel="noopener">
-            <i class="fab fa-linkedin"></i>
-            <span>LinkedIn</span>
-          </a>
-          {% endif %}
-          {% if site.social.twitter %}
-          <a href="https://twitter.com/{{ site.social.twitter }}" target="_blank" rel="noopener">
-            <i class="fab fa-twitter"></i>
-            <span>Twitter</span>
-          </a>
-          {% endif %}
-          <a href="{{ site.baseurl }}/feed.xml" target="_blank">
-            <i class="fas fa-rss"></i>
-            <span>RSS</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="footer-section">
-        <h4 class="footer-subtitle">最新文章</h4>
-        <ul class="recent-posts">
-          {% for post in site.posts limit:5 %}
-          <li>
-            <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title | truncate: 30 }}</a>
-            <small>{{ post.date | date: "%m-%d" }}</small>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>
-        本站使用 <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> 生成，
-        主题基于现代化设计，采用 <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a> 免费托管
+  <div class="footer-grid">
+    <div class="footer-section">
+      <h4>关于</h4>
+      <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+        {{ site.description }}
       </p>
-      <div class="theme-toggle-footer">
-        <button id="theme-toggle-footer" class="theme-toggle">
-          <i class="fas fa-moon"></i>
-          <span>切换主题</span>
-        </button>
-      </div>
+      <p style="font-size: 13px; margin-top: 10px;">
+        ■ 文章：<a href="{{ site.baseurl }}/archive">{{ site.posts | size }}</a>
+      </p>
+      {% if site.github_username %}
+      <p style="font-size: 13px;">
+        <a href="https://github.com/{{ site.github_username }}" target="_blank">GitHub</a>
+      </p>
+      {% endif %}
     </div>
+
+    <div class="footer-section">
+      <h4>最新文章</h4>
+      <ul class="recent-posts">
+        {% for post in site.posts limit:6 %}
+        <li>
+          <span class="post-separator">■</span>
+          <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© {{ site.time | date: '%Y' }} {{ site.author }} | <a href="{{ site.baseurl }}/feed.xml">订阅Feed</a></p>
   </div>
 </footer>
 
