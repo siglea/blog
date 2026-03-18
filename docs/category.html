@@ -1,0 +1,67 @@
+---
+layout: default
+title: 分类
+---
+
+<div class="row" style="margin-bottom:30px">
+    <div class="home col-md-8">
+        <h1>文章分类</h1>
+        <p>共 {{ site.categories | size }} 个分类</p>
+        <hr>
+        
+        {% for category in site.categories %}
+        {% assign category_name = category | first %}
+        {% assign posts = category | last %}
+        <div class="category-section" style="margin-bottom: 30px;">
+            <h2>
+                <a href="{{ site.baseurl }}/category/{{ category_name | slugify }}/">
+                    {{ category_name }}
+                </a>
+                <span class="badge" style="background-color: #6366f1;">{{ posts | size }}</span>
+            </h2>
+            <ul class="posts">
+                {% for post in posts limit:5 %}
+                <li>
+                    <span class="post-date">{{ post.date | date: "%Y-%m-%d" }}</span>
+                    <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+                </li>
+                {% endfor %}
+                {% if posts.size > 5 %}
+                <li style="list-style: none; margin-top: 10px;">
+                    <a href="{{ site.baseurl }}/category/{{ category_name | slugify }}/" style="color: #6366f1;">
+                        查看更多 ({{ posts.size | minus: 5 }} 篇) →
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="post-contents">
+            <h3><i class="fa fa-folder-open">&nbsp;&nbsp;</i>所有分类</h3>
+            <div class="category-cloud" style="margin-top: 15px;">
+                {% for category in site.categories %}
+                {% assign category_name = category | first %}
+                {% assign posts = category | last %}
+                <a href="{{ site.baseurl }}/category/{{ category_name | slugify }}/" style="display: inline-block; margin: 5px; padding: 5px 10px; background-color: #f0f0f0; border-radius: 15px; text-decoration: none; color: #333;">
+                    {{ category_name }} <span style="color: #666;">({{ posts | size }})</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <br />
+        <div class="post-contents">
+            <h3>About Me</h3>
+            <img src="{{ site.baseurl }}/img/me.jpg" style="margin:20px auto 0 auto; max-width: 100%;">
+            <p style="font-size:18px;margin-top:10px">I'm Siglea,That's All.</p>
+            <br />
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default social-network" style="background-color:#0078ba" target="_blank" onclick=''><i class="fa fa-linkedin" style="font-size:20px;color:white;"></i></button>
+                <button type="button" class="btn btn-default social-network" style="background-color:#DD4B38" target="_blank" onclick=''><i class="fa fa-google-plus" style="font-size:20px;color:white;"></i></button>
+                <button type="button" class="btn btn-default social-network" style="background-color:#F60" target="_blank" onclick=''><i class="fa fa-soundcloud" style="font-size:20px;color:white;"></i></button>
+            </div>
+        </div>
+    </div>
+</div>

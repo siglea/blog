@@ -1,0 +1,67 @@
+# Site settings
+title: "Code & Coffee"
+subtitle: "全栈架构师的数字花园"
+email: siglea@sina.com
+description: >
+  探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维，
+  在代码与咖啡的交织中，记录技术人的成长之旅。
+baseurl: "/blog"
+url: "https://siglea.github.io"
+github_username: siglea
+author: "架构师小灰"
+
+# Social links
+social:
+  github: siglea
+  linkedin: siglea
+  twitter: siglea
+
+# Content settings
+future: true
+show_drafts: false
+excerpt_separator: <!--more-->
+
+# Collections
+collections:
+  projects:
+    output: true
+    permalink: /projects/:name/
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Plugins
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-archives
+  - jekyll-feed
+
+# Pagination
+paginate: 12
+paginate_path: "/page:num/"
+
+# Archives
+jekyll-archives:
+  enabled:
+    - categories
+    - tags
+  layouts:
+    category: archive
+    tag: archive
+  permalinks:
+    year: '/:year/'
+    month: '/:year/:month/'
+    day: '/:year/:month/:day/'
+    tag: '/tag/:name/'
+    category: '/category/:name/'
+
+# Custom variables
+logo: /assets/images/logo.png
+accent_color: "#6366f1"
+dark_mode: true

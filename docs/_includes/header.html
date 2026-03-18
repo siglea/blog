@@ -1,0 +1,255 @@
+<header class="site-header">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="{{ site.baseurl }}/" class="brand-link">
+        <i class="fas fa-code"></i>
+        <span>{{ site.title }}</span>
+      </a>
+      {% if site.subtitle %}
+        <p class="brand-subtitle">{{ site.subtitle }}</p>
+      {% endif %}
+    </div>
+
+    <ul class="navbar-nav">
+      <li><a href="{{ site.baseurl }}/" class="nav-link {% if page.url == '/' %}active{% endif %}">
+        <i class="fas fa-home"></i> 首页
+      </a></li>
+      <li><a href="{{ site.baseurl }}/category/技术/" class="nav-link">
+        <i class="fas fa-code"></i> 技术
+      </a></li>
+      <li><a href="{{ site.baseurl }}/category/产品商业/" class="nav-link">
+        <i class="fas fa-briefcase"></i> 产品商业
+      </a></li>
+      <li><a href="{{ site.baseurl }}/category/随记/" class="nav-link">
+        <i class="fas fa-book"></i> 随记
+      </a></li>
+      <li><a href="{{ site.baseurl }}/category" class="nav-link">
+        <i class="fas fa-folder-open"></i> 分类
+      </a></li>
+      <li><a href="{{ site.baseurl }}/tag" class="nav-link">
+        <i class="fas fa-tags"></i> 标签
+      </a></li>
+      <li><a href="{{ site.baseurl }}/about" class="nav-link">
+        <i class="fas fa-user"></i> 关于
+      </a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button id="theme-toggle" class="theme-toggle" title="切换主题">
+        <i class="fas fa-moon"></i>
+      </button>
+      <button id="search-toggle" class="search-toggle" title="搜索">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 搜索框 -->
+  <div id="search-overlay" class="search-overlay">
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="搜索文章..." class="search-input">
+      <button id="search-close" class="search-close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+</header>
+
+<style>
+  .nav-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+
+    i {
+      color: var(--primary-color);
+    }
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+
+  .brand-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: var(--spacing-xs) 0 0 0;
+  }
+
+  .navbar-nav {
+    display: flex;
+    gap: var(--spacing-lg);
+    list-style: none;
+    margin: 0;
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+
+      &:hover, &.active {
+        background: var(--bg-card);
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .nav-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+  }
+
+  .theme-toggle, .search-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: none;
+    z-index: 1000;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 100px;
+  }
+
+  .search-overlay.active {
+    display: flex;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 var(--spacing-xl);
+    position: relative;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: var(--spacing-lg);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    outline: none;
+    transition: border-color var(--transition-fast);
+
+    &:focus {
+      border-color: var(--primary-color);
+    }
+  }
+
+  .search-close {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+
+  .search-results {
+    margin-top: var(--spacing-lg);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 768px) {
+    .navbar {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .navbar-nav {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--spacing-sm);
+    }
+
+    .nav-brand {
+      align-items: center;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  // 主题切换
+  document.getElementById('theme-toggle')?.addEventListener('click', function() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    const icon = this.querySelector('i');
+    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+  });
+
+  // 搜索功能
+  document.getElementById('search-toggle')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.add('active');
+    document.getElementById('search-input').focus();
+  });
+
+  document.getElementById('search-close')?.addEventListener('click', function() {
+    document.getElementById('search-overlay').classList.remove('active');
+  });
+
+  // ESC 键关闭搜索
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.getElementById('search-overlay').classList.remove('active');
+    }
+  });
+</script>

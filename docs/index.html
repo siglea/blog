@@ -1,0 +1,335 @@
+---
+layout: default
+title: 首页
+---
+
+<!-- 英雄区域 -->
+<section class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">
+      <span class="gradient-text">Code & Coffee</span>
+      <br>
+      <small>全栈架构师的数字花园</small>
+    </h1>
+    <p class="hero-description">
+      探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维，
+      在代码与咖啡的交织中，记录技术人的成长之旅。
+    </p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-number">{{ site.posts | size }}</span>
+        <span class="stat-label">篇文章</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">{{ site.categories | size }}</span>
+        <span class="stat-label">个分类</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">{{ site.tags | size }}</span>
+        <span class="stat-label">个标签</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 最新文章 -->
+<section class="latest-posts">
+  <div class="section-header">
+    <h2 class="section-title">
+      <i class="fas fa-fire"></i>
+      最新文章
+    </h2>
+    <a href="{{ site.baseurl }}/archive" class="view-all-link">
+      查看全部 <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="posts-grid">
+    {% for post in site.posts limit:12 %}
+    <article class="post-card">
+      <div class="post-meta">
+        <span><i class="fas fa-calendar"></i>{{ post.date | date: "%Y-%m-%d" }}</span>
+        <span><i class="fas fa-clock"></i>{{ post.content | number_of_words | divided_by: 200 | plus: 1 }} 分钟阅读</span>
+      </div>
+
+      <h3 class="post-title">
+        <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+      </h3>
+
+      <div class="post-excerpt">
+        {% if post.excerpt %}
+          {{ post.excerpt | strip_html | truncate: 150 }}
+        {% else %}
+          {{ post.content | strip_html | truncate: 150 }}
+        {% endif %}
+      </div>
+
+      <div class="post-tags">
+        {% for tag in post.tags limit:3 %}
+          <a href="{{ site.baseurl }}/tag/{{ tag }}" class="tag">{{ tag }}</a>
+        {% endfor %}
+      </div>
+
+      <a href="{{ post.url | prepend: site.baseurl }}" class="read-more">
+        阅读全文 <i class="fas fa-arrow-right"></i>
+      </a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- 分类导航 -->
+<section class="categories-section">
+  <div class="section-header">
+    <h2 class="section-title">
+      <i class="fas fa-layer-group"></i>
+      探索分类
+    </h2>
+    <a href="{{ site.baseurl }}/category" class="view-all-link">
+      查看全部 <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="categories-grid">
+    <a href="{{ site.baseurl }}/category/技术/" class="category-card tech">
+      <div class="category-icon">
+        <i class="fas fa-code"></i>
+      </div>
+      <div class="category-info">
+        <h3>技术</h3>
+        <p>编程、架构、工具</p>
+        <span class="post-count">{{ site.categories['技术'] | size }} 篇文章</span>
+      </div>
+    </a>
+
+    <a href="{{ site.baseurl }}/category/产品商业/" class="category-card business">
+      <div class="category-icon">
+        <i class="fas fa-briefcase"></i>
+      </div>
+      <div class="category-info">
+        <h3>产品商业</h3>
+        <p>产品思维、商业模式</p>
+        <span class="post-count">{{ site.categories['产品商业'] | size }} 篇文章</span>
+      </div>
+    </a>
+
+    <a href="{{ site.baseurl }}/category/随记/" class="category-card notes">
+      <div class="category-icon">
+        <i class="fas fa-book"></i>
+      </div>
+      <div class="category-info">
+        <h3>随记</h3>
+        <p>读书笔记、随笔</p>
+        <span class="post-count">{{ site.categories['随记'] | size }} 篇文章</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<style>
+  .hero-section {
+    text-align: center;
+    padding: var(--spacing-2xl) 0;
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.2;
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    small {
+      display: block;
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      margin-top: var(--spacing-md);
+    }
+  }
+
+  .hero-description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto var(--spacing-2xl);
+    line-height: 1.6;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-2xl);
+    margin-top: var(--spacing-2xl);
+  }
+
+  .stat {
+    text-align: center;
+
+    .stat-number {
+      display: block;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2xl);
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      font-size: 1.875rem;
+      font-weight: 600;
+      margin: 0;
+
+      i {
+        color: var(--primary-color);
+      }
+    }
+
+    .view-all-link {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color var(--transition-fast);
+
+      &:hover {
+        color: var(--primary-hover);
+      }
+    }
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .categories-section {
+    margin: var(--spacing-2xl) 0;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-xl);
+  }
+
+  .category-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-xl);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, transparent, rgba(99, 102, 241, 0.1));
+      opacity: 0;
+      transition: opacity var(--transition-normal);
+    }
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary-color);
+
+      &::before {
+        opacity: 1;
+      }
+    }
+
+    .category-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .category-info {
+      h3 {
+        margin: 0 0 var(--spacing-sm) 0;
+        color: var(--text-primary);
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 0 0 var(--spacing-md) 0;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      .post-count {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .hero-stats {
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+
+    .categories-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .category-card {
+      flex-direction: column;
+      text-align: center;
+
+      .category-icon {
+        margin-bottom: var(--spacing-md);
+      }
+    }
+  }
+</style>
