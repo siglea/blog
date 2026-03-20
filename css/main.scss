@@ -33,6 +33,28 @@ body {
   width: 98%;
 }
 
+// 统一字体大小设置
+p {
+  font-size: 1.6em; /* 统一正文字体大小 */
+  line-height: 220%; /* 阮一峰博客真实行高 */
+}
+
+h1 {
+  font-size: 2.88em; /* 统一标题字体大小 */
+}
+
+h2 {
+  font-size: 2.88em; /* 统一标题字体大小 */
+}
+
+h3 {
+  font-size: 1.87em; /* 统一标题字体大小 */
+}
+
+h4 {
+  font-size: 1.5em; /* 统一标题字体大小 */
+}
+
 // 2. 链接样式
 a {
   color: #06c;
@@ -108,6 +130,34 @@ body.two-columns #container {
 #header .subtitle {
   font-size: 12px;
   color: #666;
+}
+
+// 导航栏
+#nav {
+  padding: 10px 0;
+  border-bottom: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
+  margin-bottom: 20px;
+}
+
+#nav ul {
+  list-style: none;
+  text-align: center; /* 居中导航项 */
+}
+
+#nav li {
+  display: inline;
+  margin-right: 15px;
+}
+
+#nav a {
+  font-size: 1.6em; /* 统一字体大小 */
+  color: #567; /* 阮一峰博客链接颜色 */
+  text-decoration: none;
+}
+
+#nav a:hover {
+  color: #654; /* 阮一峰博客链接悬停颜色 */
+  text-decoration: underline;
 }
 
 // 搜索框和订阅图标
