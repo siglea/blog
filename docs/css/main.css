@@ -1,20 +1,28 @@
 @charset "UTF-8";
-* {
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, tt, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  font-size: 14px;
+  list-style-type: none;
+  text-align: left;
+  text-decoration: none;
+  border-bottom: none;
+  font-weight: normal;
+  font-style: normal;
+  border: none;
+  color: #111;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
-  color: #333;
+  margin: 0;
+  padding: 0;
   background-color: #f5f5d5; /* 阮一峰博客经典米黄色背景 */
+  font-family: Georgia, serif; /* 使用阮一峰博客的真实字体 */
+  letter-spacing: -0.01em;
+  word-spacing: 0.2em;
+  line-height: 1.8em; /* 阮一峰博客真实行高 */
+  font-size: 62.5%; /* 阮一峰博客真实字体大小设置 */
+  color: #111;
+  width: 98%;
 }
 
 a {
@@ -27,33 +35,51 @@ a:hover {
 }
 
 #container {
-  max-width: 900px;
   margin: 0 auto;
-  padding: 0 20px;
-  background: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加轻微阴影，增加层次感 */
+  background-color: #f5f5d5; /* 与body背景色一致 */
+  padding: 1em; /* 使用em单位，符合阮一峰博客风格 */
+}
+
+body.one-column #container {
+  width: 65%; /* 阮一峰博客真实宽度 */
+  min-width: 640px;
+  max-width: 960px;
+}
+
+body.two-columns #container {
+  width: 85%; /* 阮一峰博客真实宽度 */
+  min-width: 780px;
+  max-width: 1260px;
 }
 
 #header {
-  padding: 20px 0 12px;
-  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
-  margin-bottom: 12px;
+  width: 100%;
 }
 
-#header h1 {
-  font-size: 24px;
-  font-weight: bold; /* 加粗标题 */
-  margin-bottom: 2px;
-  line-height: 1.3;
+#header {
+  border-bottom: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
+  margin: 1em;
+  float: left;
+  height: 5em; /* 使用em单位 */
+}
+
+#header h1, #header #header-description, #header div#header-name {
+  margin-top: 0.9em; /* 使用em单位，符合阮一峰博客风格 */
+  font-size: 1.8em; /* 阮一峰博客真实字体大小 */
+  color: #567; /* 阮一峰博客真实颜色 */
+}
+
+#header h1, #header div#header-name {
+  float: left;
 }
 
 #header h1 a {
-  color: #000; /* 更深的黑色 */
+  color: orange; /* 阮一峰博客真实链接颜色 */
   text-decoration: none;
 }
 
 #header h1 a:hover {
-  color: #333;
+  /* 阮一峰博客没有特别定义悬停样式 */
 }
 
 #header .subtitle {
@@ -61,9 +87,13 @@ a:hover {
   color: #666;
 }
 
+#header a {
+  color: orange; /* 阮一峰博客真实链接颜色 */
+}
+
 #nav {
   padding: 10px 0;
-  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
+  border-bottom: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
   margin-bottom: 20px;
 }
 
@@ -78,32 +108,54 @@ a:hover {
 
 #nav a {
   font-size: 12px;
-  color: #666;
+  color: #567; /* 阮一峰博客内容链接颜色 */
   text-decoration: none;
 }
 
 #nav a:hover {
-  color: #000; /* 更深的悬停颜色 */
+  color: #654; /* 阮一峰博客链接悬停颜色 */
   text-decoration: underline;
 }
 
-#main {
-  display: flex;
-  gap: 40px;
-  margin-bottom: 40px;
-  padding-top: 10px; /* 添加顶部间距 */
-}
-
 #content {
-  flex: 1;
-  min-width: 0;
-  max-width: 620px;
+  clear: both;
+  margin: 1.5em 1em 1em 1em; /* 使用em单位，符合阮一峰博客风格 */
 }
 
-#sidebar {
-  width: 280px;
-  flex-shrink: 0;
-  padding-top: 10px; /* 与主内容对齐 */
+body.two-columns #content #alpha {
+  width: 64%; /* 阮一峰博客真实宽度 */
+  min-width: 470px;
+  max-width: 740px;
+  margin-left: 3%;
+  float: left;
+}
+
+body.two-columns #content #beta {
+  float: right;
+  width: 24%; /* 阮一峰博客真实宽度 */
+  padding: 0.6em;
+  margin-right: 3%;
+  margin-bottom: 1em;
+  min-width: 180px;
+  max-width: 300px;
+  overflow: hidden;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+  border-radius: 20px;
+}
+
+.one-column #alpha {
+  width: 100%;
+}
+
+body.one-column #content #alpha {
+  padding-top: 0.5em;
+}
+
+body.one-column #content #alpha p {
+  margin-top: 1em;
+  line-height: 180%; /* 阮一峰博客真实行高 */
+  margin-left: 0.8em; /* 阮一峰博客真实边距 */
 }
 
 #main.post-page {
@@ -285,17 +337,17 @@ a:hover {
 }
 
 .posts-list h2 {
-  font-size: 14px;
-  font-weight: bold; /* 加粗标题 */
+  font-size: 1.8em; /* 阮一峰博客标题大小 */
+  font-weight: bold;
   margin-bottom: 12px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
+  border-bottom: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
 }
 
 .post-item {
   margin-bottom: 6px;
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 1.6em; /* 阮一峰博客真实字体大小 */
+  line-height: 220%; /* 阮一峰博客真实行高 */
 }
 
 .post-item::before {
@@ -316,17 +368,17 @@ a:hover {
 
 .post-item .post-title {
   display: inline;
-  font-size: 14px;
+  font-size: 1.6em; /* 阮一峰博客真实字体大小 */
   font-weight: normal;
 }
 
 .post-item .post-title a {
-  color: #333;
+  color: #223472; /* 阮一峰博客链接颜色 */
   text-decoration: none;
 }
 
 .post-item .post-title a:hover {
-  color: #000; /* 更深的悬停颜色 */
+  color: #d03500; /* 阮一峰博客链接悬停颜色 */
   text-decoration: underline;
 }
 
@@ -339,11 +391,14 @@ a:hover {
 }
 
 .article-header h1 {
-  font-size: 20px;
-  font-weight: normal;
-  line-height: 1.4;
-  margin-bottom: 8px;
-  color: #333;
+  font-size: 2.88em; /* 阮一峰博客标题大小 */
+  font-weight: 500; /* 阮一峰博客标题权重 */
+  line-height: 1.35em; /* 阮一峰博客标题行高 */
+  margin: 0.4em 0 0.2em 0; /* 阮一峰博客标题边距 */
+  padding: 0 0 0.2em 0; /* 阮一峰博客标题填充 */
+  color: #000; /* 阮一峰博客标题颜色 */
+  letter-spacing: -0.03em; /* 阮一峰博客标题字母间距 */
+  border-bottom: 1px solid #d3d3d3; /* 阮一峰博客标题下划线 */
 }
 
 .article-meta {
@@ -366,9 +421,9 @@ a:hover {
 }
 
 .article-content {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #333;
+  font-size: 1.6em; /* 阮一峰博客真实字体大小 */
+  line-height: 220%; /* 阮一峰博客真实行高 */
+  color: #111; /* 阮一峰博客真实颜色 */
 }
 
 .article-content h1,
@@ -384,22 +439,20 @@ a:hover {
 }
 
 .article-content h1 {
-  font-size: 18px;
-}
-
+  font-size: 2.88em;
+} /* 阮一峰博客标题大小 */
 .article-content h2 {
-  font-size: 16px;
-}
-
+  font-size: 2.88em;
+} /* 阮一峰博客标题大小 */
 .article-content h3 {
-  font-size: 15px;
-}
-
+  font-size: 1.87em;
+} /* 阮一峰博客标题大小 */
 .article-content h4 {
-  font-size: 14px;
-}
-
+  font-size: 1.5em;
+} /* 阮一峰博客标题大小 */
 .article-content p {
+  font-size: 1.6em; /* 阮一峰博客真实字体大小 */
+  line-height: 220%; /* 阮一峰博客真实行高 */
   margin-bottom: 10px;
 }
 
@@ -410,11 +463,12 @@ a:hover {
 }
 
 .article-content ul {
-  list-style-type: disc;
+  list-style-type: square; /* 阮一峰博客真实列表样式 */
 }
 
 .article-content ol {
   list-style-type: decimal;
+  list-style-position: inside; /* 阮一峰博客真实列表位置 */
 }
 
 .article-content li {
@@ -422,11 +476,19 @@ a:hover {
 }
 
 .article-content blockquote {
-  margin: 12px 0;
-  padding: 10px 12px;
-  background: #f9f9f9;
-  border-left: 3px solid #ddd;
-  color: #666;
+  background-color: #f5f2f0; /* 阮一峰博客真实引用块背景色 */
+  padding: 1em; /* 阮一峰博客真实引用块填充 */
+  margin: 2em 2em; /* 阮一峰博客真实引用块边距 */
+  font-family: Consolas, Monaco, "Andale Mono", monospace; /* 阮一峰博客真实引用块字体 */
+  -moz-border-radius: 1em; /* 阮一峰博客真实引用块圆角 */
+  -webkit-border-radius: 1em; /* 阮一峰博客真实引用块圆角 */
+  border-radius: 1em; /* 阮一峰博客真实引用块圆角 */
+  font-family: Consolas, Monaco, "Andale Mono", monospace; /* 阮一峰博客真实引用块字体 */
+  border-width: 0.3em; /* 阮一峰博客真实引用块边框宽度 */
+  border-color: #e0dfcc; /* 阮一峰博客真实引用块边框颜色 */
+  border-style: solid; /* 阮一峰博客真实引用块边框样式 */
+  text-shadow: 0 1px white; /* 阮一峰博客真实引用块文字阴影 */
+  overflow: auto; /* 阮一峰博客真实引用块溢出处理 */
 }
 
 .article-content blockquote p:last-child {
@@ -434,55 +496,67 @@ a:hover {
 }
 
 .article-content pre {
+  padding: 0em 0em 0.5em 0em; /* 阮一峰博客真实代码块填充 */
+  overflow: auto; /* 阮一峰博客真实代码块溢出处理 */
   margin: 12px 0;
-  padding: 10px;
-  background: #f5f5f5;
-  overflow-x: auto;
   font-size: 12px;
   line-height: 1.5;
   border-radius: 0;
 }
 
 .article-content code {
-  font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: monospace, Consolas, Monaco, "Andale Mono"; /* 阮一峰博客真实代码字体 */
   font-size: 0.9em;
   padding: 2px 4px;
-  background: #f5f5f5;
+  background: #f5f2f0; /* 阮一峰博客真实代码背景色 */
 }
 
 .article-content pre code {
   padding: 0;
-  background: none;
+  background: #f5f2f0; /* 阮一峰博客真实代码背景色 */
 }
 
 .article-content img {
   margin: 12px auto;
   display: block;
   max-width: 100%;
+  border: 0.3em solid #e0dfcc; /* 阮一峰博客真实图片边框 */
+  -moz-border-radius: 1em; /* 阮一峰博客真实图片圆角 */
+  -webkit-border-radius: 1em; /* 阮一峰博客真实图片圆角 */
+  border-radius: 1em; /* 阮一峰博客真实图片圆角 */
 }
 
 .article-content table {
-  width: 100%;
+  width: 90%; /* 阮一峰博客真实表格宽度 */
   margin: 12px 0;
+  border-collapse: collapse;
+  border: 1px solid #2b2b2b; /* 阮一峰博客真实表格边框 */
+  font-family: verdana, arial, sans-serif; /* 阮一峰博客真实表格字体 */
+  font-size: 100%;
+  color: #333;
+  border-width: 1px;
   border-collapse: collapse;
 }
 
 .article-content th,
 .article-content td {
-  padding: 6px 8px;
-  border: 1px solid #ddd;
-  text-align: left;
+  border: 1px solid #2b2b2b; /* 阮一峰博客真实单元格边框 */
+  font-size: 1.4em; /* 阮一峰博客真实单元格字体大小 */
+  border-width: 1px;
+  padding: 0.6em; /* 阮一峰博客真实单元格填充 */
+  border-style: solid;
+  border-color: #666; /* 阮一峰博客真实单元格边框颜色 */
 }
 
 .article-content th {
-  background: #f9f9f9;
+  background-color: #dedede; /* 阮一峰博客真实表头背景色 */
   font-weight: normal;
 }
 
 .article-footer {
   margin-top: 25px;
   padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
 }
 
 .article-tags {
@@ -527,16 +601,19 @@ a:hover {
 }
 
 .sidebar-section {
-  margin-bottom: 20px;
+  margin-bottom: 1em; /* 使用em单位，符合阮一峰博客风格 */
+  padding: 1em; /* 阮一峰博客真实填充 */
+  border-radius: 1em; /* 阮一峰博客真实圆角 */
+  border: 1px solid #d3d3d3; /* 阮一峰博客真实边框 */
 }
 
 .sidebar-section h3 {
-  font-size: 12px;
-  font-weight: bold; /* 加粗侧边栏标题 */
+  font-size: 1.8em; /* 阮一峰博客标题大小 */
+  font-weight: bold;
   color: #333;
   margin-bottom: 10px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
+  border-bottom: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
 }
 
 .about-avatar {
@@ -670,17 +747,19 @@ a:hover {
 }
 
 .about-page h2 {
-  font-size: 14px;
-  font-weight: bold; /* 加粗标题 */
+  font-size: 1.8em; /* 阮一峰博客标题大小 */
+  font-weight: bold;
   margin-bottom: 12px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
+  border-bottom: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
+  color: #000; /* 阮一峰博客标题颜色 */
+  letter-spacing: -0.03em; /* 阮一峰博客标题字母间距 */
 }
 
 .about-page p {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #333;
+  font-size: 1.6em; /* 阮一峰博客真实字体大小 */
+  line-height: 220%; /* 阮一峰博客真实行高 */
+  color: #111; /* 阮一峰博客真实颜色 */
   margin-bottom: 10px;
 }
 
@@ -692,8 +771,8 @@ a:hover {
 
 .about-page li {
   margin-bottom: 6px;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 1.6em; /* 阮一峰博客真实字体大小 */
+  line-height: 220%; /* 阮一峰博客真实行高 */
 }
 
 .about-page li::before {
@@ -703,17 +782,17 @@ a:hover {
 }
 
 .about-page a {
-  color: #06c;
+  color: #223472; /* 阮一峰博客链接颜色 */
   text-decoration: none;
 }
 
 .about-page a:hover {
-  color: #000; /* 更深的悬停颜色 */
+  color: #d03500; /* 阮一峰博客链接悬停颜色 */
   text-decoration: underline;
 }
 
 .about-page hr {
-  border-bottom: 1px dashed #dcdcdc; /* 使用更深的虚线颜色 */
+  border-bottom: 1px dashed #d3d3d3; /* 使用阮一峰博客真实边框色 */
   margin: 20px 0;
 }
 
@@ -722,11 +801,13 @@ a:hover {
 }
 
 .archive-page h1 {
-  font-size: 20px;
-  font-weight: bold; /* 加粗标题 */
+  font-size: 2.88em; /* 阮一峰博客标题大小 */
+  font-weight: 500; /* 阮一峰博客标题权重 */
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
+  border-bottom: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
+  color: #000; /* 阮一峰博客标题颜色 */
+  letter-spacing: -0.03em; /* 阮一峰博客标题字母间距 */
 }
 
 .category-section {
@@ -770,20 +851,20 @@ a:hover {
 }
 
 #footer {
-  padding: 20px 0;
-  border-top: 1px solid #dcdcdc; /* 使用更深的边框色 */
-  margin-top: 30px;
-  font-size: 11px;
-  color: #666; /* 更深的颜色 */
-  text-align: center;
+  margin: 0 1em; /* 阮一峰博客真实边距 */
+  border-top: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
+  color: #d3d3d3; /* 阮一峰博客真实颜色 */
+  padding-top: 0; /* 阮一峰博客真实填充 */
+  clear: both; /* 阮一峰博客清除浮动 */
+  line-height: 1.2; /* 阮一峰博客真实行高 */
 }
 
 #footer a {
-  color: #666;
+  color: gray; /* 阮一峰博客真实链接颜色 */
 }
 
 #footer a:hover {
-  color: #000; /* 更深的悬停颜色 */
+  /* 阮一峰博客没有特别定义页脚链接悬停样式 */
   text-decoration: underline;
 }
 
@@ -808,22 +889,90 @@ a:hover {
 }
 
 @media (max-width: 768px) {
-  #main {
-    flex-direction: column;
-  }
   #content {
-    max-width: 100%;
+    margin: 0em; /* 阮一峰博客移动端内容边距 */
   }
   #sidebar {
-    width: 100%;
-    margin-top: 40px;
+    float: left;
+    width: 95%; /* 阮一峰博客移动端侧边栏宽度 */
+    min-width: 0px;
+    max-width: none; /* 阮一峰博客移动端侧边栏最大宽度 */
   }
   #nav li {
     margin-right: 15px;
     margin-bottom: 10px;
   }
   #container {
-    padding: 0 15px; /* 减少移动端边距 */
+    padding: 0.5em; /* 阮一峰博客移动端容器填充 */
+    width: 98%; /* 阮一峰博客移动端容器宽度 */
+    min-width: 0px; /* 阮一峰博客移动端容器最小宽度 */
+    overflow: hidden; /* 阮一峰博客移动端容器溢出处理 */
+  }
+  body.one-column #container {
+    width: 98%; /* 阮一峰博客移动端一栏布局容器宽度 */
+    min-width: 0px; /* 阮一峰博客移动端一栏布局容器最小宽度 */
+    overflow: hidden; /* 阮一峰博客移动端一栏布局容器溢出处理 */
+  }
+  body.two-columns #container {
+    width: 98%; /* 阮一峰博客移动端两栏布局容器宽度 */
+    min-width: 0px; /* 阮一峰博客移动端两栏布局容器最小宽度 */
+    overflow: hidden; /* 阮一峰博客移动端两栏布局容器溢出处理 */
+  }
+}
+@media (max-width: 30rem) { /* 阮一峰博客真实媒体查询断点 */
+  #container {
+    padding: 0.5em; /* 阮一峰博客移动端容器填充 */
+  }
+  body.one-column #container {
+    width: 98%; /* 阮一峰博客移动端一栏布局容器宽度 */
+    min-width: 0px; /* 阮一峰博客移动端一栏布局容器最小宽度 */
+    overflow: hidden; /* 阮一峰博客移动端一栏布局容器溢出处理 */
+  }
+  body.two-columns #container {
+    width: 98%; /* 阮一峰博客移动端两栏布局容器宽度 */
+    min-width: 0px; /* 阮一峰博客移动端两栏布局容器最小宽度 */
+    overflow: hidden; /* 阮一峰博客移动端两栏布局容器溢出处理 */
+  }
+  h2 {
+    font-size: 2em; /* 阮一峰博客移动端标题大小 */
+  }
+  #header #feed_icon {
+    display: none; /* 阮一峰博客移动端隐藏订阅图标 */
+  }
+  #header #google_search {
+    display: none; /* 阮一峰博客移动端隐藏搜索框 */
+  }
+  body.mobile #header {
+    margin: 0 1em; /* 阮一峰博客移动端头部边距 */
+    height: 3em; /* 阮一峰博客移动端头部高度 */
+    margin-bottom: 1em; /* 阮一峰博客移动端头部底部边距 */
+    max-width: 95%; /* 阮一峰博客移动端头部最大宽度 */
+  }
+  body.mobile #header h1, body.mobile #header #header-description, body.mobile #header div#header-name {
+    margin-top: 0.5em; /* 阮一峰博客移动端头部标题顶部边距 */
+  }
+  body.mobile #content {
+    margin: 0em; /* 阮一峰博客移动端内容边距 */
+  }
+  #content {
+    margin: 0em; /* 阮一峰博客移动端内容边距 */
+  }
+  body.mobile.one-column #content #alpha .asset-content ul, body.mobile.one-column #content #alpha .asset-content ol, body.mobile.one-column #content #alpha .asset-content table {
+    margin-left: 1.5em; /* 阮一峰博客移动端列表左边距 */
+  }
+  body.mobile.one-column #content #alpha .asset-content img {
+    max-width: 95%; /* 阮一峰博客移动端图片最大宽度 */
+    overflow: auto; /* 阮一峰博客移动端图片溢出处理 */
+    border: 0.15em solid #e0dfcc; /* 阮一峰博客移动端图片边框 */
+  }
+  body.mobile #footer-content section {
+    margin: 1em 1em 0 0; /* 阮一峰博客移动端页脚区域边距 */
+  }
+  body.mobile #footer-content section h2 {
+    margin-top: 1em; /* 阮一峰博客移动端页脚标题顶部边距 */
+  }
+  body.mobile #footer-content section h2, body.mobile #footer-content section p {
+    text-align: right; /* 阮一峰博客移动端页脚文本对齐 */
   }
 }
 .text-muted {
