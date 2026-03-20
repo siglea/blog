@@ -9,30 +9,41 @@
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
 </head>
-<body>
+<body id="scrapbook" class="mt-main-index two-columns">
   <div id="container">
-    <!-- 头部 -->
-    <header id="header">
-      <h1><a href="/blog/">Code & Coffee</a></h1>
-      <p class="subtitle">siglea的数字花园</p>
-    </header>
-    
-    <!-- 导航 -->
-    <nav id="nav">
-      <ul>
-        <li><a href="/blog/">首页</a></li>
-        <li><a href="/blog/category/技术/">技术</a></li>
-        <li><a href="/blog/category/产品商业/">产品商业</a></li>
-        <li><a href="/blog/category/随记/">随记</a></li>
-        <li><a href="/blog/archive/">存档</a></li>
-        <li><a href="/blog/about/">关于</a></li>
-      </ul>
-    </nav>
-    
-    <!-- 主内容区 -->
-    <div id="main">
+    <div id="container-inner">
+      <!-- 头部 -->
+      <div id="header">
+        <div id="header-inner">
+          <div id="header-content">
+            <h1 id="header-name">Code & Coffee</h1>
+            <p class="subtitle">siglea的数字花园</p>
+            
+            <div id="google_search">
+              <!-- 简化的搜索框 -->
+              <form action="https://www.google.com/search" target="_blank" method="get">
+                <div>
+                  <input type="text" size="20" name="q" class="searchbox" placeholder="搜索...">
+                  <input type="hidden" name="sitesearch" value="https://siglea.github.io/blog" />
+                </div>
+              </form>
+            </div>
+            
+            <div id="feed_icon">
+              <a href="/blog/feed.xml" title="订阅Feed">
+                <img src="https://cdn.beekka.com/blogimg/asset/202107/bg2021072117.png" alt="RSS" style="height: 20px; width: auto;" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 主内容区 -->
       <div id="content">
-        <div class="archive-page">
+        <div id="content-inner">
+          <div id="alpha">
+            <div id="alpha-inner">
+              <div class="archive-page">
   <h1>云服务</h1>
   
   <section class="posts-list">
@@ -55,99 +66,130 @@
     
   </section>
 </div>
-      </div>
-      
-      <!-- 侧边栏 - 仅列表页显示 -->
-      
-      <aside id="sidebar">
-        <section class="sidebar-section">
-          <h3>分类</h3>
-          <ul class="category-list">
-            
-            <li>
-              <a href="/blog/category/技术/">技术</a>
-              <span class="count">(66)</span>
-            </li>
-            
-            <li>
-              <a href="/blog/category/产品商业/">产品商业</a>
-              <span class="count">(5)</span>
-            </li>
-            
-            <li>
-              <a href="/blog/category/随记/">随记</a>
-              <span class="count">(6)</span>
-            </li>
-            
-          </ul>
-        </section>
-        
-        <section class="sidebar-section">
-          <h3>标签</h3>
-          <div class="tag-cloud">
-            
-            <a href="/blog/tag/programming/">programming</a>
-            
-            <a href="/blog/tag/python/">python</a>
-            
-            <a href="/blog/tag/云服务/">云服务</a>
-            
-            <a href="/blog/tag/工具/">工具</a>
-            
-            <a href="/blog/tag/网络/">网络</a>
-            
-            <a href="/blog/tag/构建/">构建</a>
-            
-            <a href="/blog/tag/分布式/">分布式</a>
-            
-            <a href="/blog/tag/股票/">股票</a>
-            
-            <a href="/blog/tag/读书笔记/">读书笔记</a>
-            
-            <a href="/blog/tag/数据库/">数据库</a>
-            
-            <a href="/blog/tag/数据结构与算法/">数据结构与算法</a>
-            
-            <a href="/blog/tag/Linux/">Linux</a>
-            
-            <a href="/blog/tag/Java/">Java</a>
-            
-            <a href="/blog/tag/NoSQL/">NoSQL</a>
-            
-            <a href="/blog/tag/大数据/">大数据</a>
-            
-            <a href="/blog/tag/安全/">安全</a>
-            
-            <a href="/blog/tag/极致思考/">极致思考</a>
-            
-            <a href="/blog/tag/架构/">架构</a>
-            
-            <a href="/blog/tag/容器/">容器</a>
-            
-            <a href="/blog/tag/Spring/">Spring</a>
-            
+            </div>
           </div>
-        </section>
-      </aside>
-      
-    </div>
-    
-    <!-- 页脚 - 关于信息 -->
-    <footer id="footer">
-      <div class="footer-about">
-        <p><strong>siglea</strong></p>
-        <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
-</p>
-        <p>
-          ■ 文章：<a href="/blog/archive/">77</a>
           
-          | <a href="https://github.com/siglea" target="_blank">GitHub</a>
+          <!-- 侧边栏 - 仅列表页显示 -->
           
-          | <a href="/blog/feed.xml">RSS</a>
-        </p>
+          <div id="beta">
+            <div id="beta-inner">
+              <div class="module module-categories">
+                <h2 class="module-header">分类</h2>
+                <div class="module-content">
+                  <ul class="module-list">
+                    
+                    <li class="module-list-item">
+                      <a href="/blog/category/技术/">技术</a>
+                      <span class="count">(66)</span>
+                    </li>
+                    
+                    <li class="module-list-item">
+                      <a href="/blog/category/产品商业/">产品商业</a>
+                      <span class="count">(5)</span>
+                    </li>
+                    
+                    <li class="module-list-item">
+                      <a href="/blog/category/随记/">随记</a>
+                      <span class="count">(6)</span>
+                    </li>
+                    
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="module module-tags">
+                <h2 class="module-header">标签</h2>
+                <div class="module-content">
+                  <div class="tag-cloud">
+                    
+                    <a href="/blog/tag/programming/">programming</a>
+                    
+                    <a href="/blog/tag/python/">python</a>
+                    
+                    <a href="/blog/tag/云服务/">云服务</a>
+                    
+                    <a href="/blog/tag/工具/">工具</a>
+                    
+                    <a href="/blog/tag/网络/">网络</a>
+                    
+                    <a href="/blog/tag/构建/">构建</a>
+                    
+                    <a href="/blog/tag/分布式/">分布式</a>
+                    
+                    <a href="/blog/tag/股票/">股票</a>
+                    
+                    <a href="/blog/tag/读书笔记/">读书笔记</a>
+                    
+                    <a href="/blog/tag/数据库/">数据库</a>
+                    
+                    <a href="/blog/tag/数据结构与算法/">数据结构与算法</a>
+                    
+                    <a href="/blog/tag/Linux/">Linux</a>
+                    
+                    <a href="/blog/tag/Java/">Java</a>
+                    
+                    <a href="/blog/tag/NoSQL/">NoSQL</a>
+                    
+                    <a href="/blog/tag/大数据/">大数据</a>
+                    
+                    <a href="/blog/tag/安全/">安全</a>
+                    
+                    <a href="/blog/tag/极致思考/">极致思考</a>
+                    
+                    <a href="/blog/tag/架构/">架构</a>
+                    
+                    <a href="/blog/tag/容器/">容器</a>
+                    
+                    <a href="/blog/tag/Spring/">Spring</a>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
       </div>
-      <p class="copyright">© 2026 Code & Coffee</p>
-    </footer>
+      
+      <!-- 页脚 - 关于信息 -->
+      <div id="footer">
+        <div id="footer-inner">
+          <div id="footer-content">
+            <section>
+              <h2>关于</h2>
+              <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
+</p>
+              <p>
+                文章：<a href="/blog/archive/">77</a> |
+                <a href="/blog/feed.xml">RSS</a>
+              </p>
+            </section>
+            
+            <section>
+              <h2>联系</h2>
+              <p>
+                
+                <a href="https://github.com/siglea" target="_blank">GitHub</a> |
+                
+                <a href="mailto:siglea@sina.com">邮箱</a>
+              </p>
+            </section>
+            
+            <section>
+              <h2>版权</h2>
+              <p>© 2026 Code & Coffee</p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+  
+  <script>
+    // 移动端适配脚本
+    if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent)) {
+      document.body.classList.add('mobile');
+    }
+  </script>
 </body>
 </html>

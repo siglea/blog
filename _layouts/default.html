@@ -8,74 +8,116 @@
   <link rel="stylesheet" href="{{ site.baseurl }}/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ site.baseurl }}/feed.xml">
 </head>
-<body>
+<body id="scrapbook" class="mt-main-index two-columns">
   <div id="container">
-    <!-- 头部 -->
-    <header id="header">
-      <h1><a href="{{ site.baseurl }}/">{{ site.title }}</a></h1>
-      <p class="subtitle">{{ site.subtitle }}</p>
-    </header>
-    
-    <!-- 导航 -->
-    <nav id="nav">
-      <ul>
-        <li><a href="{{ site.baseurl }}/">首页</a></li>
-        <li><a href="{{ site.baseurl }}/category/技术/">技术</a></li>
-        <li><a href="{{ site.baseurl }}/category/产品商业/">产品商业</a></li>
-        <li><a href="{{ site.baseurl }}/category/随记/">随记</a></li>
-        <li><a href="{{ site.baseurl }}/archive/">存档</a></li>
-        <li><a href="{{ site.baseurl }}/about/">关于</a></li>
-      </ul>
-    </nav>
-    
-    <!-- 主内容区 -->
-    <div id="main">
-      <div id="content">
-        {{ content }}
+    <div id="container-inner">
+      <!-- 头部 -->
+      <div id="header">
+        <div id="header-inner">
+          <div id="header-content">
+            <h1 id="header-name">{{ site.title }}</h1>
+            <p class="subtitle">{{ site.subtitle }}</p>
+            
+            <div id="google_search">
+              <!-- 简化的搜索框 -->
+              <form action="https://www.google.com/search" target="_blank" method="get">
+                <div>
+                  <input type="text" size="20" name="q" class="searchbox" placeholder="搜索...">
+                  <input type="hidden" name="sitesearch" value="{{ site.url }}{{ site.baseurl }}" />
+                </div>
+              </form>
+            </div>
+            
+            <div id="feed_icon">
+              <a href="{{ site.baseurl }}/feed.xml" title="订阅Feed">
+                <img src="https://cdn.beekka.com/blogimg/asset/202107/bg2021072117.png" alt="RSS" style="height: 20px; width: auto;" />
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
       
-      <!-- 侧边栏 - 仅列表页显示 -->
-      {% if page.layout == 'default' or page.layout == 'archive' %}
-      <aside id="sidebar">
-        <section class="sidebar-section">
-          <h3>分类</h3>
-          <ul class="category-list">
-            {% for category in site.categories %}
-            <li>
-              <a href="{{ site.baseurl }}/category/{{ category[0] }}/">{{ category[0] }}</a>
-              <span class="count">({{ category[1].size }})</span>
-            </li>
-            {% endfor %}
-          </ul>
-        </section>
-        
-        <section class="sidebar-section">
-          <h3>标签</h3>
-          <div class="tag-cloud">
-            {% for tag in site.tags limit:20 %}
-            <a href="{{ site.baseurl }}/tag/{{ tag[0] }}/">{{ tag[0] }}</a>
-            {% endfor %}
+      <!-- 主内容区 -->
+      <div id="content">
+        <div id="content-inner">
+          <div id="alpha">
+            <div id="alpha-inner">
+              {{ content }}
+            </div>
           </div>
-        </section>
-      </aside>
-      {% endif %}
-    </div>
-    
-    <!-- 页脚 - 关于信息 -->
-    <footer id="footer">
-      <div class="footer-about">
-        <p><strong>{{ site.author }}</strong></p>
-        <p>{{ site.description }}</p>
-        <p>
-          ■ 文章：<a href="{{ site.baseurl }}/archive/">{{ site.posts | size }}</a>
-          {% if site.github_username %}
-          | <a href="https://github.com/{{ site.github_username }}" target="_blank">GitHub</a>
+          
+          <!-- 侧边栏 - 仅列表页显示 -->
+          {% if page.layout == 'default' or page.layout == 'archive' %}
+          <div id="beta">
+            <div id="beta-inner">
+              <div class="module module-categories">
+                <h2 class="module-header">分类</h2>
+                <div class="module-content">
+                  <ul class="module-list">
+                    {% for category in site.categories %}
+                    <li class="module-list-item">
+                      <a href="{{ site.baseurl }}/category/{{ category[0] }}/">{{ category[0] }}</a>
+                      <span class="count">({{ category[1].size }})</span>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="module module-tags">
+                <h2 class="module-header">标签</h2>
+                <div class="module-content">
+                  <div class="tag-cloud">
+                    {% for tag in site.tags limit:20 %}
+                    <a href="{{ site.baseurl }}/tag/{{ tag[0] }}/">{{ tag[0] }}</a>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           {% endif %}
-          | <a href="{{ site.baseurl }}/feed.xml">RSS</a>
-        </p>
+        </div>
       </div>
-      <p class="copyright">© {{ site.time | date: '%Y' }} {{ site.title }}</p>
-    </footer>
+      
+      <!-- 页脚 - 关于信息 -->
+      <div id="footer">
+        <div id="footer-inner">
+          <div id="footer-content">
+            <section>
+              <h2>关于</h2>
+              <p>{{ site.description }}</p>
+              <p>
+                文章：<a href="{{ site.baseurl }}/archive/">{{ site.posts | size }}</a> |
+                <a href="{{ site.baseurl }}/feed.xml">RSS</a>
+              </p>
+            </section>
+            
+            <section>
+              <h2>联系</h2>
+              <p>
+                {% if site.github_username %}
+                <a href="https://github.com/{{ site.github_username }}" target="_blank">GitHub</a> |
+                {% endif %}
+                <a href="mailto:{{ site.email }}">邮箱</a>
+              </p>
+            </section>
+            
+            <section>
+              <h2>版权</h2>
+              <p>© {{ site.time | date: '%Y' }} {{ site.title }}</p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+  
+  <script>
+    // 移动端适配脚本
+    if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent)) {
+      document.body.classList.add('mobile');
+    }
+  </script>
 </body>
 </html>

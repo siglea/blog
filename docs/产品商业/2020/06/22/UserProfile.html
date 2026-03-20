@@ -9,45 +9,53 @@
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
 </head>
-<body>
+<body id="scrapbook" class="mt-main-index two-columns">
   <div id="container">
-    <!-- 头部 -->
-    <header id="header">
-      <h1><a href="/blog/">Code & Coffee</a></h1>
-      <p class="subtitle">siglea的数字花园</p>
-    </header>
-    
-    <!-- 导航 -->
-    <nav id="nav">
-      <ul>
-        <li><a href="/blog/">首页</a></li>
-        <li><a href="/blog/category/技术/">技术</a></li>
-        <li><a href="/blog/category/产品商业/">产品商业</a></li>
-        <li><a href="/blog/category/随记/">随记</a></li>
-        <li><a href="/blog/archive/">存档</a></li>
-        <li><a href="/blog/about/">关于</a></li>
-      </ul>
-    </nav>
-    
-    <!-- 文章内容 - 全宽显示 -->
-    <div id="main" class="post-page">
-      <article class="post-article" itemscope itemtype="http://schema.org/BlogPosting">
-        <header class="post-header">
-          <h1 class="post-title" itemprop="name headline">用户画像</h1>
-          <p class="post-meta">
-            <time datetime="2020-06-22T10:08:00+08:00" itemprop="datePublished">2020年06月22日</time>
+    <div id="container-inner">
+      <!-- 头部 -->
+      <div id="header">
+        <div id="header-inner">
+          <div id="header-content">
+            <h1 id="header-name">Code & Coffee</h1>
+            <p class="subtitle">siglea的数字花园</p>
             
-            <span class="post-categories">
-              
-              <a href="/blog/category/产品商业/">产品商业</a>
-              
-            </span>
+            <div id="google_search">
+              <!-- 简化的搜索框 -->
+              <form action="https://www.google.com/search" target="_blank" method="get">
+                <div>
+                  <input type="text" size="20" name="q" class="searchbox" placeholder="搜索...">
+                  <input type="hidden" name="sitesearch" value="https://siglea.github.io/blog" />
+                </div>
+              </form>
+            </div>
             
-          </p>
-        </header>
-
-        <div class="post-content" itemprop="articleBody">
-          <h4 id="核心">核心</h4>
+            <div id="feed_icon">
+              <a href="/blog/feed.xml" title="订阅Feed">
+                <img src="https://cdn.beekka.com/blogimg/asset/202107/bg2021072117.png" alt="RSS" style="height: 20px; width: auto;" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 主内容区 -->
+      <div id="content">
+        <div id="content-inner">
+          <div id="alpha">
+            <div id="alpha-inner">
+              <div class="entry-asset asset hentry">
+  <div class="asset-header">
+    <h2 class="asset-name entry-title">用户画像</h2>
+    <p id="asset-tags">
+      分类<span class="delimiter">：</span>
+      
+      <a href="/blog/category/产品商业/" rel="tag">产品商业</a>
+      
+    </p>
+  </div>
+  <div class="asset-content entry-content">
+    <div class="asset-body">
+      <h4 id="核心">核心</h4>
 <ul>
   <li>用户画像体系，有这一篇就够了 <a href="https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q">https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q</a></li>
   <li>用户画像原理、技术选型及架构实现 <a href="https://blog.csdn.net/SecondLieutenant/article/details/81153565">https://blog.csdn.net/SecondLieutenant/article/details/81153565</a></li>
@@ -222,54 +230,76 @@
   <li>汽车之家如何构建用户画像 <a href="https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw">https://mp.weixin.qq.com/s/ihvcpS0Mb5G1_-EzrhEOBw</a></li>
 </ul>
 
-        </div>
-
-        <footer class="post-footer">
-          
-          <div class="post-tags">
-            <span>标签：</span>
-            
-            <a href="/blog/tag/用户/" class="tag">用户</a>
-            
-          </div>
-          
-
-          <div class="post-nav">
-            
-            <div class="prev-post">
-              <span>上一篇：</span>
-              <a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html">Java基础</a>
-            </div>
-            
-
-            
-            <div class="next-post">
-              <span>下一篇：</span>
-              <a href="/blog/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/SaaS%E4%B8%9A%E5%8A%A1.html">SaaS业务分析</a>
-            </div>
-            
-          </div>
-        </footer>
-      </article>
     </div>
     
-    <!-- 页脚 - 关于信息 -->
-    <footer id="footer">
-      <div class="footer-about">
-        <p><strong>siglea</strong></p>
-        <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
-</p>
-        <p>
-          ■ 文章：<a href="/blog/archive/">77</a>
-          
-          | <a href="https://github.com/siglea" target="_blank">GitHub</a>
-          
-          | <a href="/blog/feed.xml">RSS</a>
-        </p>
-      </div>
-      <p class="copyright">© 2026 Code & Coffee</p>
-    </footer>
+    <div class="asset-more-link">
+      <p><a href="/blog/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html" rel="bookmark">继续阅读全文 »</a></p>
+    </div>
   </div>
+  <div class="asset-footer">
+    <div class="asset-meta">
+      <p>
+        <span class="byline">
+          <abbr class="published" title="2020-06-22T10:08:00+08:00">
+            2020年06月22日
+          </abbr>
+        </span>
+        
+        <span class="separator">|</span>
+        <a href="/blog/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/UserProfile.html#comments">留言（0）</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+
+            </div>
+          </div>
+          
+          <!-- 侧边栏 - 仅列表页显示 -->
+          
+        </div>
+      </div>
+      
+      <!-- 页脚 - 关于信息 -->
+      <div id="footer">
+        <div id="footer-inner">
+          <div id="footer-content">
+            <section>
+              <h2>关于</h2>
+              <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
+</p>
+              <p>
+                文章：<a href="/blog/archive/">77</a> |
+                <a href="/blog/feed.xml">RSS</a>
+              </p>
+            </section>
+            
+            <section>
+              <h2>联系</h2>
+              <p>
+                
+                <a href="https://github.com/siglea" target="_blank">GitHub</a> |
+                
+                <a href="mailto:siglea@sina.com">邮箱</a>
+              </p>
+            </section>
+            
+            <section>
+              <h2>版权</h2>
+              <p>© 2026 Code & Coffee</p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // 移动端适配脚本
+    if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent)) {
+      document.body.classList.add('mobile');
+    }
+  </script>
 </body>
 </html>
-	

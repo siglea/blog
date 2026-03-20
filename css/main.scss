@@ -43,11 +43,15 @@ a:hover {
   text-decoration: underline;
 }
 
-// 3. 容器 - 基于真实阮一峰博客CSS
+// 3. 容器 - 基于真实阮一峰博客HTML结构
 #container {
   margin: 0 auto;
   background-color: #f5f5d5; /* 与body背景色一致 */
   padding: 1em; /* 使用em单位，符合阮一峰博客风格 */
+}
+
+#container-inner {
+  /* 阮一峰博客实际使用的内部容器 */
 }
 
 body.one-column #container {
@@ -62,9 +66,17 @@ body.two-columns #container {
   max-width: 1260px;
 }
 
-// 4. 头部 - 基于真实阮一峰博客CSS
+// 4. 头部 - 基于真实阮一峰博客HTML结构
 #header {
   width: 100%;
+}
+
+#header-inner {
+  /* 阮一峰博客实际使用的内部头部容器 */
+}
+
+#header-content {
+  /* 阮一峰博客实际使用的头部内容容器 */
 }
 
 #header {
@@ -96,6 +108,43 @@ body.two-columns #container {
 #header .subtitle {
   font-size: 12px;
   color: #666;
+}
+
+// 搜索框和订阅图标
+#google_search {
+  float: right;
+  margin-left: 1%;
+  margin-right: 1%;
+}
+
+#google_search {
+  width: 201px;
+  height: 2.4em;
+  background-image: url("images/searchtop.gif");
+  background-repeat: no-repeat;
+  padding: 0px;
+  margin: 1.3em 1em;
+  position: relative;
+}
+
+#feed_icon {
+  float: right;
+  margin-top: .9em;
+  -webkit-transform: rotate(5deg);
+  -moz-transform: rotate(5deg);
+  -o-transform: rotate(5deg);
+  transform: rotate(5deg);
+  -webkit-transition: -webkit-transform .4s ease-in;
+  -moz-transition: -moz-transform .4s ease-in;
+  -o-transition: -o-transform .4s ease-in;
+  transition: transform .4s ease-in;
+}
+
+#feed_icon:hover {
+  -webkit-transform: rotate(275deg);
+  -moz-transform: rotate(275deg);
+  -o-transform: rotate(275deg);
+  transform: rotate(275deg);
 }
 
 // 5. 导航 - 阮一峰博客没有独立导航栏，而是集成在header中
@@ -131,18 +180,26 @@ body.two-columns #container {
   text-decoration: underline;
 }
 
-// 6. 主内容区布局（两栏）- 基于真实阮一峰博客CSS
+// 6. 主内容区布局（两栏）- 基于真实阮一峰博客HTML结构
 #content {
   clear: both;
   margin: 1.5em 1em 1em 1em; /* 使用em单位，符合阮一峰博客风格 */
 }
 
+#content-inner {
+  /* 阮一峰博客实际使用的内部内容容器 */
+}
+
 body.two-columns #content #alpha {
-  width: 64%; /* 阮一峰博客真实宽度 */
+  width: 64%; /* 阁一峰博客真实宽度 */
   min-width: 470px;
   max-width: 740px;
   margin-left: 3%;
   float: left;
+}
+
+#alpha-inner {
+  /* 阮一峰博客实际使用的内部alpha容器 */
 }
 
 body.two-columns #content #beta {
@@ -181,6 +238,44 @@ body.one-column #content #alpha p {
 
 #main.post-page #content {
   max-width: 100%;
+}
+
+// 文章条目样式
+.entry-asset {
+  border-bottom: 1px solid #d3d3d3; /* 阮一峰博客真实分割线 */
+  padding-bottom: 1em; /* 阮一峰博客真实填充 */
+}
+
+.asset-header {
+  /* 阮一峰博客文章头部样式 */
+}
+
+.asset-name {
+  /* 阮一峰博客文章标题样式 */
+}
+
+.asset-content {
+  /* 阮一峰博客文章内容样式 */
+}
+
+.asset-body {
+  /* 阮一峰博客文章正文样式 */
+}
+
+.asset-footer {
+  margin-top: 2em; /* 阮一峰博客真实边距 */
+  padding: 1.5em; /* 阮一峰博客真实填充 */
+  border: 1px solid #d3d3d3; /* 阮一峰博客真实边框 */
+  background-color: #deebf7; /* 阮一峰博客真实背景色 */
+}
+
+.asset-meta {
+  margin: 1.5em auto 2em; /* 阮一峰博客真实边距 */
+  line-height: .8; /* 阮一峰博客真实行高 */
+}
+
+.asset-meta * {
+  color: #567; /* 阮一峰博客真实颜色 */
 }
 
 // 文章详情页样式
@@ -339,17 +434,29 @@ body.one-column #content #alpha p {
   text-decoration: underline;
 }
 
-// 7. 文章列表样式（阮一峰风格）- 基于真实阮一峰博客CSS
-.posts-list {
-  margin-bottom: 30px;
+// 7. 文章列表样式（阮一峰风格）- 基于真实阮一峰博客HTML结构
+#homepage {
+  /* 阮一峰博客首页容器 */
 }
 
-.posts-list h2 {
-  font-size: 1.8em; /* 阮一峰博客标题大小 */
-  font-weight: bold;
-  margin-bottom: 12px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
+#homepage h3 {
+  font-size: 2.2em; /* 阮一峰博客标题大小 */
+  font-weight: 500; /* 阮一峰博客标题权重 */
+  margin-top: 2em; /* 阮一峰博客标题边距 */
+}
+
+#homepage ul {
+  margin-left: 4em; /* 阮一峰博客列表左边距 */
+}
+
+.module-list-item {
+  line-height: 180%; /* 阮一峰博客列表行高 */
+  margin-left: 1em; /* 阮一峰博客列表左边距 */
+  font-size: 1.44em; /* 阮一峰博客列表字体大小 */
+}
+
+.module-list-item span {
+  color: rgba(0, 0, 0, 0.5); /* 阮一峰博客日期颜色 */
 }
 
 // 文章列表项 - 使用 ■ 符号
@@ -609,21 +716,51 @@ body.one-column #content #alpha p {
   text-decoration: underline;
 }
 
-// 9. 侧边栏样式 - 基于真实阮一峰博客CSS
-.sidebar-section {
-  margin-bottom: 1em; /* 使用em单位，符合阮一峰博客风格 */
-  padding: 1em; /* 阮一峰博客真实填充 */
-  border-radius: 1em; /* 阮一峰博客真实圆角 */
-  border: 1px solid #d3d3d3; /* 阮一峰博客真实边框 */
+// 9. 侧边栏样式 - 基于真实阮一峰博客HTML结构
+#beta {
+  /* 阮一峰博客侧边栏容器 */
 }
 
-.sidebar-section h3 {
+#beta-inner {
+  /* 阮一峰博客侧边栏内部容器 */
+}
+
+.module {
+  margin-bottom: 1em; /* 阮一峰博客模块边距 */
+}
+
+.module-header {
   font-size: 1.8em; /* 阮一峰博客标题大小 */
   font-weight: bold;
   color: #333;
   margin-bottom: 10px;
   padding-bottom: 6px;
   border-bottom: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
+}
+
+.module-content {
+  margin-left: 2em; /* 阮一峰博客内容左边距 */
+}
+
+.module-list {
+  /* 阮一峰博客列表样式 */
+}
+
+.module-list-item {
+  margin-left: 1em; /* 阮一峰博客列表项左边距 */
+}
+
+.module-comments {
+  /* 阮一峰博客评论模块 */
+}
+
+.module-categories {
+  /* 阮一峰博客分类模块 */
+}
+
+.module-content a {
+  text-decoration: underline; /* 阮一峰博客链接样式 */
+  color: #000; /* 阮一峰博客链接颜色 */
 }
 
 // 关于区块
@@ -867,7 +1004,7 @@ body.one-column #content #alpha p {
   color: #fff;
 }
 
-// 12. 页脚 - 基于真实阮一峰博客CSS
+// 12. 页脚 - 基于真实阮一峰博客HTML结构
 #footer {
   margin: 0 1em; /* 阮一峰博客真实边距 */
   border-top: 1px solid #d3d3d3; /* 阮一峰博客真实边框色 */
@@ -875,6 +1012,33 @@ body.one-column #content #alpha p {
   padding-top: 0; /* 阮一峰博客真实填充 */
   clear: both; /* 阮一峰博客清除浮动 */
   line-height: 1.2; /* 阮一峰博客真实行高 */
+}
+
+#footer-inner {
+  /* 阮一峰博客页脚内部容器 */
+}
+
+#footer-content {
+  display: flex; /* 阮一峰博客使用flex布局 */
+  justify-content: flex-end; /* 阮一峰博客内容右对齐 */
+  flex-wrap: wrap; /* 阮一峰博客内容换行 */
+}
+
+#footer-content section {
+  width: 300px; /* 阮一峰博客区域宽度 */
+  margin: 1em 2em 2em 0; /* 阮一峰博客区域边距 */
+}
+
+#footer-content section h2 {
+  margin-top: 2em; /* 阮一峰博客标题边距 */
+  font-size: 1.6em; /* 阮一峰博客标题大小 */
+  font-weight: 500; /* 阮一峰博客标题权重 */
+  color: #000; /* 阮一峰博客标题颜色 */
+}
+
+#footer-content section p {
+  color: gray; /* 阮一峰博客段落颜色 */
+  font-size: 1.4em; /* 阮一峰博客段落大小 */
 }
 
 #footer a {

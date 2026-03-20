@@ -3,20 +3,18 @@ layout: default
 title: 首页
 ---
 
-<section class="posts-list">
-  <h2>最新文章</h2>
-  
-  {% for post in site.posts limit:20 %}
-  <p class="post-item">
-    <span class="post-date">{{ post.date | date: "%Y年%m月%d日" }}</span>
-    <span class="post-separator">»</span>
-    <span class="post-title">
+<div id="homepage">
+  <h3>最新文章</h3>
+  <ul>
+    {% for post in site.posts limit:20 %}
+    <li class="module-list-item">
+      <span>{{ post.date | date: "%Y年%m月%d日" }} » </span>
       <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-    </span>
-  </p>
-  {% endfor %}
+    </li>
+    {% endfor %}
+  </ul>
   
   <p style="margin-top: 30px; font-size: 14px;">
     <a href="{{ site.baseurl }}/archive/">更多文章……</a>
   </p>
-</section>
+</div>
