@@ -534,11 +534,12 @@ body.one-column #content #alpha p {
 .module-list-item {
   line-height: 180%; /* 阮一峰博客列表行高 */
   margin-left: 1em; /* 阮一峰博客列表左边距 */
-  font-size: 1.44em; /* 阮一峰博客列表字体大小 */
+  font-size: 1.6em; /* 统一列表项字体大小，与正文一致 */
 }
 
 .module-list-item span {
   color: rgba(0, 0, 0, 0.5); /* 阮一峰博客日期颜色 */
+  font-size: 1.6em; /* 统一日期字体大小，与正文一致 */
 }
 
 // 文章列表项 - 使用 ■ 符号
@@ -826,10 +827,6 @@ body.one-column #content #alpha p {
 
 .module-list {
   /* 阮一峰博客列表样式 */
-}
-
-.module-list-item {
-  margin-left: 1em; /* 阮一峰博客列表项左边距 */
 }
 
 .module-comments {
