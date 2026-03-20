@@ -3,33 +3,30 @@ layout: default
 title: 分类
 ---
 
-<div class="category-page">
-    <h1 class="page-title">文章分类</h1>
-    <p class="page-description">共 {{ site.categories | size }} 个分类</p>
+<div class="archive-page">
+  <h1>文章分类</h1>
+  
+  {% for category in site.categories %}
+  <section class="category-section">
+    <h2>
+      <a href="{{ site.baseurl }}/category/{{ category[0] }}/">{{ category[0] }}</a>
+      <span class="count">({{ category[1].size }})</span>
+    </h2>
     
-    {% for category in site.categories %}
-    {% assign category_name = category | first %}
-    {% assign posts = category | last %}
-    <section class="category-section">
-        <h2 class="category-title">
-            <span class="post-separator">■</span>
-            <a href="{{ site.baseurl }}/category/{{ category_name | slugify }}/">{{ category_name }}</a>
-            <span class="post-count">({{ posts | size }})</span>
-        </h2>
-        <ul class="posts-list">
-            {% for post in posts limit:5 %}
-            <li class="post-item">
-                <span class="post-date">{{ post.date | date: "%Y年%m月%d日" }}</span>
-                <span class="post-separator">»</span>
-                <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-            </li>
-            {% endfor %}
-        </ul>
-        {% if posts.size > 5 %}
-        <p class="view-more">
-            <a href="{{ site.baseurl }}/category/{{ category_name | slugify }}/">查看全部 {{ posts.size }} 篇文章...</a>
-        </p>
-        {% endif %}
-    </section>
+    {% for post in category[1] limit:5 %}
+    <article class="post-item">
+      <p class="post-date">{{ post.date | date: "%Y年%m月%d日" }}</p>
+      <h3 class="post-title">
+        <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+      </h3>
+    </article>
     {% endfor %}
+    
+    {% if category[1].size > 5 %}
+    <p style="font-size: 14px; margin-top: 15px;">
+      <a href="{{ site.baseurl }}/category/{{ category[0] }}/">查看全部 {{ category[1].size }} 篇文章...</a>
+    </p>
+    {% endif %}
+  </section>
+  {% endfor %}
 </div>

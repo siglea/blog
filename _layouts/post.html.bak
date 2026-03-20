@@ -1,0 +1,44 @@
+---
+layout: new_default
+---
+
+<article class="entry single">
+  <header class="entry-header">
+    <h1 class="entry-title">{{ page.title }}</h1>
+    <div class="entry-meta">
+      <span class="date">{{ page.date | date: "%Y年%m月%d日" }}</span>
+      {% if page.categories %}
+      <span class="category">
+        分类：{% for cat in page.categories %}<a href="{{ site.baseurl }}/category/{{ cat }}/">{{ cat }}</a>{% unless forloop.last %}, {% endunless %}{% endfor %}
+      </span>
+      {% endif %}
+      {% if page.tags %}
+      <span class="tags">
+        标签：{% for tag in page.tags %}<a href="{{ site.baseurl }}/tag/{{ tag }}/">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}{% endfor %}
+      </span>
+      {% endif %}
+    </div>
+  </header>
+  
+  <div class="entry-content">
+    {{ content }}
+  </div>
+  
+  <footer class="entry-footer">
+    <div class="post-navigation">
+      {% if page.previous %}
+      <div class="prev-post">
+        <span>上一篇：</span>
+        <a href="{{ page.previous.url | prepend: site.baseurl }}">{{ page.previous.title }}</a>
+      </div>
+      {% endif %}
+      
+      {% if page.next %}
+      <div class="next-post">
+        <span>下一篇：</span>
+        <a href="{{ page.next.url | prepend: site.baseurl }}">{{ page.next.title }}</a>
+      </div>
+      {% endif %}
+    </div>
+  </footer>
+</article>

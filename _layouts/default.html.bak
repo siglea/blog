@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} - {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+  <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
+  
+  <link rel="stylesheet" href="{{ site.baseurl }}/css/main.css">
+  <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ site.baseurl }}/feed.xml">
+</head>
+<body>
+  <div id="container">
+    
+    <!-- 头部 -->
+    <header id="header">
+      <h1><a href="{{ site.baseurl }}/">{{ site.title }}</a></h1>
+      {% if site.subtitle %}<p class="subtitle">{{ site.subtitle }}</p>{% endif %}
+    </header>
+    
+    <!-- 导航栏 -->
+    <nav id="nav">
+      <a href="{{ site.baseurl }}/">首页</a>
+      <a href="{{ site.baseurl }}/category/技术/">技术</a>
+      <a href="{{ site.baseurl }}/category/产品商业/">产品商业</a>
+      <a href="{{ site.baseurl }}/category/随记/">随记</a>
+      <a href="{{ site.baseurl }}/category">分类</a>
+      <a href="{{ site.baseurl }}/tag">标签</a>
+      <a href="{{ site.baseurl }}/about">关于</a>
+    </nav>
+    
+    <!-- 主体内容 -->
+    <div id="content">
+      <div id="main">
+        {{ content }}
+      </div>
+      
+      <!-- 侧边栏 -->
+      <aside id="sidebar">
+        {% include sidebar.html %}
+      </aside>
+    </div>
+    
+    <!-- 底部 -->
+    <footer id="footer">
+      <p>
+        <a href="{{ site.baseurl }}/">首页</a> |
+        <a href="{{ site.baseurl }}/feed.xml">订阅Feed</a> |
+        © {{ site.time | date: '%Y' }} {{ site.author }}
+      </p>
+    </footer>
+    
+  </div>
+</body>
+</html>

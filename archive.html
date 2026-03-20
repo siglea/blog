@@ -1,12 +1,16 @@
 ---
 layout: default
-title: 首页
+title: 文章存档
 ---
 
-<section class="posts-list">
-  <h2>最新文章</h2>
+<div class="archive-page">
+  <h1>文章存档</h1>
   
-  {% for post in site.posts limit:20 %}
+  <p style="margin-bottom: 30px; color: #666;">
+    共 {{ site.posts | size }} 篇文章
+  </p>
+  
+  {% for post in site.posts %}
   <p class="post-item">
     <span class="post-date">{{ post.date | date: "%Y年%m月%d日" }}</span>
     <span class="post-separator">»</span>
@@ -15,8 +19,4 @@ title: 首页
     </span>
   </p>
   {% endfor %}
-  
-  <p style="margin-top: 30px; font-size: 14px;">
-    <a href="{{ site.baseurl }}/archive/">更多文章……</a>
-  </p>
-</section>
+</div>

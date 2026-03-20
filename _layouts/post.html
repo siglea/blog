@@ -1,56 +1,99 @@
----
-layout: default
----
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }} - {{ site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <link rel="stylesheet" href="{{ site.baseurl }}/css/main.css">
+  <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ site.baseurl }}/feed.xml">
+</head>
+<body>
+  <div id="container">
+    <!-- 头部 -->
+    <header id="header">
+      <h1><a href="{{ site.baseurl }}/">{{ site.title }}</a></h1>
+      <p class="subtitle">{{ site.subtitle }}</p>
+    </header>
+    
+    <!-- 导航 -->
+    <nav id="nav">
+      <ul>
+        <li><a href="{{ site.baseurl }}/">首页</a></li>
+        <li><a href="{{ site.baseurl }}/category/技术/">技术</a></li>
+        <li><a href="{{ site.baseurl }}/category/产品商业/">产品商业</a></li>
+        <li><a href="{{ site.baseurl }}/category/随记/">随记</a></li>
+        <li><a href="{{ site.baseurl }}/archive/">存档</a></li>
+        <li><a href="{{ site.baseurl }}/about/">关于</a></li>
+      </ul>
+    </nav>
+    
+    <!-- 文章内容 - 全宽显示 -->
+    <div id="main" class="post-page">
+      <article class="post-article" itemscope itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+          <h1 class="post-title" itemprop="name headline">{{ page.title }}</h1>
+          <p class="post-meta">
+            <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%Y年%m月%d日" }}</time>
+            {% if page.categories %}
+            <span class="post-categories">
+              {% for category in page.categories %}
+              <a href="{{ site.baseurl }}/category/{{ category }}/">{{ category }}</a>{% unless forloop.last %}, {% endunless %}
+              {% endfor %}
+            </span>
+            {% endif %}
+          </p>
+        </header>
 
-<article class="post-article" itemscope itemtype="http://schema.org/BlogPosting">
-  <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">{{ page.title }}</h1>
-    <p class="post-meta">
-      <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%Y年%m月%d日" }}</time>
-      {% if page.author %}
-      <span itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">{{ page.author }}</span>
-      </span>
-      {% endif %}
-      {% if page.categories %}
-      <span class="post-categories">
-        {% for category in page.categories %}
-        <a href="{{ site.baseurl }}/category/{{ category }}/">{{ category }}</a>{% unless forloop.last %}, {% endunless %}
-        {% endfor %}
-      </span>
-      {% endif %}
-    </p>
-  </header>
+        <div class="post-content" itemprop="articleBody">
+          {{ content }}
+        </div>
 
-  <div class="post-content" itemprop="articleBody">
-    {{ content }}
+        <footer class="post-footer">
+          {% if page.tags %}
+          <div class="post-tags">
+            <span>标签：</span>
+            {% for tag in page.tags %}
+            <a href="{{ site.baseurl }}/tag/{{ tag }}/" class="tag">{{ tag }}</a>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="post-nav">
+            {% if page.previous %}
+            <div class="prev-post">
+              <span>上一篇：</span>
+              <a href="{{ page.previous.url | prepend: site.baseurl }}">{{ page.previous.title }}</a>
+            </div>
+            {% endif %}
+
+            {% if page.next %}
+            <div class="next-post">
+              <span>下一篇：</span>
+              <a href="{{ page.next.url | prepend: site.baseurl }}">{{ page.next.title }}</a>
+            </div>
+            {% endif %}
+          </div>
+        </footer>
+      </article>
+    </div>
+    
+    <!-- 页脚 - 关于信息 -->
+    <footer id="footer">
+      <div class="footer-about">
+        <p><strong>{{ site.author }}</strong></p>
+        <p>{{ site.description }}</p>
+        <p>
+          ■ 文章：<a href="{{ site.baseurl }}/archive/">{{ site.posts | size }}</a>
+          {% if site.github_username %}
+          | <a href="https://github.com/{{ site.github_username }}" target="_blank">GitHub</a>
+          {% endif %}
+          | <a href="{{ site.baseurl }}/feed.xml">RSS</a>
+        </p>
+      </div>
+      <p class="copyright">© {{ site.time | date: '%Y' }} {{ site.title }}</p>
+    </footer>
   </div>
-
-  <footer class="post-footer">
-    {% if page.tags %}
-    <div class="post-tags">
-      <span>标签：</span>
-      {% for tag in page.tags %}
-      <a href="{{ site.baseurl }}/tag/{{ tag }}/" class="tag">{{ tag }}</a>
-      {% endfor %}
-    </div>
-    {% endif %}
-
-    <div class="post-nav">
-      {% if page.previous %}
-      <div class="prev-post">
-        <span>上一篇：</span>
-        <a href="{{ page.previous.url | prepend: site.baseurl }}">{{ page.previous.title }}</a>
-      </div>
-      {% endif %}
-
-      {% if page.next %}
-      <div class="next-post">
-        <span>下一篇：</span>
-        <a href="{{ page.next.url | prepend: site.baseurl }}">{{ page.next.title }}</a>
-      </div>
-      {% endif %}
-    </div>
-  </footer>
-</article>
+</body>
+</html>
 	
