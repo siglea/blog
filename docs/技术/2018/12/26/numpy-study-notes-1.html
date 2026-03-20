@@ -1,301 +1,53 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN">
 <head>
-  <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>Numpy学习笔记</title>
-  <meta name="description" content="np.array  construct ndarray from python array  ndim: 返回值有几个括弧  dtype: 也是object，指定ndarray的型, 必须整个数列都是一个型的    a = np.array([1, 2, 3,4,5], ndmin = 2, dtype=comp...">
-  <script src="/blog/static/jquery-3.1.1.min.js"></script>
-  <link rel="stylesheet" href="/blog/static/bootstrap.min.css">
-  <link rel="stylesheet" href="/blog/static/font-awesome-4.6.3/css/font-awesome.min.css">
-  <script src="/blog/static/bootstrap.min.js"></script>
-  <!-- should put bootstrap before main style sheet, otherwise it't hard to override  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Numpy学习笔记 - Code & Coffee</title>
+  <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
+">
   <link rel="stylesheet" href="/blog/css/main.css">
-  <link rel="stylesheet" href="/blog/css/syntax.css">
-  <link rel="canonical" href="http://0.0.0.0:4000/blog/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html">
-  <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="http://0.0.0.0:4000/blog/feed.xml">
-</head>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
 </head>
 <body>
-  <header class="site-header">
-  <nav class="navbar">
-    <div class="nav-brand">
-      <a href="/blog/" class="brand-link">
-        <i class="fas fa-code"></i>
-        <span>Code & Coffee</span>
-      </a>
-      
-        <p class="brand-subtitle">全栈架构师的数字花园</p>
-      
-    </div>
+  <div id="container">
+    <!-- 头部 -->
+    <header id="header">
+      <h1><a href="/blog/">Code & Coffee</a></h1>
+      <p class="subtitle">siglea的数字花园</p>
+    </header>
+    
+    <!-- 导航 -->
+    <nav id="nav">
+      <ul>
+        <li><a href="/blog/">首页</a></li>
+        <li><a href="/blog/category/技术/">技术</a></li>
+        <li><a href="/blog/category/产品商业/">产品商业</a></li>
+        <li><a href="/blog/category/随记/">随记</a></li>
+        <li><a href="/blog/archive/">存档</a></li>
+        <li><a href="/blog/about/">关于</a></li>
+      </ul>
+    </nav>
+    
+    <!-- 文章内容 - 全宽显示 -->
+    <div id="main" class="post-page">
+      <article class="post-article" itemscope itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+          <h1 class="post-title" itemprop="name headline">Numpy学习笔记</h1>
+          <p class="post-meta">
+            <time datetime="2018-12-26T09:30:09+08:00" itemprop="datePublished">2018年12月26日</time>
+            
+            <span class="post-categories">
+              
+              <a href="/blog/category/技术/">技术</a>
+              
+            </span>
+            
+          </p>
+        </header>
 
-    <ul class="navbar-nav">
-      <li><a href="/blog/" class="nav-link ">
-        <i class="fas fa-home"></i> 首页
-      </a></li>
-      <li><a href="/blog/category/技术/" class="nav-link">
-        <i class="fas fa-code"></i> 技术
-      </a></li>
-      <li><a href="/blog/category/产品商业/" class="nav-link">
-        <i class="fas fa-briefcase"></i> 产品商业
-      </a></li>
-      <li><a href="/blog/category/随记/" class="nav-link">
-        <i class="fas fa-book"></i> 随记
-      </a></li>
-      <li><a href="/blog/category" class="nav-link">
-        <i class="fas fa-folder-open"></i> 分类
-      </a></li>
-      <li><a href="/blog/tag" class="nav-link">
-        <i class="fas fa-tags"></i> 标签
-      </a></li>
-      <li><a href="/blog/about" class="nav-link">
-        <i class="fas fa-user"></i> 关于
-      </a></li>
-    </ul>
-
-    <div class="nav-actions">
-      <button id="theme-toggle" class="theme-toggle" title="切换主题">
-        <i class="fas fa-moon"></i>
-      </button>
-      <button id="search-toggle" class="search-toggle" title="搜索">
-        <i class="fas fa-search"></i>
-      </button>
-    </div>
-  </nav>
-
-  <!-- 搜索框 -->
-  <div id="search-overlay" class="search-overlay">
-    <div class="search-container">
-      <input type="text" id="search-input" placeholder="搜索文章..." class="search-input">
-      <button id="search-close" class="search-close">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div id="search-results" class="search-results"></div>
-  </div>
-</header>
-
-<style>
-  .nav-brand {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .brand-link {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: color var(--transition-fast);
-
-    i {
-      color: var(--primary-color);
-    }
-
-    &:hover {
-      color: var(--primary-color);
-    }
-  }
-
-  .brand-subtitle {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    margin: var(--spacing-xs) 0 0 0;
-  }
-
-  .navbar-nav {
-    display: flex;
-    gap: var(--spacing-lg);
-    list-style: none;
-    margin: 0;
-
-    .nav-link {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-weight: 500;
-      padding: var(--spacing-sm) var(--spacing-md);
-      border-radius: var(--radius-md);
-      transition: all var(--transition-fast);
-
-      &:hover, &.active {
-        background: var(--bg-card);
-        color: var(--primary-color);
-      }
-    }
-  }
-
-  .nav-actions {
-    display: flex;
-    gap: var(--spacing-sm);
-    align-items: center;
-  }
-
-  .theme-toggle, .search-toggle {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    color: var(--text-secondary);
-    padding: var(--spacing-sm);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover {
-      background: var(--primary-color);
-      color: white;
-      border-color: var(--primary-color);
-    }
-  }
-
-  .search-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    display: none;
-    z-index: 1000;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 100px;
-  }
-
-  .search-overlay.active {
-    display: flex;
-  }
-
-  .search-container {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 var(--spacing-xl);
-    position: relative;
-  }
-
-  .search-input {
-    width: 100%;
-    padding: var(--spacing-lg);
-    background: var(--bg-card);
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    color: var(--text-primary);
-    font-size: 1.125rem;
-    outline: none;
-    transition: border-color var(--transition-fast);
-
-    &:focus {
-      border-color: var(--primary-color);
-    }
-  }
-
-  .search-close {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.25rem;
-    cursor: pointer;
-    padding: var(--spacing-sm);
-
-    &:hover {
-      color: var(--text-primary);
-    }
-  }
-
-  .search-results {
-    margin-top: var(--spacing-lg);
-    max-height: 60vh;
-    overflow-y: auto;
-  }
-
-  @media (max-width: 768px) {
-    .navbar {
-      flex-direction: column;
-      gap: var(--spacing-md);
-    }
-
-    .navbar-nav {
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: var(--spacing-sm);
-    }
-
-    .nav-brand {
-      align-items: center;
-      text-align: center;
-    }
-  }
-</style>
-
-<script>
-  // 主题切换
-  document.getElementById('theme-toggle')?.addEventListener('click', function() {
-    const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-
-    const icon = this.querySelector('i');
-    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-  });
-
-  // 搜索功能
-  document.getElementById('search-toggle')?.addEventListener('click', function() {
-    document.getElementById('search-overlay').classList.add('active');
-    document.getElementById('search-input').focus();
-  });
-
-  document.getElementById('search-close')?.addEventListener('click', function() {
-    document.getElementById('search-overlay').classList.remove('active');
-  });
-
-  // ESC 键关闭搜索
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      document.getElementById('search-overlay').classList.remove('active');
-    }
-  });
-</script>
-
-
-  <main class="main-content">
-    <div class="container">
-      <div class="row">
-  <div class="col-md-1 col-xs-0"></div>
-    <div class="col-md-10 col-xs-12">
-<article class="post post-contents" style="margin-bottom:30px;" itemscope itemtype="http://schema.org/BlogPosting">
-
-  <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">Numpy学习笔记</h1>
-    <p class="post-meta"><i class="fa fa-calendar">&nbsp;&nbsp;</i><time datetime="2018-12-26T09:30:09+08:00" itemprop="datePublished">Dec 26, 2018</time></p>
-  </header>
-
-  <div class="post-content" style="margin:15px;" itemprop="articleBody">
-    <h2 id="nparray">np.array</h2>
+        <div class="post-content" itemprop="articleBody">
+          <h2 id="nparray">np.array</h2>
 <ul>
   <li>construct ndarray from python array</li>
   <li>ndim: 返回值有几个括弧</li>
@@ -403,430 +155,54 @@
   <li>可以boardcast的情况：形状完全相同，形状(n, 1)和(n, m)的情况</li>
 </ol>
 
-  </div>
-</article>
+        </div>
 
-</div>
-<div class="col-md-1 col-xs-0"></div>
-</div>
+        <footer class="post-footer">
+          
+          <div class="post-tags">
+            <span>标签：</span>
+            
+            <a href="/blog/tag/python/" class="tag">python</a>
+            
+          </div>
+          
 
-<div class="clearfix"></div>
-	
+          <div class="post-nav">
+            
+            <div class="prev-post">
+              <span>上一篇：</span>
+              <a href="/blog/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html">Use `raise_error` matcher in Rspec</a>
+            </div>
+            
 
+            
+            <div class="next-post">
+              <span>下一篇：</span>
+              <a href="/blog/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html">aws developer associate test IAM quick note</a>
+            </div>
+            
+          </div>
+        </footer>
+      </article>
     </div>
-  </main>
-
-  <footer class="site-footer">
-  <div class="footer-content">
-    <div class="footer-grid">
-      <div class="footer-section">
-        <h3 class="footer-title">Code & Coffee</h3>
-        <p class="footer-description">探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
+    
+    <!-- 页脚 - 关于信息 -->
+    <footer id="footer">
+      <div class="footer-about">
+        <p><strong>siglea</strong></p>
+        <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
 </p>
-        <div class="footer-author">
-          <p>由 <strong>架构师小灰</strong> 创作</p>
-          <p>© 2026 All rights reserved.</p>
-        </div>
+        <p>
+          ■ 文章：<a href="/blog/archive/">77</a>
+          
+          | <a href="https://github.com/siglea" target="_blank">GitHub</a>
+          
+          | <a href="/blog/feed.xml">RSS</a>
+        </p>
       </div>
-
-      <div class="footer-section">
-        <h4 class="footer-subtitle">快速导航</h4>
-        <ul class="footer-links">
-          <li><a href="/blog/">首页</a></li>
-          <li><a href="/blog/category/技术/">技术</a></li>
-          <li><a href="/blog/category/产品商业/">产品商业</a></li>
-          <li><a href="/blog/category/随记/">随记</a></li>
-          <li><a href="/blog/category">分类</a></li>
-          <li><a href="/blog/tag">标签云</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-section">
-        <h4 class="footer-subtitle">关注我</h4>
-        <div class="social-links">
-          
-          <a href="https://github.com/siglea" target="_blank" rel="noopener">
-            <i class="fab fa-github"></i>
-            <span>GitHub</span>
-          </a>
-          
-          
-          <a href="https://linkedin.com/in/siglea" target="_blank" rel="noopener">
-            <i class="fab fa-linkedin"></i>
-            <span>LinkedIn</span>
-          </a>
-          
-          
-          <a href="https://twitter.com/siglea" target="_blank" rel="noopener">
-            <i class="fab fa-twitter"></i>
-            <span>Twitter</span>
-          </a>
-          
-          <a href="/blog/feed.xml" target="_blank">
-            <i class="fas fa-rss"></i>
-            <span>RSS</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="footer-section">
-        <h4 class="footer-subtitle">最新文章</h4>
-        <ul class="recent-posts">
-          
-          <li>
-            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
-            <small>07-28</small>
-          </li>
-          
-          <li>
-            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
-            <small>07-26</small>
-          </li>
-          
-          <li>
-            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
-            <small>07-20</small>
-          </li>
-          
-          <li>
-            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
-            <small>07-18</small>
-          </li>
-          
-          <li>
-            <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/15/JVM-Note.html"> Jvm（四）Note</a>
-            <small>07-15</small>
-          </li>
-          
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>
-        本站使用 <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> 生成，
-        主题基于现代化设计，采用 <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a> 免费托管
-      </p>
-      <div class="theme-toggle-footer">
-        <button id="theme-toggle-footer" class="theme-toggle">
-          <i class="fas fa-moon"></i>
-          <span>切换主题</span>
-        </button>
-      </div>
-    </div>
+      <p class="copyright">© 2026 Code & Coffee</p>
+    </footer>
   </div>
-</footer>
-
-<style>
-  .site-footer {
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
-    padding: var(--spacing-2xl) 0;
-    margin-top: var(--spacing-2xl);
-  }
-
-  .footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 var(--spacing-xl);
-  }
-
-  .footer-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-2xl);
-    margin-bottom: var(--spacing-2xl);
-  }
-
-  .footer-section {
-    .footer-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: var(--spacing-md);
-      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .footer-subtitle {
-      font-size: 1.125rem;
-      font-weight: 600;
-      margin-bottom: var(--spacing-lg);
-      color: var(--text-primary);
-    }
-
-    .footer-description {
-      color: var(--text-secondary);
-      line-height: 1.6;
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .footer-author {
-      p {
-        margin: var(--spacing-xs) 0;
-        color: var(--text-muted);
-        font-size: 0.875rem;
-      }
-    }
-  }
-
-  .footer-links {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-
-    li {
-      margin-bottom: var(--spacing-sm);
-
-      a {
-        color: var(--text-secondary);
-        text-decoration: none;
-        transition: color var(--transition-fast);
-
-        &:hover {
-          color: var(--primary-color);
-        }
-      }
-    }
-  }
-
-  .social-links {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-
-    a {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: color var(--transition-fast);
-
-      &:hover {
-        color: var(--primary-color);
-      }
-
-      i {
-        font-size: 1.25rem;
-        width: 20px;
-      }
-    }
-  }
-
-  .recent-posts {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-
-    li {
-      margin-bottom: var(--spacing-md);
-      padding-bottom: var(--spacing-sm);
-      border-bottom: 1px solid var(--border-color);
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      a {
-        color: var(--text-secondary);
-        text-decoration: none;
-        display: block;
-        font-weight: 500;
-        margin-bottom: var(--spacing-xs);
-        transition: color var(--transition-fast);
-
-        &:hover {
-          color: var(--primary-color);
-        }
-      }
-
-      small {
-        color: var(--text-muted);
-        font-size: 0.75rem;
-      }
-    }
-  }
-
-  .footer-bottom {
-    border-top: 1px solid var(--border-color);
-    padding-top: var(--spacing-xl);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--spacing-md);
-
-    p {
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      margin: 0;
-
-      a {
-        color: var(--primary-color);
-        text-decoration: none;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
-
-    .theme-toggle-footer {
-      .theme-toggle {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-sm);
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        color: var(--text-secondary);
-        padding: var(--spacing-xs) var(--spacing-md);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        font-size: 0.875rem;
-
-        &:hover {
-          background: var(--primary-color);
-          color: white;
-          border-color: var(--primary-color);
-        }
-      }
-    }
-  }
-
-  @media (max-width: 768px) {
-    .footer-grid {
-      grid-template-columns: 1fr;
-      gap: var(--spacing-xl);
-    }
-
-    .footer-bottom {
-      flex-direction: column;
-      text-align: center;
-      gap: var(--spacing-lg);
-    }
-  }
-</style>
-
-<script>
-  // Footer theme toggle
-  document.getElementById('theme-toggle-footer')?.addEventListener('click', function() {
-    const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-
-    const icon = this.querySelector('i');
-    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-  });
-</script>
-
-
-  <!-- 现代化JavaScript功能 -->
-  <script>
-    // 主题切换功能
-    function toggleTheme() {
-      const html = document.documentElement;
-      const currentTheme = html.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-    }
-
-    // 从本地存储加载主题
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-
-    // 平滑滚动
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
-
-    // 懒加载和动画
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('fade-in-up');
-        }
-      });
-    }, observerOptions);
-
-    // 观察所有卡片元素
-    document.querySelectorAll('.post-card, .card').forEach(card => {
-      observer.observe(card);
-    });
-
-    // 代码块复制功能
-    document.querySelectorAll('pre').forEach(block => {
-      const button = document.createElement('button');
-      button.className = 'copy-button';
-      button.innerHTML = '<i class="fas fa-copy"></i>';
-      button.title = '复制代码';
-
-      button.addEventListener('click', () => {
-        const code = block.querySelector('code');
-        if (code) {
-          navigator.clipboard.writeText(code.textContent).then(() => {
-            button.innerHTML = '<i class="fas fa-check"></i>';
-            setTimeout(() => {
-              button.innerHTML = '<i class="fas fa-copy"></i>';
-            }, 2000);
-          });
-        }
-      });
-
-      block.style.position = 'relative';
-      block.appendChild(button);
-    });
-  </script>
-
-  <style>
-    .copy-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      color: var(--text-muted);
-      padding: 5px 8px;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      font-size: 12px;
-    }
-
-    .copy-button:hover {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    .main-content {
-      min-height: calc(100vh - 200px);
-      padding: var(--spacing-2xl) 0;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--spacing-xl);
-    }
-  </style>
 </body>
 </html>
+	
