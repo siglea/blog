@@ -4,15 +4,15 @@ layout: default
 
 <div class="entry-asset asset hentry">
   <div class="asset-header">
-    <h1 class="asset-name entry-title">{{ page.title }}</h1>
+    <h2 class="asset-name entry-title">{{ page.title }}</h2>
   </div>
   <div class="asset-content entry-content">
     <div class="asset-body">
       <div id="homepage">
         <ul>
           {% for post in page.posts %}
-          <li class="module-list-item">
-            <span>{{ post.date | date: "%Y年%m月%d日" }} » </span>
+          <li>
+            <span>{{ post.date | date: "%Y年%m月%d日" }} &raquo; </span>
             <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
           </li>
           {% endfor %}

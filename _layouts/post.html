@@ -1,38 +1,75 @@
 ---
 layout: default
 ---
+
 <div class="entry-asset asset hentry">
-  <div class="asset-header">
-    <h2 class="asset-name entry-title">{{ page.title }}</h2>
-    <p id="asset-tags">
+
+  <div class="asset-nav">
+    <div class="entry-categories">
       分类<span class="delimiter">：</span>
-      {% if page.categories %}
-      <a href="{{ site.baseurl }}/category/{{ page.categories[0] }}/" rel="tag">{{ page.categories[0] }}</a>
+      {% for cat in page.categories %}
+      <a href="{{ site.baseurl }}/category/{{ cat }}/" rel="tag">{{ cat }}</a>{% unless forloop.last %}, {% endunless %}
+      {% endfor %}
+    </div>
+    <div class="entry-location">
+      {% if page.previous %}
+      <li><a href="{{ page.previous.url | prepend: site.baseurl }}">&laquo; {{ page.previous.title | truncate: 20 }}</a></li>
       {% endif %}
+    </div>
+  </div>
+
+  <div class="asset-header">
+    <h1 class="asset-name entry-title">{{ page.title }}</h1>
+  </div>
+
+  <div class="asset-meta">
+    <p>
+      日期：
+      <a href="{{ site.baseurl }}/archive/">
+        <abbr class="published" title="{{ page.date | date_to_xmlschema }}">
+          {{ page.date | date: "%Y年%m月%d日" }}
+        </abbr>
+      </a>
     </p>
   </div>
+
   <div class="asset-content entry-content">
     <div class="asset-body">
       {{ content }}
     </div>
-    
-    <div class="asset-more-link">
-      <p><a href="{{ page.url | prepend: site.baseurl }}" rel="bookmark">继续阅读全文 »</a></p>
-    </div>
   </div>
+
   <div class="asset-footer">
-    <div class="asset-meta">
-      <p>
-        <span class="byline">
-          <abbr class="published" title="{{ page.date | date_to_xmlschema }}">
-            {{ page.date | date: "%Y年%m月%d日" }}
-          </abbr>
-        </span>
-        
-        <span class="separator">|</span>
-        <a href="{{ page.url | prepend: site.baseurl }}#comments">留言（0）</a>
-      </p>
-    </div>
+    <h3>文档信息</h3>
+    <ul>
+      <li>发表日期：{{ page.date | date: "%Y年%m月%d日" }}</li>
+      {% if page.tags.size > 0 %}
+      <li>标签：
+        {% for tag in page.tags %}
+        <a href="{{ site.baseurl }}/tag/{{ tag }}/">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+        {% endfor %}
+      </li>
+      {% endif %}
+      <li>版权声明：自由转载-非商用-非衍生-保持署名</li>
+    </ul>
   </div>
+
 </div>
 
+{% assign related = site.related_posts | slice: 0, 4 %}
+{% if related.size > 0 %}
+<div id="related_entries">
+  <h3>相关文章</h3>
+  <ul>
+    {% for post in related %}
+    <li>
+      <span>{{ post.date | date: "%Y.%m.%d" }}: </span>
+      <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+      <div class="entry-body">
+        <p>{{ post.content | strip_html | truncate: 80 }}</p>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

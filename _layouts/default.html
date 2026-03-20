@@ -4,132 +4,138 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
-  <meta name="description" content="{{ site.description }}">
+  <meta name="description" content="{{ site.description | strip_html | strip_newlines | truncate: 160 }}">
   <link rel="stylesheet" href="{{ site.baseurl }}/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ site.baseurl }}/feed.xml">
+  {% seo %}
 </head>
-<body id="scrapbook" class="mt-main-index two-columns">
+<body class="{% if page.layout == 'post' or page.layout == 'page' %}one-column{% else %}two-columns{% endif %}">
+
   <div id="container">
-    <div id="container-inner">
-      <!-- 头部 -->
-      <div id="header">
-        <div id="header-inner">
-          <div id="header-content">
-            <h1 id="header-name">{{ site.title }}</h1>
-            <p class="subtitle">{{ site.subtitle }}</p>
-            
-            <div id="google_search">
-              <!-- 简化的搜索框 -->
-              <form action="https://www.google.com/search" target="_blank" method="get">
-                <div>
-                  <input type="text" size="20" name="q" class="searchbox" placeholder="搜索...">
-                  <input type="hidden" name="sitesearch" value="{{ site.url }}{{ site.baseurl }}" />
-                </div>
-              </form>
-            </div>
-            
-            <div id="feed_icon">
-              <a href="{{ site.baseurl }}/feed.xml" title="订阅Feed">
-                <img src="https://cdn.beekka.com/blogimg/asset/202107/bg2021072117.png" alt="RSS" style="height: 20px; width: auto;" />
-              </a>
-            </div>
-          </div>
-        </div>
+
+    <div id="header">
+      <div id="header-left">
+        <span id="header-name"><a href="{{ site.baseurl }}/">{{ site.title }}</a></span>
+        <span class="header-nav">
+          &raquo; <a href="{{ site.baseurl }}/">首页</a>
+          &raquo; <a href="{{ site.baseurl }}/archive/">档案</a>
+        </span>
       </div>
-      
-      <!-- 导航栏 -->
-      <nav id="nav">
-        <ul>
-          <li><a href="{{ site.baseurl }}/">首页</a></li>
-          <li><a href="{{ site.baseurl }}/category/技术/">技术</a></li>
-          <li><a href="{{ site.baseurl }}/category/产品商业/">产品商业</a></li>
-          <li><a href="{{ site.baseurl }}/category/随记/">随记</a></li>
-          <li><a href="{{ site.baseurl }}/archive/">存档</a></li>
-          <li><a href="{{ site.baseurl }}/about/">关于</a></li>
-        </ul>
-      </nav>
-      
-      <!-- 主内容区 -->
-      <div id="content">
-        <div id="content-inner">
-          <div id="alpha">
-            <div id="alpha-inner">
-              {{ content }}
-            </div>
-          </div>
-          
-          <!-- 侧边栏 - 仅列表页显示 -->
-          {% if page.layout == 'default' or page.layout == 'archive' %}
-          <div id="beta">
-            <div id="beta-inner">
-              <div class="module module-categories">
-                <h2 class="module-header">分类</h2>
-                <div class="module-content">
-                  <ul class="module-list">
-                    {% for category in site.categories %}
-                    <li class="module-list-item">
-                      <a href="{{ site.baseurl }}/category/{{ category[0] }}/">{{ category[0] }}</a>
-                      <span class="count">({{ category[1].size }})</span>
-                    </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              </div>
-              
-              <div class="module module-tags">
-                <h2 class="module-header">标签</h2>
-                <div class="module-content">
-                  <div class="tag-cloud">
-                    {% for tag in site.tags limit:20 %}
-                    <a href="{{ site.baseurl }}/tag/{{ tag[0] }}/">{{ tag[0] }}</a>
-                    {% endfor %}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endif %}
+
+      <div id="header-right">
+        <div id="google_search">
+          <form action="https://www.google.com/search" target="_blank" method="get">
+            <input type="text" name="q" class="searchbox" placeholder="Google..." />
+            <input type="hidden" name="sitesearch" value="{{ site.url }}{{ site.baseurl }}" />
+            <input type="submit" class="searchbox_submit" value="&#x1F50D;" />
+          </form>
         </div>
-      </div>
-      
-      <!-- 页脚 - 关于信息 -->
-      <div id="footer">
-        <div id="footer-inner">
-          <div id="footer-content">
-            <section>
-              <h2>关于</h2>
-              <p>{{ site.description }}</p>
-              <p>
-                文章：<a href="{{ site.baseurl }}/archive/">{{ site.posts | size }}</a> |
-                <a href="{{ site.baseurl }}/feed.xml">RSS</a>
-              </p>
-            </section>
-            
-            <section>
-              <h2>联系</h2>
-              <p>
-                {% if site.github_username %}
-                <a href="https://github.com/{{ site.github_username }}" target="_blank">GitHub</a> |
-                {% endif %}
-                <a href="mailto:{{ site.email }}">邮箱</a>
-              </p>
-            </section>
-            
-            <section>
-              <h2>版权</h2>
-              <p>© {{ site.time | date: '%Y' }} {{ site.title }}</p>
-            </section>
-          </div>
+
+        <div id="feed_icon">
+          <a href="{{ site.baseurl }}/feed.xml" title="RSS Feed">
+            <img src="https://cdn.beekka.com/blogimg/asset/202107/bg2021072117.png" alt="RSS" style="height:18px;width:auto;border:none;" />
+          </a>
         </div>
       </div>
     </div>
+
+    <div id="content">
+
+      <div id="alpha">
+        <div id="alpha-inner">
+          {{ content }}
+        </div>
+      </div>
+
+      {% unless page.layout == 'post' or page.layout == 'page' %}
+      <div id="beta">
+        <div id="beta-inner">
+
+          <div class="module">
+            <h2>分类</h2>
+            <div class="module-content">
+              <ul>
+                {% for category in site.categories %}
+                <li>
+                  <a href="{{ site.baseurl }}/category/{{ category[0] }}/">{{ category[0] }}</a>
+                  <span class="count">({{ category[1].size }})</span>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+
+          <div class="module">
+            <h2>标签</h2>
+            <div class="module-content">
+              <ul>
+                {% for tag in site.tags limit:20 %}
+                <li>
+                  <a href="{{ site.baseurl }}/tag/{{ tag[0] }}/">{{ tag[0] }}</a>
+                  <span class="count">({{ tag[1].size }})</span>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+
+          <div class="module">
+            <h2>关于</h2>
+            <div class="module-content">
+              <p>
+                文章：<a href="{{ site.baseurl }}/archive/">{{ site.posts | size }}</a>
+              </p>
+              <p>
+                {% if site.github_username %}
+                <a href="https://github.com/{{ site.github_username }}">GitHub</a>
+                {% endif %}
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      {% endunless %}
+
+    </div>
+
+    <div id="footer">
+      <div id="footer-content">
+        <section>
+          <h2>关于</h2>
+          <p>{{ site.description | strip_html | strip_newlines | truncate: 100 }}</p>
+          <p>
+            文章：<a href="{{ site.baseurl }}/archive/">{{ site.posts | size }}</a>
+            &middot;
+            <a href="{{ site.baseurl }}/feed.xml">RSS</a>
+          </p>
+        </section>
+
+        <section>
+          <h2>联系</h2>
+          <p>
+            {% if site.github_username %}
+            <a href="https://github.com/{{ site.github_username }}">GitHub</a>
+            {% endif %}
+            {% if site.email %}
+            &middot; <a href="mailto:{{ site.email }}">Email</a>
+            {% endif %}
+          </p>
+        </section>
+
+        <section>
+          <h2>版权</h2>
+          <p>&copy; {{ site.time | date: '%Y' }} {{ site.title }}</p>
+          <p>自由转载-非商用-非衍生-保持署名</p>
+        </section>
+      </div>
+    </div>
+
   </div>
-  
+
   <script>
-    // 移动端适配脚本
-    if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent)) {
-      document.body.classList.add('mobile');
-    }
+  if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+    document.body.classList.add('mobile');
   </script>
 </body>
 </html>

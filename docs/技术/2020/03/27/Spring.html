@@ -4,67 +4,94 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title> SpringBoot  - Code & Coffee</title>
-  <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
-">
+  <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>SpringBoot | Code &amp; Coffee</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="SpringBoot" />
+<meta name="author" content="siglea" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="springboot启动总结https://blog.csdn.net/mnicsm/article/details/93893669 Spring Boot 是什么？ Spring 是一个“引擎”； Spring MVC 是基于Spring的一个 MVC 框架； Spring Boot 是基于Spring的条件注册的一套快速开发整合包。 SpringBoot启动原理 ☆☆☆ package org.springframework.boot; public class SpringApplication { public SpringApplication(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources) { // ... 省略代码 this.resourceLoader = resourceLoader; Assert.notNull(primarySources, &quot;PrimarySources must not be null&quot;); this.primarySources = new LinkedHashSet(Arrays.asList(primarySources)); // 1. 推测ApplicationType this.webApplicationType = WebApplicationType.deduceFromClasspath(); // 2. 根据spring.factories初始化ApplicationContextInitializer 与 ApplicationListener this.setInitializers(this.getSpringFactoriesInstances(ApplicationContextInitializer.class)); this.setListeners(this.getSpringFactoriesInstances(ApplicationListener.class)); // 3. 推测 Main入口 this.mainApplicationClass = this.deduceMainApplicationClass(); } public ConfigurableApplicationContext run(String... args) { // ... 省略代码 ConfigurableApplicationContext context = null; Collection&lt;SpringBootExceptionReporter&gt; exceptionReporters = new ArrayList(); this.configureHeadlessProperty(); SpringApplicationRunListeners listeners = this.getRunListeners(args); // 4. SpringApplicationRunListeners生命周期之started() listeners.starting(); // ... 省略代码 Collection exceptionReporters; ApplicationArguments applicationArguments = new DefaultApplicationArguments(args); // 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared() ConfigurableEnvironment environment = this.prepareEnvironment(listeners, applicationArguments); this.configureIgnoreBeanInfo(environment); Banner printedBanner = this.printBanner(environment); context = this.createApplicationContext(); exceptionReporters = this.getSpringFactoriesInstances(SpringBootExceptionReporter.class, new Class[]{ConfigurableApplicationContext.class}, context); // 6. 初始化类加载器、bean产生器、资源加载器等，打印banner this.prepareContext(context, environment, listeners, applicationArguments, printedBanner); // 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等 // SpringApplicationRunListeners生命周期之contextPrepared()/contextLoaded() this.refreshContext(context); this.afterRefresh(context, applicationArguments); stopWatch.stop(); if (this.logStartupInfo) { (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), stopWatch); } listeners.started(context); this.callRunners(context, applicationArguments); listeners.running(context); // ... 省略代码 } } 启动原理解析 http://tengj.top/2017/03/09/springboot3/ 自动装配之@ComponentScan详解 https://blog.csdn.net/mapleleafforest/article/details/86623578 自动装配之@EnableAutoConfiguration详解 https://blog.csdn.net/mapleleafforest/article/details/87273213 Apache Shiro Apache Shiro 是 Java 的一个安全框架。使用 shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 JavaSE 环境，也可以用在 JavaEE 环境。Shiro 可以帮助我们完成:认证、授权、加密、会话管理、与 Web 集成、缓存等。 三个核心组件:Subject, SecurityManager 和 Realms. Subject:即“当前操作用户”。但是，在 Shiro 中，Subject 这一概念并不仅仅指人，也可以是第三方进程、后台帐 户(Daemon Account)或其他类似事物。它仅仅意味着“当前跟软件交互的东西”。但考虑到大多数目的和用途， 你可以把它认为是 Shiro 的“用户”概念。 Subject 代表了当前用户的安全操作，SecurityManager 则管理所有用户的安全操作。 SecurityManager:它是 Shiro 框架的核心，典型的 Facade 模式，Shiro 通过 SecurityManager 来管理内部组 件实例，并通过它来提供安全管理的各种服务。 Realm: Realm 充当了 Shiro 与应用安全数据间的“桥梁”或者“连接器”。也就是说，当对用户执行认证(登 录)和授权(访问控制)验证时，Shiro 会从应用配置的 Realm 中查找用户及其权限信息。 SpringBoot自动配置 ☆☆☆ SpringBoot项目配置注解@EnableAutoConfiguration后 SpringBoot启动扫描META-INF下的spring.factories spring.factories子配置项org.springframework.boot.autoconfigure.EnableAutoConfiguration配置了所有可以自动配置的组件 各个XXXAutoConfiguration按照各自的ConditionalOnClass/OnBean等，判断是否加载XXX配置 根据XXX配置的@Import加载相关的其他类，之后通过反射机制初始化Bean 之后即可通过注入的方式使用 // 比如DataSourceAutoConfiguration的自动配置是检测到DataSource.class 与 EmbeddedDatabaseType.class存在 // DataSource是javax包中自带，而EmbeddedDatabaseType存在于spring-boot-starter-jdbc中 // 因此在pom中引入spring-boot-starter-jdbc后，即可触发加载操作 // 接下来就是根据spring.datasource相关配置初始化PooledDataSource 或者 直接使用EmbeddedDatabase @Configuration @ConditionalOnClass({DataSource.class, EmbeddedDatabaseType.class}) @EnableConfigurationProperties({DataSourceProperties.class}) @Import({DataSourcePoolMetadataProvidersConfiguration.class, DataSourceInitializationConfiguration.class}) public class DataSourceAutoConfiguration { } // DataSourceAutoConfiguration解析 https://blog.csdn.net/kangsa998/article/details/90231518 SpringBoot的Starter ☆☆☆ 徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！ https://www.cnblogs.com/lenve/p/10892011.html SpringBoot启动机制（starter机制）核心原理详解 https://www.jianshu.com/p/d166d935217b 实现一个Spring boot stater https://www.jianshu.com/p/fdb574e1f77c SpringBoot Starter 其实是Java的SPI的全名为Service Provider Interfac的一种实现 EnableAutoConfiguration 导入 @Import({AutoConfigurationImportSelector.class}) AutoConfigurationImportSelector 从classpath中搜寻所有的META-INF/spring.factories配置文件 找到org.springframework.boot.autoconfigure.EnableAutoConfiguration该key对应的其他自动配置className 通过反射按照相关Conditional进行实例化 如关闭数据源自动配置功能: @SpringBootApplication(exclude ={ DataSourceAutoConfiguration.class })。 如何在 Spring Boot 启动的时候运行一些特定的代码? 可以实现接口 ApplicationRunner 或者 CommandLineRunner，这两个接口实现方式一 样，它们都只提供了一个 run 方法。 Spring Boot 可以通过 @PropertySource,@Value,@Environment SpringBoot常用注解 @Conditional @SpringBootConfiguration @EnableAutoConfiguration @SpringBootApplication @Configuration：代表这个类是一个配置类。 @ComponentScan：用来扫描指定包下面的注解类。 @Import：用来导入其他的@Configuration配置类。 @ImportResource：用来导入xml配置文件，比如某些配置一定要xml配置。 @Bean：用来定义一个bean，可以指定初始、销毁方法，及bean范围等。 @Controller 标识一个类为控制器。 @RequestMapping URL的映射。 @ResponseBody 返回结果转换为JSON字符串。 @RequestBody 表示接收JSON格式字符串参数。 @RestController这个注解，而不是@Controller，不过这个注解同样不是Spring boot提供的，而是Spring MVC4中的提供的注解，表示一个支持Restful的控制器。 这个类中有三个URL映射是相同的，即都是/article/{id}，这在@Controller标识的类中是不允许出现的。这里的可以通过method来进行区分，produces的作用是表示返回结果的类型是JSON。 @PathVariable这个注解，也是Spring MVC提供的，其作用是表示该变量的值是从访问路径中获取。 27个核心注解 https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA SpringWebApplication 与 Servlet Servlet是JavaWeb的核心，可以理解为CGI的Java线程版本 SpringMVC核心用到DispatcherServlet，可以配置多个urlMapping Struts2/SpringMVC是基于Servlet实现分发，而Struts1是基于Filter 一个SpringWebApplication可以定义多个Servlet，需要区分urlMapping SpringBoot 中的 Tomcat 是如何启动的？ https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ SpringJDBC / Mybatis / Spring Data / JPA Mybatis的集成和使用 https://blog.lqdev.cn/2018/12/03/springboot/chapter-thirty-five/ Mybatis-plus的集成和使用 https://blog.lqdev.cn/2018/07/21/springboot/chapter-nine/ Spring Security / Apache Shrio / JWT JavaWebToken SpringBoot 打出来的war中的web.xml消失了 springboot 是如何帮我们省去web.xml配置的 https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app WebMvcConfigurerAdapter 与 WebMvcConfigurationSupport (遇到的一个坑查了半天) https://blog.csdn.net/innovationad/article/details/79959383 SpringBoot之Actuator Spring Boot Actuator:健康检查、审计、统计和监控 https://www.jianshu.com/p/d5943e303a1f 监控管理之Spring Boot Admin使用 https://blog.lqdev.cn/2018/09/14/springboot/chapter-twenty-eight/ SpringBoot日志管理之AOP统一日志 https://blog.lqdev.cn/2018/08/24/springboot/chapter-twenty-four/ SpringBoot日志管理之追加统一traceId import org.slf4j.MDC; import org.springframework.web.servlet.ModelAndView; import org.springframework.web.servlet.handler.HandlerInterceptorAdapter; import javax.servlet.http.HttpServletRequest; import javax.servlet.http.HttpServletResponse; public class LogTraceInterceptor extends HandlerInterceptorAdapter { @Override public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception { MDC.put(Constant.traceId, Constant.traceId+&quot;:&quot;+RandomHelper.generateNonceNumStr(8)); return super.preHandle(request, response, handler); } @Override public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception { super.postHandle(request, response, handler, modelAndView); MDC.remove(Constant.traceId); } } &lt;appender name=&quot;xhs&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt; &lt;file&gt;${LOG_HOME}/app.log&lt;/file&gt; &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt; &lt;FileNamePattern&gt;${LOG_HOME}/app.%d{yyyy-MM-dd}.log&lt;/FileNamePattern&gt; &lt;MaxHistory&gt;30&lt;/MaxHistory&gt; &lt;/rollingPolicy&gt; &lt;encoder&gt; &lt;pattern&gt;%d{HH:mm:ss.SSS} %X{traceId} [%thread] %-5level %c{10} - %msg%n&lt;/pattern&gt; &lt;charset&gt;UTF-8&lt;/charset&gt; &lt;/encoder&gt; &lt;/appender&gt; SpringBoot &amp; Dubbo https://blog.lqdev.cn/2018/09/28/springboot/chapter-twenty-nine/ SpringBoot 异步的各种实现 异步开发之异步请求 https://blog.lqdev.cn/2018/08/16/springboot/chapter-twenty/ 异步开发之异步调用 https://blog.lqdev.cn/2018/08/17/springboot/chapter-twenty-one/ https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA 事件的发布和监听 https://blog.lqdev.cn/2018/11/06/springboot/chapter-thirty-two/ RabbitMQ的集成和使用 https://blog.lqdev.cn/2018/07/24/springboot/chapter-twelve/ https://blog.lqdev.cn/2019/07/21/springboot/chapter-thirty-eight/ SpringBoot &amp; WebService Spring web Servcies集成和使用 https://blog.lqdev.cn/2018/11/09/springboot/chapter-thirty-three/ CXF构建WebService服务 https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/ LTW In Jdk Or SpringBoot https://www.cnblogs.com/takumicx/p/10150344.html 集成框架Spring Integration, Mule ESB or Apache Camel比较 https://www.jdon.com/soa/integration-framework-comparison-spring.html https://www.jianshu.com/p/68aba8d09a89 Spring ApplicationContext BeanFactory 是 Spring 框架的基础设施，面向 Spring 本身;ApplicationContext 面向使用 Spring 框架的开发者，几乎所有的应用场合我们都直接使用 ApplicationContext 而非底层 的 BeanFactory。 HierarchicalBeanFactory 父子级联，父子级联 IoC 容器的接口，子容器可以通过接口方法访问父容器; 通过 HierarchicalBeanFactory 接口， Spring 的 IoC 容器可以建立父子层级关联的容器体系，子 容器可以访问父容器中的 Bean，但父容器不能访问子容器的 Bean。Spring 使用父子容器实 现了很多功能，比如在 Spring MVC 中，展现层 Bean 位于一个子容器中，而业务层和持久 层的 Bean 位于父容器中。这样，展现层 Bean 就可以引用业务层和持久层的 Bean，而业务 层和持久层的 Bean 则看不到展现层的 Bean。 ClassPathXmlApplicationContext -&gt; ApplicationContext -&gt; HierarchicalBeanFactory/ListableBeanFactory ConfigurableApplicationContext 扩展于 ApplicationContext，它新增加了两个主要 的方法: refresh()和 close()，让 ApplicationContext 具有启动、刷新和关闭应用上下 文的能力。在应用上下文关闭的情况下调用 refresh()即可启动应用上下文，在已经启动 的状态下，调用 refresh()则清除缓存并重新装载配置信息，而调用 close()则可关闭应用 上下文。 WebApplicationContext 是专门为 Web 应用准备的，它允许从相对于 Web 根目录的 路径中装载配置文件完成初始化工作。从 WebApplicationContext 中可以获得 ServletContext 的引用，整个 Web 应用上下文对象将作为属性放置到 ServletContext 中，以便 Web 应用环境可以访问 Spring 应用上下文。 Bean的Scope singleton prototype，每次都创建（对有状态的 bean 使用 prototype 作用域，而对无状态的 bean 使用 singleton 作用域。） request：一次request一个实例 session：一个session一个实例 global Session:在一个全局的 Http Session 中，容器会返回该 Bean 的同一个实例，仅在 使用 portlet context 时有效。 Bean的生命周期 根据scope，实例化 设置属性 postProcessBeforeInitialization afterPropertiesSet postProcessAfterInitialization Done &lt;bean id=&quot;&quot; class=&quot;&quot; init-method=&quot;初始化方法&quot; destroy-method=&quot;销毁方法&quot; /&gt; 依赖注入 构造器注入 setter 方法注入 接口注入 IOC:把对象的创建、初始化、销毁交给 spring 来管理，而不是由开发者控制，实现控制反转。 5 种不同方式的自动装配 no:默认的方式是不进行自动装配，通过显式设置 ref 属性来进行装配。 byName:通过参数名 自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被设置成 byname，之后容器试图匹配、装配和该 bean 的属性具有相同名字的 bean。 byType:通过参数类型自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被 设置成 byType，之后容器试图匹配、装配和该 bean 的属性具有相同类型的 bean。如果有多个 bean 符合条件，则抛出错误。 constructor:这个方式类似于 byType， 但是要提供给构造器参数，如果没有确定的带参数的构造器参数类型，将会抛出异常。 autodetect:首先尝试使用 constructor 来自动装配，如果无法工作，则使用 byType 方式 AOP 核心概念 切面(aspect):类是对物体特征的抽象，切面就是对横切关注点的抽象 横切关注点:对哪些方法进行拦截，拦截后怎么处理，这些关注点称之为横切关注点。 连接点(joinpoint):被拦截到的点，因为 Spring 只支持方法类型的连接点，所以在 Spring中连接点指的就是被拦截到的方法，实际上连接点还可以是字段或者构造器。 切入点(pointcut):对连接点进行拦截的定义 通知(advice):所谓通知指的就是指拦截到连接点之后要执行的代码，通知分为前置、后置、 异常、最终、环绕通知五类。 目标对象:代理的目标对象 织入(weave):将切面应用到目标对象并导致代理对象创建的过程 引入(introduction):在不修改代码的前提下，引入可以在运行期为类动态地添加一些方法 或字段。 MyBatis缓存 Mybatis 中有一级缓存和二级缓存，默认情况下一级缓存是开启的，而且是不能关闭的。一级缓存 是指 SqlSession 级别的缓存，当在同一个 SqlSession 中进行相同的 SQL 语句查询时，第二次以 后的查询不会从数据库查询，而是直接从缓存中获取，一级缓存最多缓存 1024 条 SQL。二级缓存 是指可以跨 SqlSession 的缓存。是 mapper 级别的缓存，对于 mapper 级别的缓存不同的 sqlsession 是可以共享的。 如果两次中间出现 commit 操作 (修改、添加、删除)，本 sqlsession 中的一级缓存区域全部清空，下次再去缓存中查询不到所 以要从数据库查询，从数据库查询到再写入缓存。 Slf4j slf4j 的全称是 Simple Loging Facade For Java，即它仅仅是一个为 Java 程序提供日志输出的统一接 口，并不是一个具体的日志实现方案，就比如 JDBC 一样，只是一种规则而已。所以单独的 slf4j 是不 能工作的，必须搭配其他具体的日志实现方案，比如 apache 的 org.apache.log4j.Logger，jdk 自带 的 java.util.logging.Logger 等。" />
+<meta property="og:description" content="springboot启动总结https://blog.csdn.net/mnicsm/article/details/93893669 Spring Boot 是什么？ Spring 是一个“引擎”； Spring MVC 是基于Spring的一个 MVC 框架； Spring Boot 是基于Spring的条件注册的一套快速开发整合包。 SpringBoot启动原理 ☆☆☆ package org.springframework.boot; public class SpringApplication { public SpringApplication(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources) { // ... 省略代码 this.resourceLoader = resourceLoader; Assert.notNull(primarySources, &quot;PrimarySources must not be null&quot;); this.primarySources = new LinkedHashSet(Arrays.asList(primarySources)); // 1. 推测ApplicationType this.webApplicationType = WebApplicationType.deduceFromClasspath(); // 2. 根据spring.factories初始化ApplicationContextInitializer 与 ApplicationListener this.setInitializers(this.getSpringFactoriesInstances(ApplicationContextInitializer.class)); this.setListeners(this.getSpringFactoriesInstances(ApplicationListener.class)); // 3. 推测 Main入口 this.mainApplicationClass = this.deduceMainApplicationClass(); } public ConfigurableApplicationContext run(String... args) { // ... 省略代码 ConfigurableApplicationContext context = null; Collection&lt;SpringBootExceptionReporter&gt; exceptionReporters = new ArrayList(); this.configureHeadlessProperty(); SpringApplicationRunListeners listeners = this.getRunListeners(args); // 4. SpringApplicationRunListeners生命周期之started() listeners.starting(); // ... 省略代码 Collection exceptionReporters; ApplicationArguments applicationArguments = new DefaultApplicationArguments(args); // 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared() ConfigurableEnvironment environment = this.prepareEnvironment(listeners, applicationArguments); this.configureIgnoreBeanInfo(environment); Banner printedBanner = this.printBanner(environment); context = this.createApplicationContext(); exceptionReporters = this.getSpringFactoriesInstances(SpringBootExceptionReporter.class, new Class[]{ConfigurableApplicationContext.class}, context); // 6. 初始化类加载器、bean产生器、资源加载器等，打印banner this.prepareContext(context, environment, listeners, applicationArguments, printedBanner); // 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等 // SpringApplicationRunListeners生命周期之contextPrepared()/contextLoaded() this.refreshContext(context); this.afterRefresh(context, applicationArguments); stopWatch.stop(); if (this.logStartupInfo) { (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), stopWatch); } listeners.started(context); this.callRunners(context, applicationArguments); listeners.running(context); // ... 省略代码 } } 启动原理解析 http://tengj.top/2017/03/09/springboot3/ 自动装配之@ComponentScan详解 https://blog.csdn.net/mapleleafforest/article/details/86623578 自动装配之@EnableAutoConfiguration详解 https://blog.csdn.net/mapleleafforest/article/details/87273213 Apache Shiro Apache Shiro 是 Java 的一个安全框架。使用 shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 JavaSE 环境，也可以用在 JavaEE 环境。Shiro 可以帮助我们完成:认证、授权、加密、会话管理、与 Web 集成、缓存等。 三个核心组件:Subject, SecurityManager 和 Realms. Subject:即“当前操作用户”。但是，在 Shiro 中，Subject 这一概念并不仅仅指人，也可以是第三方进程、后台帐 户(Daemon Account)或其他类似事物。它仅仅意味着“当前跟软件交互的东西”。但考虑到大多数目的和用途， 你可以把它认为是 Shiro 的“用户”概念。 Subject 代表了当前用户的安全操作，SecurityManager 则管理所有用户的安全操作。 SecurityManager:它是 Shiro 框架的核心，典型的 Facade 模式，Shiro 通过 SecurityManager 来管理内部组 件实例，并通过它来提供安全管理的各种服务。 Realm: Realm 充当了 Shiro 与应用安全数据间的“桥梁”或者“连接器”。也就是说，当对用户执行认证(登 录)和授权(访问控制)验证时，Shiro 会从应用配置的 Realm 中查找用户及其权限信息。 SpringBoot自动配置 ☆☆☆ SpringBoot项目配置注解@EnableAutoConfiguration后 SpringBoot启动扫描META-INF下的spring.factories spring.factories子配置项org.springframework.boot.autoconfigure.EnableAutoConfiguration配置了所有可以自动配置的组件 各个XXXAutoConfiguration按照各自的ConditionalOnClass/OnBean等，判断是否加载XXX配置 根据XXX配置的@Import加载相关的其他类，之后通过反射机制初始化Bean 之后即可通过注入的方式使用 // 比如DataSourceAutoConfiguration的自动配置是检测到DataSource.class 与 EmbeddedDatabaseType.class存在 // DataSource是javax包中自带，而EmbeddedDatabaseType存在于spring-boot-starter-jdbc中 // 因此在pom中引入spring-boot-starter-jdbc后，即可触发加载操作 // 接下来就是根据spring.datasource相关配置初始化PooledDataSource 或者 直接使用EmbeddedDatabase @Configuration @ConditionalOnClass({DataSource.class, EmbeddedDatabaseType.class}) @EnableConfigurationProperties({DataSourceProperties.class}) @Import({DataSourcePoolMetadataProvidersConfiguration.class, DataSourceInitializationConfiguration.class}) public class DataSourceAutoConfiguration { } // DataSourceAutoConfiguration解析 https://blog.csdn.net/kangsa998/article/details/90231518 SpringBoot的Starter ☆☆☆ 徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！ https://www.cnblogs.com/lenve/p/10892011.html SpringBoot启动机制（starter机制）核心原理详解 https://www.jianshu.com/p/d166d935217b 实现一个Spring boot stater https://www.jianshu.com/p/fdb574e1f77c SpringBoot Starter 其实是Java的SPI的全名为Service Provider Interfac的一种实现 EnableAutoConfiguration 导入 @Import({AutoConfigurationImportSelector.class}) AutoConfigurationImportSelector 从classpath中搜寻所有的META-INF/spring.factories配置文件 找到org.springframework.boot.autoconfigure.EnableAutoConfiguration该key对应的其他自动配置className 通过反射按照相关Conditional进行实例化 如关闭数据源自动配置功能: @SpringBootApplication(exclude ={ DataSourceAutoConfiguration.class })。 如何在 Spring Boot 启动的时候运行一些特定的代码? 可以实现接口 ApplicationRunner 或者 CommandLineRunner，这两个接口实现方式一 样，它们都只提供了一个 run 方法。 Spring Boot 可以通过 @PropertySource,@Value,@Environment SpringBoot常用注解 @Conditional @SpringBootConfiguration @EnableAutoConfiguration @SpringBootApplication @Configuration：代表这个类是一个配置类。 @ComponentScan：用来扫描指定包下面的注解类。 @Import：用来导入其他的@Configuration配置类。 @ImportResource：用来导入xml配置文件，比如某些配置一定要xml配置。 @Bean：用来定义一个bean，可以指定初始、销毁方法，及bean范围等。 @Controller 标识一个类为控制器。 @RequestMapping URL的映射。 @ResponseBody 返回结果转换为JSON字符串。 @RequestBody 表示接收JSON格式字符串参数。 @RestController这个注解，而不是@Controller，不过这个注解同样不是Spring boot提供的，而是Spring MVC4中的提供的注解，表示一个支持Restful的控制器。 这个类中有三个URL映射是相同的，即都是/article/{id}，这在@Controller标识的类中是不允许出现的。这里的可以通过method来进行区分，produces的作用是表示返回结果的类型是JSON。 @PathVariable这个注解，也是Spring MVC提供的，其作用是表示该变量的值是从访问路径中获取。 27个核心注解 https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA SpringWebApplication 与 Servlet Servlet是JavaWeb的核心，可以理解为CGI的Java线程版本 SpringMVC核心用到DispatcherServlet，可以配置多个urlMapping Struts2/SpringMVC是基于Servlet实现分发，而Struts1是基于Filter 一个SpringWebApplication可以定义多个Servlet，需要区分urlMapping SpringBoot 中的 Tomcat 是如何启动的？ https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ SpringJDBC / Mybatis / Spring Data / JPA Mybatis的集成和使用 https://blog.lqdev.cn/2018/12/03/springboot/chapter-thirty-five/ Mybatis-plus的集成和使用 https://blog.lqdev.cn/2018/07/21/springboot/chapter-nine/ Spring Security / Apache Shrio / JWT JavaWebToken SpringBoot 打出来的war中的web.xml消失了 springboot 是如何帮我们省去web.xml配置的 https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app WebMvcConfigurerAdapter 与 WebMvcConfigurationSupport (遇到的一个坑查了半天) https://blog.csdn.net/innovationad/article/details/79959383 SpringBoot之Actuator Spring Boot Actuator:健康检查、审计、统计和监控 https://www.jianshu.com/p/d5943e303a1f 监控管理之Spring Boot Admin使用 https://blog.lqdev.cn/2018/09/14/springboot/chapter-twenty-eight/ SpringBoot日志管理之AOP统一日志 https://blog.lqdev.cn/2018/08/24/springboot/chapter-twenty-four/ SpringBoot日志管理之追加统一traceId import org.slf4j.MDC; import org.springframework.web.servlet.ModelAndView; import org.springframework.web.servlet.handler.HandlerInterceptorAdapter; import javax.servlet.http.HttpServletRequest; import javax.servlet.http.HttpServletResponse; public class LogTraceInterceptor extends HandlerInterceptorAdapter { @Override public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception { MDC.put(Constant.traceId, Constant.traceId+&quot;:&quot;+RandomHelper.generateNonceNumStr(8)); return super.preHandle(request, response, handler); } @Override public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception { super.postHandle(request, response, handler, modelAndView); MDC.remove(Constant.traceId); } } &lt;appender name=&quot;xhs&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt; &lt;file&gt;${LOG_HOME}/app.log&lt;/file&gt; &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt; &lt;FileNamePattern&gt;${LOG_HOME}/app.%d{yyyy-MM-dd}.log&lt;/FileNamePattern&gt; &lt;MaxHistory&gt;30&lt;/MaxHistory&gt; &lt;/rollingPolicy&gt; &lt;encoder&gt; &lt;pattern&gt;%d{HH:mm:ss.SSS} %X{traceId} [%thread] %-5level %c{10} - %msg%n&lt;/pattern&gt; &lt;charset&gt;UTF-8&lt;/charset&gt; &lt;/encoder&gt; &lt;/appender&gt; SpringBoot &amp; Dubbo https://blog.lqdev.cn/2018/09/28/springboot/chapter-twenty-nine/ SpringBoot 异步的各种实现 异步开发之异步请求 https://blog.lqdev.cn/2018/08/16/springboot/chapter-twenty/ 异步开发之异步调用 https://blog.lqdev.cn/2018/08/17/springboot/chapter-twenty-one/ https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA 事件的发布和监听 https://blog.lqdev.cn/2018/11/06/springboot/chapter-thirty-two/ RabbitMQ的集成和使用 https://blog.lqdev.cn/2018/07/24/springboot/chapter-twelve/ https://blog.lqdev.cn/2019/07/21/springboot/chapter-thirty-eight/ SpringBoot &amp; WebService Spring web Servcies集成和使用 https://blog.lqdev.cn/2018/11/09/springboot/chapter-thirty-three/ CXF构建WebService服务 https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/ LTW In Jdk Or SpringBoot https://www.cnblogs.com/takumicx/p/10150344.html 集成框架Spring Integration, Mule ESB or Apache Camel比较 https://www.jdon.com/soa/integration-framework-comparison-spring.html https://www.jianshu.com/p/68aba8d09a89 Spring ApplicationContext BeanFactory 是 Spring 框架的基础设施，面向 Spring 本身;ApplicationContext 面向使用 Spring 框架的开发者，几乎所有的应用场合我们都直接使用 ApplicationContext 而非底层 的 BeanFactory。 HierarchicalBeanFactory 父子级联，父子级联 IoC 容器的接口，子容器可以通过接口方法访问父容器; 通过 HierarchicalBeanFactory 接口， Spring 的 IoC 容器可以建立父子层级关联的容器体系，子 容器可以访问父容器中的 Bean，但父容器不能访问子容器的 Bean。Spring 使用父子容器实 现了很多功能，比如在 Spring MVC 中，展现层 Bean 位于一个子容器中，而业务层和持久 层的 Bean 位于父容器中。这样，展现层 Bean 就可以引用业务层和持久层的 Bean，而业务 层和持久层的 Bean 则看不到展现层的 Bean。 ClassPathXmlApplicationContext -&gt; ApplicationContext -&gt; HierarchicalBeanFactory/ListableBeanFactory ConfigurableApplicationContext 扩展于 ApplicationContext，它新增加了两个主要 的方法: refresh()和 close()，让 ApplicationContext 具有启动、刷新和关闭应用上下 文的能力。在应用上下文关闭的情况下调用 refresh()即可启动应用上下文，在已经启动 的状态下，调用 refresh()则清除缓存并重新装载配置信息，而调用 close()则可关闭应用 上下文。 WebApplicationContext 是专门为 Web 应用准备的，它允许从相对于 Web 根目录的 路径中装载配置文件完成初始化工作。从 WebApplicationContext 中可以获得 ServletContext 的引用，整个 Web 应用上下文对象将作为属性放置到 ServletContext 中，以便 Web 应用环境可以访问 Spring 应用上下文。 Bean的Scope singleton prototype，每次都创建（对有状态的 bean 使用 prototype 作用域，而对无状态的 bean 使用 singleton 作用域。） request：一次request一个实例 session：一个session一个实例 global Session:在一个全局的 Http Session 中，容器会返回该 Bean 的同一个实例，仅在 使用 portlet context 时有效。 Bean的生命周期 根据scope，实例化 设置属性 postProcessBeforeInitialization afterPropertiesSet postProcessAfterInitialization Done &lt;bean id=&quot;&quot; class=&quot;&quot; init-method=&quot;初始化方法&quot; destroy-method=&quot;销毁方法&quot; /&gt; 依赖注入 构造器注入 setter 方法注入 接口注入 IOC:把对象的创建、初始化、销毁交给 spring 来管理，而不是由开发者控制，实现控制反转。 5 种不同方式的自动装配 no:默认的方式是不进行自动装配，通过显式设置 ref 属性来进行装配。 byName:通过参数名 自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被设置成 byname，之后容器试图匹配、装配和该 bean 的属性具有相同名字的 bean。 byType:通过参数类型自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被 设置成 byType，之后容器试图匹配、装配和该 bean 的属性具有相同类型的 bean。如果有多个 bean 符合条件，则抛出错误。 constructor:这个方式类似于 byType， 但是要提供给构造器参数，如果没有确定的带参数的构造器参数类型，将会抛出异常。 autodetect:首先尝试使用 constructor 来自动装配，如果无法工作，则使用 byType 方式 AOP 核心概念 切面(aspect):类是对物体特征的抽象，切面就是对横切关注点的抽象 横切关注点:对哪些方法进行拦截，拦截后怎么处理，这些关注点称之为横切关注点。 连接点(joinpoint):被拦截到的点，因为 Spring 只支持方法类型的连接点，所以在 Spring中连接点指的就是被拦截到的方法，实际上连接点还可以是字段或者构造器。 切入点(pointcut):对连接点进行拦截的定义 通知(advice):所谓通知指的就是指拦截到连接点之后要执行的代码，通知分为前置、后置、 异常、最终、环绕通知五类。 目标对象:代理的目标对象 织入(weave):将切面应用到目标对象并导致代理对象创建的过程 引入(introduction):在不修改代码的前提下，引入可以在运行期为类动态地添加一些方法 或字段。 MyBatis缓存 Mybatis 中有一级缓存和二级缓存，默认情况下一级缓存是开启的，而且是不能关闭的。一级缓存 是指 SqlSession 级别的缓存，当在同一个 SqlSession 中进行相同的 SQL 语句查询时，第二次以 后的查询不会从数据库查询，而是直接从缓存中获取，一级缓存最多缓存 1024 条 SQL。二级缓存 是指可以跨 SqlSession 的缓存。是 mapper 级别的缓存，对于 mapper 级别的缓存不同的 sqlsession 是可以共享的。 如果两次中间出现 commit 操作 (修改、添加、删除)，本 sqlsession 中的一级缓存区域全部清空，下次再去缓存中查询不到所 以要从数据库查询，从数据库查询到再写入缓存。 Slf4j slf4j 的全称是 Simple Loging Facade For Java，即它仅仅是一个为 Java 程序提供日志输出的统一接 口，并不是一个具体的日志实现方案，就比如 JDBC 一样，只是一种规则而已。所以单独的 slf4j 是不 能工作的，必须搭配其他具体的日志实现方案，比如 apache 的 org.apache.log4j.Logger，jdk 自带 的 java.util.logging.Logger 等。" />
+<link rel="canonical" href="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html" />
+<meta property="og:url" content="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html" />
+<meta property="og:site_name" content="Code &amp; Coffee" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-03-27T22:25:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="SpringBoot" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-03-27T22:25:00+08:00","datePublished":"2020-03-27T22:25:00+08:00","description":"springboot启动总结https://blog.csdn.net/mnicsm/article/details/93893669 Spring Boot 是什么？ Spring 是一个“引擎”； Spring MVC 是基于Spring的一个 MVC 框架； Spring Boot 是基于Spring的条件注册的一套快速开发整合包。 SpringBoot启动原理 ☆☆☆ package org.springframework.boot; public class SpringApplication { public SpringApplication(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources) { // ... 省略代码 this.resourceLoader = resourceLoader; Assert.notNull(primarySources, &quot;PrimarySources must not be null&quot;); this.primarySources = new LinkedHashSet(Arrays.asList(primarySources)); // 1. 推测ApplicationType this.webApplicationType = WebApplicationType.deduceFromClasspath(); // 2. 根据spring.factories初始化ApplicationContextInitializer 与 ApplicationListener this.setInitializers(this.getSpringFactoriesInstances(ApplicationContextInitializer.class)); this.setListeners(this.getSpringFactoriesInstances(ApplicationListener.class)); // 3. 推测 Main入口 this.mainApplicationClass = this.deduceMainApplicationClass(); } public ConfigurableApplicationContext run(String... args) { // ... 省略代码 ConfigurableApplicationContext context = null; Collection&lt;SpringBootExceptionReporter&gt; exceptionReporters = new ArrayList(); this.configureHeadlessProperty(); SpringApplicationRunListeners listeners = this.getRunListeners(args); // 4. SpringApplicationRunListeners生命周期之started() listeners.starting(); // ... 省略代码 Collection exceptionReporters; ApplicationArguments applicationArguments = new DefaultApplicationArguments(args); // 5. 准备环境 及 SpringApplicationRunListeners生命周期之environmentPrepared() ConfigurableEnvironment environment = this.prepareEnvironment(listeners, applicationArguments); this.configureIgnoreBeanInfo(environment); Banner printedBanner = this.printBanner(environment); context = this.createApplicationContext(); exceptionReporters = this.getSpringFactoriesInstances(SpringBootExceptionReporter.class, new Class[]{ConfigurableApplicationContext.class}, context); // 6. 初始化类加载器、bean产生器、资源加载器等，打印banner this.prepareContext(context, environment, listeners, applicationArguments, printedBanner); // 7. 触发 @EnableAutoConfiguration 自动装配相关beans及configuration等 // SpringApplicationRunListeners生命周期之contextPrepared()/contextLoaded() this.refreshContext(context); this.afterRefresh(context, applicationArguments); stopWatch.stop(); if (this.logStartupInfo) { (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), stopWatch); } listeners.started(context); this.callRunners(context, applicationArguments); listeners.running(context); // ... 省略代码 } } 启动原理解析 http://tengj.top/2017/03/09/springboot3/ 自动装配之@ComponentScan详解 https://blog.csdn.net/mapleleafforest/article/details/86623578 自动装配之@EnableAutoConfiguration详解 https://blog.csdn.net/mapleleafforest/article/details/87273213 Apache Shiro Apache Shiro 是 Java 的一个安全框架。使用 shiro 可以非常容易的开发出足够好的应用，其不仅可以用在 JavaSE 环境，也可以用在 JavaEE 环境。Shiro 可以帮助我们完成:认证、授权、加密、会话管理、与 Web 集成、缓存等。 三个核心组件:Subject, SecurityManager 和 Realms. Subject:即“当前操作用户”。但是，在 Shiro 中，Subject 这一概念并不仅仅指人，也可以是第三方进程、后台帐 户(Daemon Account)或其他类似事物。它仅仅意味着“当前跟软件交互的东西”。但考虑到大多数目的和用途， 你可以把它认为是 Shiro 的“用户”概念。 Subject 代表了当前用户的安全操作，SecurityManager 则管理所有用户的安全操作。 SecurityManager:它是 Shiro 框架的核心，典型的 Facade 模式，Shiro 通过 SecurityManager 来管理内部组 件实例，并通过它来提供安全管理的各种服务。 Realm: Realm 充当了 Shiro 与应用安全数据间的“桥梁”或者“连接器”。也就是说，当对用户执行认证(登 录)和授权(访问控制)验证时，Shiro 会从应用配置的 Realm 中查找用户及其权限信息。 SpringBoot自动配置 ☆☆☆ SpringBoot项目配置注解@EnableAutoConfiguration后 SpringBoot启动扫描META-INF下的spring.factories spring.factories子配置项org.springframework.boot.autoconfigure.EnableAutoConfiguration配置了所有可以自动配置的组件 各个XXXAutoConfiguration按照各自的ConditionalOnClass/OnBean等，判断是否加载XXX配置 根据XXX配置的@Import加载相关的其他类，之后通过反射机制初始化Bean 之后即可通过注入的方式使用 // 比如DataSourceAutoConfiguration的自动配置是检测到DataSource.class 与 EmbeddedDatabaseType.class存在 // DataSource是javax包中自带，而EmbeddedDatabaseType存在于spring-boot-starter-jdbc中 // 因此在pom中引入spring-boot-starter-jdbc后，即可触发加载操作 // 接下来就是根据spring.datasource相关配置初始化PooledDataSource 或者 直接使用EmbeddedDatabase @Configuration @ConditionalOnClass({DataSource.class, EmbeddedDatabaseType.class}) @EnableConfigurationProperties({DataSourceProperties.class}) @Import({DataSourcePoolMetadataProvidersConfiguration.class, DataSourceInitializationConfiguration.class}) public class DataSourceAutoConfiguration { } // DataSourceAutoConfiguration解析 https://blog.csdn.net/kangsa998/article/details/90231518 SpringBoot的Starter ☆☆☆ 徒手撸一个SpringBoot中的Starter ，解密自动化配置黑魔法！ https://www.cnblogs.com/lenve/p/10892011.html SpringBoot启动机制（starter机制）核心原理详解 https://www.jianshu.com/p/d166d935217b 实现一个Spring boot stater https://www.jianshu.com/p/fdb574e1f77c SpringBoot Starter 其实是Java的SPI的全名为Service Provider Interfac的一种实现 EnableAutoConfiguration 导入 @Import({AutoConfigurationImportSelector.class}) AutoConfigurationImportSelector 从classpath中搜寻所有的META-INF/spring.factories配置文件 找到org.springframework.boot.autoconfigure.EnableAutoConfiguration该key对应的其他自动配置className 通过反射按照相关Conditional进行实例化 如关闭数据源自动配置功能: @SpringBootApplication(exclude ={ DataSourceAutoConfiguration.class })。 如何在 Spring Boot 启动的时候运行一些特定的代码? 可以实现接口 ApplicationRunner 或者 CommandLineRunner，这两个接口实现方式一 样，它们都只提供了一个 run 方法。 Spring Boot 可以通过 @PropertySource,@Value,@Environment SpringBoot常用注解 @Conditional @SpringBootConfiguration @EnableAutoConfiguration @SpringBootApplication @Configuration：代表这个类是一个配置类。 @ComponentScan：用来扫描指定包下面的注解类。 @Import：用来导入其他的@Configuration配置类。 @ImportResource：用来导入xml配置文件，比如某些配置一定要xml配置。 @Bean：用来定义一个bean，可以指定初始、销毁方法，及bean范围等。 @Controller 标识一个类为控制器。 @RequestMapping URL的映射。 @ResponseBody 返回结果转换为JSON字符串。 @RequestBody 表示接收JSON格式字符串参数。 @RestController这个注解，而不是@Controller，不过这个注解同样不是Spring boot提供的，而是Spring MVC4中的提供的注解，表示一个支持Restful的控制器。 这个类中有三个URL映射是相同的，即都是/article/{id}，这在@Controller标识的类中是不允许出现的。这里的可以通过method来进行区分，produces的作用是表示返回结果的类型是JSON。 @PathVariable这个注解，也是Spring MVC提供的，其作用是表示该变量的值是从访问路径中获取。 27个核心注解 https://mp.weixin.qq.com/s/E2DyzV1cgUn1T5PfE92KSA SpringWebApplication 与 Servlet Servlet是JavaWeb的核心，可以理解为CGI的Java线程版本 SpringMVC核心用到DispatcherServlet，可以配置多个urlMapping Struts2/SpringMVC是基于Servlet实现分发，而Struts1是基于Filter 一个SpringWebApplication可以定义多个Servlet，需要区分urlMapping SpringBoot 中的 Tomcat 是如何启动的？ https://mp.weixin.qq.com/s/qpLgkXOkccwCQbWoaEpqUQ SpringJDBC / Mybatis / Spring Data / JPA Mybatis的集成和使用 https://blog.lqdev.cn/2018/12/03/springboot/chapter-thirty-five/ Mybatis-plus的集成和使用 https://blog.lqdev.cn/2018/07/21/springboot/chapter-nine/ Spring Security / Apache Shrio / JWT JavaWebToken SpringBoot 打出来的war中的web.xml消失了 springboot 是如何帮我们省去web.xml配置的 https://www.jianshu.com/p/3c94d7e76998?utm_source=oschina-app WebMvcConfigurerAdapter 与 WebMvcConfigurationSupport (遇到的一个坑查了半天) https://blog.csdn.net/innovationad/article/details/79959383 SpringBoot之Actuator Spring Boot Actuator:健康检查、审计、统计和监控 https://www.jianshu.com/p/d5943e303a1f 监控管理之Spring Boot Admin使用 https://blog.lqdev.cn/2018/09/14/springboot/chapter-twenty-eight/ SpringBoot日志管理之AOP统一日志 https://blog.lqdev.cn/2018/08/24/springboot/chapter-twenty-four/ SpringBoot日志管理之追加统一traceId import org.slf4j.MDC; import org.springframework.web.servlet.ModelAndView; import org.springframework.web.servlet.handler.HandlerInterceptorAdapter; import javax.servlet.http.HttpServletRequest; import javax.servlet.http.HttpServletResponse; public class LogTraceInterceptor extends HandlerInterceptorAdapter { @Override public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception { MDC.put(Constant.traceId, Constant.traceId+&quot;:&quot;+RandomHelper.generateNonceNumStr(8)); return super.preHandle(request, response, handler); } @Override public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception { super.postHandle(request, response, handler, modelAndView); MDC.remove(Constant.traceId); } } &lt;appender name=&quot;xhs&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt; &lt;file&gt;${LOG_HOME}/app.log&lt;/file&gt; &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt; &lt;FileNamePattern&gt;${LOG_HOME}/app.%d{yyyy-MM-dd}.log&lt;/FileNamePattern&gt; &lt;MaxHistory&gt;30&lt;/MaxHistory&gt; &lt;/rollingPolicy&gt; &lt;encoder&gt; &lt;pattern&gt;%d{HH:mm:ss.SSS} %X{traceId} [%thread] %-5level %c{10} - %msg%n&lt;/pattern&gt; &lt;charset&gt;UTF-8&lt;/charset&gt; &lt;/encoder&gt; &lt;/appender&gt; SpringBoot &amp; Dubbo https://blog.lqdev.cn/2018/09/28/springboot/chapter-twenty-nine/ SpringBoot 异步的各种实现 异步开发之异步请求 https://blog.lqdev.cn/2018/08/16/springboot/chapter-twenty/ 异步开发之异步调用 https://blog.lqdev.cn/2018/08/17/springboot/chapter-twenty-one/ https://mp.weixin.qq.com/s/wjc9ImJfxcYpyAKEw-3AgA 事件的发布和监听 https://blog.lqdev.cn/2018/11/06/springboot/chapter-thirty-two/ RabbitMQ的集成和使用 https://blog.lqdev.cn/2018/07/24/springboot/chapter-twelve/ https://blog.lqdev.cn/2019/07/21/springboot/chapter-thirty-eight/ SpringBoot &amp; WebService Spring web Servcies集成和使用 https://blog.lqdev.cn/2018/11/09/springboot/chapter-thirty-three/ CXF构建WebService服务 https://blog.lqdev.cn/2018/11/12/springboot/chapter-thirty-four/ LTW In Jdk Or SpringBoot https://www.cnblogs.com/takumicx/p/10150344.html 集成框架Spring Integration, Mule ESB or Apache Camel比较 https://www.jdon.com/soa/integration-framework-comparison-spring.html https://www.jianshu.com/p/68aba8d09a89 Spring ApplicationContext BeanFactory 是 Spring 框架的基础设施，面向 Spring 本身;ApplicationContext 面向使用 Spring 框架的开发者，几乎所有的应用场合我们都直接使用 ApplicationContext 而非底层 的 BeanFactory。 HierarchicalBeanFactory 父子级联，父子级联 IoC 容器的接口，子容器可以通过接口方法访问父容器; 通过 HierarchicalBeanFactory 接口， Spring 的 IoC 容器可以建立父子层级关联的容器体系，子 容器可以访问父容器中的 Bean，但父容器不能访问子容器的 Bean。Spring 使用父子容器实 现了很多功能，比如在 Spring MVC 中，展现层 Bean 位于一个子容器中，而业务层和持久 层的 Bean 位于父容器中。这样，展现层 Bean 就可以引用业务层和持久层的 Bean，而业务 层和持久层的 Bean 则看不到展现层的 Bean。 ClassPathXmlApplicationContext -&gt; ApplicationContext -&gt; HierarchicalBeanFactory/ListableBeanFactory ConfigurableApplicationContext 扩展于 ApplicationContext，它新增加了两个主要 的方法: refresh()和 close()，让 ApplicationContext 具有启动、刷新和关闭应用上下 文的能力。在应用上下文关闭的情况下调用 refresh()即可启动应用上下文，在已经启动 的状态下，调用 refresh()则清除缓存并重新装载配置信息，而调用 close()则可关闭应用 上下文。 WebApplicationContext 是专门为 Web 应用准备的，它允许从相对于 Web 根目录的 路径中装载配置文件完成初始化工作。从 WebApplicationContext 中可以获得 ServletContext 的引用，整个 Web 应用上下文对象将作为属性放置到 ServletContext 中，以便 Web 应用环境可以访问 Spring 应用上下文。 Bean的Scope singleton prototype，每次都创建（对有状态的 bean 使用 prototype 作用域，而对无状态的 bean 使用 singleton 作用域。） request：一次request一个实例 session：一个session一个实例 global Session:在一个全局的 Http Session 中，容器会返回该 Bean 的同一个实例，仅在 使用 portlet context 时有效。 Bean的生命周期 根据scope，实例化 设置属性 postProcessBeforeInitialization afterPropertiesSet postProcessAfterInitialization Done &lt;bean id=&quot;&quot; class=&quot;&quot; init-method=&quot;初始化方法&quot; destroy-method=&quot;销毁方法&quot; /&gt; 依赖注入 构造器注入 setter 方法注入 接口注入 IOC:把对象的创建、初始化、销毁交给 spring 来管理，而不是由开发者控制，实现控制反转。 5 种不同方式的自动装配 no:默认的方式是不进行自动装配，通过显式设置 ref 属性来进行装配。 byName:通过参数名 自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被设置成 byname，之后容器试图匹配、装配和该 bean 的属性具有相同名字的 bean。 byType:通过参数类型自动装配，Spring 容器在配置文件中发现 bean 的 autowire 属性被 设置成 byType，之后容器试图匹配、装配和该 bean 的属性具有相同类型的 bean。如果有多个 bean 符合条件，则抛出错误。 constructor:这个方式类似于 byType， 但是要提供给构造器参数，如果没有确定的带参数的构造器参数类型，将会抛出异常。 autodetect:首先尝试使用 constructor 来自动装配，如果无法工作，则使用 byType 方式 AOP 核心概念 切面(aspect):类是对物体特征的抽象，切面就是对横切关注点的抽象 横切关注点:对哪些方法进行拦截，拦截后怎么处理，这些关注点称之为横切关注点。 连接点(joinpoint):被拦截到的点，因为 Spring 只支持方法类型的连接点，所以在 Spring中连接点指的就是被拦截到的方法，实际上连接点还可以是字段或者构造器。 切入点(pointcut):对连接点进行拦截的定义 通知(advice):所谓通知指的就是指拦截到连接点之后要执行的代码，通知分为前置、后置、 异常、最终、环绕通知五类。 目标对象:代理的目标对象 织入(weave):将切面应用到目标对象并导致代理对象创建的过程 引入(introduction):在不修改代码的前提下，引入可以在运行期为类动态地添加一些方法 或字段。 MyBatis缓存 Mybatis 中有一级缓存和二级缓存，默认情况下一级缓存是开启的，而且是不能关闭的。一级缓存 是指 SqlSession 级别的缓存，当在同一个 SqlSession 中进行相同的 SQL 语句查询时，第二次以 后的查询不会从数据库查询，而是直接从缓存中获取，一级缓存最多缓存 1024 条 SQL。二级缓存 是指可以跨 SqlSession 的缓存。是 mapper 级别的缓存，对于 mapper 级别的缓存不同的 sqlsession 是可以共享的。 如果两次中间出现 commit 操作 (修改、添加、删除)，本 sqlsession 中的一级缓存区域全部清空，下次再去缓存中查询不到所 以要从数据库查询，从数据库查询到再写入缓存。 Slf4j slf4j 的全称是 Simple Loging Facade For Java，即它仅仅是一个为 Java 程序提供日志输出的统一接 口，并不是一个具体的日志实现方案，就比如 JDBC 一样，只是一种规则而已。所以单独的 slf4j 是不 能工作的，必须搭配其他具体的日志实现方案，比如 apache 的 org.apache.log4j.Logger，jdk 自带 的 java.util.logging.Logger 等。","headline":"SpringBoot","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/blog/assets/images/logo.png"},"name":"siglea"},"url":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html"}</script>
+<!-- End Jekyll SEO tag -->
+
 </head>
-<body id="scrapbook" class="mt-main-index two-columns">
+<body class="one-column">
+
   <div id="container">
-    <div id="container-inner">
-      <!-- 头部 -->
-      <div id="header">
-        <div id="header-inner">
-          <div id="header-content">
-            <h1 id="header-name">Code & Coffee</h1>
-            <p class="subtitle">siglea的数字花园</p>
-            
-            <div id="google_search">
-              <!-- 简化的搜索框 -->
-              <form action="https://www.google.com/search" target="_blank" method="get">
-                <div>
-                  <input type="text" size="20" name="q" class="searchbox" placeholder="搜索...">
-                  <input type="hidden" name="sitesearch" value="https://siglea.github.io/blog" />
-                </div>
-              </form>
-            </div>
-            
-            <div id="feed_icon">
-              <a href="/blog/feed.xml" title="订阅Feed">
-                <img src="https://cdn.beekka.com/blogimg/asset/202107/bg2021072117.png" alt="RSS" style="height: 20px; width: auto;" />
-              </a>
-            </div>
-          </div>
+
+    <div id="header">
+      <div id="header-left">
+        <span id="header-name"><a href="/blog/">Code & Coffee</a></span>
+        <span class="header-nav">
+          &raquo; <a href="/blog/">首页</a>
+          &raquo; <a href="/blog/archive/">档案</a>
+        </span>
+      </div>
+
+      <div id="header-right">
+        <div id="google_search">
+          <form action="https://www.google.com/search" target="_blank" method="get">
+            <input type="text" name="q" class="searchbox" placeholder="Google..." />
+            <input type="hidden" name="sitesearch" value="http://localhost:4000/blog" />
+            <input type="submit" class="searchbox_submit" value="&#x1F50D;" />
+          </form>
+        </div>
+
+        <div id="feed_icon">
+          <a href="/blog/feed.xml" title="RSS Feed">
+            <img src="https://cdn.beekka.com/blogimg/asset/202107/bg2021072117.png" alt="RSS" style="height:18px;width:auto;border:none;" />
+          </a>
         </div>
       </div>
-      
-      <!-- 导航栏 -->
-      <nav id="nav">
-        <ul>
-          <li><a href="/blog/">首页</a></li>
-          <li><a href="/blog/category/技术/">技术</a></li>
-          <li><a href="/blog/category/产品商业/">产品商业</a></li>
-          <li><a href="/blog/category/随记/">随记</a></li>
-          <li><a href="/blog/archive/">存档</a></li>
-          <li><a href="/blog/about/">关于</a></li>
-        </ul>
-      </nav>
-      
-      <!-- 主内容区 -->
-      <div id="content">
-        <div id="content-inner">
-          <div id="alpha">
-            <div id="alpha-inner">
-              <div class="entry-asset asset hentry">
-  <div class="asset-header">
-    <h2 class="asset-name entry-title"> SpringBoot </h2>
-    <p id="asset-tags">
+    </div>
+
+    <div id="content">
+
+      <div id="alpha">
+        <div id="alpha-inner">
+          <div class="entry-asset asset hentry">
+
+  <div class="asset-nav">
+    <div class="entry-categories">
       分类<span class="delimiter">：</span>
       
       <a href="/blog/category/技术/" rel="tag">技术</a>
       
+    </div>
+    <div class="entry-location">
+      
+      <li><a href="/blog/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html">&laquo;  Jvm（二）常用工具 </a></li>
+      
+    </div>
+  </div>
+
+  <div class="asset-header">
+    <h1 class="asset-name entry-title"> SpringBoot </h1>
+  </div>
+
+  <div class="asset-meta">
+    <p>
+      日期：
+      <a href="/blog/archive/">
+        <abbr class="published" title="2020-03-27T22:25:00+08:00">
+          2020年03月27日
+        </abbr>
+      </a>
     </p>
   </div>
+
   <div class="asset-content entry-content">
     <div class="asset-body">
       <p>springboot启动总结<a href="https://blog.csdn.net/mnicsm/article/details/93893669">https://blog.csdn.net/mnicsm/article/details/93893669</a></p>
@@ -427,75 +454,125 @@ slf4j 的全称是 Simple Loging Facade For Java，即它仅仅是一个为 Java
 
 
     </div>
-    
-    <div class="asset-more-link">
-      <p><a href="/blog/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html" rel="bookmark">继续阅读全文 »</a></p>
-    </div>
   </div>
+
   <div class="asset-footer">
-    <div class="asset-meta">
-      <p>
-        <span class="byline">
-          <abbr class="published" title="2020-03-27T22:25:00+08:00">
-            2020年03月27日
-          </abbr>
-        </span>
+    <h3>文档信息</h3>
+    <ul>
+      <li>发表日期：2020年03月27日</li>
+      
+      <li>标签：
         
-        <span class="separator">|</span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/03/27/Spring.html#comments">留言（0）</a>
-      </p>
-    </div>
+        <a href="/blog/tag/Java/">Java</a>, 
+        
+        <a href="/blog/tag/Spring/">Spring</a>
+        
+      </li>
+      
+      <li>版权声明：自由转载-非商用-非衍生-保持署名</li>
+    </ul>
   </div>
+
 </div>
 
 
-            </div>
-          </div>
-          
-          <!-- 侧边栏 - 仅列表页显示 -->
-          
+
+<div id="related_entries">
+  <h3>相关文章</h3>
+  <ul>
+    
+    <li>
+      <span>2020.07.28: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <div class="entry-body">
+        <p>DDD
+
+#### Redis 的并发竞争问题如何解决
+- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概...</p>
+      </div>
+    </li>
+    
+    <li>
+      <span>2020.07.26: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <div class="entry-body">
+        <p>#### 高可用
+- 负载均衡
+    - Consul + Consul-template 动态配置 Nginx upstream
+    - Ngin...</p>
+      </div>
+    </li>
+    
+    <li>
+      <span>2020.07.20: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <div class="entry-body">
+        <p>#### 分布式控制方案
+- 中心化的副本控制协议，也就是主从模式
+- primary-secondary协议，也就是leader/follower（数据...</p>
+      </div>
+    </li>
+    
+    <li>
+      <span>2020.07.18: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <div class="entry-body">
+        <p>#### UseCompressedOop
+- CompressedOops原理：
+64位地址分为堆的基地址+偏移量，当堆内存
+```shell
+-Xms...</p>
+      </div>
+    </li>
+    
+  </ul>
+</div>
+
+
         </div>
       </div>
+
       
-      <!-- 页脚 - 关于信息 -->
-      <div id="footer">
-        <div id="footer-inner">
-          <div id="footer-content">
-            <section>
-              <h2>关于</h2>
-              <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
-</p>
-              <p>
-                文章：<a href="/blog/archive/">77</a> |
-                <a href="/blog/feed.xml">RSS</a>
-              </p>
-            </section>
+
+    </div>
+
+    <div id="footer">
+      <div id="footer-content">
+        <section>
+          <h2>关于</h2>
+          <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。</p>
+          <p>
+            文章：<a href="/blog/archive/">77</a>
+            &middot;
+            <a href="/blog/feed.xml">RSS</a>
+          </p>
+        </section>
+
+        <section>
+          <h2>联系</h2>
+          <p>
             
-            <section>
-              <h2>联系</h2>
-              <p>
-                
-                <a href="https://github.com/siglea" target="_blank">GitHub</a> |
-                
-                <a href="mailto:siglea@sina.com">邮箱</a>
-              </p>
-            </section>
+            <a href="https://github.com/siglea">GitHub</a>
             
-            <section>
-              <h2>版权</h2>
-              <p>© 2026 Code & Coffee</p>
-            </section>
-          </div>
-        </div>
+            
+            &middot; <a href="mailto:siglea@sina.com">Email</a>
+            
+          </p>
+        </section>
+
+        <section>
+          <h2>版权</h2>
+          <p>&copy; 2026 Code & Coffee</p>
+          <p>自由转载-非商用-非衍生-保持署名</p>
+        </section>
       </div>
     </div>
+
   </div>
-  
+
   <script>
-    // 移动端适配脚本
-    if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent)) {
-      document.body.classList.add('mobile');
-    }
+  if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+    document.body.classList.add('mobile');
   </script>
 </body>
 </html>

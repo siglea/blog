@@ -3,20 +3,23 @@ layout: default
 title: 文章存档
 ---
 
-<div class="archive-page">
-  <h1>文章存档</h1>
-  
-  <p style="margin-bottom: 30px; color: #666;">
-    共 {{ site.posts | size }} 篇文章
-  </p>
-  
-  {% for post in site.posts %}
-  <p class="post-item">
-    <span class="post-date">{{ post.date | date: "%Y年%m月%d日" }}</span>
-    <span class="post-separator">»</span>
-    <span class="post-title">
-      <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-    </span>
-  </p>
-  {% endfor %}
+<div class="entry-asset asset hentry">
+  <div class="asset-header">
+    <h2 class="asset-name entry-title">文章存档</h2>
+  </div>
+  <div class="asset-content entry-content">
+    <div class="asset-body">
+      <p style="color:gray;">共 {{ site.posts | size }} 篇文章</p>
+      <div id="homepage">
+        <ul>
+          {% for post in site.posts %}
+          <li>
+            <span>{{ post.date | date: "%Y年%m月%d日" }} &raquo; </span>
+            <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>

@@ -5,33 +5,31 @@ title: 分类
 
 <div class="entry-asset asset hentry">
   <div class="asset-header">
-    <h1 class="asset-name entry-title">文章分类</h1>
+    <h2 class="asset-name entry-title">文章分类</h2>
   </div>
   <div class="asset-content entry-content">
     <div class="asset-body">
+      <div id="homepage">
       {% for category in site.categories %}
-      <section class="category-section">
-        <h2>
+        <h3>
           <a href="{{ site.baseurl }}/category/{{ category[0] }}/">{{ category[0] }}</a>
-          <span class="count">({{ category[1].size }})</span>
-        </h2>
-        
+          <span style="color:gray;font-size:0.7em;">({{ category[1].size }})</span>
+        </h3>
         <ul>
-        {% for post in category[1] limit:5 %}
-        <li class="module-list-item">
-          <span>{{ post.date | date: "%Y年%m月%d日" }} » </span>
-          <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-        </li>
-        {% endfor %}
+          {% for post in category[1] limit:5 %}
+          <li>
+            <span>{{ post.date | date: "%Y年%m月%d日" }} &raquo; </span>
+            <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+          </li>
+          {% endfor %}
         </ul>
-        
         {% if category[1].size > 5 %}
-        <p style="font-size: 1.6em; margin-top: 15px;">
+        <p>
           <a href="{{ site.baseurl }}/category/{{ category[0] }}/">查看全部 {{ category[1].size }} 篇文章...</a>
         </p>
         {% endif %}
-      </section>
       {% endfor %}
+      </div>
     </div>
   </div>
 </div>

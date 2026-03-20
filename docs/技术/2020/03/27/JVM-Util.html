@@ -4,67 +4,94 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title> Jvm（二）常用工具  - Code & Coffee</title>
-  <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
-">
+  <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Jvm（二）常用工具 | Code &amp; Coffee</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Jvm（二）常用工具" />
+<meta name="author" content="siglea" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="JPS JVM Process Status Tool jps 31856 xhs-push.jar 22640 Jps jps -q 31856 22640 [root@VM_0_17_centos ~]# jps -m 31856 xhs-push.jar --push.queue=message_queue_low 22825 Jps -m [root@VM_0_17_centos ~]# jps -l 31856 /home/web/xhs-push/xhs-push.jar 22886 sun.tools.jps.Jps [root@VM_0_17_centos ~]# jps -v 31856 xhs-push.jar -Xms256m -Xmx512m -XX:+PrintGCDateStamps -XX:+PrintGC -Xloggc:... 22932 Jps -Dapplication.home=/usr/java/jdk1.8.0_171-amd64 -Xms8m jstat: JVM Statistics Monitoring Tool 可以实时监测系统资源占用与jvm运行情况 类加载相关 -class gc相关 -gc* 编译相关 -compiler ## 命令语法结构： Usage: jstat -help|-options jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]] ## 参数解释： Options — 选项，我们一般使用 -gcutil 查看gc情况 -t — 输出Timestamp vmid — VM的进程号，即当前运行的java进程号 interval– 间隔时间，单位为秒或者毫秒 count — 打印次数，如果缺省则打印无数次 S0 — Heap上的 Survivor space 0 区已使用空间的百分比 S1 — Heap上的 Survivor space 1 区已使用空间的百分比 E — Heap上的 Eden space 区已使用空间的百分比 O — Heap上的 Old space 区已使用空间的百分比 P — Perm space 区已使用空间的百分比 YGC — 从应用程序启动到采样时发生 Young GC 的次数 YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒) FGC — 从应用程序启动到采样时发生 Full GC 的次数 FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒) GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒) ## jstat -options -class 类加载统计 -compiler 编译统计 -gc -gccapacity -gccause Allocation Failure -gcmetacapacity 元数据空间统计 -gcnew -gcnewcapacity -gcold -gcoldcapacity -gcutil 总结垃圾回收统计 -printcompilation JVM编译方法统计 ## 示例1 总结垃圾回收统计 [root@VM_0_8_centos ~]# jstat -gcutil 27472 1000 5 S0 S1 E O M CCS YGC YGCT FGC FGCT GCT 78.04 0.00 14.10 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 24.05 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 34.14 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 40.62 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 47.20 61.31 96.88 94.27 288 5.612 4 3.335 8.947 ## 示例2 类加载统计 [root@VM_0_8_centos ~]# jstat -class -t 27472 1000 5 Timestamp 加载class的数量 所占用空间大小 未加载数量 未加载占用空间 Time(秒) Timestamp Loaded Bytes Unloaded Bytes Time 5359.3 10847 20148.1 0 0.0 46.25 5360.4 10847 20148.1 0 0.0 46.25 5361.4 10847 20148.1 0 0.0 46.25 5362.3 10847 20148.1 0 0.0 46.25 5363.3 10847 20148.1 0 0.0 46.25 jstat命令使用 https://www.cnblogs.com/lizhonghua34/p/7307139.html jinfo java配置信息 -flags to print VM flags -sysprops to print Java system properties &lt;no option&gt; to print both of the above jmap : Memory Map For Java 内存占用情况查询 ## 查询某个pid进程对应的应用程序内存占用情况 jmap -heap pid ## 示例1 jmap -heap 5940 [root@VM_0_8_centos ~]# jmap -heap 27472 Attaching to process ID 27472, please wait... Debugger attached successfully. Server compiler detected. JVM version is 25.171-b11 using thread-local object allocation. Parallel GC with 2 thread(s) Heap Configuration: MinHeapFreeRatio = 0 MaxHeapFreeRatio = 100 MaxHeapSize = 2051014656 (1956.0MB) NewSize = 42991616 (41.0MB) MaxNewSize = 683671552 (652.0MB) OldSize = 87031808 (83.0MB) NewRatio = 2 SurvivorRatio = 8 MetaspaceSize = 21807104 (20.796875MB) CompressedClassSpaceSize = 1073741824 (1024.0MB) MaxMetaspaceSize = 17592186044415 MB G1HeapRegionSize = 0 (0.0MB) Heap Usage: PS Young Generation Eden Space: capacity = 37224448 (35.5MB) used = 14139096 (13.484092712402344MB) free = 23085352 (22.015907287597656MB) 37.98335975324604% used From Space: capacity = 3145728 (3.0MB) used = 2929584 (2.7938690185546875MB) free = 216144 (0.2061309814453125MB) 93.12896728515625% used To Space: capacity = 3670016 (3.5MB) used = 0 (0.0MB) free = 3670016 (3.5MB) 0.0% used PS Old Generation capacity = 165150720 (157.5MB) used = 98856376 (94.27678680419922MB) free = 66294344 (63.22321319580078MB) 59.8582773359995% used 26452 interned Strings occupying 2659208 bytes. ## 示例2 jmap -F -histo 16464 &gt; 16464.log -histo[:live] 打印每个class的实例数目,内存占用,类全名信息. VM的内部类名字开头会加上前缀”*”. 如果live子参数加上后,只统计活的对象数量. ## 示例2 jmap -dump:format=b,file=outfile 3024可以将3024进程的内存heap输出出来到outfile文件里，再配合MAT（内存分析工具）。 jhat JVM Heap Analysis Tool ，把jmap dump的文件展示 jhat outfile http://localhost:7000 jstack Java堆栈跟踪 # 示例 jstach 5940 Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.92-b14 mixed mode): &quot;RMI TCP Connection(10)-10.2.13.162&quot; #32 daemon prio=5 os_prio=0 tid=0x00000000179dc000 nid=0x1f60 in Object.wait() [0x000000001d7dd000] java.lang.Thread.State: TIMED_WAITING (on object monitor) at java.lang.Object.wait(Native Method) at com.sun.jmx.remote.internal.ArrayNotificationBuffer.fetchNotifications(ArrayNotificationBuffer.java:449) - locked &lt;0x00000000d462ec18&gt; (a com.sun.jmx.remote.internal.ArrayNotificationBuffer) # 查看该进程中哪个线程占用大量 CPU，执行 top -H -p 11281 # 找到执行时间最长的线程id：19279 # printf &quot;%x\n&quot; 19279 #输出十六进制 4b4f # jstack 19268 |grep 4b4f # 接下来我们将进程中的所有线程输出到一个文件中，执行：jstack 11281&gt; jstack.txt # 在进程中查找对应的线程 ID，执行：cat jstack.txt | grep -i 2c6d # jstack -l 14716 |grep deadlock # 查看死锁 JConsole、VisualVM 用javap查看字节码指令 HSDIS：JIT生成代码反汇编 JVM运行时内存使用情况监控 https://blog.csdn.net/zmx729618/article/details/78392715" />
+<meta property="og:description" content="JPS JVM Process Status Tool jps 31856 xhs-push.jar 22640 Jps jps -q 31856 22640 [root@VM_0_17_centos ~]# jps -m 31856 xhs-push.jar --push.queue=message_queue_low 22825 Jps -m [root@VM_0_17_centos ~]# jps -l 31856 /home/web/xhs-push/xhs-push.jar 22886 sun.tools.jps.Jps [root@VM_0_17_centos ~]# jps -v 31856 xhs-push.jar -Xms256m -Xmx512m -XX:+PrintGCDateStamps -XX:+PrintGC -Xloggc:... 22932 Jps -Dapplication.home=/usr/java/jdk1.8.0_171-amd64 -Xms8m jstat: JVM Statistics Monitoring Tool 可以实时监测系统资源占用与jvm运行情况 类加载相关 -class gc相关 -gc* 编译相关 -compiler ## 命令语法结构： Usage: jstat -help|-options jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]] ## 参数解释： Options — 选项，我们一般使用 -gcutil 查看gc情况 -t — 输出Timestamp vmid — VM的进程号，即当前运行的java进程号 interval– 间隔时间，单位为秒或者毫秒 count — 打印次数，如果缺省则打印无数次 S0 — Heap上的 Survivor space 0 区已使用空间的百分比 S1 — Heap上的 Survivor space 1 区已使用空间的百分比 E — Heap上的 Eden space 区已使用空间的百分比 O — Heap上的 Old space 区已使用空间的百分比 P — Perm space 区已使用空间的百分比 YGC — 从应用程序启动到采样时发生 Young GC 的次数 YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒) FGC — 从应用程序启动到采样时发生 Full GC 的次数 FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒) GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒) ## jstat -options -class 类加载统计 -compiler 编译统计 -gc -gccapacity -gccause Allocation Failure -gcmetacapacity 元数据空间统计 -gcnew -gcnewcapacity -gcold -gcoldcapacity -gcutil 总结垃圾回收统计 -printcompilation JVM编译方法统计 ## 示例1 总结垃圾回收统计 [root@VM_0_8_centos ~]# jstat -gcutil 27472 1000 5 S0 S1 E O M CCS YGC YGCT FGC FGCT GCT 78.04 0.00 14.10 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 24.05 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 34.14 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 40.62 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 47.20 61.31 96.88 94.27 288 5.612 4 3.335 8.947 ## 示例2 类加载统计 [root@VM_0_8_centos ~]# jstat -class -t 27472 1000 5 Timestamp 加载class的数量 所占用空间大小 未加载数量 未加载占用空间 Time(秒) Timestamp Loaded Bytes Unloaded Bytes Time 5359.3 10847 20148.1 0 0.0 46.25 5360.4 10847 20148.1 0 0.0 46.25 5361.4 10847 20148.1 0 0.0 46.25 5362.3 10847 20148.1 0 0.0 46.25 5363.3 10847 20148.1 0 0.0 46.25 jstat命令使用 https://www.cnblogs.com/lizhonghua34/p/7307139.html jinfo java配置信息 -flags to print VM flags -sysprops to print Java system properties &lt;no option&gt; to print both of the above jmap : Memory Map For Java 内存占用情况查询 ## 查询某个pid进程对应的应用程序内存占用情况 jmap -heap pid ## 示例1 jmap -heap 5940 [root@VM_0_8_centos ~]# jmap -heap 27472 Attaching to process ID 27472, please wait... Debugger attached successfully. Server compiler detected. JVM version is 25.171-b11 using thread-local object allocation. Parallel GC with 2 thread(s) Heap Configuration: MinHeapFreeRatio = 0 MaxHeapFreeRatio = 100 MaxHeapSize = 2051014656 (1956.0MB) NewSize = 42991616 (41.0MB) MaxNewSize = 683671552 (652.0MB) OldSize = 87031808 (83.0MB) NewRatio = 2 SurvivorRatio = 8 MetaspaceSize = 21807104 (20.796875MB) CompressedClassSpaceSize = 1073741824 (1024.0MB) MaxMetaspaceSize = 17592186044415 MB G1HeapRegionSize = 0 (0.0MB) Heap Usage: PS Young Generation Eden Space: capacity = 37224448 (35.5MB) used = 14139096 (13.484092712402344MB) free = 23085352 (22.015907287597656MB) 37.98335975324604% used From Space: capacity = 3145728 (3.0MB) used = 2929584 (2.7938690185546875MB) free = 216144 (0.2061309814453125MB) 93.12896728515625% used To Space: capacity = 3670016 (3.5MB) used = 0 (0.0MB) free = 3670016 (3.5MB) 0.0% used PS Old Generation capacity = 165150720 (157.5MB) used = 98856376 (94.27678680419922MB) free = 66294344 (63.22321319580078MB) 59.8582773359995% used 26452 interned Strings occupying 2659208 bytes. ## 示例2 jmap -F -histo 16464 &gt; 16464.log -histo[:live] 打印每个class的实例数目,内存占用,类全名信息. VM的内部类名字开头会加上前缀”*”. 如果live子参数加上后,只统计活的对象数量. ## 示例2 jmap -dump:format=b,file=outfile 3024可以将3024进程的内存heap输出出来到outfile文件里，再配合MAT（内存分析工具）。 jhat JVM Heap Analysis Tool ，把jmap dump的文件展示 jhat outfile http://localhost:7000 jstack Java堆栈跟踪 # 示例 jstach 5940 Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.92-b14 mixed mode): &quot;RMI TCP Connection(10)-10.2.13.162&quot; #32 daemon prio=5 os_prio=0 tid=0x00000000179dc000 nid=0x1f60 in Object.wait() [0x000000001d7dd000] java.lang.Thread.State: TIMED_WAITING (on object monitor) at java.lang.Object.wait(Native Method) at com.sun.jmx.remote.internal.ArrayNotificationBuffer.fetchNotifications(ArrayNotificationBuffer.java:449) - locked &lt;0x00000000d462ec18&gt; (a com.sun.jmx.remote.internal.ArrayNotificationBuffer) # 查看该进程中哪个线程占用大量 CPU，执行 top -H -p 11281 # 找到执行时间最长的线程id：19279 # printf &quot;%x\n&quot; 19279 #输出十六进制 4b4f # jstack 19268 |grep 4b4f # 接下来我们将进程中的所有线程输出到一个文件中，执行：jstack 11281&gt; jstack.txt # 在进程中查找对应的线程 ID，执行：cat jstack.txt | grep -i 2c6d # jstack -l 14716 |grep deadlock # 查看死锁 JConsole、VisualVM 用javap查看字节码指令 HSDIS：JIT生成代码反汇编 JVM运行时内存使用情况监控 https://blog.csdn.net/zmx729618/article/details/78392715" />
+<link rel="canonical" href="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html" />
+<meta property="og:url" content="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html" />
+<meta property="og:site_name" content="Code &amp; Coffee" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-03-27T22:25:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Jvm（二）常用工具" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-03-27T22:25:00+08:00","datePublished":"2020-03-27T22:25:00+08:00","description":"JPS JVM Process Status Tool jps 31856 xhs-push.jar 22640 Jps jps -q 31856 22640 [root@VM_0_17_centos ~]# jps -m 31856 xhs-push.jar --push.queue=message_queue_low 22825 Jps -m [root@VM_0_17_centos ~]# jps -l 31856 /home/web/xhs-push/xhs-push.jar 22886 sun.tools.jps.Jps [root@VM_0_17_centos ~]# jps -v 31856 xhs-push.jar -Xms256m -Xmx512m -XX:+PrintGCDateStamps -XX:+PrintGC -Xloggc:... 22932 Jps -Dapplication.home=/usr/java/jdk1.8.0_171-amd64 -Xms8m jstat: JVM Statistics Monitoring Tool 可以实时监测系统资源占用与jvm运行情况 类加载相关 -class gc相关 -gc* 编译相关 -compiler ## 命令语法结构： Usage: jstat -help|-options jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]] ## 参数解释： Options — 选项，我们一般使用 -gcutil 查看gc情况 -t — 输出Timestamp vmid — VM的进程号，即当前运行的java进程号 interval– 间隔时间，单位为秒或者毫秒 count — 打印次数，如果缺省则打印无数次 S0 — Heap上的 Survivor space 0 区已使用空间的百分比 S1 — Heap上的 Survivor space 1 区已使用空间的百分比 E — Heap上的 Eden space 区已使用空间的百分比 O — Heap上的 Old space 区已使用空间的百分比 P — Perm space 区已使用空间的百分比 YGC — 从应用程序启动到采样时发生 Young GC 的次数 YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒) FGC — 从应用程序启动到采样时发生 Full GC 的次数 FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒) GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒) ## jstat -options -class 类加载统计 -compiler 编译统计 -gc -gccapacity -gccause Allocation Failure -gcmetacapacity 元数据空间统计 -gcnew -gcnewcapacity -gcold -gcoldcapacity -gcutil 总结垃圾回收统计 -printcompilation JVM编译方法统计 ## 示例1 总结垃圾回收统计 [root@VM_0_8_centos ~]# jstat -gcutil 27472 1000 5 S0 S1 E O M CCS YGC YGCT FGC FGCT GCT 78.04 0.00 14.10 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 24.05 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 34.14 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 40.62 61.31 96.88 94.27 288 5.612 4 3.335 8.947 78.04 0.00 47.20 61.31 96.88 94.27 288 5.612 4 3.335 8.947 ## 示例2 类加载统计 [root@VM_0_8_centos ~]# jstat -class -t 27472 1000 5 Timestamp 加载class的数量 所占用空间大小 未加载数量 未加载占用空间 Time(秒) Timestamp Loaded Bytes Unloaded Bytes Time 5359.3 10847 20148.1 0 0.0 46.25 5360.4 10847 20148.1 0 0.0 46.25 5361.4 10847 20148.1 0 0.0 46.25 5362.3 10847 20148.1 0 0.0 46.25 5363.3 10847 20148.1 0 0.0 46.25 jstat命令使用 https://www.cnblogs.com/lizhonghua34/p/7307139.html jinfo java配置信息 -flags to print VM flags -sysprops to print Java system properties &lt;no option&gt; to print both of the above jmap : Memory Map For Java 内存占用情况查询 ## 查询某个pid进程对应的应用程序内存占用情况 jmap -heap pid ## 示例1 jmap -heap 5940 [root@VM_0_8_centos ~]# jmap -heap 27472 Attaching to process ID 27472, please wait... Debugger attached successfully. Server compiler detected. JVM version is 25.171-b11 using thread-local object allocation. Parallel GC with 2 thread(s) Heap Configuration: MinHeapFreeRatio = 0 MaxHeapFreeRatio = 100 MaxHeapSize = 2051014656 (1956.0MB) NewSize = 42991616 (41.0MB) MaxNewSize = 683671552 (652.0MB) OldSize = 87031808 (83.0MB) NewRatio = 2 SurvivorRatio = 8 MetaspaceSize = 21807104 (20.796875MB) CompressedClassSpaceSize = 1073741824 (1024.0MB) MaxMetaspaceSize = 17592186044415 MB G1HeapRegionSize = 0 (0.0MB) Heap Usage: PS Young Generation Eden Space: capacity = 37224448 (35.5MB) used = 14139096 (13.484092712402344MB) free = 23085352 (22.015907287597656MB) 37.98335975324604% used From Space: capacity = 3145728 (3.0MB) used = 2929584 (2.7938690185546875MB) free = 216144 (0.2061309814453125MB) 93.12896728515625% used To Space: capacity = 3670016 (3.5MB) used = 0 (0.0MB) free = 3670016 (3.5MB) 0.0% used PS Old Generation capacity = 165150720 (157.5MB) used = 98856376 (94.27678680419922MB) free = 66294344 (63.22321319580078MB) 59.8582773359995% used 26452 interned Strings occupying 2659208 bytes. ## 示例2 jmap -F -histo 16464 &gt; 16464.log -histo[:live] 打印每个class的实例数目,内存占用,类全名信息. VM的内部类名字开头会加上前缀”*”. 如果live子参数加上后,只统计活的对象数量. ## 示例2 jmap -dump:format=b,file=outfile 3024可以将3024进程的内存heap输出出来到outfile文件里，再配合MAT（内存分析工具）。 jhat JVM Heap Analysis Tool ，把jmap dump的文件展示 jhat outfile http://localhost:7000 jstack Java堆栈跟踪 # 示例 jstach 5940 Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.92-b14 mixed mode): &quot;RMI TCP Connection(10)-10.2.13.162&quot; #32 daemon prio=5 os_prio=0 tid=0x00000000179dc000 nid=0x1f60 in Object.wait() [0x000000001d7dd000] java.lang.Thread.State: TIMED_WAITING (on object monitor) at java.lang.Object.wait(Native Method) at com.sun.jmx.remote.internal.ArrayNotificationBuffer.fetchNotifications(ArrayNotificationBuffer.java:449) - locked &lt;0x00000000d462ec18&gt; (a com.sun.jmx.remote.internal.ArrayNotificationBuffer) # 查看该进程中哪个线程占用大量 CPU，执行 top -H -p 11281 # 找到执行时间最长的线程id：19279 # printf &quot;%x\\n&quot; 19279 #输出十六进制 4b4f # jstack 19268 |grep 4b4f # 接下来我们将进程中的所有线程输出到一个文件中，执行：jstack 11281&gt; jstack.txt # 在进程中查找对应的线程 ID，执行：cat jstack.txt | grep -i 2c6d # jstack -l 14716 |grep deadlock # 查看死锁 JConsole、VisualVM 用javap查看字节码指令 HSDIS：JIT生成代码反汇编 JVM运行时内存使用情况监控 https://blog.csdn.net/zmx729618/article/details/78392715","headline":"Jvm（二）常用工具","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/blog/assets/images/logo.png"},"name":"siglea"},"url":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html"}</script>
+<!-- End Jekyll SEO tag -->
+
 </head>
-<body id="scrapbook" class="mt-main-index two-columns">
+<body class="one-column">
+
   <div id="container">
-    <div id="container-inner">
-      <!-- 头部 -->
-      <div id="header">
-        <div id="header-inner">
-          <div id="header-content">
-            <h1 id="header-name">Code & Coffee</h1>
-            <p class="subtitle">siglea的数字花园</p>
-            
-            <div id="google_search">
-              <!-- 简化的搜索框 -->
-              <form action="https://www.google.com/search" target="_blank" method="get">
-                <div>
-                  <input type="text" size="20" name="q" class="searchbox" placeholder="搜索...">
-                  <input type="hidden" name="sitesearch" value="https://siglea.github.io/blog" />
-                </div>
-              </form>
-            </div>
-            
-            <div id="feed_icon">
-              <a href="/blog/feed.xml" title="订阅Feed">
-                <img src="https://cdn.beekka.com/blogimg/asset/202107/bg2021072117.png" alt="RSS" style="height: 20px; width: auto;" />
-              </a>
-            </div>
-          </div>
+
+    <div id="header">
+      <div id="header-left">
+        <span id="header-name"><a href="/blog/">Code & Coffee</a></span>
+        <span class="header-nav">
+          &raquo; <a href="/blog/">首页</a>
+          &raquo; <a href="/blog/archive/">档案</a>
+        </span>
+      </div>
+
+      <div id="header-right">
+        <div id="google_search">
+          <form action="https://www.google.com/search" target="_blank" method="get">
+            <input type="text" name="q" class="searchbox" placeholder="Google..." />
+            <input type="hidden" name="sitesearch" value="http://localhost:4000/blog" />
+            <input type="submit" class="searchbox_submit" value="&#x1F50D;" />
+          </form>
+        </div>
+
+        <div id="feed_icon">
+          <a href="/blog/feed.xml" title="RSS Feed">
+            <img src="https://cdn.beekka.com/blogimg/asset/202107/bg2021072117.png" alt="RSS" style="height:18px;width:auto;border:none;" />
+          </a>
         </div>
       </div>
-      
-      <!-- 导航栏 -->
-      <nav id="nav">
-        <ul>
-          <li><a href="/blog/">首页</a></li>
-          <li><a href="/blog/category/技术/">技术</a></li>
-          <li><a href="/blog/category/产品商业/">产品商业</a></li>
-          <li><a href="/blog/category/随记/">随记</a></li>
-          <li><a href="/blog/archive/">存档</a></li>
-          <li><a href="/blog/about/">关于</a></li>
-        </ul>
-      </nav>
-      
-      <!-- 主内容区 -->
-      <div id="content">
-        <div id="content-inner">
-          <div id="alpha">
-            <div id="alpha-inner">
-              <div class="entry-asset asset hentry">
-  <div class="asset-header">
-    <h2 class="asset-name entry-title"> Jvm（二）常用工具 </h2>
-    <p id="asset-tags">
+    </div>
+
+    <div id="content">
+
+      <div id="alpha">
+        <div id="alpha-inner">
+          <div class="entry-asset asset hentry">
+
+  <div class="asset-nav">
+    <div class="entry-categories">
       分类<span class="delimiter">：</span>
       
       <a href="/blog/category/技术/" rel="tag">技术</a>
       
+    </div>
+    <div class="entry-location">
+      
+      <li><a href="/blog/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html">&laquo; Docker</a></li>
+      
+    </div>
+  </div>
+
+  <div class="asset-header">
+    <h1 class="asset-name entry-title"> Jvm（二）常用工具 </h1>
+  </div>
+
+  <div class="asset-meta">
+    <p>
+      日期：
+      <a href="/blog/archive/">
+        <abbr class="published" title="2020-03-27T22:25:00+08:00">
+          2020年03月27日
+        </abbr>
+      </a>
     </p>
   </div>
+
   <div class="asset-content entry-content">
     <div class="asset-body">
       <h4 id="jps-jvm-process-status-tool">JPS JVM Process Status Tool</h4>
@@ -265,75 +292,123 @@ Full thread dump Java HotSpot<span class="o">(</span>TM<span class="o">)</span> 
 </ul>
 
     </div>
-    
-    <div class="asset-more-link">
-      <p><a href="/blog/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html" rel="bookmark">继续阅读全文 »</a></p>
-    </div>
   </div>
+
   <div class="asset-footer">
-    <div class="asset-meta">
-      <p>
-        <span class="byline">
-          <abbr class="published" title="2020-03-27T22:25:00+08:00">
-            2020年03月27日
-          </abbr>
-        </span>
+    <h3>文档信息</h3>
+    <ul>
+      <li>发表日期：2020年03月27日</li>
+      
+      <li>标签：
         
-        <span class="separator">|</span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/03/27/JVM-Util.html#comments">留言（0）</a>
-      </p>
-    </div>
+        <a href="/blog/tag/Java/">Java</a>
+        
+      </li>
+      
+      <li>版权声明：自由转载-非商用-非衍生-保持署名</li>
+    </ul>
   </div>
+
 </div>
 
 
-            </div>
-          </div>
-          
-          <!-- 侧边栏 - 仅列表页显示 -->
-          
+
+<div id="related_entries">
+  <h3>相关文章</h3>
+  <ul>
+    
+    <li>
+      <span>2020.07.28: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <div class="entry-body">
+        <p>DDD
+
+#### Redis 的并发竞争问题如何解决
+- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概...</p>
+      </div>
+    </li>
+    
+    <li>
+      <span>2020.07.26: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <div class="entry-body">
+        <p>#### 高可用
+- 负载均衡
+    - Consul + Consul-template 动态配置 Nginx upstream
+    - Ngin...</p>
+      </div>
+    </li>
+    
+    <li>
+      <span>2020.07.20: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <div class="entry-body">
+        <p>#### 分布式控制方案
+- 中心化的副本控制协议，也就是主从模式
+- primary-secondary协议，也就是leader/follower（数据...</p>
+      </div>
+    </li>
+    
+    <li>
+      <span>2020.07.18: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <div class="entry-body">
+        <p>#### UseCompressedOop
+- CompressedOops原理：
+64位地址分为堆的基地址+偏移量，当堆内存
+```shell
+-Xms...</p>
+      </div>
+    </li>
+    
+  </ul>
+</div>
+
+
         </div>
       </div>
+
       
-      <!-- 页脚 - 关于信息 -->
-      <div id="footer">
-        <div id="footer-inner">
-          <div id="footer-content">
-            <section>
-              <h2>关于</h2>
-              <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
-</p>
-              <p>
-                文章：<a href="/blog/archive/">77</a> |
-                <a href="/blog/feed.xml">RSS</a>
-              </p>
-            </section>
+
+    </div>
+
+    <div id="footer">
+      <div id="footer-content">
+        <section>
+          <h2>关于</h2>
+          <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。</p>
+          <p>
+            文章：<a href="/blog/archive/">77</a>
+            &middot;
+            <a href="/blog/feed.xml">RSS</a>
+          </p>
+        </section>
+
+        <section>
+          <h2>联系</h2>
+          <p>
             
-            <section>
-              <h2>联系</h2>
-              <p>
-                
-                <a href="https://github.com/siglea" target="_blank">GitHub</a> |
-                
-                <a href="mailto:siglea@sina.com">邮箱</a>
-              </p>
-            </section>
+            <a href="https://github.com/siglea">GitHub</a>
             
-            <section>
-              <h2>版权</h2>
-              <p>© 2026 Code & Coffee</p>
-            </section>
-          </div>
-        </div>
+            
+            &middot; <a href="mailto:siglea@sina.com">Email</a>
+            
+          </p>
+        </section>
+
+        <section>
+          <h2>版权</h2>
+          <p>&copy; 2026 Code & Coffee</p>
+          <p>自由转载-非商用-非衍生-保持署名</p>
+        </section>
       </div>
     </div>
+
   </div>
-  
+
   <script>
-    // 移动端适配脚本
-    if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent)) {
-      document.body.classList.add('mobile');
-    }
+  if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+    document.body.classList.add('mobile');
   </script>
 </body>
 </html>

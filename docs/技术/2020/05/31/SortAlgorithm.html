@@ -4,67 +4,94 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>排序算法概述 - Code & Coffee</title>
-  <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
-">
+  <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>排序算法概述 | Code &amp; Coffee</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="排序算法概述" />
+<meta name="author" content="siglea" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="冒泡排序 从左开始比较，大的往右换 或 从右开始比较，小的往左换 重复上一步骤 鸡尾排序 也叫双向冒泡或者定向冒泡， 从左开始比较，大的往右换 与 从右开始比较，小的往左换 同时进行 选择排序 与冒泡排序相比减少了多余的交换 找出最小的元素放在最左侧，接着找第二小的...直到最后排完(不稳定) 快速排序 选中一个基准元素X，小于X放在左侧，大于X放在右侧，分而治之，不断重复 public class QuickSort { public static void main(String[] args) { int[] arr = new int[] {4,7,6,5,3,2,8,1}; quickSort(arr, 0, arr.length-1); System.out.println(Arrays.toString(arr)); } public static void quickSort(int[] arr, int startIndex, int endIndex) { // 递归结束条件：startIndex大等于endIndex的时候 if (startIndex &gt;= endIndex) { return; } // 得到基准元素位置 int pivotIndex = partition(arr, startIndex, endIndex); // 用分治法递归数列的两部分 quickSort(arr, startIndex, pivotIndex - 1); quickSort(arr, pivotIndex + 1, endIndex); } private static int partition(int[] arr, int startIndex, int endIndex) { // 取第一个位置的元素作为基准元素 int pivot = arr[startIndex]; int left = startIndex; int right = endIndex; // 坑的位置，初始等于pivot的位置 int index = startIndex; //大循环在左右指针重合或者交错时结束 while ( right &gt;= left ){ //right指针从右向左进行比较 while ( right &gt;= left ) { if (arr[right] &lt; pivot) { arr[left] = arr[right]; index = right; left++; break; } right--; } //left指针从左向右进行比较 while ( right &gt;= left ) { if (arr[left] &gt; pivot) { arr[right] = arr[left]; index = left; right--; break; } left++; } } arr[index] = pivot; return index; } } 插入排序 从左侧开始设定一个有序区，从第二个元素开始去有序找自己的位置插入进去 希尔排序 按照跨度分成若干&quot;小数组&quot;，进行插入排序 逐渐缩小跨度为1，即完成 public class ShellSort { public static void sort(int [] array){ //希尔排序的增量 int d=array.length; while(d&gt;1) { //使用希尔增量的方式，即每次折半 d=d/2; for(int x=0;x&lt;d;x++) { //开始跨度内的插入排序 for(int i=x+d;i&lt;array.length;i=i+d) { int temp=array[i]; int j; for(j=i-d;j&gt;=0&amp;&amp;array[j]&gt;temp;j=j-d) { array[j+d]=array[j]; } array[j+d]=temp; } } } } public static void main(String [] args) { int[] array = {5,3,9,12,6,1,7,2,4,11,8,10}; sort(array); System.out.println(Arrays.toString(array)); } } 归并排序(比武排序) 由一组数字分为两组，逐渐分为只包含2个元素的小组 开始比较大小，左小右大 比较完毕之后，开始合并，合并的时候按照小大顺序把2个小组合并成1个有序大组，直到最后1个最大有序组 public class MergeSort { public static void main(String[] args) { int[] array = { 5, 8, 6, 3, 9, 2, 1, 7 }; mergeSort(array, 0, array.length-1); System.out.println(Arrays.toString(array)); } static public void mergeSort(int[] array, int start, int end){ if(start &lt; end){ //折半成两个小集合，分别进行递归 int mid=(start+end)/2; mergeSort(array, start, mid); mergeSort(array, mid+1, end); //把两个有序小集合，归并成一个大集合 merge(array, start, mid, end); } } static private void merge(int[] array, int start, int mid, int end){ //开辟额外大集合，设置指针 int[] tempArray = new int[end-start+1]; int p1=start, p2=mid+1, p=0; //比较两个小集合的元素，依次放入大集合 while(p1&lt;=mid &amp;&amp; p2&lt;=end){ if(array[p1]&lt;=array[p2]) tempArray[p++]=array[p1++]; else tempArray[p++]=array[p2++]; } //左侧小集合还有剩余，依次放入大集合尾部 while(p1&lt;=mid) tempArray[p++]=array[p1++]; //右侧小集合还有剩余，依次放入大集合尾部 while(p2&lt;=end) tempArray[p++]=array[p2++]; //把大集合的元素复制回原数组 for (int i=0; i&lt;tempArray.length; i++) array[i+start]=tempArray[i]; } } 计数排序 建立【元素都为0】的空数组，开始遍历待排序数组 如果待排元素值等于空数组的位置角标，则【元素+1】 桶排序 计数排序的升级版，计数排序每个索引只能记录一个值， 索引升级为桶（比如桶范围2.0-3.5） 此时，一个桶里就可以放多个数据范围内的数据 基数排序（按位排序） 提取每个元素的最后一位进行计数排序 再提取倒数第二位进行计数排序 直到最前一位 比如：单词排序，长度不一的末尾用0代替 堆排序 主要利用二叉堆是完全二叉堆这样的数据结构的特性 把无序数组构建成二叉堆。 循环删除堆顶元素，移到集合尾部，调节堆产生新的堆顶。 二叉堆虽然是一颗完全二叉树，但它的存储方式并不是链式存储，而是顺序存储。换句话说，二叉堆的所有节点都存储在数组当中。 利用大顶堆，删除顶点放于数组未部，此后二叉堆自我调整选出新的堆顶 https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg 参考 https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA" />
+<meta property="og:description" content="冒泡排序 从左开始比较，大的往右换 或 从右开始比较，小的往左换 重复上一步骤 鸡尾排序 也叫双向冒泡或者定向冒泡， 从左开始比较，大的往右换 与 从右开始比较，小的往左换 同时进行 选择排序 与冒泡排序相比减少了多余的交换 找出最小的元素放在最左侧，接着找第二小的...直到最后排完(不稳定) 快速排序 选中一个基准元素X，小于X放在左侧，大于X放在右侧，分而治之，不断重复 public class QuickSort { public static void main(String[] args) { int[] arr = new int[] {4,7,6,5,3,2,8,1}; quickSort(arr, 0, arr.length-1); System.out.println(Arrays.toString(arr)); } public static void quickSort(int[] arr, int startIndex, int endIndex) { // 递归结束条件：startIndex大等于endIndex的时候 if (startIndex &gt;= endIndex) { return; } // 得到基准元素位置 int pivotIndex = partition(arr, startIndex, endIndex); // 用分治法递归数列的两部分 quickSort(arr, startIndex, pivotIndex - 1); quickSort(arr, pivotIndex + 1, endIndex); } private static int partition(int[] arr, int startIndex, int endIndex) { // 取第一个位置的元素作为基准元素 int pivot = arr[startIndex]; int left = startIndex; int right = endIndex; // 坑的位置，初始等于pivot的位置 int index = startIndex; //大循环在左右指针重合或者交错时结束 while ( right &gt;= left ){ //right指针从右向左进行比较 while ( right &gt;= left ) { if (arr[right] &lt; pivot) { arr[left] = arr[right]; index = right; left++; break; } right--; } //left指针从左向右进行比较 while ( right &gt;= left ) { if (arr[left] &gt; pivot) { arr[right] = arr[left]; index = left; right--; break; } left++; } } arr[index] = pivot; return index; } } 插入排序 从左侧开始设定一个有序区，从第二个元素开始去有序找自己的位置插入进去 希尔排序 按照跨度分成若干&quot;小数组&quot;，进行插入排序 逐渐缩小跨度为1，即完成 public class ShellSort { public static void sort(int [] array){ //希尔排序的增量 int d=array.length; while(d&gt;1) { //使用希尔增量的方式，即每次折半 d=d/2; for(int x=0;x&lt;d;x++) { //开始跨度内的插入排序 for(int i=x+d;i&lt;array.length;i=i+d) { int temp=array[i]; int j; for(j=i-d;j&gt;=0&amp;&amp;array[j]&gt;temp;j=j-d) { array[j+d]=array[j]; } array[j+d]=temp; } } } } public static void main(String [] args) { int[] array = {5,3,9,12,6,1,7,2,4,11,8,10}; sort(array); System.out.println(Arrays.toString(array)); } } 归并排序(比武排序) 由一组数字分为两组，逐渐分为只包含2个元素的小组 开始比较大小，左小右大 比较完毕之后，开始合并，合并的时候按照小大顺序把2个小组合并成1个有序大组，直到最后1个最大有序组 public class MergeSort { public static void main(String[] args) { int[] array = { 5, 8, 6, 3, 9, 2, 1, 7 }; mergeSort(array, 0, array.length-1); System.out.println(Arrays.toString(array)); } static public void mergeSort(int[] array, int start, int end){ if(start &lt; end){ //折半成两个小集合，分别进行递归 int mid=(start+end)/2; mergeSort(array, start, mid); mergeSort(array, mid+1, end); //把两个有序小集合，归并成一个大集合 merge(array, start, mid, end); } } static private void merge(int[] array, int start, int mid, int end){ //开辟额外大集合，设置指针 int[] tempArray = new int[end-start+1]; int p1=start, p2=mid+1, p=0; //比较两个小集合的元素，依次放入大集合 while(p1&lt;=mid &amp;&amp; p2&lt;=end){ if(array[p1]&lt;=array[p2]) tempArray[p++]=array[p1++]; else tempArray[p++]=array[p2++]; } //左侧小集合还有剩余，依次放入大集合尾部 while(p1&lt;=mid) tempArray[p++]=array[p1++]; //右侧小集合还有剩余，依次放入大集合尾部 while(p2&lt;=end) tempArray[p++]=array[p2++]; //把大集合的元素复制回原数组 for (int i=0; i&lt;tempArray.length; i++) array[i+start]=tempArray[i]; } } 计数排序 建立【元素都为0】的空数组，开始遍历待排序数组 如果待排元素值等于空数组的位置角标，则【元素+1】 桶排序 计数排序的升级版，计数排序每个索引只能记录一个值， 索引升级为桶（比如桶范围2.0-3.5） 此时，一个桶里就可以放多个数据范围内的数据 基数排序（按位排序） 提取每个元素的最后一位进行计数排序 再提取倒数第二位进行计数排序 直到最前一位 比如：单词排序，长度不一的末尾用0代替 堆排序 主要利用二叉堆是完全二叉堆这样的数据结构的特性 把无序数组构建成二叉堆。 循环删除堆顶元素，移到集合尾部，调节堆产生新的堆顶。 二叉堆虽然是一颗完全二叉树，但它的存储方式并不是链式存储，而是顺序存储。换句话说，二叉堆的所有节点都存储在数组当中。 利用大顶堆，删除顶点放于数组未部，此后二叉堆自我调整选出新的堆顶 https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg 参考 https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA" />
+<link rel="canonical" href="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html" />
+<meta property="og:url" content="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html" />
+<meta property="og:site_name" content="Code &amp; Coffee" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-31T11:25:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="排序算法概述" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-05-31T11:25:00+08:00","datePublished":"2020-05-31T11:25:00+08:00","description":"冒泡排序 从左开始比较，大的往右换 或 从右开始比较，小的往左换 重复上一步骤 鸡尾排序 也叫双向冒泡或者定向冒泡， 从左开始比较，大的往右换 与 从右开始比较，小的往左换 同时进行 选择排序 与冒泡排序相比减少了多余的交换 找出最小的元素放在最左侧，接着找第二小的...直到最后排完(不稳定) 快速排序 选中一个基准元素X，小于X放在左侧，大于X放在右侧，分而治之，不断重复 public class QuickSort { public static void main(String[] args) { int[] arr = new int[] {4,7,6,5,3,2,8,1}; quickSort(arr, 0, arr.length-1); System.out.println(Arrays.toString(arr)); } public static void quickSort(int[] arr, int startIndex, int endIndex) { // 递归结束条件：startIndex大等于endIndex的时候 if (startIndex &gt;= endIndex) { return; } // 得到基准元素位置 int pivotIndex = partition(arr, startIndex, endIndex); // 用分治法递归数列的两部分 quickSort(arr, startIndex, pivotIndex - 1); quickSort(arr, pivotIndex + 1, endIndex); } private static int partition(int[] arr, int startIndex, int endIndex) { // 取第一个位置的元素作为基准元素 int pivot = arr[startIndex]; int left = startIndex; int right = endIndex; // 坑的位置，初始等于pivot的位置 int index = startIndex; //大循环在左右指针重合或者交错时结束 while ( right &gt;= left ){ //right指针从右向左进行比较 while ( right &gt;= left ) { if (arr[right] &lt; pivot) { arr[left] = arr[right]; index = right; left++; break; } right--; } //left指针从左向右进行比较 while ( right &gt;= left ) { if (arr[left] &gt; pivot) { arr[right] = arr[left]; index = left; right--; break; } left++; } } arr[index] = pivot; return index; } } 插入排序 从左侧开始设定一个有序区，从第二个元素开始去有序找自己的位置插入进去 希尔排序 按照跨度分成若干&quot;小数组&quot;，进行插入排序 逐渐缩小跨度为1，即完成 public class ShellSort { public static void sort(int [] array){ //希尔排序的增量 int d=array.length; while(d&gt;1) { //使用希尔增量的方式，即每次折半 d=d/2; for(int x=0;x&lt;d;x++) { //开始跨度内的插入排序 for(int i=x+d;i&lt;array.length;i=i+d) { int temp=array[i]; int j; for(j=i-d;j&gt;=0&amp;&amp;array[j]&gt;temp;j=j-d) { array[j+d]=array[j]; } array[j+d]=temp; } } } } public static void main(String [] args) { int[] array = {5,3,9,12,6,1,7,2,4,11,8,10}; sort(array); System.out.println(Arrays.toString(array)); } } 归并排序(比武排序) 由一组数字分为两组，逐渐分为只包含2个元素的小组 开始比较大小，左小右大 比较完毕之后，开始合并，合并的时候按照小大顺序把2个小组合并成1个有序大组，直到最后1个最大有序组 public class MergeSort { public static void main(String[] args) { int[] array = { 5, 8, 6, 3, 9, 2, 1, 7 }; mergeSort(array, 0, array.length-1); System.out.println(Arrays.toString(array)); } static public void mergeSort(int[] array, int start, int end){ if(start &lt; end){ //折半成两个小集合，分别进行递归 int mid=(start+end)/2; mergeSort(array, start, mid); mergeSort(array, mid+1, end); //把两个有序小集合，归并成一个大集合 merge(array, start, mid, end); } } static private void merge(int[] array, int start, int mid, int end){ //开辟额外大集合，设置指针 int[] tempArray = new int[end-start+1]; int p1=start, p2=mid+1, p=0; //比较两个小集合的元素，依次放入大集合 while(p1&lt;=mid &amp;&amp; p2&lt;=end){ if(array[p1]&lt;=array[p2]) tempArray[p++]=array[p1++]; else tempArray[p++]=array[p2++]; } //左侧小集合还有剩余，依次放入大集合尾部 while(p1&lt;=mid) tempArray[p++]=array[p1++]; //右侧小集合还有剩余，依次放入大集合尾部 while(p2&lt;=end) tempArray[p++]=array[p2++]; //把大集合的元素复制回原数组 for (int i=0; i&lt;tempArray.length; i++) array[i+start]=tempArray[i]; } } 计数排序 建立【元素都为0】的空数组，开始遍历待排序数组 如果待排元素值等于空数组的位置角标，则【元素+1】 桶排序 计数排序的升级版，计数排序每个索引只能记录一个值， 索引升级为桶（比如桶范围2.0-3.5） 此时，一个桶里就可以放多个数据范围内的数据 基数排序（按位排序） 提取每个元素的最后一位进行计数排序 再提取倒数第二位进行计数排序 直到最前一位 比如：单词排序，长度不一的末尾用0代替 堆排序 主要利用二叉堆是完全二叉堆这样的数据结构的特性 把无序数组构建成二叉堆。 循环删除堆顶元素，移到集合尾部，调节堆产生新的堆顶。 二叉堆虽然是一颗完全二叉树，但它的存储方式并不是链式存储，而是顺序存储。换句话说，二叉堆的所有节点都存储在数组当中。 利用大顶堆，删除顶点放于数组未部，此后二叉堆自我调整选出新的堆顶 https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg 参考 https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA","headline":"排序算法概述","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/blog/assets/images/logo.png"},"name":"siglea"},"url":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html"}</script>
+<!-- End Jekyll SEO tag -->
+
 </head>
-<body id="scrapbook" class="mt-main-index two-columns">
+<body class="one-column">
+
   <div id="container">
-    <div id="container-inner">
-      <!-- 头部 -->
-      <div id="header">
-        <div id="header-inner">
-          <div id="header-content">
-            <h1 id="header-name">Code & Coffee</h1>
-            <p class="subtitle">siglea的数字花园</p>
-            
-            <div id="google_search">
-              <!-- 简化的搜索框 -->
-              <form action="https://www.google.com/search" target="_blank" method="get">
-                <div>
-                  <input type="text" size="20" name="q" class="searchbox" placeholder="搜索...">
-                  <input type="hidden" name="sitesearch" value="https://siglea.github.io/blog" />
-                </div>
-              </form>
-            </div>
-            
-            <div id="feed_icon">
-              <a href="/blog/feed.xml" title="订阅Feed">
-                <img src="https://cdn.beekka.com/blogimg/asset/202107/bg2021072117.png" alt="RSS" style="height: 20px; width: auto;" />
-              </a>
-            </div>
-          </div>
+
+    <div id="header">
+      <div id="header-left">
+        <span id="header-name"><a href="/blog/">Code & Coffee</a></span>
+        <span class="header-nav">
+          &raquo; <a href="/blog/">首页</a>
+          &raquo; <a href="/blog/archive/">档案</a>
+        </span>
+      </div>
+
+      <div id="header-right">
+        <div id="google_search">
+          <form action="https://www.google.com/search" target="_blank" method="get">
+            <input type="text" name="q" class="searchbox" placeholder="Google..." />
+            <input type="hidden" name="sitesearch" value="http://localhost:4000/blog" />
+            <input type="submit" class="searchbox_submit" value="&#x1F50D;" />
+          </form>
+        </div>
+
+        <div id="feed_icon">
+          <a href="/blog/feed.xml" title="RSS Feed">
+            <img src="https://cdn.beekka.com/blogimg/asset/202107/bg2021072117.png" alt="RSS" style="height:18px;width:auto;border:none;" />
+          </a>
         </div>
       </div>
-      
-      <!-- 导航栏 -->
-      <nav id="nav">
-        <ul>
-          <li><a href="/blog/">首页</a></li>
-          <li><a href="/blog/category/技术/">技术</a></li>
-          <li><a href="/blog/category/产品商业/">产品商业</a></li>
-          <li><a href="/blog/category/随记/">随记</a></li>
-          <li><a href="/blog/archive/">存档</a></li>
-          <li><a href="/blog/about/">关于</a></li>
-        </ul>
-      </nav>
-      
-      <!-- 主内容区 -->
-      <div id="content">
-        <div id="content-inner">
-          <div id="alpha">
-            <div id="alpha-inner">
-              <div class="entry-asset asset hentry">
-  <div class="asset-header">
-    <h2 class="asset-name entry-title">排序算法概述</h2>
-    <p id="asset-tags">
+    </div>
+
+    <div id="content">
+
+      <div id="alpha">
+        <div id="alpha-inner">
+          <div class="entry-asset asset hentry">
+
+  <div class="asset-nav">
+    <div class="entry-categories">
       分类<span class="delimiter">：</span>
       
       <a href="/blog/category/技术/" rel="tag">技术</a>
       
+    </div>
+    <div class="entry-location">
+      
+      <li><a href="/blog/%E6%8A%80%E6%9C%AF/2020/05/22/MessageQueue.html">&laquo;  kafka activeMQ R...</a></li>
+      
+    </div>
+  </div>
+
+  <div class="asset-header">
+    <h1 class="asset-name entry-title">排序算法概述</h1>
+  </div>
+
+  <div class="asset-meta">
+    <p>
+      日期：
+      <a href="/blog/archive/">
+        <abbr class="published" title="2020-05-31T11:25:00+08:00">
+          2020年05月31日
+        </abbr>
+      </a>
     </p>
   </div>
+
   <div class="asset-content entry-content">
     <div class="asset-body">
       <h4 id="冒泡排序">冒泡排序</h4>
@@ -264,75 +291,123 @@
 <h4 id="参考-httpsmpweixinqqcomsteogqlslb6ap4aqrx7ttza">参考 <a href="https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA">https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA</a></h4>
 
     </div>
-    
-    <div class="asset-more-link">
-      <p><a href="/blog/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html" rel="bookmark">继续阅读全文 »</a></p>
-    </div>
   </div>
+
   <div class="asset-footer">
-    <div class="asset-meta">
-      <p>
-        <span class="byline">
-          <abbr class="published" title="2020-05-31T11:25:00+08:00">
-            2020年05月31日
-          </abbr>
-        </span>
+    <h3>文档信息</h3>
+    <ul>
+      <li>发表日期：2020年05月31日</li>
+      
+      <li>标签：
         
-        <span class="separator">|</span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/05/31/SortAlgorithm.html#comments">留言（0）</a>
-      </p>
-    </div>
+        <a href="/blog/tag/数据结构与算法/">数据结构与算法</a>
+        
+      </li>
+      
+      <li>版权声明：自由转载-非商用-非衍生-保持署名</li>
+    </ul>
   </div>
+
 </div>
 
 
-            </div>
-          </div>
-          
-          <!-- 侧边栏 - 仅列表页显示 -->
-          
+
+<div id="related_entries">
+  <h3>相关文章</h3>
+  <ul>
+    
+    <li>
+      <span>2020.07.28: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <div class="entry-body">
+        <p>DDD
+
+#### Redis 的并发竞争问题如何解决
+- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概...</p>
+      </div>
+    </li>
+    
+    <li>
+      <span>2020.07.26: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <div class="entry-body">
+        <p>#### 高可用
+- 负载均衡
+    - Consul + Consul-template 动态配置 Nginx upstream
+    - Ngin...</p>
+      </div>
+    </li>
+    
+    <li>
+      <span>2020.07.20: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <div class="entry-body">
+        <p>#### 分布式控制方案
+- 中心化的副本控制协议，也就是主从模式
+- primary-secondary协议，也就是leader/follower（数据...</p>
+      </div>
+    </li>
+    
+    <li>
+      <span>2020.07.18: </span>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <div class="entry-body">
+        <p>#### UseCompressedOop
+- CompressedOops原理：
+64位地址分为堆的基地址+偏移量，当堆内存
+```shell
+-Xms...</p>
+      </div>
+    </li>
+    
+  </ul>
+</div>
+
+
         </div>
       </div>
+
       
-      <!-- 页脚 - 关于信息 -->
-      <div id="footer">
-        <div id="footer-inner">
-          <div id="footer-content">
-            <section>
-              <h2>关于</h2>
-              <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。
-</p>
-              <p>
-                文章：<a href="/blog/archive/">77</a> |
-                <a href="/blog/feed.xml">RSS</a>
-              </p>
-            </section>
+
+    </div>
+
+    <div id="footer">
+      <div id="footer-content">
+        <section>
+          <h2>关于</h2>
+          <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。</p>
+          <p>
+            文章：<a href="/blog/archive/">77</a>
+            &middot;
+            <a href="/blog/feed.xml">RSS</a>
+          </p>
+        </section>
+
+        <section>
+          <h2>联系</h2>
+          <p>
             
-            <section>
-              <h2>联系</h2>
-              <p>
-                
-                <a href="https://github.com/siglea" target="_blank">GitHub</a> |
-                
-                <a href="mailto:siglea@sina.com">邮箱</a>
-              </p>
-            </section>
+            <a href="https://github.com/siglea">GitHub</a>
             
-            <section>
-              <h2>版权</h2>
-              <p>© 2026 Code & Coffee</p>
-            </section>
-          </div>
-        </div>
+            
+            &middot; <a href="mailto:siglea@sina.com">Email</a>
+            
+          </p>
+        </section>
+
+        <section>
+          <h2>版权</h2>
+          <p>&copy; 2026 Code & Coffee</p>
+          <p>自由转载-非商用-非衍生-保持署名</p>
+        </section>
       </div>
     </div>
+
   </div>
-  
+
   <script>
-    // 移动端适配脚本
-    if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent)) {
-      document.body.classList.add('mobile');
-    }
+  if (/mobile/i.test(navigator.userAgent) || /android/i.test(navigator.userAgent))
+    document.body.classList.add('mobile');
   </script>
 </body>
 </html>
