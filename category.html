@@ -3,30 +3,37 @@ layout: default
 title: 分类
 ---
 
-<div class="archive-page">
-  <h1>文章分类</h1>
-  
-  {% for category in site.categories %}
-  <section class="category-section">
-    <h2>
-      <a href="{{ site.baseurl }}/category/{{ category[0] }}/">{{ category[0] }}</a>
-      <span class="count">({{ category[1].size }})</span>
-    </h2>
-    
-    {% for post in category[1] limit:5 %}
-    <article class="post-item">
-      <p class="post-date">{{ post.date | date: "%Y年%m月%d日" }}</p>
-      <h3 class="post-title">
-        <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-      </h3>
-    </article>
-    {% endfor %}
-    
-    {% if category[1].size > 5 %}
-    <p style="font-size: 14px; margin-top: 15px;">
-      <a href="{{ site.baseurl }}/category/{{ category[0] }}/">查看全部 {{ category[1].size }} 篇文章...</a>
-    </p>
-    {% endif %}
-  </section>
+<div class="entry-asset asset hentry">
+  <div class="asset-header">
+    <h1 class="asset-name entry-title">文章分类</h1>
+  </div>
+  <div class="asset-content entry-content">
+    <div class="asset-body">
+      {% for category in site.categories %}
+      <section class="category-section">
+        <h2>
+          <a href="{{ site.baseurl }}/category/{{ category[0] }}/">{{ category[0] }}</a>
+          <span class="count">({{ category[1].size }})</span>
+        </h2>
+        
+        <ul>
+        {% for post in category[1] limit:5 %}
+        <li class="module-list-item">
+          <span>{{ post.date | date: "%Y年%m月%d日" }} » </span>
+          <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </li>
+        {% endfor %}
+        </ul>
+        
+        {% if category[1].size > 5 %}
+        <p style="font-size: 1.6em; margin-top: 15px;">
+          <a href="{{ site.baseurl }}/category/{{ category[0] }}/">查看全部 {{ category[1].size }} 篇文章...</a>
+        </p>
+        {% endif %}
+      </section>
+      {% endfor %}
+    </div>
+  </div>
+</div>
   {% endfor %}
 </div>

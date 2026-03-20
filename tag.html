@@ -3,31 +3,34 @@ layout: default
 title: 标签
 ---
 
-<div class="row" style="margin-bottom:30px">
-    <div class="home col-md-8">
-        <h1>文章标签</h1>
-        <p>共 {{ site.tags | size }} 个标签</p>
-        <hr>
-        
-        <div class="tags-cloud" style="margin: 30px 0;">
-            {% for tag in site.tags %}
-            {% assign tag_name = tag | first %}
-            {% assign posts = tag | last %}
-            {% assign font_size = posts | size | times: 2 | plus: 12 %}
-            {% if font_size > 24 %}{% assign font_size = 24 %}{% endif %}
-            <a href="{{ site.baseurl }}/tag/{{ tag_name | slugify }}/" 
-               style="display: inline-block; margin: 8px; padding: 8px 16px; 
-                      background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); 
-                      color: white; border-radius: 20px; text-decoration: none; 
-                      font-size: {{ font_size }}px; transition: all 0.3s ease;
-                      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);"
-               onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99, 102, 241, 0.4)'"
-               onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 8px rgba(99, 102, 241, 0.3)'">
-                {{ tag_name }}
-                <span style="opacity: 0.9; font-size: 0.8em;">({{ posts | size }})</span>
-            </a>
-            {% endfor %}
-        </div>
+<div class="entry-asset asset hentry">
+  <div class="asset-header">
+    <h1 class="asset-name entry-title">文章标签</h1>
+  </div>
+  <div class="asset-content entry-content">
+    <div class="asset-body">
+      <p style="font-size: 1.6em;">共 {{ site.tags | size }} 个标签</p>
+      <hr>
+      
+      <div class="tag-cloud" style="margin: 30px 0;">
+          {% for tag in site.tags %}
+          {% assign tag_name = tag | first %}
+          {% assign posts = tag | last %}
+          {% assign font_size = posts | size | times: 2 | plus: 12 %}
+          {% if font_size > 24 %}{% assign font_size = 24 %}{% endif %}
+          <a href="{{ site.baseurl }}/tag/{{ tag_name | slugify }}/" 
+             style="display: inline-block; margin: 8px; padding: 8px 16px; 
+                    background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); 
+                    color: white; border-radius: 20px; text-decoration: none; 
+                    font-size: {{ font_size }}px; transition: all 0.3s ease;
+                    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);"
+             onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99, 102, 241, 0.4)'"
+             onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 8px rgba(99, 102, 241, 0.3)'">
+              {{ tag_name }}
+              <span style="opacity: 0.9; font-size: 0.8em;">({{ posts | size }})</span>
+          </a>
+          {% endfor %}
+      </div>
 
         <hr style="margin: 40px 0;">
         
