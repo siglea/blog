@@ -31,28 +31,29 @@ a:hover {
   margin: 0 auto;
   padding: 0 20px;
   background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加轻微阴影，增加层次感 */
 }
 
 #header {
   padding: 20px 0 12px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
   margin-bottom: 12px;
 }
 
 #header h1 {
   font-size: 24px;
-  font-weight: normal;
+  font-weight: bold; /* 加粗标题 */
   margin-bottom: 2px;
   line-height: 1.3;
 }
 
 #header h1 a {
-  color: #333;
+  color: #000; /* 更深的黑色 */
   text-decoration: none;
 }
 
 #header h1 a:hover {
-  color: #000;
+  color: #333;
 }
 
 #header .subtitle {
@@ -62,7 +63,7 @@ a:hover {
 
 #nav {
   padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
   margin-bottom: 20px;
 }
 
@@ -82,7 +83,7 @@ a:hover {
 }
 
 #nav a:hover {
-  color: #333;
+  color: #000; /* 更深的悬停颜色 */
   text-decoration: underline;
 }
 
@@ -283,10 +284,10 @@ a:hover {
 
 .posts-list h2 {
   font-size: 14px;
-  font-weight: normal;
+  font-weight: bold; /* 加粗标题 */
   margin-bottom: 12px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
 }
 
 .post-item {
@@ -297,7 +298,7 @@ a:hover {
 
 .post-item::before {
   content: "■ ";
-  color: #999;
+  color: #666; /* 更深的颜色 */
   font-size: 12px;
 }
 
@@ -323,7 +324,7 @@ a:hover {
 }
 
 .post-item .post-title a:hover {
-  color: #06c;
+  color: #000; /* 更深的悬停颜色 */
   text-decoration: underline;
 }
 
@@ -767,10 +768,10 @@ a:hover {
 
 #footer {
   padding: 20px 0;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid #dcdcdc; /* 使用更深的边框色 */
   margin-top: 30px;
   font-size: 11px;
-  color: #999;
+  color: #666; /* 更深的颜色 */
   text-align: center;
 }
 
@@ -779,7 +780,7 @@ a:hover {
 }
 
 #footer a:hover {
-  color: #333;
+  color: #000; /* 更深的悬停颜色 */
   text-decoration: underline;
 }
 
