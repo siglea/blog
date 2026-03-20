@@ -6,7 +6,7 @@ comments: true
 tags:
 - 用户
 categories:
-- 产品商业
+- 技术
 ---
 #### 核心
 - 用户画像体系，有这一篇就够了 <https://mp.weixin.qq.com/s/WbBUX2g_XhGXrH9xtv0i2Q>

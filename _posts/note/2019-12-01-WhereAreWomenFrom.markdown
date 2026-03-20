@@ -6,7 +6,7 @@ comments: true
 tags:
 - 极致思考
 categories:
-- 随记
+- 随手记
 ---
 
 #### 开言

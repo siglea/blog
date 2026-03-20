@@ -6,7 +6,7 @@ comments: true
 tag: 
 - 读书笔记
 categories:
-- 随记
+- 随手记
 ---
 
 ### 优秀的绵羊
