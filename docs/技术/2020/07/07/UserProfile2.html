@@ -72,7 +72,10 @@
     </div>
     <div class="entry-location">
       
-      <li><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html">&laquo; myBatis</a></li>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html">&laquo; myBatis</a></span>
+      
+      
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html">用户画像之标签数据开发 &raquo;</a></span>
       
     </div>
   </div>
@@ -104,44 +107,44 @@
 </ul>
 
 <h4 id="标签分区存储">标签分区存储</h4>
-<p><img src="/img/up1.jpeg" width="600px" /></p>
+<p><img src="/blog/img/up1.jpeg" width="600px" /></p>
 <ul>
   <li>数字表示
     <ul>
       <li>0：用户没被打上该标签</li>
       <li>1：用户被打上该标签，但是没有具体数值</li>
       <li>具体数字：用户被打上该标签，有具体数值
-<img src="/img/up2.jpg" width="600px" /></li>
+<img src="/blog/img/up2.jpg" width="600px" /></li>
     </ul>
   </li>
 </ul>
 
 <h4 id="标签以userid进行冗余存储">标签以UserID进行冗余存储</h4>
-<p><img src="/img/up3.jpg" width="600px" /></p>
+<p><img src="/blog/img/up3.jpg" width="600px" /></p>
 
 <h4 id="id-map">ID-MAP</h4>
 <ul>
   <li>用户使用不同设备登录系统，或者同一设备登录多个用户</li>
   <li>可以通过event_log、page_view_log等来获取登录时长、登录天数</li>
   <li>userid与cookieId通常是多对多
-<img src="/img/up4.jpg" width="600px" /></li>
+<img src="/blog/img/up4.jpg" width="600px" /></li>
 </ul>
 
 <h4 id="mysql存储元数据管理">Mysql存储元数据管理</h4>
-<p><img src="/img/up5.jpg" width="600px" /></p>
+<p><img src="/blog/img/up5.jpg" width="600px" /></p>
 
 <h4 id="mysql存储结果集">Mysql存储结果集</h4>
 <p>比如用脚本通过Sqoop把Hive结果导入的mysql中，主要是离线，在线的建议用HBase</p>
 
 <h4 id="hbase存储">HBase存储</h4>
 <p>使用Spark，把用户标签同步到HBase以供线上实时访问
-<img src="/img/up6.jpg" width="600px" /></p>
+<img src="/blog/img/up6.jpg" width="600px" /></p>
 
 <h4 id="es做为hbase的二级索引方便快速检索">Es做为HBase的二级索引方便快速检索</h4>
-<p><img src="/img/up7.jpg" width="600px" /></p>
+<p><img src="/blog/img/up7.jpg" width="600px" /></p>
 
 <h4 id="从etlhivhbasees整个链路的数据监控旧数据可怕">从ETL/Hiv/HBase/Es整个链路的数据监控，旧数据可怕</h4>
-<p><img src="/img/up8.jpg" width="600px" /></p>
+<p><img src="/blog/img/up8.jpg" width="600px" /></p>
 
     </div>
   </div>
@@ -173,10 +176,7 @@
       <span>2020.07.28: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
       <div class="entry-body">
-        <p>DDD
-
-#### Redis 的并发竞争问题如何解决
-- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概...</p>
+        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
       </div>
     </li>
     
@@ -184,10 +184,7 @@
       <span>2020.07.26: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
       <div class="entry-body">
-        <p>#### 高可用
-- 负载均衡
-    - Consul + Consul-template 动态配置 Nginx upstream
-    - Ngin...</p>
+        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
       </div>
     </li>
     
@@ -195,9 +192,7 @@
       <span>2020.07.20: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
       <div class="entry-body">
-        <p>#### 分布式控制方案
-- 中心化的副本控制协议，也就是主从模式
-- primary-secondary协议，也就是leader/follower（数据...</p>
+        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
       </div>
     </li>
     
@@ -205,11 +200,7 @@
       <span>2020.07.18: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
       <div class="entry-body">
-        <p>#### UseCompressedOop
-- CompressedOops原理：
-64位地址分为堆的基地址+偏移量，当堆内存
-```shell
--Xms...</p>
+        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
       </div>
     </li>
     

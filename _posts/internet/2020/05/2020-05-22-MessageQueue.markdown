@@ -9,7 +9,7 @@ categories:
 - 技术
 ---
 #### MOM(Message Oriented Middleware)
-<img src="/img/mq.jpg" width="600px"> 
+<img src="{{ site.baseurl }}/img/mq.jpg" width="600px"> 
 
 - 17 个方面，综合对比 Kafka、RabbitMQ、RocketMQ、ActiveMQ 
 <https://mp.weixin.qq.com/s/u7pyzEQgqmux9qUI_SPaNw>
@@ -217,7 +217,7 @@ broker机器的外网ip  hostname.com
   
 ### rocketmq
 
-<img src="/img/RocketMq.jpg" width="600px"> 
+<img src="{{ site.baseurl }}/img/RocketMq.jpg" width="600px"> 
 
 #### RocketMq优点
 - 支持分布式：原生支持分布式,ActiveMQ原生存在单点

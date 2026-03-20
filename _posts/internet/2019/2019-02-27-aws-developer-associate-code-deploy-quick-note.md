@@ -13,7 +13,7 @@ categories:
 integrate with CI/CD tools as well as config management tools `ansible`, `chef`, `puppet`
 
 ## Steps to deploy a project
-<img src="/img/code_deploy.png">
+<img src="{{ site.baseurl }}/img/code_deploy.png">
 
 
 ## deploy methods

@@ -17,34 +17,34 @@ categories:
 - 随时􏰣变化:数据仓􏱓库关注􏱩的是历史􏲙数据，按􏲌时间􏰣顺序定期从􏰊业务库和􏱰日志􏱺库里面载􏲚入新的数据进行追􏲛加，带有时间属性􏰲。
 
 #### 标签分区存储
-<img src="/img/up1.jpeg" width="600px">
+<img src="{{ site.baseurl }}/img/up1.jpeg" width="600px">
 - 数字表示
     - 0：用户没被打上该标签
     - 1：用户被打上该标签，但是没有具体数值
     - 具体数字：用户被打上该标签，有具体数值
-<img src="/img/up2.jpg" width="600px">
+<img src="{{ site.baseurl }}/img/up2.jpg" width="600px">
 
 #### 标签以UserID进行冗余存储
-<img src="/img/up3.jpg" width="600px">
+<img src="{{ site.baseurl }}/img/up3.jpg" width="600px">
 
 #### ID-MAP
 - 用户使用不同设备登录系统，或者同一设备登录多个用户
 - 可以通过event_log、page_view_log等来获取登录时长、登录天数
 - userid与cookieId通常是多对多
-<img src="/img/up4.jpg" width="600px">
+<img src="{{ site.baseurl }}/img/up4.jpg" width="600px">
 
 #### Mysql存储元数据管理
-<img src="/img/up5.jpg" width="600px">
+<img src="{{ site.baseurl }}/img/up5.jpg" width="600px">
 
 #### Mysql存储结果集
 比如用脚本通过Sqoop把Hive结果导入的mysql中，主要是离线，在线的建议用HBase
 
 #### HBase存储
 使用Spark，把用户标签同步到HBase以供线上实时访问
-<img src="/img/up6.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/up6.jpg" width="600px" />
 
 #### Es做为HBase的二级索引方便快速检索
-<img src="/img/up7.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/up7.jpg" width="600px" />
 
 #### 从ETL/Hiv/HBase/Es整个链路的数据监控，旧数据可怕
-<img src="/img/up8.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/up8.jpg" width="600px" />

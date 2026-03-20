@@ -133,7 +133,7 @@ private native int epollWait(long pollAddress, int numfds, long timeout,
 - Unpooled.copiedBuffer("Netty rocks!",CharsetUtil.UTF-8);
 - 由于采用引用计数，需要在消费完消息之后调用ReferenceCountUtil.release(msg);
 - 可以通过 java -Dio.netty.leakDetectionLevel=ADVANCED 这个参数设置泄露检测级别
-<img src="/img/leak_level.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/leak_level.jpg" width="600px" />
 
 #### ChannelHandler ChannelPipeline ChannelHandlerContext
 - 每个ChannelHandler都会分配一个ChannelHandlerContext
@@ -156,7 +156,7 @@ if (!f.isSuccess()) { f.cause().printStackTrace();
 #### EventLoop和线程池
 - 本质是创建包含少量的线程EventLoop的线程池EventLoopGroup，一个EventLoop管理多个Channel，
     实际上就是IO多路复用
-<img src="/img/eventLoop.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/eventLoop.jpg" width="600px" />
 
 #### Bootstrap
 - 为什么引导类是 Cloneable 的 你有时可能会需要创建多个具有类似配置或者完全相同配置的Channel。为了支持这种模式而又不
@@ -169,14 +169,14 @@ if (!f.isSuccess()) { f.cause().printStackTrace();
     - 其次，Netty 也包含了一组设计模式，将应用程序逻辑从网络层解耦， 简化了开发过程，同时也最大限度地提高了可测试性、模块化以及代码的可重用性。
 
 ####  不使用Netty的NIO
-<img src="/img/nio-selector.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/nio-selector.jpg" width="600px" />
 
 ####  Netty 的 OpenSSL/SSLEngine 实现
 - Netty 还提供了使用 OpenSSL 工具包(www.openssl.org)的 SSLEngine 实现。这个 OpenSsl-Engine 类提供了比 JDK 提供的 SSLEngine 实现更好的性能。
 - 如果 OpenSSL 库可用，可以将 Netty 应用程序(客户端和服务器)配置为默认使用 OpenSslEngine。如果不可用，Netty 将会回退到 JDK 实现。有关配置 OpenSSL 支持的详细说明，参见 Netty 文档: http://netty.io/wiki/forked-tomcat-native.html#wikih2-1。
 - 注意，无论你使用 JDK 的 SSLEngine 还是使用 Netty 的 OpenSslEngine，SSL API 和数据流都 是一致的。
 
-<img src="/img/ssl_tls.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/ssl_tls.jpg" width="600px" />
 
 ```shell
 SelfSignedCertificate cert = new SelfSignedCertificate();

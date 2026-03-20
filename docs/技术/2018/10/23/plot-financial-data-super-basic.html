@@ -72,7 +72,10 @@
     </div>
     <div class="entry-location">
       
-      <li><a href="/blog/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html">&laquo; Configure Mailgun...</a></li>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html">&laquo; Configure Mailgun...</a></span>
+      
+      
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/10/25/serialize-non-activerecord-model-in-rails.html">Serialize Non-Act... &raquo;</a></span>
       
     </div>
   </div>
@@ -109,7 +112,7 @@
 <span class="n">apple_data</span> <span class="o">=</span> <span class="n">market_train_df</span><span class="p">[</span><span class="n">market_train_df</span><span class="p">[</span><span class="sh">'</span><span class="s">assetCode</span><span class="sh">'</span><span class="p">]</span> <span class="o">==</span> <span class="sh">'</span><span class="s">AAPL.O</span><span class="sh">'</span><span class="p">]</span>
 <span class="n">apple_data</span><span class="p">.</span><span class="nf">set_index</span><span class="p">(</span><span class="sh">'</span><span class="s">time</span><span class="sh">'</span><span class="p">)[</span><span class="sh">'</span><span class="s">close</span><span class="sh">'</span><span class="p">].</span><span class="nf">plot</span><span class="p">(</span><span class="n">grid</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
 </code></pre></div></div>
-<p><img src="/img/python-plot-financial-data-1.png" style="height:50%" /></p>
+<p><img src="/blog/img/python-plot-financial-data-1.png" style="height:50%" /></p>
 
 <h2 id="compare-multiple-plots">compare multiple plots</h2>
 <p>Then I’m trying to sanitize the data by looking at the figure it self, I want to plot all suspicious assets.</p>
@@ -117,7 +120,7 @@
     <span class="n">apple_data</span> <span class="o">=</span> <span class="n">market_train_df</span><span class="p">[</span><span class="n">market_train_df</span><span class="p">[</span><span class="sh">'</span><span class="s">assetCode</span><span class="sh">'</span><span class="p">]</span> <span class="o">==</span> <span class="n">code</span><span class="p">]</span>
     <span class="n">apple_data</span><span class="p">.</span><span class="nf">set_index</span><span class="p">(</span><span class="sh">'</span><span class="s">time</span><span class="sh">'</span><span class="p">)[</span><span class="sh">'</span><span class="s">close</span><span class="sh">'</span><span class="p">].</span><span class="nf">plot</span><span class="p">(</span><span class="n">grid</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
 </code></pre></div></div>
-<p><img src="/img/python-financial-plot-2.png" style="height:50%" /></p>
+<p><img src="/blog/img/python-financial-plot-2.png" style="height:50%" /></p>
 
 <p>This only gives me one figure with all assets, it’s ugly. I want to plot them one by one.</p>
 
@@ -126,7 +129,7 @@
 </span><span class="n">fig</span><span class="p">.</span><span class="nf">add_subplot</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
 </code></pre></div></div>
 <p>Then you’ll get graphs all together to detect abnormal data.
-<img src="/img/python-plot-subplot.png" style="height:50%" /></p>
+<img src="/blog/img/python-plot-subplot.png" style="height:50%" /></p>
 
     </div>
   </div>
@@ -158,10 +161,7 @@
       <span>2020.07.28: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
       <div class="entry-body">
-        <p>DDD
-
-#### Redis 的并发竞争问题如何解决
-- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概...</p>
+        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
       </div>
     </li>
     
@@ -169,10 +169,7 @@
       <span>2020.07.26: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
       <div class="entry-body">
-        <p>#### 高可用
-- 负载均衡
-    - Consul + Consul-template 动态配置 Nginx upstream
-    - Ngin...</p>
+        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
       </div>
     </li>
     
@@ -180,9 +177,7 @@
       <span>2020.07.20: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
       <div class="entry-body">
-        <p>#### 分布式控制方案
-- 中心化的副本控制协议，也就是主从模式
-- primary-secondary协议，也就是leader/follower（数据...</p>
+        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
       </div>
     </li>
     
@@ -190,11 +185,7 @@
       <span>2020.07.18: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
       <div class="entry-body">
-        <p>#### UseCompressedOop
-- CompressedOops原理：
-64位地址分为堆的基地址+偏移量，当堆内存
-```shell
--Xms...</p>
+        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
       </div>
     </li>
     

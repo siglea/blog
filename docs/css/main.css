@@ -164,27 +164,40 @@ body.two-columns #container {
 }
 
 #header #google_search .searchbox {
+  box-sizing: border-box;
   border: 1px solid #d3d3d3;
   background-color: #f5f4df;
-  height: 22px;
+  height: 26px;
   width: 120px;
   padding: 2px 6px;
   font-size: 1.1em;
   outline: none;
   border-radius: 3px;
   font-family: Georgia, serif;
+  vertical-align: middle;
 }
 
 #header #google_search .searchbox_submit {
+  box-sizing: border-box;
   border: 1px solid #d3d3d3;
   background-color: #e0dfcc;
-  height: 22px;
+  height: 26px;
   width: 28px;
   cursor: pointer;
   border-radius: 3px;
   font-size: 12px;
-  line-height: 22px;
+  line-height: 24px;
   text-align: center;
+  vertical-align: middle;
+}
+
+#header #feed_icon a {
+  display: flex;
+  align-items: center;
+}
+
+#header #feed_icon img {
+  vertical-align: middle;
 }
 
 #footer img {
@@ -520,27 +533,41 @@ body.one-column #content #alpha div.asset-footer {
   text-shadow: 1px 1px 0px #eee;
 }
 
-body.one-column #content #alpha div.asset-nav:after {
-  content: " ";
-  display: block;
-  height: 0;
-  clear: both;
-}
-
 body.one-column #content #alpha div.asset-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
   zoom: 1;
 }
 
-body.one-column #content #alpha div.asset-nav * {
-  display: inline;
+body.one-column #content #alpha div.asset-nav {
   font-size: 1.44em;
 }
 
 body.one-column #content #alpha div.asset-nav a {
   color: green;
+  font-size: 1em;
 }
 
-body.one-column #content #alpha div.asset-nav li {
+body.one-column #content #alpha div.asset-nav .entry-categories {
+  flex-shrink: 0;
+  font-size: 1em;
+}
+
+body.one-column #content #alpha div.asset-nav .entry-location {
+  display: flex;
+  gap: 1.5em;
+  flex-shrink: 0;
+  font-size: 1em;
+}
+
+body.one-column #content #alpha div.asset-nav .entry-location .nav-prev,
+body.one-column #content #alpha div.asset-nav .entry-location .nav-next {
+  white-space: nowrap;
+}
+
+body.one-column #content #alpha div.asset-nav .entry-location a {
   font-size: 1em;
 }
 

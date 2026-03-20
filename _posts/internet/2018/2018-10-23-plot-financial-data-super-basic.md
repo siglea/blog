@@ -26,7 +26,7 @@ rcParams['figure.figsize'] = 50,13
 apple_data = market_train_df[market_train_df['assetCode'] == 'AAPL.O']
 apple_data.set_index('time')['close'].plot(grid = True)
 ```
-<img src="/img/python-plot-financial-data-1.png" style="height:50%">
+<img src="{{ site.baseurl }}/img/python-plot-financial-data-1.png" style="height:50%">
 
 ## compare multiple plots
 Then I'm trying to sanitize the data by looking at the figure it self, I want to plot all suspicious assets.
@@ -35,7 +35,7 @@ for code in suspicious_asset_code:
     apple_data = market_train_df[market_train_df['assetCode'] == code]
     apple_data.set_index('time')['close'].plot(grid = True)
 ```
-<img src="/img/python-financial-plot-2.png" style="height:50%">
+<img src="{{ site.baseurl }}/img/python-financial-plot-2.png" style="height:50%">
 
 This only gives me one figure with all assets, it's ugly. I want to plot them one by one.
 
@@ -45,4 +45,4 @@ Subplot will give you figures put up together, use
 fig.add_subplot(row, columns, index)
 ```
 Then you'll get graphs all together to detect abnormal data.
-<img src="/img/python-plot-subplot.png" style="height:50%">
+<img src="{{ site.baseurl }}/img/python-plot-subplot.png" style="height:50%">

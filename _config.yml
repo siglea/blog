@@ -28,6 +28,8 @@ collections:
     permalink: /projects/:name/
 
 # Build settings
+include:
+  - .nojekyll
 markdown: kramdown
 highlighter: rouge
 kramdown:

@@ -41,7 +41,7 @@ categories:
 - cassandra不分主次，写入多数quorum，写任意节点，读任意，读多个节点返回最新数据，扩容自动数据迁移，AP
     (一致性hash确定分区，依靠协调节点）
 
-<img src="/img/biu.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/biu.jpg" width="600px" />
 
 #### cassandra 
 - Gossip协议 <https://www.jianshu.com/p/f1c251614bad?tdsourcetag=s_pcqq_aiomsg>

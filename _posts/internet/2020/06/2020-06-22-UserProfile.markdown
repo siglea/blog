@@ -64,13 +64,13 @@ categories:
 - reach越大，一般情况CTR会小
 
 #### 用户画像架构图
- <img src="/img/user_profile.jpg" width="600px">
+ <img src="{{ site.baseurl }}/img/user_profile.jpg" width="600px">
 
 #### 用户画像后台标签
- <img src="/img/user_profile_admin.jpg" width="600px"> 
+ <img src="{{ site.baseurl }}/img/user_profile_admin.jpg" width="600px"> 
 
 #### 用户业务标签
- <img src="/img/user_profile_tags.jpg" width="600px">
+ <img src="{{ site.baseurl }}/img/user_profile_tags.jpg" width="600px">
  
 #### 会员理论模型
 - 会员体系模型：AIPL
@@ -83,7 +83,7 @@ categories:
     - R(Recency)近度：距某节点最近的一次消费
     - F(Frequency)频度：消费频次
     - M (Monetary)额度：消费金额
-<img src="/img/RFM.jpg" width="600px">
+<img src="{{ site.baseurl }}/img/RFM.jpg" width="600px">
 
 - 会员体系模型：AARRR
     - Acquisition（获取用户）：关注PV、UV、CPC、点击转化率、注册量、注册率、获客成本CAC
@@ -101,7 +101,7 @@ categories:
     - 多变的酬赏Variable Reward：当行为被触发之后，接下来就需要给用户一些酬赏进行持续刺激，以培养对他们对产品的使用习惯。酬赏简单来说就是产品带给用户的满足感，但为什么要强调“多变”呢？
         据行为学研究，人们对产品的满足感会随着时间的推移逐渐降低，即使现阶段用户因为产品解决了某方面问题而产生依赖，但市面上的新产品层出不穷，要想不被淘汰，“无穷的多变性”是保持产品神秘感和吸引力，维持用户长期兴趣的关键。
     - 投入Investment：有研究表明，用户对某个产品投入时间精力的多寡与对这个产品的依赖程度成正比，就像免费东西你不会珍惜，而氪过金的游戏或服务反而会不断充值一样。已经享受酬赏的用户，想要他们对你的产品彻底“上瘾”，最后一步就是要让他们有所投入。
- <img src="/img/hook.jpg" width="600px">
+ <img src="{{ site.baseurl }}/img/hook.jpg" width="600px">
   <https://www.sohu.com/a/239048631_100180218>
 - 《疯传》STEPPS原则
     - 社交货币（Social Currency）：我们会共享那些能让我们显得更优秀的事情

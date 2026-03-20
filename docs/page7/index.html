@@ -83,16 +83,7 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <p>DDD
-
-Redis 的并发竞争问题如何解决
-
-  Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis 对于多个客户端连接并不存在竞争，但是在业务客户端对 Redis 进行并发访问时会发生连接超时、数据转换错误、阻塞、客户端关闭连接等问题，这些问题均是由于客户端连接混乱造成
-  解决方法：
-    
-      客户端加锁（synchronized）
-      乐观锁（redis 的命令 watch）：
-  当执行多键值事务操作时，Redis 不仅要求这些键值需要落在同一个 Redis 实例上，还要求落在同一个 slot 上，所...</p>
+      <p>DDDRedis 的并发竞争问题如何解决 Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis 对于多个客户端连接并不存在竞争，但是在业务客户端对 Redis 进行并发访问时会发生连接超时、数据转换错误、阻塞、客户端关闭连接等问题，这些问题均是由于客户端连接混乱造成 解决方法： 客户端加锁（synchronized） 乐观锁（redis 的命令 watch）： 当执行多键值事务操作时，Redis 不仅要求这些键值需要落在同一个 Redis 实例上，还要求落在同一个 slot 上，所以 redis 的事务比较鸡肋 不过可以想办法遵循 ...</p>
     </div>
     <div class="asset-more-link">
       <p><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">继续阅读全文 &raquo;</a></p>

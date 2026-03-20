@@ -72,7 +72,10 @@
     </div>
     <div class="entry-location">
       
-      <li><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html">&laquo; DotDot</a></li>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html">&laquo; DotDot</a></span>
+      
+      
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html">Case of online sy... &raquo;</a></span>
       
     </div>
   </div>
@@ -263,7 +266,7 @@ private native int epollWait<span class="o">(</span>long pollAddress, int numfds
   <li>Unpooled.copiedBuffer(“Netty rocks!”,CharsetUtil.UTF-8);</li>
   <li>由于采用引用计数，需要在消费完消息之后调用ReferenceCountUtil.release(msg);</li>
   <li>可以通过 java -Dio.netty.leakDetectionLevel=ADVANCED 这个参数设置泄露检测级别
-<img src="/img/leak_level.jpg" width="600px" /></li>
+<img src="/blog/img/leak_level.jpg" width="600px" /></li>
 </ul>
 
 <h4 id="channelhandler-channelpipeline-channelhandlercontext">ChannelHandler ChannelPipeline ChannelHandlerContext</h4>
@@ -288,7 +291,7 @@ public void operationComplete<span class="o">(</span>ChannelFuture f<span class=
   </li>
   <li>本质是创建包含少量的线程EventLoop的线程池EventLoopGroup，一个EventLoop管理多个Channel，
   实际上就是IO多路复用
-<img src="/img/eventLoop.jpg" width="600px" /></li>
+<img src="/blog/img/eventLoop.jpg" width="600px" /></li>
 </ul>
 
 <h4 id="bootstrap">Bootstrap</h4>
@@ -312,7 +315,7 @@ public void operationComplete<span class="o">(</span>ChannelFuture f<span class=
 </ul>
 
 <h4 id="不使用netty的nio">不使用Netty的NIO</h4>
-<p><img src="/img/nio-selector.jpg" width="600px" /></p>
+<p><img src="/blog/img/nio-selector.jpg" width="600px" /></p>
 
 <h4 id="netty-的-opensslsslengine-实现">Netty 的 OpenSSL/SSLEngine 实现</h4>
 <ul>
@@ -321,7 +324,7 @@ public void operationComplete<span class="o">(</span>ChannelFuture f<span class=
   <li>注意，无论你使用 JDK 的 SSLEngine 还是使用 Netty 的 OpenSslEngine，SSL API 和数据流都 是一致的。</li>
 </ul>
 
-<p><img src="/img/ssl_tls.jpg" width="600px" /></p>
+<p><img src="/blog/img/ssl_tls.jpg" width="600px" /></p>
 
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SelfSignedCertificate cert <span class="o">=</span> new SelfSignedCertificate<span class="o">()</span><span class="p">;</span>
 SslContext context <span class="o">=</span> SslContext.newServerContext<span class="o">(</span>cert.certificate<span class="o">()</span>, cert.privateKey<span class="o">())</span><span class="p">;</span>
@@ -447,10 +450,7 @@ Sec-WebSocket-Version: 13
       <span>2020.07.28: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
       <div class="entry-body">
-        <p>DDD
-
-#### Redis 的并发竞争问题如何解决
-- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概...</p>
+        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
       </div>
     </li>
     
@@ -458,10 +458,7 @@ Sec-WebSocket-Version: 13
       <span>2020.07.26: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
       <div class="entry-body">
-        <p>#### 高可用
-- 负载均衡
-    - Consul + Consul-template 动态配置 Nginx upstream
-    - Ngin...</p>
+        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
       </div>
     </li>
     
@@ -469,9 +466,7 @@ Sec-WebSocket-Version: 13
       <span>2020.07.20: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
       <div class="entry-body">
-        <p>#### 分布式控制方案
-- 中心化的副本控制协议，也就是主从模式
-- primary-secondary协议，也就是leader/follower（数据...</p>
+        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
       </div>
     </li>
     
@@ -479,11 +474,7 @@ Sec-WebSocket-Version: 13
       <span>2020.07.18: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
       <div class="entry-body">
-        <p>#### UseCompressedOop
-- CompressedOops原理：
-64位地址分为堆的基地址+偏移量，当堆内存
-```shell
--Xms...</p>
+        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
       </div>
     </li>
     

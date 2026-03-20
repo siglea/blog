@@ -72,7 +72,10 @@
     </div>
     <div class="entry-location">
       
-      <li><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html">&laquo; Java基础</a></li>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html">&laquo; Java基础</a></span>
+      
+      
+      <span class="nav-next"><a href="/blog/%E4%BA%A7%E5%93%81%E5%95%86%E4%B8%9A/2020/06/22/SaaS%E4%B8%9A%E5%8A%A1.html">SaaS业务分析 &raquo;</a></span>
       
     </div>
   </div>
@@ -181,13 +184,13 @@
 </ul>
 
 <h4 id="用户画像架构图">用户画像架构图</h4>
-<p><img src="/img/user_profile.jpg" width="600px" /></p>
+<p><img src="/blog/img/user_profile.jpg" width="600px" /></p>
 
 <h4 id="用户画像后台标签">用户画像后台标签</h4>
-<p><img src="/img/user_profile_admin.jpg" width="600px" /></p>
+<p><img src="/blog/img/user_profile_admin.jpg" width="600px" /></p>
 
 <h4 id="用户业务标签">用户业务标签</h4>
-<p><img src="/img/user_profile_tags.jpg" width="600px" /></p>
+<p><img src="/blog/img/user_profile_tags.jpg" width="600px" /></p>
 
 <h4 id="会员理论模型">会员理论模型</h4>
 <ul>
@@ -204,7 +207,7 @@
       <li>R(Recency)近度：距某节点最近的一次消费</li>
       <li>F(Frequency)频度：消费频次</li>
       <li>M (Monetary)额度：消费金额
-<img src="/img/RFM.jpg" width="600px" /></li>
+<img src="/blog/img/RFM.jpg" width="600px" /></li>
     </ul>
   </li>
   <li>会员体系模型：AARRR
@@ -228,7 +231,7 @@
       <li>多变的酬赏Variable Reward：当行为被触发之后，接下来就需要给用户一些酬赏进行持续刺激，以培养对他们对产品的使用习惯。酬赏简单来说就是产品带给用户的满足感，但为什么要强调“多变”呢？
   据行为学研究，人们对产品的满足感会随着时间的推移逐渐降低，即使现阶段用户因为产品解决了某方面问题而产生依赖，但市面上的新产品层出不穷，要想不被淘汰，“无穷的多变性”是保持产品神秘感和吸引力，维持用户长期兴趣的关键。</li>
       <li>投入Investment：有研究表明，用户对某个产品投入时间精力的多寡与对这个产品的依赖程度成正比，就像免费东西你不会珍惜，而氪过金的游戏或服务反而会不断充值一样。已经享受酬赏的用户，想要他们对你的产品彻底“上瘾”，最后一步就是要让他们有所投入。
- <img src="/img/hook.jpg" width="600px" /></li>
+ <img src="/blog/img/hook.jpg" width="600px" /></li>
     </ul>
     <p><a href="https://www.sohu.com/a/239048631_100180218">https://www.sohu.com/a/239048631_100180218</a></p>
   </li>
@@ -299,10 +302,7 @@
       <span>2020.07.28: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
       <div class="entry-body">
-        <p>DDD
-
-#### Redis 的并发竞争问题如何解决
-- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概...</p>
+        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
       </div>
     </li>
     
@@ -310,10 +310,7 @@
       <span>2020.07.26: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
       <div class="entry-body">
-        <p>#### 高可用
-- 负载均衡
-    - Consul + Consul-template 动态配置 Nginx upstream
-    - Ngin...</p>
+        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
       </div>
     </li>
     
@@ -321,9 +318,7 @@
       <span>2020.07.20: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
       <div class="entry-body">
-        <p>#### 分布式控制方案
-- 中心化的副本控制协议，也就是主从模式
-- primary-secondary协议，也就是leader/follower（数据...</p>
+        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
       </div>
     </li>
     
@@ -331,11 +326,7 @@
       <span>2020.07.18: </span>
       <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
       <div class="entry-body">
-        <p>#### UseCompressedOop
-- CompressedOops原理：
-64位地址分为堆的基地址+偏移量，当堆内存
-```shell
--Xms...</p>
+        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
       </div>
     </li>
     

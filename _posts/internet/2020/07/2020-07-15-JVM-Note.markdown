@@ -9,7 +9,7 @@ categories:
 - 技术
 ---
 #### Class文件
-<img src="/img/class.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/class.jpg" width="600px" />
 
 - Magic Number：4字节，0xCAFEBABE
 - minor_version/major_version：JDK版本号，向下兼容
@@ -43,8 +43,8 @@ public class TestClass{
     }
 }
 ```
-<img src="/img/class_code.jpg" width="600px" />
-<img src="/img/class_javap.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/class_code.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/class_javap.jpg" width="600px" />
 
 #### 字节码指令集（200多个，不超过256）
 - 加载和存储指令：iload、istore、bipush等
@@ -161,7 +161,7 @@ public class Test{
     - 编译执行/解释执行
     - JIT编译(just-in-time compilation)狭义来说是当某段代码即将第一次被执行时进行编译,因而叫“即时编译”
     - 基于栈的指令集 与 基于寄存器的指令集 （Android Dalvik VM)
-    <img src="/img/exec.jpg" width="600px" />
+    <img src="{{ site.baseurl }}/img/exec.jpg" width="600px" />
     
 #### 类加载及执行子系统案例
 - tomcat
@@ -304,7 +304,7 @@ public class Test{
 - 自旋锁，单纯自旋等待前面的锁定释放
 - 偏向锁、轻量级锁、重量级锁
 
-<img src="/img/lock_optimize.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/lock_optimize.jpg" width="600px" />
     
 #### 总览 
 - <https://www.cnblogs.com/linghu-java/category/855958.html>

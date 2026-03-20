@@ -35,7 +35,7 @@ categories:
 - 查询最近7日浏览某商品详情页超过10次的用户
 - 查询7日浏览、收藏、关注过"母婴"品类商品的用户
 - 用户标签权重=行为类型权重 X 时间衰减 X 用户行为次数 X TF-IDF计算标签权重
-<img src="/img/up9.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/up9.jpg" width="600px" />
 - 同现矩阵是指标签和标签之间的关联程度，这种关联程度有用户身上的标签所决定。（啤酒&尿不湿）
 
 #### 人群计算
@@ -61,21 +61,21 @@ categories:
  
 #### 案例
 - 风控反欺诈画像模型
-<img src="/img/up10.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/up10.jpg" width="600px" />
 
 - LTV生命周期运营
     - 流失率的倒数用来表示预测的用户的生命周期，如果一个产品的流失率为10%，则产品对应的生命周期为10个月
     - 单个用户毛利 = CLV customer life value - CAC customer aqurie cost - COC customer operation cost
-<img src="/img/up11.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/up11.jpg" width="600px" />
 
 - 80%的注册用户在安装3日内完成注册，那就圈出来3日用户发红包优惠券等
 - 76%的下单用户是在注册前9日完成的首次交易
 - 注册首日消费满100，立即短信营销赠送红包，以更好地留存该高价值新用户
 - Session特征库
-<img src="/img/up12.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/up12.jpg" width="600px" />
 - 在线医疗场景
-<img src="/img/up13.jpg" width="600px" />
-<img src="/img/up14.jpg" width="600px" />
-<img src="/img/up15.jpg" width="600px" />
-<img src="/img/up16.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/up13.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/up14.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/up15.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/up16.jpg" width="600px" />
  

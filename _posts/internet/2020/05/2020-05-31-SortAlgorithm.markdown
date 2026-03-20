@@ -202,6 +202,6 @@ public class MergeSort {
 </pre>
 - <https://mp.weixin.qq.com/s/cq2EhVtOTzTVpNpLDXfeJg>
 
-<img src="/img/sort.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/sort.jpg" width="600px" />
 
 #### 参考 <https://mp.weixin.qq.com/s/teOGQlslb6aP4AQrx7TTzA>

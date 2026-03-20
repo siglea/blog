@@ -13,7 +13,10 @@ layout: default
     </div>
     <div class="entry-location">
       {% if page.previous %}
-      <li><a href="{{ page.previous.url | prepend: site.baseurl }}">&laquo; {{ page.previous.title | truncate: 20 }}</a></li>
+      <span class="nav-prev"><a href="{{ page.previous.url | prepend: site.baseurl }}">&laquo; {{ page.previous.title | truncate: 20 }}</a></span>
+      {% endif %}
+      {% if page.next %}
+      <span class="nav-next"><a href="{{ page.next.url | prepend: site.baseurl }}">{{ page.next.title | truncate: 20 }} &raquo;</a></span>
       {% endif %}
     </div>
   </div>
@@ -66,7 +69,7 @@ layout: default
       <span>{{ post.date | date: "%Y.%m.%d" }}: </span>
       <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
       <div class="entry-body">
-        <p>{{ post.content | strip_html | truncate: 80 }}</p>
+        <p>{{ post.content | strip_html | replace: '#', '' | strip_newlines | split: ' ' | join: ' ' | truncate: 80 }}</p>
       </div>
     </li>
     {% endfor %}

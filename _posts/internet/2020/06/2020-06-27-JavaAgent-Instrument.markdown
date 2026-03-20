@@ -107,13 +107,13 @@ public class InstrumentationExample {
 }
 ```
 
-<img src="/img/JavaAgent.jpg" width="600px">
+<img src="{{ site.baseurl }}/img/JavaAgent.jpg" width="600px">
 
 - <https://www.jianshu.com/p/be68d66afb85>
 - <https://www.jianshu.com/p/b72f66da679f>
 
 #### ASM & CGlib 
-<img src="/img/AOP.jpg" width="600px">
+<img src="{{ site.baseurl }}/img/AOP.jpg" width="600px">
 
 ```java
 class AddSecurityCheckClassAdapter extends ClassAdapter {

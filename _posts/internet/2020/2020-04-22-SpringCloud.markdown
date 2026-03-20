@@ -9,7 +9,7 @@ tags:
 categories:
 - 技术
 ---
-<img src="/img/springcloud.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/springcloud.jpg" width="600px" />
 
 #### Spring
 - Eureka：服务治理组件，包括服务端的注册中心和客户端的服务发现机制；
@@ -52,7 +52,7 @@ API网关组件，对请求提供路由及过滤功能。Spring Cloud Gateway是
     - 在分布式系统中，由于服务数量巨多，为了方便服务配置文件统一管理，实时更新，所以需要分布式配置中心组件。在Spring Cloud中，有分布式配置中心组件spring cloud config ，它支持配置服务放在配置服务的内存中（即本地），也支持放在远程Git仓库中。在spring cloud config 组件中，分两个角色，一是config server，二是config client。
     使用：（1）添加pom依赖（2）配置文件添加相关配置（3）启动类添加注解@EnableConfigServer
     
-    <img src="/img/springconfig.jpg" width="600px" />
+    <img src="{{ site.baseurl }}/img/springconfig.jpg" width="600px" />
 
 - Spring中使用@Autowired注解静态实例对象 <https://blog.csdn.net/RogueFist/article/details/79575665>
 - 多个ApplicationRunner，可以用@Order指定优先级串行执行的，如果优先级高的block了，后面的需要等着

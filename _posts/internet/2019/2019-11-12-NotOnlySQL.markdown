@@ -27,7 +27,7 @@ categories:
 
 #### SQL-CAP
 <div align="left">
-<img src="/img/nosql-cap.jpg" width="500px">
+<img src="{{ site.baseurl }}/img/nosql-cap.jpg" width="500px">
 </div>
 
 #### NoSQL由来
@@ -216,7 +216,7 @@ db.user.find({"geo": {$near: [118.10388605,24.48923061], $maxDistance:0.1}},{id:
     - Feeds场景、滴滴或物联网订单轨迹场景 <https://mp.weixin.qq.com/s/DaspXFLPASYE7N0WHllcYQ>
     - cassandra在饿了么的应用 <https://zhuanlan.zhihu.com/p/42175864>
     <div align="left">
-    <img src="/img/cassandra.jpg" width="500px">
+    <img src="{{ site.baseurl }}/img/cassandra.jpg" width="500px">
     </div>
 - cassandra与mysql使用对比 <https://www.ibm.com/developerworks/cn/opensource/os-apache-cassandra/>
 - cassandra使用场景判断：何时使用及何时不用 <https://developer.aliyun.com/article/713847>
