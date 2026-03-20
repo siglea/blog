@@ -91,6 +91,7 @@ a:hover {
   display: flex;
   gap: 40px;
   margin-bottom: 40px;
+  padding-top: 10px; /* 添加顶部间距 */
 }
 
 #content {
@@ -102,6 +103,7 @@ a:hover {
 #sidebar {
   width: 280px;
   flex-shrink: 0;
+  padding-top: 10px; /* 与主内容对齐 */
 }
 
 #main.post-page {
@@ -530,11 +532,11 @@ a:hover {
 
 .sidebar-section h3 {
   font-size: 12px;
-  font-weight: normal;
+  font-weight: bold; /* 加粗侧边栏标题 */
   color: #333;
   margin-bottom: 10px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
 }
 
 .about-avatar {
@@ -669,10 +671,10 @@ a:hover {
 
 .about-page h2 {
   font-size: 14px;
-  font-weight: normal;
+  font-weight: bold; /* 加粗标题 */
   margin-bottom: 12px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
 }
 
 .about-page p {
@@ -696,7 +698,7 @@ a:hover {
 
 .about-page li::before {
   content: "■ ";
-  color: #999;
+  color: #666; /* 使用更深的颜色 */
   font-size: 12px;
 }
 
@@ -706,11 +708,12 @@ a:hover {
 }
 
 .about-page a:hover {
+  color: #000; /* 更深的悬停颜色 */
   text-decoration: underline;
 }
 
 .about-page hr {
-  border-bottom: 1px dashed #cfcfcf;
+  border-bottom: 1px dashed #dcdcdc; /* 使用更深的虚线颜色 */
   margin: 20px 0;
 }
 
@@ -720,10 +723,10 @@ a:hover {
 
 .archive-page h1 {
   font-size: 20px;
-  font-weight: normal;
+  font-weight: bold; /* 加粗标题 */
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #dcdcdc; /* 使用更深的边框色 */
 }
 
 .category-section {
@@ -818,6 +821,9 @@ a:hover {
   #nav li {
     margin-right: 15px;
     margin-bottom: 10px;
+  }
+  #container {
+    padding: 0 15px; /* 减少移动端边距 */
   }
 }
 .text-muted {
