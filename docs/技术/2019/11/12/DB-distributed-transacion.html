@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DB-distributed-transacion - Code & Coffee</title>
+  <title>分布式事务全解析：从CAP理论到主流框架选型 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>DB-distributed-transacion | Code &amp; Coffee</title>
+<title>分布式事务全解析：从CAP理论到主流框架选型 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="DB-distributed-transacion" />
+<meta property="og:title" content="分布式事务全解析：从CAP理论到主流框架选型" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="从一笔金币充值去思考分布式事务，五种方案详解！ https://mp.weixin.qq.com/s/dbQsfBdJSs5Ol70hCYCZMw 数据库本地事务简述 ACID原则 原子性(Atomicity) 一致性(Consistency) 隔离性(Isolation) 持久性(Durability) 以Mysql的InnoDB为例，事务的ACID是通过InnoDB日志和锁来保证 事务的隔离性是通过数据库锁的机制实现的 持久性通过Redo Log（重做日志）来实现，在事务提交前，只要将 Redo Log 持久化即可，不需要将数据持久化。 原子性和一致性通过 Undo Log 来实现。（数据数据操作前的数据备份 Undo Log） 本质都是通过一个本地事务资源管理器来统一协调调度 分布式事务 分布式事务产生的原因 Service多节点部署（比如公司内的用户、账户等各种微服务) Resource 多节点 (每个人的数据部署再不同节点的数据库里) 分布式系统之CAP定理 CAP 定理，又被叫作布鲁尔定理。对于设计分布式系统(不仅仅是分布式事务)的架构师来说，CAP 就是你的入门理论。 C (一致性)：对某个指定的客户端来说，读操作能返回一致的写操作。 对于数据分布在不同节点上的数据来说，如果在某个节点更新了数据，那么在其他节点如果都能读取到这个***的数据，那么就称为强一致，如果有某个节点没有读取到，那就是分布式不一致。 A (可用性)：非故障的节点在合理的时间内返回合理的响应(不是错误和超时的响应)。可用性的两个关键一个是合理的时间，一个是合理的响应。 合理的时间指的是请求不能被阻塞，应该在合理的时间给出返回。合理的响应指的是系统应该明确返回结果并且结果是正确的，这里的正确指的是比如应该返回 50，而不是返回 40。 P (分区容错性)：当出现网络分区后，系统能够继续工作。打个比方，这里集群有多台机器，有台机器网络出现了问题，但是这个集群仍然可以正常工作。 熟悉 CAP 的人都知道，三者不能共有，如果感兴趣可以搜索 CAP 的证明，在分布式系统中，网络无法 100% 可靠，分区其实是一个必然现象 如果我们选择了 CA 而放弃了 P，那么当发生分区现象时，为了保证一致性，这个时候必须拒绝请求，但是 A 又不允许，所以分布式系统理论上不可能选择 CA 架构，只能选择 CP 或者 AP 架构。 对于 CP 来说，放弃可用性，追求一致性和分区容错性，我们的 ZooKeeper 其实就是追求的强一致。 对于 AP 来说，放弃一致性(这里说的一致性是强一致性)，追求分区容错性和可用性，这是很多分布式系统设计时的选择，后面的 BASE 也是根据 AP 来扩展。 顺便一提，CAP 理论中是忽略网络延迟，也就是当事务提交时，从节点 A 复制到节点 B 没有延迟，但是在现实中这个是明显不可能的，所以总会有一定的时间是不一致。 同时 CAP 中选择两个，比如你选择了 CP，并不是叫你放弃 A。因为 P 出现的概率实在是太小了，大部分的时间你仍然需要保证 CA。 就算分区出现了你也要为后来的 A 做准备，比如通过一些日志的手段，是其他机器回复至可用。 这可能是我看过最通俗也是最深刻的CAP理论 https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg 分布式系统之BASE定理 BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩写，是对 CAP 中 AP 的一个扩展。 基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用。 软状态：允许系统中存在中间状态，这个状态不影响系统可用性，这里指的是 CAP 中的不一致。 最终一致：最终一致是指经过一段时间后，所有节点数据都将会达到一致。 BASE 解决了 CAP 中理论没有网络延迟，在 BASE 中用软状态和最终一致，保证了延迟后的一致性。 BASE 和 ACID 是相反的，它完全不同于 ACID 的强一致性模型，而是通过牺牲强一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态 常用分布式事务框架 基于XA的 2PC、3PC 本质相当于本地事务的加强版，强一致性，引入中间事务协调者，依赖数据库，属于数据库资源层方案 Saga 引入补偿机制（最终一致性） TCC Try、Commit、Cancel 本地消息表 RocketMQ(阿里开源) Seata 参考资料 分布式事务概述 由Seata看分布式事务取舍 常用分布式事务框架 蚂蚁金服分布式事务实战 分布式事务选型的取舍infoq 分布式事务 Spring的分布式事务实现(JTA+XA/2PC) Seata官网 FLP不可能原理 分布式事务：深入理解什么是2PC、3PC及TCC协议 如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？ CAP定理 分布式事务的解决方案CSDN Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较 分布式CSDN博客 基于RocketMQ的最终一致性" />
-<meta property="og:description" content="从一笔金币充值去思考分布式事务，五种方案详解！ https://mp.weixin.qq.com/s/dbQsfBdJSs5Ol70hCYCZMw 数据库本地事务简述 ACID原则 原子性(Atomicity) 一致性(Consistency) 隔离性(Isolation) 持久性(Durability) 以Mysql的InnoDB为例，事务的ACID是通过InnoDB日志和锁来保证 事务的隔离性是通过数据库锁的机制实现的 持久性通过Redo Log（重做日志）来实现，在事务提交前，只要将 Redo Log 持久化即可，不需要将数据持久化。 原子性和一致性通过 Undo Log 来实现。（数据数据操作前的数据备份 Undo Log） 本质都是通过一个本地事务资源管理器来统一协调调度 分布式事务 分布式事务产生的原因 Service多节点部署（比如公司内的用户、账户等各种微服务) Resource 多节点 (每个人的数据部署再不同节点的数据库里) 分布式系统之CAP定理 CAP 定理，又被叫作布鲁尔定理。对于设计分布式系统(不仅仅是分布式事务)的架构师来说，CAP 就是你的入门理论。 C (一致性)：对某个指定的客户端来说，读操作能返回一致的写操作。 对于数据分布在不同节点上的数据来说，如果在某个节点更新了数据，那么在其他节点如果都能读取到这个***的数据，那么就称为强一致，如果有某个节点没有读取到，那就是分布式不一致。 A (可用性)：非故障的节点在合理的时间内返回合理的响应(不是错误和超时的响应)。可用性的两个关键一个是合理的时间，一个是合理的响应。 合理的时间指的是请求不能被阻塞，应该在合理的时间给出返回。合理的响应指的是系统应该明确返回结果并且结果是正确的，这里的正确指的是比如应该返回 50，而不是返回 40。 P (分区容错性)：当出现网络分区后，系统能够继续工作。打个比方，这里集群有多台机器，有台机器网络出现了问题，但是这个集群仍然可以正常工作。 熟悉 CAP 的人都知道，三者不能共有，如果感兴趣可以搜索 CAP 的证明，在分布式系统中，网络无法 100% 可靠，分区其实是一个必然现象 如果我们选择了 CA 而放弃了 P，那么当发生分区现象时，为了保证一致性，这个时候必须拒绝请求，但是 A 又不允许，所以分布式系统理论上不可能选择 CA 架构，只能选择 CP 或者 AP 架构。 对于 CP 来说，放弃可用性，追求一致性和分区容错性，我们的 ZooKeeper 其实就是追求的强一致。 对于 AP 来说，放弃一致性(这里说的一致性是强一致性)，追求分区容错性和可用性，这是很多分布式系统设计时的选择，后面的 BASE 也是根据 AP 来扩展。 顺便一提，CAP 理论中是忽略网络延迟，也就是当事务提交时，从节点 A 复制到节点 B 没有延迟，但是在现实中这个是明显不可能的，所以总会有一定的时间是不一致。 同时 CAP 中选择两个，比如你选择了 CP，并不是叫你放弃 A。因为 P 出现的概率实在是太小了，大部分的时间你仍然需要保证 CA。 就算分区出现了你也要为后来的 A 做准备，比如通过一些日志的手段，是其他机器回复至可用。 这可能是我看过最通俗也是最深刻的CAP理论 https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg 分布式系统之BASE定理 BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩写，是对 CAP 中 AP 的一个扩展。 基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用。 软状态：允许系统中存在中间状态，这个状态不影响系统可用性，这里指的是 CAP 中的不一致。 最终一致：最终一致是指经过一段时间后，所有节点数据都将会达到一致。 BASE 解决了 CAP 中理论没有网络延迟，在 BASE 中用软状态和最终一致，保证了延迟后的一致性。 BASE 和 ACID 是相反的，它完全不同于 ACID 的强一致性模型，而是通过牺牲强一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态 常用分布式事务框架 基于XA的 2PC、3PC 本质相当于本地事务的加强版，强一致性，引入中间事务协调者，依赖数据库，属于数据库资源层方案 Saga 引入补偿机制（最终一致性） TCC Try、Commit、Cancel 本地消息表 RocketMQ(阿里开源) Seata 参考资料 分布式事务概述 由Seata看分布式事务取舍 常用分布式事务框架 蚂蚁金服分布式事务实战 分布式事务选型的取舍infoq 分布式事务 Spring的分布式事务实现(JTA+XA/2PC) Seata官网 FLP不可能原理 分布式事务：深入理解什么是2PC、3PC及TCC协议 如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？ CAP定理 分布式事务的解决方案CSDN Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较 分布式CSDN博客 基于RocketMQ的最终一致性" />
+<meta name="description" content="引言 在单体应用时代，数据库的本地事务就能满足绝大多数一致性需求。但随着微服务架构和分布式数据库的普及，一个业务操作可能横跨多个服务和多个数据库，本地事务力不从心，分布式事务应运而生。本文将从数据库本地事务出发，深入探讨 CAP 定理、BASE 理论，并对比分析主流的分布式事务解决方案。 参考案例：从一笔金币充值去思考分布式事务，五种方案详解！ https://mp.weixin.qq.com/s/dbQsfBdJSs5Ol70hCYCZMw 数据库本地事务简述 理解分布式事务之前，需要先回顾本地事务的 ACID 原则： 原子性（Atomicity）：事务中的操作要么全部成功，要么全部回滚 一致性（Consistency）：事务执行前后，数据库从一个一致状态转变为另一个一致状态 隔离性（Isolation）：并发事务之间互不干扰 持久性（Durability）：事务提交后，修改永久保存 以 MySQL InnoDB 引擎为例，ACID 的实现依赖日志和锁的配合： 隔离性：通过数据库锁机制实现（行锁、间隙锁、MVCC） 持久性：通过 Redo Log（重做日志）实现。事务提交前只需将 Redo Log 持久化，不必等待数据页落盘 原子性和一致性：通过 Undo Log 实现。Undo Log 记录了数据操作前的备份，支持事务回滚 本地事务的本质是通过单一的事务资源管理器来统一协调调度。当数据和服务分布在多个节点上时，这种单一协调者的模式就不再适用了。 分布式事务产生的原因 分布式事务的产生根源在于数据和服务的分布： Service 多节点部署：公司内部的用户服务、账户服务、订单服务等各个微服务独立部署 Resource 多节点：同一个服务的数据可能分布在不同的数据库节点上（分库分表） 当一个业务操作需要同时修改多个服务的数据（如下单扣库存 + 扣余额），就必须保证跨服务/跨库的数据一致性。 CAP 定理 CAP 定理（又称布鲁尔定理）是分布式系统设计的入门理论，指出一个分布式系统不可能同时满足以下三点： C（Consistency，一致性）：所有节点在同一时间看到的数据是一致的。如果在某个节点更新了数据，其他节点立即能读到最新值即为强一致；否则为分布式不一致。 A（Availability，可用性）：非故障节点在合理的时间内返回合理的响应（不是错误或超时）。”合理的时间”意味着请求不能被无限期阻塞；”合理的响应”意味着结果是正确的。 P（Partition Tolerance，分区容错性）：当网络分区发生时，系统仍能继续工作。 三者不可兼得 在分布式系统中，网络无法 100% 可靠，分区是一个必然现象。因此： 如果选择 CA 放弃 P：当分区发生时，为了保证一致性必须拒绝请求，但这与可用性矛盾。因此分布式系统理论上无法选择 CA 架构。 选择 CP：放弃可用性，追求一致性和分区容错性。ZooKeeper 就是典型的 CP 系统。 选择 AP：放弃强一致性，追求可用性和分区容错性。大多数互联网分布式系统选择这一路线。 需要注意的几点： CAP 理论忽略了网络延迟——实际中节点间的数据同步总需要时间，因此”绝对一致”在现实中是不存在的 选择 CP 不意味着完全放弃 A：分区发生的概率很小，大部分时间仍需保证 CA。即使分区发生，也应为后续的可用性恢复做准备（如通过日志补偿） 参考：这可能是最通俗也是最深刻的CAP理论 https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg BASE 理论 BASE 是 Basically Available（基本可用）、Soft State（软状态）和 Eventually Consistent（最终一致性）的缩写，是对 CAP 中 AP 的进一步扩展。 基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用 软状态：允许系统中存在中间状态（即数据暂时不一致），这个中间状态不影响系统整体可用性 最终一致：经过一段时间后，所有节点的数据最终会达到一致状态 BASE 与 ACID 的对比：ACID 追求强一致性，BASE 通过牺牲强一致性来获得可用性，允许数据在一段时间内不一致但最终达到一致。BASE 解决了 CAP 理论中”无网络延迟”这一理想假设的局限——用软状态和最终一致性来适应现实中不可避免的延迟。 常用分布式事务框架 基于 XA 的 2PC / 3PC 本质是本地事务的加强版，通过引入事务协调者实现强一致性，依赖数据库对 XA 协议的支持，属于数据库资源层方案。优点是一致性保障强，缺点是性能开销大、存在阻塞和单点问题。 Saga 引入补偿机制实现最终一致性。每个参与者定义正向操作和对应的补偿（逆向）操作，当某一步失败时，按逆序执行已完成步骤的补偿操作。适合长事务场景。 TCC（Try-Confirm-Cancel） 将事务分为三个阶段： Try：资源预留（如冻结库存、冻结余额） Confirm：确认提交（扣减冻结的资源） Cancel：取消释放（解冻资源） TCC 对业务侵入性较大，需要业务方实现三个接口，但灵活性最高，性能也优于 XA。 本地消息表 在业务操作的同一个本地事务中写入消息表，由后台任务定期扫描消息表并发送消息给下游。下游处理成功后更新消息状态。这是一种经典的最终一致性方案。 RocketMQ 事务消息 阿里开源的 RocketMQ 提供了原生的事务消息支持，其核心是”半消息”机制——消息先发送到 MQ 但对消费者不可见，本地事务提交后再确认消息，MQ 将消息投递给消费者。 Seata 阿里开源的分布式事务解决方案，支持 AT、TCC、Saga 和 XA 四种模式。AT 模式对业务代码几乎零侵入，通过代理数据源自动生成补偿日志，是目前社区中最流行的分布式事务框架之一。 参考资料 分布式事务概述 由Seata看分布式事务取舍 常用分布式事务框架 蚂蚁金服分布式事务实战 分布式事务选型的取舍infoq 分布式事务 Spring的分布式事务实现(JTA+XA/2PC) Seata官网 FLP不可能原理 分布式事务：深入理解什么是2PC、3PC及TCC协议 如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？ CAP定理 分布式事务的解决方案CSDN Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较 分布式CSDN博客 基于RocketMQ的最终一致性 总结 分布式事务是分布式系统中最具挑战性的问题之一。理解 CAP 定理和 BASE 理论是做出正确架构决策的前提——在绝大多数互联网业务场景中，最终一致性是比强一致性更务实的选择。在具体方案选型上，需要根据业务对一致性的要求、性能预期和技术团队能力来权衡：对一致性要求极高且能接受性能损耗的场景选择 XA/2PC；需要灵活控制且团队能力强的场景选择 TCC；追求简单可靠的场景选择本地消息表或 RocketMQ 事务消息；想要开箱即用且低侵入的场景选择 Seata AT 模式。" />
+<meta property="og:description" content="引言 在单体应用时代，数据库的本地事务就能满足绝大多数一致性需求。但随着微服务架构和分布式数据库的普及，一个业务操作可能横跨多个服务和多个数据库，本地事务力不从心，分布式事务应运而生。本文将从数据库本地事务出发，深入探讨 CAP 定理、BASE 理论，并对比分析主流的分布式事务解决方案。 参考案例：从一笔金币充值去思考分布式事务，五种方案详解！ https://mp.weixin.qq.com/s/dbQsfBdJSs5Ol70hCYCZMw 数据库本地事务简述 理解分布式事务之前，需要先回顾本地事务的 ACID 原则： 原子性（Atomicity）：事务中的操作要么全部成功，要么全部回滚 一致性（Consistency）：事务执行前后，数据库从一个一致状态转变为另一个一致状态 隔离性（Isolation）：并发事务之间互不干扰 持久性（Durability）：事务提交后，修改永久保存 以 MySQL InnoDB 引擎为例，ACID 的实现依赖日志和锁的配合： 隔离性：通过数据库锁机制实现（行锁、间隙锁、MVCC） 持久性：通过 Redo Log（重做日志）实现。事务提交前只需将 Redo Log 持久化，不必等待数据页落盘 原子性和一致性：通过 Undo Log 实现。Undo Log 记录了数据操作前的备份，支持事务回滚 本地事务的本质是通过单一的事务资源管理器来统一协调调度。当数据和服务分布在多个节点上时，这种单一协调者的模式就不再适用了。 分布式事务产生的原因 分布式事务的产生根源在于数据和服务的分布： Service 多节点部署：公司内部的用户服务、账户服务、订单服务等各个微服务独立部署 Resource 多节点：同一个服务的数据可能分布在不同的数据库节点上（分库分表） 当一个业务操作需要同时修改多个服务的数据（如下单扣库存 + 扣余额），就必须保证跨服务/跨库的数据一致性。 CAP 定理 CAP 定理（又称布鲁尔定理）是分布式系统设计的入门理论，指出一个分布式系统不可能同时满足以下三点： C（Consistency，一致性）：所有节点在同一时间看到的数据是一致的。如果在某个节点更新了数据，其他节点立即能读到最新值即为强一致；否则为分布式不一致。 A（Availability，可用性）：非故障节点在合理的时间内返回合理的响应（不是错误或超时）。”合理的时间”意味着请求不能被无限期阻塞；”合理的响应”意味着结果是正确的。 P（Partition Tolerance，分区容错性）：当网络分区发生时，系统仍能继续工作。 三者不可兼得 在分布式系统中，网络无法 100% 可靠，分区是一个必然现象。因此： 如果选择 CA 放弃 P：当分区发生时，为了保证一致性必须拒绝请求，但这与可用性矛盾。因此分布式系统理论上无法选择 CA 架构。 选择 CP：放弃可用性，追求一致性和分区容错性。ZooKeeper 就是典型的 CP 系统。 选择 AP：放弃强一致性，追求可用性和分区容错性。大多数互联网分布式系统选择这一路线。 需要注意的几点： CAP 理论忽略了网络延迟——实际中节点间的数据同步总需要时间，因此”绝对一致”在现实中是不存在的 选择 CP 不意味着完全放弃 A：分区发生的概率很小，大部分时间仍需保证 CA。即使分区发生，也应为后续的可用性恢复做准备（如通过日志补偿） 参考：这可能是最通俗也是最深刻的CAP理论 https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg BASE 理论 BASE 是 Basically Available（基本可用）、Soft State（软状态）和 Eventually Consistent（最终一致性）的缩写，是对 CAP 中 AP 的进一步扩展。 基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用 软状态：允许系统中存在中间状态（即数据暂时不一致），这个中间状态不影响系统整体可用性 最终一致：经过一段时间后，所有节点的数据最终会达到一致状态 BASE 与 ACID 的对比：ACID 追求强一致性，BASE 通过牺牲强一致性来获得可用性，允许数据在一段时间内不一致但最终达到一致。BASE 解决了 CAP 理论中”无网络延迟”这一理想假设的局限——用软状态和最终一致性来适应现实中不可避免的延迟。 常用分布式事务框架 基于 XA 的 2PC / 3PC 本质是本地事务的加强版，通过引入事务协调者实现强一致性，依赖数据库对 XA 协议的支持，属于数据库资源层方案。优点是一致性保障强，缺点是性能开销大、存在阻塞和单点问题。 Saga 引入补偿机制实现最终一致性。每个参与者定义正向操作和对应的补偿（逆向）操作，当某一步失败时，按逆序执行已完成步骤的补偿操作。适合长事务场景。 TCC（Try-Confirm-Cancel） 将事务分为三个阶段： Try：资源预留（如冻结库存、冻结余额） Confirm：确认提交（扣减冻结的资源） Cancel：取消释放（解冻资源） TCC 对业务侵入性较大，需要业务方实现三个接口，但灵活性最高，性能也优于 XA。 本地消息表 在业务操作的同一个本地事务中写入消息表，由后台任务定期扫描消息表并发送消息给下游。下游处理成功后更新消息状态。这是一种经典的最终一致性方案。 RocketMQ 事务消息 阿里开源的 RocketMQ 提供了原生的事务消息支持，其核心是”半消息”机制——消息先发送到 MQ 但对消费者不可见，本地事务提交后再确认消息，MQ 将消息投递给消费者。 Seata 阿里开源的分布式事务解决方案，支持 AT、TCC、Saga 和 XA 四种模式。AT 模式对业务代码几乎零侵入，通过代理数据源自动生成补偿日志，是目前社区中最流行的分布式事务框架之一。 参考资料 分布式事务概述 由Seata看分布式事务取舍 常用分布式事务框架 蚂蚁金服分布式事务实战 分布式事务选型的取舍infoq 分布式事务 Spring的分布式事务实现(JTA+XA/2PC) Seata官网 FLP不可能原理 分布式事务：深入理解什么是2PC、3PC及TCC协议 如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？ CAP定理 分布式事务的解决方案CSDN Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较 分布式CSDN博客 基于RocketMQ的最终一致性 总结 分布式事务是分布式系统中最具挑战性的问题之一。理解 CAP 定理和 BASE 理论是做出正确架构决策的前提——在绝大多数互联网业务场景中，最终一致性是比强一致性更务实的选择。在具体方案选型上，需要根据业务对一致性的要求、性能预期和技术团队能力来权衡：对一致性要求极高且能接受性能损耗的场景选择 XA/2PC；需要灵活控制且团队能力强的场景选择 TCC；追求简单可靠的场景选择本地消息表或 RocketMQ 事务消息；想要开箱即用且低侵入的场景选择 Seata AT 模式。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-11-12T10:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="DB-distributed-transacion" />
+<meta property="twitter:title" content="分布式事务全解析：从CAP理论到主流框架选型" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"从一笔金币充值去思考分布式事务，五种方案详解！ https://mp.weixin.qq.com/s/dbQsfBdJSs5Ol70hCYCZMw 数据库本地事务简述 ACID原则 原子性(Atomicity) 一致性(Consistency) 隔离性(Isolation) 持久性(Durability) 以Mysql的InnoDB为例，事务的ACID是通过InnoDB日志和锁来保证 事务的隔离性是通过数据库锁的机制实现的 持久性通过Redo Log（重做日志）来实现，在事务提交前，只要将 Redo Log 持久化即可，不需要将数据持久化。 原子性和一致性通过 Undo Log 来实现。（数据数据操作前的数据备份 Undo Log） 本质都是通过一个本地事务资源管理器来统一协调调度 分布式事务 分布式事务产生的原因 Service多节点部署（比如公司内的用户、账户等各种微服务) Resource 多节点 (每个人的数据部署再不同节点的数据库里) 分布式系统之CAP定理 CAP 定理，又被叫作布鲁尔定理。对于设计分布式系统(不仅仅是分布式事务)的架构师来说，CAP 就是你的入门理论。 C (一致性)：对某个指定的客户端来说，读操作能返回一致的写操作。 对于数据分布在不同节点上的数据来说，如果在某个节点更新了数据，那么在其他节点如果都能读取到这个***的数据，那么就称为强一致，如果有某个节点没有读取到，那就是分布式不一致。 A (可用性)：非故障的节点在合理的时间内返回合理的响应(不是错误和超时的响应)。可用性的两个关键一个是合理的时间，一个是合理的响应。 合理的时间指的是请求不能被阻塞，应该在合理的时间给出返回。合理的响应指的是系统应该明确返回结果并且结果是正确的，这里的正确指的是比如应该返回 50，而不是返回 40。 P (分区容错性)：当出现网络分区后，系统能够继续工作。打个比方，这里集群有多台机器，有台机器网络出现了问题，但是这个集群仍然可以正常工作。 熟悉 CAP 的人都知道，三者不能共有，如果感兴趣可以搜索 CAP 的证明，在分布式系统中，网络无法 100% 可靠，分区其实是一个必然现象 如果我们选择了 CA 而放弃了 P，那么当发生分区现象时，为了保证一致性，这个时候必须拒绝请求，但是 A 又不允许，所以分布式系统理论上不可能选择 CA 架构，只能选择 CP 或者 AP 架构。 对于 CP 来说，放弃可用性，追求一致性和分区容错性，我们的 ZooKeeper 其实就是追求的强一致。 对于 AP 来说，放弃一致性(这里说的一致性是强一致性)，追求分区容错性和可用性，这是很多分布式系统设计时的选择，后面的 BASE 也是根据 AP 来扩展。 顺便一提，CAP 理论中是忽略网络延迟，也就是当事务提交时，从节点 A 复制到节点 B 没有延迟，但是在现实中这个是明显不可能的，所以总会有一定的时间是不一致。 同时 CAP 中选择两个，比如你选择了 CP，并不是叫你放弃 A。因为 P 出现的概率实在是太小了，大部分的时间你仍然需要保证 CA。 就算分区出现了你也要为后来的 A 做准备，比如通过一些日志的手段，是其他机器回复至可用。 这可能是我看过最通俗也是最深刻的CAP理论 https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg 分布式系统之BASE定理 BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩写，是对 CAP 中 AP 的一个扩展。 基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用。 软状态：允许系统中存在中间状态，这个状态不影响系统可用性，这里指的是 CAP 中的不一致。 最终一致：最终一致是指经过一段时间后，所有节点数据都将会达到一致。 BASE 解决了 CAP 中理论没有网络延迟，在 BASE 中用软状态和最终一致，保证了延迟后的一致性。 BASE 和 ACID 是相反的，它完全不同于 ACID 的强一致性模型，而是通过牺牲强一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态 常用分布式事务框架 基于XA的 2PC、3PC 本质相当于本地事务的加强版，强一致性，引入中间事务协调者，依赖数据库，属于数据库资源层方案 Saga 引入补偿机制（最终一致性） TCC Try、Commit、Cancel 本地消息表 RocketMQ(阿里开源) Seata 参考资料 分布式事务概述 由Seata看分布式事务取舍 常用分布式事务框架 蚂蚁金服分布式事务实战 分布式事务选型的取舍infoq 分布式事务 Spring的分布式事务实现(JTA+XA/2PC) Seata官网 FLP不可能原理 分布式事务：深入理解什么是2PC、3PC及TCC协议 如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？ CAP定理 分布式事务的解决方案CSDN Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较 分布式CSDN博客 基于RocketMQ的最终一致性","headline":"DB-distributed-transacion","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"引言 在单体应用时代，数据库的本地事务就能满足绝大多数一致性需求。但随着微服务架构和分布式数据库的普及，一个业务操作可能横跨多个服务和多个数据库，本地事务力不从心，分布式事务应运而生。本文将从数据库本地事务出发，深入探讨 CAP 定理、BASE 理论，并对比分析主流的分布式事务解决方案。 参考案例：从一笔金币充值去思考分布式事务，五种方案详解！ https://mp.weixin.qq.com/s/dbQsfBdJSs5Ol70hCYCZMw 数据库本地事务简述 理解分布式事务之前，需要先回顾本地事务的 ACID 原则： 原子性（Atomicity）：事务中的操作要么全部成功，要么全部回滚 一致性（Consistency）：事务执行前后，数据库从一个一致状态转变为另一个一致状态 隔离性（Isolation）：并发事务之间互不干扰 持久性（Durability）：事务提交后，修改永久保存 以 MySQL InnoDB 引擎为例，ACID 的实现依赖日志和锁的配合： 隔离性：通过数据库锁机制实现（行锁、间隙锁、MVCC） 持久性：通过 Redo Log（重做日志）实现。事务提交前只需将 Redo Log 持久化，不必等待数据页落盘 原子性和一致性：通过 Undo Log 实现。Undo Log 记录了数据操作前的备份，支持事务回滚 本地事务的本质是通过单一的事务资源管理器来统一协调调度。当数据和服务分布在多个节点上时，这种单一协调者的模式就不再适用了。 分布式事务产生的原因 分布式事务的产生根源在于数据和服务的分布： Service 多节点部署：公司内部的用户服务、账户服务、订单服务等各个微服务独立部署 Resource 多节点：同一个服务的数据可能分布在不同的数据库节点上（分库分表） 当一个业务操作需要同时修改多个服务的数据（如下单扣库存 + 扣余额），就必须保证跨服务/跨库的数据一致性。 CAP 定理 CAP 定理（又称布鲁尔定理）是分布式系统设计的入门理论，指出一个分布式系统不可能同时满足以下三点： C（Consistency，一致性）：所有节点在同一时间看到的数据是一致的。如果在某个节点更新了数据，其他节点立即能读到最新值即为强一致；否则为分布式不一致。 A（Availability，可用性）：非故障节点在合理的时间内返回合理的响应（不是错误或超时）。”合理的时间”意味着请求不能被无限期阻塞；”合理的响应”意味着结果是正确的。 P（Partition Tolerance，分区容错性）：当网络分区发生时，系统仍能继续工作。 三者不可兼得 在分布式系统中，网络无法 100% 可靠，分区是一个必然现象。因此： 如果选择 CA 放弃 P：当分区发生时，为了保证一致性必须拒绝请求，但这与可用性矛盾。因此分布式系统理论上无法选择 CA 架构。 选择 CP：放弃可用性，追求一致性和分区容错性。ZooKeeper 就是典型的 CP 系统。 选择 AP：放弃强一致性，追求可用性和分区容错性。大多数互联网分布式系统选择这一路线。 需要注意的几点： CAP 理论忽略了网络延迟——实际中节点间的数据同步总需要时间，因此”绝对一致”在现实中是不存在的 选择 CP 不意味着完全放弃 A：分区发生的概率很小，大部分时间仍需保证 CA。即使分区发生，也应为后续的可用性恢复做准备（如通过日志补偿） 参考：这可能是最通俗也是最深刻的CAP理论 https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg BASE 理论 BASE 是 Basically Available（基本可用）、Soft State（软状态）和 Eventually Consistent（最终一致性）的缩写，是对 CAP 中 AP 的进一步扩展。 基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用 软状态：允许系统中存在中间状态（即数据暂时不一致），这个中间状态不影响系统整体可用性 最终一致：经过一段时间后，所有节点的数据最终会达到一致状态 BASE 与 ACID 的对比：ACID 追求强一致性，BASE 通过牺牲强一致性来获得可用性，允许数据在一段时间内不一致但最终达到一致。BASE 解决了 CAP 理论中”无网络延迟”这一理想假设的局限——用软状态和最终一致性来适应现实中不可避免的延迟。 常用分布式事务框架 基于 XA 的 2PC / 3PC 本质是本地事务的加强版，通过引入事务协调者实现强一致性，依赖数据库对 XA 协议的支持，属于数据库资源层方案。优点是一致性保障强，缺点是性能开销大、存在阻塞和单点问题。 Saga 引入补偿机制实现最终一致性。每个参与者定义正向操作和对应的补偿（逆向）操作，当某一步失败时，按逆序执行已完成步骤的补偿操作。适合长事务场景。 TCC（Try-Confirm-Cancel） 将事务分为三个阶段： Try：资源预留（如冻结库存、冻结余额） Confirm：确认提交（扣减冻结的资源） Cancel：取消释放（解冻资源） TCC 对业务侵入性较大，需要业务方实现三个接口，但灵活性最高，性能也优于 XA。 本地消息表 在业务操作的同一个本地事务中写入消息表，由后台任务定期扫描消息表并发送消息给下游。下游处理成功后更新消息状态。这是一种经典的最终一致性方案。 RocketMQ 事务消息 阿里开源的 RocketMQ 提供了原生的事务消息支持，其核心是”半消息”机制——消息先发送到 MQ 但对消费者不可见，本地事务提交后再确认消息，MQ 将消息投递给消费者。 Seata 阿里开源的分布式事务解决方案，支持 AT、TCC、Saga 和 XA 四种模式。AT 模式对业务代码几乎零侵入，通过代理数据源自动生成补偿日志，是目前社区中最流行的分布式事务框架之一。 参考资料 分布式事务概述 由Seata看分布式事务取舍 常用分布式事务框架 蚂蚁金服分布式事务实战 分布式事务选型的取舍infoq 分布式事务 Spring的分布式事务实现(JTA+XA/2PC) Seata官网 FLP不可能原理 分布式事务：深入理解什么是2PC、3PC及TCC协议 如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？ CAP定理 分布式事务的解决方案CSDN Atomikos和GTS-Fescar和TCC-Transaction和TX-LCN分布式事物的比较 分布式CSDN博客 基于RocketMQ的最终一致性 总结 分布式事务是分布式系统中最具挑战性的问题之一。理解 CAP 定理和 BASE 理论是做出正确架构决策的前提——在绝大多数互联网业务场景中，最终一致性是比强一致性更务实的选择。在具体方案选型上，需要根据业务对一致性的要求、性能预期和技术团队能力来权衡：对一致性要求极高且能接受性能损耗的场景选择 XA/2PC；需要灵活控制且团队能力强的场景选择 TCC；追求简单可靠的场景选择本地消息表或 RocketMQ 事务消息；想要开箱即用且低侵入的场景选择 Seata AT 模式。","headline":"分布式事务全解析：从CAP理论到主流框架选型","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DB-distributed-transacion.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html">&laquo; DB Shard</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DB-Shard.html">&laquo; 数据库分库分表实战：分片策略、中间...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html">Not Only SQL &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html">NoSQL数据库全景解析：从存储原... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">DB-distributed-transacion</h1>
+    <h1 class="asset-name entry-title">分布式事务全解析：从CAP理论到主流框架选型</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,79 +97,132 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <p>从一笔金币充值去思考分布式事务，五种方案详解！
+      <h3 id="引言">引言</h3>
+
+<p>在单体应用时代，数据库的本地事务就能满足绝大多数一致性需求。但随着微服务架构和分布式数据库的普及，一个业务操作可能横跨多个服务和多个数据库，本地事务力不从心，<strong>分布式事务</strong>应运而生。本文将从数据库本地事务出发，深入探讨 CAP 定理、BASE 理论，并对比分析主流的分布式事务解决方案。</p>
+
+<p>参考案例：从一笔金币充值去思考分布式事务，五种方案详解！
 <a href="https://mp.weixin.qq.com/s/dbQsfBdJSs5Ol70hCYCZMw">https://mp.weixin.qq.com/s/dbQsfBdJSs5Ol70hCYCZMw</a></p>
 
+<hr />
+
 <h3 id="数据库本地事务简述">数据库本地事务简述</h3>
+
+<p>理解分布式事务之前，需要先回顾本地事务的 ACID 原则：</p>
+
+<ol>
+  <li><strong>原子性（Atomicity）</strong>：事务中的操作要么全部成功，要么全部回滚</li>
+  <li><strong>一致性（Consistency）</strong>：事务执行前后，数据库从一个一致状态转变为另一个一致状态</li>
+  <li><strong>隔离性（Isolation）</strong>：并发事务之间互不干扰</li>
+  <li><strong>持久性（Durability）</strong>：事务提交后，修改永久保存</li>
+</ol>
+
+<p>以 MySQL InnoDB 引擎为例，ACID 的实现依赖日志和锁的配合：</p>
+
 <ul>
-  <li>ACID原则
-    <ol>
-      <li>原子性(Atomicity)</li>
-      <li>一致性(Consistency)</li>
-      <li>隔离性(Isolation)</li>
-      <li>持久性(Durability)</li>
-    </ol>
-  </li>
-  <li>以Mysql的InnoDB为例，事务的ACID是通过InnoDB日志和锁来保证
-    <ol>
-      <li>事务的隔离性是通过数据库锁的机制实现的</li>
-      <li>持久性通过Redo Log（重做日志）来实现，在事务提交前，只要将 Redo Log 持久化即可，不需要将数据持久化。</li>
-      <li>原子性和一致性通过 Undo Log 来实现。（数据数据操作前的数据备份 Undo Log）</li>
-    </ol>
-  </li>
-  <li>本质都是通过一个本地事务资源管理器来统一协调调度</li>
+  <li><strong>隔离性</strong>：通过数据库锁机制实现（行锁、间隙锁、MVCC）</li>
+  <li><strong>持久性</strong>：通过 <strong>Redo Log</strong>（重做日志）实现。事务提交前只需将 Redo Log 持久化，不必等待数据页落盘</li>
+  <li><strong>原子性和一致性</strong>：通过 <strong>Undo Log</strong> 实现。Undo Log 记录了数据操作前的备份，支持事务回滚</li>
 </ul>
 
-<h3 id="分布式事务">分布式事务</h3>
+<p>本地事务的本质是通过<strong>单一的事务资源管理器</strong>来统一协调调度。当数据和服务分布在多个节点上时，这种单一协调者的模式就不再适用了。</p>
 
-<h4 id="分布式事务产生的原因">分布式事务产生的原因</h4>
+<hr />
+
+<h3 id="分布式事务产生的原因">分布式事务产生的原因</h3>
+
+<p>分布式事务的产生根源在于数据和服务的分布：</p>
+
 <ul>
-  <li>Service多节点部署（比如公司内的用户、账户等各种微服务)</li>
-  <li>Resource 多节点 (每个人的数据部署再不同节点的数据库里)</li>
+  <li><strong>Service 多节点部署</strong>：公司内部的用户服务、账户服务、订单服务等各个微服务独立部署</li>
+  <li><strong>Resource 多节点</strong>：同一个服务的数据可能分布在不同的数据库节点上（分库分表）</li>
 </ul>
 
-<h4 id="分布式系统之cap定理">分布式系统之CAP定理</h4>
+<p>当一个业务操作需要同时修改多个服务的数据（如下单扣库存 + 扣余额），就必须保证跨服务/跨库的数据一致性。</p>
+
+<hr />
+
+<h3 id="cap-定理">CAP 定理</h3>
+
+<p><strong>CAP 定理</strong>（又称布鲁尔定理）是分布式系统设计的入门理论，指出一个分布式系统不可能同时满足以下三点：</p>
+
 <ul>
-  <li>CAP 定理，又被叫作布鲁尔定理。对于设计分布式系统(不仅仅是分布式事务)的架构师来说，CAP 就是你的入门理论。</li>
-  <li>C (一致性)：对某个指定的客户端来说，读操作能返回一致的写操作。
-对于数据分布在不同节点上的数据来说，如果在某个节点更新了数据，那么在其他节点如果都能读取到这个***的数据，那么就称为强一致，如果有某个节点没有读取到，那就是分布式不一致。</li>
-  <li>A (可用性)：非故障的节点在合理的时间内返回合理的响应(不是错误和超时的响应)。可用性的两个关键一个是合理的时间，一个是合理的响应。
-合理的时间指的是请求不能被阻塞，应该在合理的时间给出返回。合理的响应指的是系统应该明确返回结果并且结果是正确的，这里的正确指的是比如应该返回 50，而不是返回 40。</li>
-  <li>
-    <p>P (分区容错性)：当出现网络分区后，系统能够继续工作。打个比方，这里集群有多台机器，有台机器网络出现了问题，但是这个集群仍然可以正常工作。</p>
-  </li>
-  <li>熟悉 CAP 的人都知道，三者不能共有，如果感兴趣可以搜索 CAP 的证明，在分布式系统中，网络无法 100% 可靠，分区其实是一个必然现象
-  如果我们选择了 CA 而放弃了 P，那么当发生分区现象时，为了保证一致性，这个时候必须拒绝请求，但是 A 又不允许，所以分布式系统理论上不可能选择 CA 架构，只能选择 CP 或者 AP 架构。
-  对于 CP 来说，放弃可用性，追求一致性和分区容错性，我们的 ZooKeeper 其实就是追求的强一致。
-  对于 AP 来说，放弃一致性(这里说的一致性是强一致性)，追求分区容错性和可用性，这是很多分布式系统设计时的选择，后面的 BASE 也是根据 AP 来扩展。
-  顺便一提，CAP 理论中是忽略网络延迟，也就是当事务提交时，从节点 A 复制到节点 B 没有延迟，但是在现实中这个是明显不可能的，所以总会有一定的时间是不一致。
-  同时 CAP 中选择两个，比如你选择了 CP，并不是叫你放弃 A。因为 P 出现的概率实在是太小了，大部分的时间你仍然需要保证 CA。
-  就算分区出现了你也要为后来的 A 做准备，比如通过一些日志的手段，是其他机器回复至可用。</li>
-  <li>这可能是我看过最通俗也是最深刻的CAP理论  <a href="https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg">https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg</a>
-    <h4 id="分布式系统之base定理">分布式系统之BASE定理</h4>
-  </li>
-  <li>BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩写，是对 CAP 中 AP 的一个扩展。</li>
-  <li>基本可用：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用。</li>
-  <li>软状态：允许系统中存在中间状态，这个状态不影响系统可用性，这里指的是 CAP 中的不一致。</li>
-  <li>最终一致：最终一致是指经过一段时间后，所有节点数据都将会达到一致。</li>
-  <li>BASE 解决了 CAP 中理论没有网络延迟，在 BASE 中用软状态和最终一致，保证了延迟后的一致性。</li>
-  <li>BASE 和 ACID 是相反的，它完全不同于 ACID 的强一致性模型，而是通过牺牲强一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态</li>
+  <li><strong>C（Consistency，一致性）</strong>：所有节点在同一时间看到的数据是一致的。如果在某个节点更新了数据，其他节点立即能读到最新值即为强一致；否则为分布式不一致。</li>
+  <li><strong>A（Availability，可用性）</strong>：非故障节点在合理的时间内返回合理的响应（不是错误或超时）。”合理的时间”意味着请求不能被无限期阻塞；”合理的响应”意味着结果是正确的。</li>
+  <li><strong>P（Partition Tolerance，分区容错性）</strong>：当网络分区发生时，系统仍能继续工作。</li>
 </ul>
 
-<h4 id="常用分布式事务框架">常用分布式事务框架</h4>
+<h4 id="三者不可兼得">三者不可兼得</h4>
+
+<p>在分布式系统中，网络无法 100% 可靠，分区是一个必然现象。因此：</p>
+
 <ul>
-  <li>基于XA的 2PC、3PC
-   本质相当于本地事务的加强版，强一致性，引入中间事务协调者，依赖数据库，属于数据库资源层方案</li>
-  <li>Saga
-  引入补偿机制（最终一致性）</li>
-  <li>TCC
-  Try、Commit、Cancel</li>
-  <li>本地消息表</li>
-  <li>RocketMQ(阿里开源)</li>
-  <li>Seata</li>
+  <li>如果选择 <strong>CA</strong> 放弃 P：当分区发生时，为了保证一致性必须拒绝请求，但这与可用性矛盾。因此分布式系统理论上无法选择 CA 架构。</li>
+  <li>选择 <strong>CP</strong>：放弃可用性，追求一致性和分区容错性。<strong>ZooKeeper</strong> 就是典型的 CP 系统。</li>
+  <li>选择 <strong>AP</strong>：放弃强一致性，追求可用性和分区容错性。大多数互联网分布式系统选择这一路线。</li>
 </ul>
 
-<h5 id="参考资料">参考资料</h5>
+<p><strong>需要注意的几点</strong>：</p>
+<ul>
+  <li>CAP 理论忽略了网络延迟——实际中节点间的数据同步总需要时间，因此”绝对一致”在现实中是不存在的</li>
+  <li>选择 CP 不意味着完全放弃 A：分区发生的概率很小，大部分时间仍需保证 CA。即使分区发生，也应为后续的可用性恢复做准备（如通过日志补偿）</li>
+</ul>
+
+<p>参考：这可能是最通俗也是最深刻的CAP理论 <a href="https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg">https://mp.weixin.qq.com/s/6PgqyigrgVICl0JiI73oNg</a></p>
+
+<hr />
+
+<h3 id="base-理论">BASE 理论</h3>
+
+<p><strong>BASE</strong> 是 Basically Available（基本可用）、Soft State（软状态）和 Eventually Consistent（最终一致性）的缩写，是对 CAP 中 AP 的进一步扩展。</p>
+
+<ul>
+  <li><strong>基本可用</strong>：分布式系统在出现故障时，允许损失部分可用功能，保证核心功能可用</li>
+  <li><strong>软状态</strong>：允许系统中存在中间状态（即数据暂时不一致），这个中间状态不影响系统整体可用性</li>
+  <li><strong>最终一致</strong>：经过一段时间后，所有节点的数据最终会达到一致状态</li>
+</ul>
+
+<p><strong>BASE 与 ACID 的对比</strong>：ACID 追求强一致性，BASE 通过牺牲强一致性来获得可用性，允许数据在一段时间内不一致但最终达到一致。BASE 解决了 CAP 理论中”无网络延迟”这一理想假设的局限——用软状态和最终一致性来适应现实中不可避免的延迟。</p>
+
+<hr />
+
+<h3 id="常用分布式事务框架">常用分布式事务框架</h3>
+
+<h4 id="基于-xa-的-2pc--3pc">基于 XA 的 2PC / 3PC</h4>
+
+<p>本质是本地事务的加强版，通过引入<strong>事务协调者</strong>实现强一致性，依赖数据库对 XA 协议的支持，属于数据库资源层方案。优点是一致性保障强，缺点是性能开销大、存在阻塞和单点问题。</p>
+
+<h4 id="saga">Saga</h4>
+
+<p>引入<strong>补偿机制</strong>实现最终一致性。每个参与者定义正向操作和对应的补偿（逆向）操作，当某一步失败时，按逆序执行已完成步骤的补偿操作。适合长事务场景。</p>
+
+<h4 id="tcctry-confirm-cancel">TCC（Try-Confirm-Cancel）</h4>
+
+<p>将事务分为三个阶段：</p>
+<ul>
+  <li><strong>Try</strong>：资源预留（如冻结库存、冻结余额）</li>
+  <li><strong>Confirm</strong>：确认提交（扣减冻结的资源）</li>
+  <li><strong>Cancel</strong>：取消释放（解冻资源）</li>
+</ul>
+
+<p>TCC 对业务侵入性较大，需要业务方实现三个接口，但灵活性最高，性能也优于 XA。</p>
+
+<h4 id="本地消息表">本地消息表</h4>
+
+<p>在业务操作的同一个本地事务中写入消息表，由后台任务定期扫描消息表并发送消息给下游。下游处理成功后更新消息状态。这是一种经典的最终一致性方案。</p>
+
+<h4 id="rocketmq-事务消息">RocketMQ 事务消息</h4>
+
+<p>阿里开源的 RocketMQ 提供了原生的事务消息支持，其核心是”半消息”机制——消息先发送到 MQ 但对消费者不可见，本地事务提交后再确认消息，MQ 将消息投递给消费者。</p>
+
+<h4 id="seata">Seata</h4>
+
+<p>阿里开源的分布式事务解决方案，支持 AT、TCC、Saga 和 XA 四种模式。AT 模式对业务代码几乎零侵入，通过代理数据源自动生成补偿日志，是目前社区中最流行的分布式事务框架之一。</p>
+
+<hr />
+
+<h3 id="参考资料">参考资料</h3>
+
 <ul>
   <li><a href="https://developer.51cto.com/art/201808/581174.htm">分布式事务概述</a></li>
   <li><a href="https://www.jianshu.com/p/917cb4bdaa03">由Seata看分布式事务取舍</a></li>
@@ -180,7 +233,7 @@
   <li><a href="https://www.jdon.com/48829">Spring的分布式事务实现(JTA+XA/2PC)</a></li>
   <li><a href="http://seata.io/zh-cn/">Seata官网</a></li>
   <li><a href="https://www.cnblogs.com/firstdream/p/6585923.html">FLP不可能原理</a></li>
-  <li><a href="http://www.sohu.com/a/290897501_684445">分布式事务：深入理解什么是2PC、3PC及TCC协议 </a></li>
+  <li><a href="http://www.sohu.com/a/290897501_684445">分布式事务：深入理解什么是2PC、3PC及TCC协议</a></li>
   <li><a href="https://juejin.im/post/5dd0ff1af265da0c075d0af7">如何基于RocketMQ的事务消息特性实现分布式系统的最终一致性？</a></li>
   <li><a href="http://www.ruanyifeng.com/blog/2018/07/cap.html">CAP定理</a></li>
   <li><a href="https://blog.csdn.net/m0_38110132/article/details/76994165">分布式事务的解决方案CSDN</a></li>
@@ -188,6 +241,12 @@
   <li><a href="https://blog.csdn.net/qq_27384769/category_7453176_1.html">分布式CSDN博客</a></li>
   <li><a href="https://www.itcodemonkey.com/article/13548.html">基于RocketMQ的最终一致性</a></li>
 </ul>
+
+<hr />
+
+<h3 id="总结">总结</h3>
+
+<p>分布式事务是分布式系统中最具挑战性的问题之一。理解 CAP 定理和 BASE 理论是做出正确架构决策的前提——在绝大多数互联网业务场景中，<strong>最终一致性</strong>是比强一致性更务实的选择。在具体方案选型上，需要根据业务对一致性的要求、性能预期和技术团队能力来权衡：对一致性要求极高且能接受性能损耗的场景选择 XA/2PC；需要灵活控制且团队能力强的场景选择 TCC；追求简单可靠的场景选择本地消息表或 RocketMQ 事务消息；想要开箱即用且低侵入的场景选择 Seata AT 模式。</p>
 
     </div>
   </div>
@@ -219,33 +278,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

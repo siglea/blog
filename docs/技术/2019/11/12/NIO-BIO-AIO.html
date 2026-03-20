@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NIO-BIO-AIO - Code & Coffee</title>
+  <title>Java IO 模型详解：BIO、NIO 与 AIO 的原理、区别与实战 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>NIO-BIO-AIO | Code &amp; Coffee</title>
+<title>Java IO 模型详解：BIO、NIO 与 AIO 的原理、区别与实战 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="NIO-BIO-AIO" />
+<meta property="og:title" content="Java IO 模型详解：BIO、NIO 与 AIO 的原理、区别与实战" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="写在前面 即便是NIO，本地文件IO依然是Block操作的，NIO主要是解决网络IO的问题。 本质都是需要操作系统层次的支持。 BIO、NIO、AIO区别 BIO 就是传统的 java.io 包，它是基于流模型实现的，交互的方式是同步、阻塞方式，也就是说在读入输入流或者输出流时，在读写动作完成之前，线程会一直阻塞在那里，它们之间的调用时可靠的线性顺序。它的有点就是代码比较简单、直观；缺点就是 IO 的效率和扩展性很低，容易成为应用性能瓶颈。 NIO 是 Java 1.4 引入的 java.nio 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。 AIO 是 Java 1.7 之后引入的包，是 NIO 的升级版本，提供了异步非堵塞的 IO 操作方式，所以人们叫它 AIO（Asynchronous IO），异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。 深入理解BIO、NIO、AIO https://zhuanlan.zhihu.com/p/51453522 结合select/poll/epoll看NIO https://www.jianshu.com/p/ef418ccf2f7d Stream（BIO) 与 Channel (NIO) Stream不支持异步 Channel同时支持读写 NIO流是以数据块为单位来处理，缓冲区就是用于读写的数据块。缓冲区的IO操作是由底层操作系统实现的，效率很快。 各种Channel Demo https://blog.csdn.net/dd864140130/article/details/50327649 Channel &amp; Buffer的使用https://www.cnblogs.com/fwnboke/p/8529604.html Buffer的读取与写入 Buffer相当于，操作系统与程序之间共同开辟了一份缓冲区共同读写，效率更高 本质上Buffer支持读写，又共用同一个缓冲区，在读写切换时确实需要进行相关操作 3个重要的属性 position:读的时候表示可以从哪里开始读，写的时候表示现在可以从哪里开始写。 limit:读的时候表示可以最大可读位置，写的时候表示最大可写的位置。 capacity：容量 flip() &amp; clear()，不论读写position都要从0开始 class Buffer{ public final Buffer flip() { limit = position; position = 0; mark = -1; return this; } public final Buffer clear() { position = 0; limit = capacity; mark = -1; return this; } } 参考 https://www.cnblogs.com/yaowen/p/9173443.html https://blog.csdn.net/u013096088/article/details/78638245 Java NIO：Scatter 与 Gather Scatter 是指允许将一个channel中的数据分散的依次写入多个buffer中存储 Gather 是指允许将多个buffer中的数据按某种顺序写入一个channel中 https://blog.csdn.net/lemon89/article/details/47152635 allocateDirect直接缓冲区 “IO与NIO ”重点概念整理https://www.jianshu.com/p/c0e7462f9e1d AsynchronousServerSocketChannel import java.net.InetSocketAddress; import java.nio.ByteBuffer; import java.nio.channels.AsynchronousServerSocketChannel; import java.nio.channels.AsynchronousSocketChannel; import java.util.concurrent.Future; public class Server { public static void main(String[] args) { try { Server server = new Server(); } catch (Exception e) { e.printStackTrace(); } } public Server() throws Exception { AsynchronousServerSocketChannel serverSocketChannel = AsynchronousServerSocketChannel.open(); InetSocketAddress inetSocketAddress = new InetSocketAddress(&quot;localhost&quot;, 80); serverSocketChannel.bind(inetSocketAddress); Future&lt;AsynchronousSocketChannel&gt; accept; while (true) { // accept()不会阻塞。 accept = serverSocketChannel.accept(); System.out.println(&quot;=================&quot;); System.out.println(&quot;服务器等待连接...&quot;); AsynchronousSocketChannel socketChannel = accept.get();// get()方法将阻塞。 System.out.println(&quot;服务器接受连接&quot;); System.out.println(&quot;服务器与&quot; + socketChannel.getRemoteAddress() + &quot;建立连接&quot;); ByteBuffer buffer = ByteBuffer.wrap(&quot;demo&quot;.getBytes()); Future&lt;Integer&gt; write=socketChannel.write(buffer); while(!write.isDone()) { Thread.sleep(10); } System.out.println(&quot;服务器发送数据完毕.&quot;); socketChannel.close(); } } } ServerSocketChannel+Selector实现多路复用io import java.io.IOException; import java.net.Inet4Address; import java.net.InetSocketAddress; import java.net.ServerSocket; import java.net.SocketAddress; import java.nio.ByteBuffer; import java.nio.channels.*; import java.util.Iterator; import java.util.Set; public class SelectorServer { private static int LISTEN_PORT = 5300; public static void main(String[] args) { /* ServerSocketChannel ServerSocket SocketChannel Selector SelectionKey */ try { ServerSocketChannel ssc = buildServerSocketChannel(); Selector selector = Selector.open(); SelectionKey skey = ssc.register( selector, SelectionKey.OP_ACCEPT ); ByteBuffer echoBuffer = ByteBuffer.allocate(128); printSelectorKeys(selector); System.out.println(&quot;channel 准备就绪！&quot;); while(true) { int num = selector.select();//获取通道内是否有选择器的关心事件 if (num &lt; 1) { continue; } Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();//获取通道内关心事件的集合 Iterator&lt;SelectionKey&gt; it = selectedKeys.iterator(); while (it.hasNext()) { //遍历每个key SelectionKey key = it.next(); it.remove(); System.out.println(&quot;key hashCode=&quot; + key.hashCode()); if (key.isAcceptable()) { // 有新的socket链接进来 ServerSocketChannel serverChanel = (ServerSocketChannel)key.channel(); SocketChannel sc = serverChanel.accept(); sc.configureBlocking( false ); SelectionKey newKey = sc.register( selector, SelectionKey.OP_READ ); System.out.println( &quot;Got connection from &quot;+sc ); printSelectorKeys(selector); } if (key.isReadable()) { // 有请求进来 SocketChannel sc = (SocketChannel)key.channel(); System.out.println(&quot;address:&quot; + sc.socket().getPort()); int bytesEchoed = 0; while((bytesEchoed = sc.read(echoBuffer))&gt; 0){ System.out.println(&quot;bytesEchoed:&quot;+bytesEchoed); } echoBuffer.flip(); if (bytesEchoed == -1) { System.out.println(&quot;connect finish!over!&quot;); sc.close(); printSelectorKeys(selector); break; } byte [] content = new byte[echoBuffer.limit()]; echoBuffer.get(content); String result=new String(content, &quot;utf-8&quot;); doPost(result,sc); echoBuffer.clear(); } } } } catch (IOException e) { e.printStackTrace(); } } private static void printSelectorKeys(Selector selector) { Set&lt;SelectionKey&gt; keys = selector.keys(); Iterator&lt;SelectionKey&gt; iterator = keys.iterator(); while (iterator.hasNext()) { SelectionKey key = iterator.next(); System.out.println(&quot;all:selectKey hashCode=&quot; + key.hashCode()); } } private static void doPost(String result, SocketChannel sc) { System.out.println(result); } private static ServerSocketChannel buildServerSocketChannel() throws IOException { ServerSocketChannel channel = ServerSocketChannel.open(); channel.configureBlocking( false );//使通道为非阻塞 ServerSocket ss = channel.socket();//创建基于NIO通道的socket连接 ss.bind(new InetSocketAddress(LISTEN_PORT));//新建socket通道的端口 //将NIO通道选绑定到择器,当然绑定后分配的主键为skey return channel; } private static void register(ServerSocketChannel ssc, Selector selector, int ops) throws ClosedChannelException { SelectionKey key = ssc.register(selector, ops); System.out.println(&quot;selectKey hashCode=&quot; + key.hashCode()); } }" />
-<meta property="og:description" content="写在前面 即便是NIO，本地文件IO依然是Block操作的，NIO主要是解决网络IO的问题。 本质都是需要操作系统层次的支持。 BIO、NIO、AIO区别 BIO 就是传统的 java.io 包，它是基于流模型实现的，交互的方式是同步、阻塞方式，也就是说在读入输入流或者输出流时，在读写动作完成之前，线程会一直阻塞在那里，它们之间的调用时可靠的线性顺序。它的有点就是代码比较简单、直观；缺点就是 IO 的效率和扩展性很低，容易成为应用性能瓶颈。 NIO 是 Java 1.4 引入的 java.nio 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。 AIO 是 Java 1.7 之后引入的包，是 NIO 的升级版本，提供了异步非堵塞的 IO 操作方式，所以人们叫它 AIO（Asynchronous IO），异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。 深入理解BIO、NIO、AIO https://zhuanlan.zhihu.com/p/51453522 结合select/poll/epoll看NIO https://www.jianshu.com/p/ef418ccf2f7d Stream（BIO) 与 Channel (NIO) Stream不支持异步 Channel同时支持读写 NIO流是以数据块为单位来处理，缓冲区就是用于读写的数据块。缓冲区的IO操作是由底层操作系统实现的，效率很快。 各种Channel Demo https://blog.csdn.net/dd864140130/article/details/50327649 Channel &amp; Buffer的使用https://www.cnblogs.com/fwnboke/p/8529604.html Buffer的读取与写入 Buffer相当于，操作系统与程序之间共同开辟了一份缓冲区共同读写，效率更高 本质上Buffer支持读写，又共用同一个缓冲区，在读写切换时确实需要进行相关操作 3个重要的属性 position:读的时候表示可以从哪里开始读，写的时候表示现在可以从哪里开始写。 limit:读的时候表示可以最大可读位置，写的时候表示最大可写的位置。 capacity：容量 flip() &amp; clear()，不论读写position都要从0开始 class Buffer{ public final Buffer flip() { limit = position; position = 0; mark = -1; return this; } public final Buffer clear() { position = 0; limit = capacity; mark = -1; return this; } } 参考 https://www.cnblogs.com/yaowen/p/9173443.html https://blog.csdn.net/u013096088/article/details/78638245 Java NIO：Scatter 与 Gather Scatter 是指允许将一个channel中的数据分散的依次写入多个buffer中存储 Gather 是指允许将多个buffer中的数据按某种顺序写入一个channel中 https://blog.csdn.net/lemon89/article/details/47152635 allocateDirect直接缓冲区 “IO与NIO ”重点概念整理https://www.jianshu.com/p/c0e7462f9e1d AsynchronousServerSocketChannel import java.net.InetSocketAddress; import java.nio.ByteBuffer; import java.nio.channels.AsynchronousServerSocketChannel; import java.nio.channels.AsynchronousSocketChannel; import java.util.concurrent.Future; public class Server { public static void main(String[] args) { try { Server server = new Server(); } catch (Exception e) { e.printStackTrace(); } } public Server() throws Exception { AsynchronousServerSocketChannel serverSocketChannel = AsynchronousServerSocketChannel.open(); InetSocketAddress inetSocketAddress = new InetSocketAddress(&quot;localhost&quot;, 80); serverSocketChannel.bind(inetSocketAddress); Future&lt;AsynchronousSocketChannel&gt; accept; while (true) { // accept()不会阻塞。 accept = serverSocketChannel.accept(); System.out.println(&quot;=================&quot;); System.out.println(&quot;服务器等待连接...&quot;); AsynchronousSocketChannel socketChannel = accept.get();// get()方法将阻塞。 System.out.println(&quot;服务器接受连接&quot;); System.out.println(&quot;服务器与&quot; + socketChannel.getRemoteAddress() + &quot;建立连接&quot;); ByteBuffer buffer = ByteBuffer.wrap(&quot;demo&quot;.getBytes()); Future&lt;Integer&gt; write=socketChannel.write(buffer); while(!write.isDone()) { Thread.sleep(10); } System.out.println(&quot;服务器发送数据完毕.&quot;); socketChannel.close(); } } } ServerSocketChannel+Selector实现多路复用io import java.io.IOException; import java.net.Inet4Address; import java.net.InetSocketAddress; import java.net.ServerSocket; import java.net.SocketAddress; import java.nio.ByteBuffer; import java.nio.channels.*; import java.util.Iterator; import java.util.Set; public class SelectorServer { private static int LISTEN_PORT = 5300; public static void main(String[] args) { /* ServerSocketChannel ServerSocket SocketChannel Selector SelectionKey */ try { ServerSocketChannel ssc = buildServerSocketChannel(); Selector selector = Selector.open(); SelectionKey skey = ssc.register( selector, SelectionKey.OP_ACCEPT ); ByteBuffer echoBuffer = ByteBuffer.allocate(128); printSelectorKeys(selector); System.out.println(&quot;channel 准备就绪！&quot;); while(true) { int num = selector.select();//获取通道内是否有选择器的关心事件 if (num &lt; 1) { continue; } Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();//获取通道内关心事件的集合 Iterator&lt;SelectionKey&gt; it = selectedKeys.iterator(); while (it.hasNext()) { //遍历每个key SelectionKey key = it.next(); it.remove(); System.out.println(&quot;key hashCode=&quot; + key.hashCode()); if (key.isAcceptable()) { // 有新的socket链接进来 ServerSocketChannel serverChanel = (ServerSocketChannel)key.channel(); SocketChannel sc = serverChanel.accept(); sc.configureBlocking( false ); SelectionKey newKey = sc.register( selector, SelectionKey.OP_READ ); System.out.println( &quot;Got connection from &quot;+sc ); printSelectorKeys(selector); } if (key.isReadable()) { // 有请求进来 SocketChannel sc = (SocketChannel)key.channel(); System.out.println(&quot;address:&quot; + sc.socket().getPort()); int bytesEchoed = 0; while((bytesEchoed = sc.read(echoBuffer))&gt; 0){ System.out.println(&quot;bytesEchoed:&quot;+bytesEchoed); } echoBuffer.flip(); if (bytesEchoed == -1) { System.out.println(&quot;connect finish!over!&quot;); sc.close(); printSelectorKeys(selector); break; } byte [] content = new byte[echoBuffer.limit()]; echoBuffer.get(content); String result=new String(content, &quot;utf-8&quot;); doPost(result,sc); echoBuffer.clear(); } } } } catch (IOException e) { e.printStackTrace(); } } private static void printSelectorKeys(Selector selector) { Set&lt;SelectionKey&gt; keys = selector.keys(); Iterator&lt;SelectionKey&gt; iterator = keys.iterator(); while (iterator.hasNext()) { SelectionKey key = iterator.next(); System.out.println(&quot;all:selectKey hashCode=&quot; + key.hashCode()); } } private static void doPost(String result, SocketChannel sc) { System.out.println(result); } private static ServerSocketChannel buildServerSocketChannel() throws IOException { ServerSocketChannel channel = ServerSocketChannel.open(); channel.configureBlocking( false );//使通道为非阻塞 ServerSocket ss = channel.socket();//创建基于NIO通道的socket连接 ss.bind(new InetSocketAddress(LISTEN_PORT));//新建socket通道的端口 //将NIO通道选绑定到择器,当然绑定后分配的主键为skey return channel; } private static void register(ServerSocketChannel ssc, Selector selector, int ops) throws ClosedChannelException { SelectionKey key = ssc.register(selector, ops); System.out.println(&quot;selectKey hashCode=&quot; + key.hashCode()); } }" />
+<meta name="description" content="Java 的 IO 模型经历了从 BIO 到 NIO 再到 AIO 的演进，每一次升级都是为了更高效地处理网络通信和文件操作。理解这三种 IO 模型的原理和适用场景，是构建高性能 Java 网络应用的基础。本文将从概念对比出发，深入讲解 NIO 的核心组件（Channel、Buffer、Selector），并通过完整的代码示例展示 AIO 和 NIO 多路复用的实现方式。 一、BIO、NIO、AIO 概念对比 在开始之前需要明确一点：即便是 NIO，本地文件 IO 依然是 Block 操作的，NIO 主要是解决网络 IO 的问题。 而且本质都需要操作系统层次的支持。 1.1 三种模型的区别 BIO（Blocking IO）：传统的 java.io 包，基于流模型实现，交互方式是同步阻塞的。在读入输入流或写出输出流时，线程会一直阻塞在那里，直到读写动作完成。优点是代码简单直观；缺点是 IO 效率和扩展性很低，容易成为应用性能瓶颈。 NIO（Non-blocking IO）：Java 1.4 引入的 java.nio 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。 AIO（Asynchronous IO）：Java 1.7 引入，是 NIO 的升级版本，提供了异步非阻塞的 IO 操作方式。异步 IO 是基于事件和回调机制实现的，应用操作之后会直接返回，不会阻塞在那里，当后台处理完成后操作系统会通知相应的线程进行后续操作。 深入理解 BIO、NIO、AIO：https://zhuanlan.zhihu.com/p/51453522 1.2 结合 select/poll/epoll 理解 NIO NIO 的多路复用能力在底层依赖操作系统提供的 select/poll/epoll 等系统调用。Selector 本质上就是对这些系统调用的 Java 封装。 参考：https://www.jianshu.com/p/ef418ccf2f7d 二、Stream（BIO）vs Channel（NIO） 从编程模型上看，BIO 和 NIO 的核心区别体现在 Stream 和 Channel 的差异上： 特性 Stream（BIO） Channel（NIO） 方向 单向（InputStream / OutputStream） 双向（同时支持读写） 阻塞 阻塞式 支持非阻塞 数据单位 字节/字符流 数据块（Buffer） 异步支持 不支持 支持 NIO 流是以数据块为单位来处理的，缓冲区就是用于读写的数据块。缓冲区的 IO 操作由底层操作系统实现，效率很高。 参考： 各种 Channel Demo：https://blog.csdn.net/dd864140130/article/details/50327649 Channel &amp; Buffer 的使用：https://www.cnblogs.com/fwnboke/p/8529604.html 三、Buffer 的读写机制 Buffer 是 NIO 中最核心的概念之一。它相当于在操作系统与程序之间开辟了一片共享的缓冲区进行读写，效率远高于传统的流式操作。 由于 Buffer 支持读写两种操作且共用同一块缓冲区，在读写模式切换时需要进行相应的状态转换。 3.1 三个关键属性 position：读的时候表示可以从哪里开始读，写的时候表示现在可以从哪里开始写 limit：读的时候表示最大可读位置，写的时候表示最大可写位置 capacity：缓冲区的总容量，创建后不可改变 3.2 flip() 与 clear() 这两个方法是 Buffer 读写模式切换的关键。无论读写，position 都要从 0 开始： class Buffer{ public final Buffer flip() { limit = position; position = 0; mark = -1; return this; } public final Buffer clear() { position = 0; limit = capacity; mark = -1; return this; } } flip()：从写模式切换到读模式。将 limit 设为当前 position（即已写入数据的末尾），将 position 重置为 0（从头开始读） clear()：从读模式切换到写模式。将 position 重置为 0，将 limit 设为 capacity（可以写满整个缓冲区） 参考： https://www.cnblogs.com/yaowen/p/9173443.html https://blog.csdn.net/u013096088/article/details/78638245 四、Scatter 与 Gather NIO 还提供了分散读取和聚集写入的能力： Scatter（分散读取）：允许将一个 Channel 中的数据分散地依次写入多个 Buffer 中存储 Gather（聚集写入）：允许将多个 Buffer 中的数据按某种顺序写入一个 Channel 中 这在处理具有固定格式的协议数据时非常有用，可以将消息头和消息体分别读入不同的 Buffer。 参考：https://blog.csdn.net/lemon89/article/details/47152635 allocateDirect 直接缓冲区 ByteBuffer.allocateDirect() 创建的是直接缓冲区，它使用的是堆外内存（Native Memory），避免了 JVM 堆和操作系统之间的数据拷贝，适合大量 IO 操作的场景。但分配和回收的成本较高，适合长期使用的缓冲区。 参考：https://www.jianshu.com/p/c0e7462f9e1d 五、AIO 实战：AsynchronousServerSocketChannel AIO 是真正的异步 IO，accept() 和 read()/write() 都不会阻塞当前线程。以下是一个简单的 AIO 服务端示例： import java.net.InetSocketAddress; import java.nio.ByteBuffer; import java.nio.channels.AsynchronousServerSocketChannel; import java.nio.channels.AsynchronousSocketChannel; import java.util.concurrent.Future; public class Server { public static void main(String[] args) { try { Server server = new Server(); } catch (Exception e) { e.printStackTrace(); } } public Server() throws Exception { AsynchronousServerSocketChannel serverSocketChannel = AsynchronousServerSocketChannel.open(); InetSocketAddress inetSocketAddress = new InetSocketAddress(&quot;localhost&quot;, 80); serverSocketChannel.bind(inetSocketAddress); Future&lt;AsynchronousSocketChannel&gt; accept; while (true) { // accept()不会阻塞。 accept = serverSocketChannel.accept(); System.out.println(&quot;=================&quot;); System.out.println(&quot;服务器等待连接...&quot;); AsynchronousSocketChannel socketChannel = accept.get();// get()方法将阻塞。 System.out.println(&quot;服务器接受连接&quot;); System.out.println(&quot;服务器与&quot; + socketChannel.getRemoteAddress() + &quot;建立连接&quot;); ByteBuffer buffer = ByteBuffer.wrap(&quot;demo&quot;.getBytes()); Future&lt;Integer&gt; write=socketChannel.write(buffer); while(!write.isDone()) { Thread.sleep(10); } System.out.println(&quot;服务器发送数据完毕.&quot;); socketChannel.close(); } } } 这个示例中，serverSocketChannel.accept() 返回一个 Future 对象而不会阻塞，真正的阻塞发生在 accept.get() 调用处。这种模式允许在等待连接的同时做其他事情（虽然本例中没有展示）。在实际项目中，通常会使用 CompletionHandler 回调模式来替代 Future 轮询。 六、NIO 多路复用实战：ServerSocketChannel + Selector 以下是一个完整的 NIO 多路复用服务端示例，展示了如何用一个线程处理多个客户端连接： import java.io.IOException; import java.net.Inet4Address; import java.net.InetSocketAddress; import java.net.ServerSocket; import java.net.SocketAddress; import java.nio.ByteBuffer; import java.nio.channels.*; import java.util.Iterator; import java.util.Set; public class SelectorServer { private static int LISTEN_PORT = 5300; public static void main(String[] args) { /* ServerSocketChannel ServerSocket SocketChannel Selector SelectionKey */ try { ServerSocketChannel ssc = buildServerSocketChannel(); Selector selector = Selector.open(); SelectionKey skey = ssc.register( selector, SelectionKey.OP_ACCEPT ); ByteBuffer echoBuffer = ByteBuffer.allocate(128); printSelectorKeys(selector); System.out.println(&quot;channel 准备就绪！&quot;); while(true) { int num = selector.select();//获取通道内是否有选择器的关心事件 if (num &lt; 1) { continue; } Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();//获取通道内关心事件的集合 Iterator&lt;SelectionKey&gt; it = selectedKeys.iterator(); while (it.hasNext()) { //遍历每个key SelectionKey key = it.next(); it.remove(); System.out.println(&quot;key hashCode=&quot; + key.hashCode()); if (key.isAcceptable()) { // 有新的socket链接进来 ServerSocketChannel serverChanel = (ServerSocketChannel)key.channel(); SocketChannel sc = serverChanel.accept(); sc.configureBlocking( false ); SelectionKey newKey = sc.register( selector, SelectionKey.OP_READ ); System.out.println( &quot;Got connection from &quot;+sc ); printSelectorKeys(selector); } if (key.isReadable()) { // 有请求进来 SocketChannel sc = (SocketChannel)key.channel(); System.out.println(&quot;address:&quot; + sc.socket().getPort()); int bytesEchoed = 0; while((bytesEchoed = sc.read(echoBuffer))&gt; 0){ System.out.println(&quot;bytesEchoed:&quot;+bytesEchoed); } echoBuffer.flip(); if (bytesEchoed == -1) { System.out.println(&quot;connect finish!over!&quot;); sc.close(); printSelectorKeys(selector); break; } byte [] content = new byte[echoBuffer.limit()]; echoBuffer.get(content); String result=new String(content, &quot;utf-8&quot;); doPost(result,sc); echoBuffer.clear(); } } } } catch (IOException e) { e.printStackTrace(); } } private static void printSelectorKeys(Selector selector) { Set&lt;SelectionKey&gt; keys = selector.keys(); Iterator&lt;SelectionKey&gt; iterator = keys.iterator(); while (iterator.hasNext()) { SelectionKey key = iterator.next(); System.out.println(&quot;all:selectKey hashCode=&quot; + key.hashCode()); } } private static void doPost(String result, SocketChannel sc) { System.out.println(result); } private static ServerSocketChannel buildServerSocketChannel() throws IOException { ServerSocketChannel channel = ServerSocketChannel.open(); channel.configureBlocking( false );//使通道为非阻塞 ServerSocket ss = channel.socket();//创建基于NIO通道的socket连接 ss.bind(new InetSocketAddress(LISTEN_PORT));//新建socket通道的端口 //将NIO通道选绑定到择器,当然绑定后分配的主键为skey return channel; } private static void register(ServerSocketChannel ssc, Selector selector, int ops) throws ClosedChannelException { SelectionKey key = ssc.register(selector, ops); System.out.println(&quot;selectKey hashCode=&quot; + key.hashCode()); } } 这段代码的核心工作流程： 创建 ServerSocketChannel 并设置为非阻塞模式 创建 Selector 并将 ServerSocketChannel 注册到 Selector 上，关注 OP_ACCEPT 事件 事件循环：调用 selector.select() 阻塞等待事件到达 处理 Accept 事件：接受新连接，将新的 SocketChannel 注册到 Selector 上，关注 OP_READ 事件 处理 Read 事件：读取客户端发送的数据，通过 Buffer 进行数据交换 这就是 NIO 多路复用的核心——一个 Selector 线程可以同时监听多个 Channel 的 IO 事件，避免了为每个连接创建一个线程的开销，是构建高并发网络服务的基础模式。 七、总结 模型 同步/异步 阻塞/非阻塞 适用场景 BIO 同步 阻塞 连接数少、对延迟不敏感的场景 NIO 同步 非阻塞 连接数多、但每个连接传输数据量不大的场景（如聊天服务器） AIO 异步 非阻塞 连接数多且每个连接传输数据量大的场景（如文件服务器） 在实际项目中，直接使用 NIO 编程较为复杂（需要处理半包/粘包、连接管理等问题），因此通常会使用 Netty 这样的网络框架来屏蔽底层细节。但理解 BIO/NIO/AIO 的原理，是深入理解 Netty 等框架设计思想的前提。" />
+<meta property="og:description" content="Java 的 IO 模型经历了从 BIO 到 NIO 再到 AIO 的演进，每一次升级都是为了更高效地处理网络通信和文件操作。理解这三种 IO 模型的原理和适用场景，是构建高性能 Java 网络应用的基础。本文将从概念对比出发，深入讲解 NIO 的核心组件（Channel、Buffer、Selector），并通过完整的代码示例展示 AIO 和 NIO 多路复用的实现方式。 一、BIO、NIO、AIO 概念对比 在开始之前需要明确一点：即便是 NIO，本地文件 IO 依然是 Block 操作的，NIO 主要是解决网络 IO 的问题。 而且本质都需要操作系统层次的支持。 1.1 三种模型的区别 BIO（Blocking IO）：传统的 java.io 包，基于流模型实现，交互方式是同步阻塞的。在读入输入流或写出输出流时，线程会一直阻塞在那里，直到读写动作完成。优点是代码简单直观；缺点是 IO 效率和扩展性很低，容易成为应用性能瓶颈。 NIO（Non-blocking IO）：Java 1.4 引入的 java.nio 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。 AIO（Asynchronous IO）：Java 1.7 引入，是 NIO 的升级版本，提供了异步非阻塞的 IO 操作方式。异步 IO 是基于事件和回调机制实现的，应用操作之后会直接返回，不会阻塞在那里，当后台处理完成后操作系统会通知相应的线程进行后续操作。 深入理解 BIO、NIO、AIO：https://zhuanlan.zhihu.com/p/51453522 1.2 结合 select/poll/epoll 理解 NIO NIO 的多路复用能力在底层依赖操作系统提供的 select/poll/epoll 等系统调用。Selector 本质上就是对这些系统调用的 Java 封装。 参考：https://www.jianshu.com/p/ef418ccf2f7d 二、Stream（BIO）vs Channel（NIO） 从编程模型上看，BIO 和 NIO 的核心区别体现在 Stream 和 Channel 的差异上： 特性 Stream（BIO） Channel（NIO） 方向 单向（InputStream / OutputStream） 双向（同时支持读写） 阻塞 阻塞式 支持非阻塞 数据单位 字节/字符流 数据块（Buffer） 异步支持 不支持 支持 NIO 流是以数据块为单位来处理的，缓冲区就是用于读写的数据块。缓冲区的 IO 操作由底层操作系统实现，效率很高。 参考： 各种 Channel Demo：https://blog.csdn.net/dd864140130/article/details/50327649 Channel &amp; Buffer 的使用：https://www.cnblogs.com/fwnboke/p/8529604.html 三、Buffer 的读写机制 Buffer 是 NIO 中最核心的概念之一。它相当于在操作系统与程序之间开辟了一片共享的缓冲区进行读写，效率远高于传统的流式操作。 由于 Buffer 支持读写两种操作且共用同一块缓冲区，在读写模式切换时需要进行相应的状态转换。 3.1 三个关键属性 position：读的时候表示可以从哪里开始读，写的时候表示现在可以从哪里开始写 limit：读的时候表示最大可读位置，写的时候表示最大可写位置 capacity：缓冲区的总容量，创建后不可改变 3.2 flip() 与 clear() 这两个方法是 Buffer 读写模式切换的关键。无论读写，position 都要从 0 开始： class Buffer{ public final Buffer flip() { limit = position; position = 0; mark = -1; return this; } public final Buffer clear() { position = 0; limit = capacity; mark = -1; return this; } } flip()：从写模式切换到读模式。将 limit 设为当前 position（即已写入数据的末尾），将 position 重置为 0（从头开始读） clear()：从读模式切换到写模式。将 position 重置为 0，将 limit 设为 capacity（可以写满整个缓冲区） 参考： https://www.cnblogs.com/yaowen/p/9173443.html https://blog.csdn.net/u013096088/article/details/78638245 四、Scatter 与 Gather NIO 还提供了分散读取和聚集写入的能力： Scatter（分散读取）：允许将一个 Channel 中的数据分散地依次写入多个 Buffer 中存储 Gather（聚集写入）：允许将多个 Buffer 中的数据按某种顺序写入一个 Channel 中 这在处理具有固定格式的协议数据时非常有用，可以将消息头和消息体分别读入不同的 Buffer。 参考：https://blog.csdn.net/lemon89/article/details/47152635 allocateDirect 直接缓冲区 ByteBuffer.allocateDirect() 创建的是直接缓冲区，它使用的是堆外内存（Native Memory），避免了 JVM 堆和操作系统之间的数据拷贝，适合大量 IO 操作的场景。但分配和回收的成本较高，适合长期使用的缓冲区。 参考：https://www.jianshu.com/p/c0e7462f9e1d 五、AIO 实战：AsynchronousServerSocketChannel AIO 是真正的异步 IO，accept() 和 read()/write() 都不会阻塞当前线程。以下是一个简单的 AIO 服务端示例： import java.net.InetSocketAddress; import java.nio.ByteBuffer; import java.nio.channels.AsynchronousServerSocketChannel; import java.nio.channels.AsynchronousSocketChannel; import java.util.concurrent.Future; public class Server { public static void main(String[] args) { try { Server server = new Server(); } catch (Exception e) { e.printStackTrace(); } } public Server() throws Exception { AsynchronousServerSocketChannel serverSocketChannel = AsynchronousServerSocketChannel.open(); InetSocketAddress inetSocketAddress = new InetSocketAddress(&quot;localhost&quot;, 80); serverSocketChannel.bind(inetSocketAddress); Future&lt;AsynchronousSocketChannel&gt; accept; while (true) { // accept()不会阻塞。 accept = serverSocketChannel.accept(); System.out.println(&quot;=================&quot;); System.out.println(&quot;服务器等待连接...&quot;); AsynchronousSocketChannel socketChannel = accept.get();// get()方法将阻塞。 System.out.println(&quot;服务器接受连接&quot;); System.out.println(&quot;服务器与&quot; + socketChannel.getRemoteAddress() + &quot;建立连接&quot;); ByteBuffer buffer = ByteBuffer.wrap(&quot;demo&quot;.getBytes()); Future&lt;Integer&gt; write=socketChannel.write(buffer); while(!write.isDone()) { Thread.sleep(10); } System.out.println(&quot;服务器发送数据完毕.&quot;); socketChannel.close(); } } } 这个示例中，serverSocketChannel.accept() 返回一个 Future 对象而不会阻塞，真正的阻塞发生在 accept.get() 调用处。这种模式允许在等待连接的同时做其他事情（虽然本例中没有展示）。在实际项目中，通常会使用 CompletionHandler 回调模式来替代 Future 轮询。 六、NIO 多路复用实战：ServerSocketChannel + Selector 以下是一个完整的 NIO 多路复用服务端示例，展示了如何用一个线程处理多个客户端连接： import java.io.IOException; import java.net.Inet4Address; import java.net.InetSocketAddress; import java.net.ServerSocket; import java.net.SocketAddress; import java.nio.ByteBuffer; import java.nio.channels.*; import java.util.Iterator; import java.util.Set; public class SelectorServer { private static int LISTEN_PORT = 5300; public static void main(String[] args) { /* ServerSocketChannel ServerSocket SocketChannel Selector SelectionKey */ try { ServerSocketChannel ssc = buildServerSocketChannel(); Selector selector = Selector.open(); SelectionKey skey = ssc.register( selector, SelectionKey.OP_ACCEPT ); ByteBuffer echoBuffer = ByteBuffer.allocate(128); printSelectorKeys(selector); System.out.println(&quot;channel 准备就绪！&quot;); while(true) { int num = selector.select();//获取通道内是否有选择器的关心事件 if (num &lt; 1) { continue; } Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();//获取通道内关心事件的集合 Iterator&lt;SelectionKey&gt; it = selectedKeys.iterator(); while (it.hasNext()) { //遍历每个key SelectionKey key = it.next(); it.remove(); System.out.println(&quot;key hashCode=&quot; + key.hashCode()); if (key.isAcceptable()) { // 有新的socket链接进来 ServerSocketChannel serverChanel = (ServerSocketChannel)key.channel(); SocketChannel sc = serverChanel.accept(); sc.configureBlocking( false ); SelectionKey newKey = sc.register( selector, SelectionKey.OP_READ ); System.out.println( &quot;Got connection from &quot;+sc ); printSelectorKeys(selector); } if (key.isReadable()) { // 有请求进来 SocketChannel sc = (SocketChannel)key.channel(); System.out.println(&quot;address:&quot; + sc.socket().getPort()); int bytesEchoed = 0; while((bytesEchoed = sc.read(echoBuffer))&gt; 0){ System.out.println(&quot;bytesEchoed:&quot;+bytesEchoed); } echoBuffer.flip(); if (bytesEchoed == -1) { System.out.println(&quot;connect finish!over!&quot;); sc.close(); printSelectorKeys(selector); break; } byte [] content = new byte[echoBuffer.limit()]; echoBuffer.get(content); String result=new String(content, &quot;utf-8&quot;); doPost(result,sc); echoBuffer.clear(); } } } } catch (IOException e) { e.printStackTrace(); } } private static void printSelectorKeys(Selector selector) { Set&lt;SelectionKey&gt; keys = selector.keys(); Iterator&lt;SelectionKey&gt; iterator = keys.iterator(); while (iterator.hasNext()) { SelectionKey key = iterator.next(); System.out.println(&quot;all:selectKey hashCode=&quot; + key.hashCode()); } } private static void doPost(String result, SocketChannel sc) { System.out.println(result); } private static ServerSocketChannel buildServerSocketChannel() throws IOException { ServerSocketChannel channel = ServerSocketChannel.open(); channel.configureBlocking( false );//使通道为非阻塞 ServerSocket ss = channel.socket();//创建基于NIO通道的socket连接 ss.bind(new InetSocketAddress(LISTEN_PORT));//新建socket通道的端口 //将NIO通道选绑定到择器,当然绑定后分配的主键为skey return channel; } private static void register(ServerSocketChannel ssc, Selector selector, int ops) throws ClosedChannelException { SelectionKey key = ssc.register(selector, ops); System.out.println(&quot;selectKey hashCode=&quot; + key.hashCode()); } } 这段代码的核心工作流程： 创建 ServerSocketChannel 并设置为非阻塞模式 创建 Selector 并将 ServerSocketChannel 注册到 Selector 上，关注 OP_ACCEPT 事件 事件循环：调用 selector.select() 阻塞等待事件到达 处理 Accept 事件：接受新连接，将新的 SocketChannel 注册到 Selector 上，关注 OP_READ 事件 处理 Read 事件：读取客户端发送的数据，通过 Buffer 进行数据交换 这就是 NIO 多路复用的核心——一个 Selector 线程可以同时监听多个 Channel 的 IO 事件，避免了为每个连接创建一个线程的开销，是构建高并发网络服务的基础模式。 七、总结 模型 同步/异步 阻塞/非阻塞 适用场景 BIO 同步 阻塞 连接数少、对延迟不敏感的场景 NIO 同步 非阻塞 连接数多、但每个连接传输数据量不大的场景（如聊天服务器） AIO 异步 非阻塞 连接数多且每个连接传输数据量大的场景（如文件服务器） 在实际项目中，直接使用 NIO 编程较为复杂（需要处理半包/粘包、连接管理等问题），因此通常会使用 Netty 这样的网络框架来屏蔽底层细节。但理解 BIO/NIO/AIO 的原理，是深入理解 Netty 等框架设计思想的前提。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-11-12T10:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="NIO-BIO-AIO" />
+<meta property="twitter:title" content="Java IO 模型详解：BIO、NIO 与 AIO 的原理、区别与实战" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"写在前面 即便是NIO，本地文件IO依然是Block操作的，NIO主要是解决网络IO的问题。 本质都是需要操作系统层次的支持。 BIO、NIO、AIO区别 BIO 就是传统的 java.io 包，它是基于流模型实现的，交互的方式是同步、阻塞方式，也就是说在读入输入流或者输出流时，在读写动作完成之前，线程会一直阻塞在那里，它们之间的调用时可靠的线性顺序。它的有点就是代码比较简单、直观；缺点就是 IO 的效率和扩展性很低，容易成为应用性能瓶颈。 NIO 是 Java 1.4 引入的 java.nio 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。 AIO 是 Java 1.7 之后引入的包，是 NIO 的升级版本，提供了异步非堵塞的 IO 操作方式，所以人们叫它 AIO（Asynchronous IO），异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。 深入理解BIO、NIO、AIO https://zhuanlan.zhihu.com/p/51453522 结合select/poll/epoll看NIO https://www.jianshu.com/p/ef418ccf2f7d Stream（BIO) 与 Channel (NIO) Stream不支持异步 Channel同时支持读写 NIO流是以数据块为单位来处理，缓冲区就是用于读写的数据块。缓冲区的IO操作是由底层操作系统实现的，效率很快。 各种Channel Demo https://blog.csdn.net/dd864140130/article/details/50327649 Channel &amp; Buffer的使用https://www.cnblogs.com/fwnboke/p/8529604.html Buffer的读取与写入 Buffer相当于，操作系统与程序之间共同开辟了一份缓冲区共同读写，效率更高 本质上Buffer支持读写，又共用同一个缓冲区，在读写切换时确实需要进行相关操作 3个重要的属性 position:读的时候表示可以从哪里开始读，写的时候表示现在可以从哪里开始写。 limit:读的时候表示可以最大可读位置，写的时候表示最大可写的位置。 capacity：容量 flip() &amp; clear()，不论读写position都要从0开始 class Buffer{ public final Buffer flip() { limit = position; position = 0; mark = -1; return this; } public final Buffer clear() { position = 0; limit = capacity; mark = -1; return this; } } 参考 https://www.cnblogs.com/yaowen/p/9173443.html https://blog.csdn.net/u013096088/article/details/78638245 Java NIO：Scatter 与 Gather Scatter 是指允许将一个channel中的数据分散的依次写入多个buffer中存储 Gather 是指允许将多个buffer中的数据按某种顺序写入一个channel中 https://blog.csdn.net/lemon89/article/details/47152635 allocateDirect直接缓冲区 “IO与NIO ”重点概念整理https://www.jianshu.com/p/c0e7462f9e1d AsynchronousServerSocketChannel import java.net.InetSocketAddress; import java.nio.ByteBuffer; import java.nio.channels.AsynchronousServerSocketChannel; import java.nio.channels.AsynchronousSocketChannel; import java.util.concurrent.Future; public class Server { public static void main(String[] args) { try { Server server = new Server(); } catch (Exception e) { e.printStackTrace(); } } public Server() throws Exception { AsynchronousServerSocketChannel serverSocketChannel = AsynchronousServerSocketChannel.open(); InetSocketAddress inetSocketAddress = new InetSocketAddress(&quot;localhost&quot;, 80); serverSocketChannel.bind(inetSocketAddress); Future&lt;AsynchronousSocketChannel&gt; accept; while (true) { // accept()不会阻塞。 accept = serverSocketChannel.accept(); System.out.println(&quot;=================&quot;); System.out.println(&quot;服务器等待连接...&quot;); AsynchronousSocketChannel socketChannel = accept.get();// get()方法将阻塞。 System.out.println(&quot;服务器接受连接&quot;); System.out.println(&quot;服务器与&quot; + socketChannel.getRemoteAddress() + &quot;建立连接&quot;); ByteBuffer buffer = ByteBuffer.wrap(&quot;demo&quot;.getBytes()); Future&lt;Integer&gt; write=socketChannel.write(buffer); while(!write.isDone()) { Thread.sleep(10); } System.out.println(&quot;服务器发送数据完毕.&quot;); socketChannel.close(); } } } ServerSocketChannel+Selector实现多路复用io import java.io.IOException; import java.net.Inet4Address; import java.net.InetSocketAddress; import java.net.ServerSocket; import java.net.SocketAddress; import java.nio.ByteBuffer; import java.nio.channels.*; import java.util.Iterator; import java.util.Set; public class SelectorServer { private static int LISTEN_PORT = 5300; public static void main(String[] args) { /* ServerSocketChannel ServerSocket SocketChannel Selector SelectionKey */ try { ServerSocketChannel ssc = buildServerSocketChannel(); Selector selector = Selector.open(); SelectionKey skey = ssc.register( selector, SelectionKey.OP_ACCEPT ); ByteBuffer echoBuffer = ByteBuffer.allocate(128); printSelectorKeys(selector); System.out.println(&quot;channel 准备就绪！&quot;); while(true) { int num = selector.select();//获取通道内是否有选择器的关心事件 if (num &lt; 1) { continue; } Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();//获取通道内关心事件的集合 Iterator&lt;SelectionKey&gt; it = selectedKeys.iterator(); while (it.hasNext()) { //遍历每个key SelectionKey key = it.next(); it.remove(); System.out.println(&quot;key hashCode=&quot; + key.hashCode()); if (key.isAcceptable()) { // 有新的socket链接进来 ServerSocketChannel serverChanel = (ServerSocketChannel)key.channel(); SocketChannel sc = serverChanel.accept(); sc.configureBlocking( false ); SelectionKey newKey = sc.register( selector, SelectionKey.OP_READ ); System.out.println( &quot;Got connection from &quot;+sc ); printSelectorKeys(selector); } if (key.isReadable()) { // 有请求进来 SocketChannel sc = (SocketChannel)key.channel(); System.out.println(&quot;address:&quot; + sc.socket().getPort()); int bytesEchoed = 0; while((bytesEchoed = sc.read(echoBuffer))&gt; 0){ System.out.println(&quot;bytesEchoed:&quot;+bytesEchoed); } echoBuffer.flip(); if (bytesEchoed == -1) { System.out.println(&quot;connect finish!over!&quot;); sc.close(); printSelectorKeys(selector); break; } byte [] content = new byte[echoBuffer.limit()]; echoBuffer.get(content); String result=new String(content, &quot;utf-8&quot;); doPost(result,sc); echoBuffer.clear(); } } } } catch (IOException e) { e.printStackTrace(); } } private static void printSelectorKeys(Selector selector) { Set&lt;SelectionKey&gt; keys = selector.keys(); Iterator&lt;SelectionKey&gt; iterator = keys.iterator(); while (iterator.hasNext()) { SelectionKey key = iterator.next(); System.out.println(&quot;all:selectKey hashCode=&quot; + key.hashCode()); } } private static void doPost(String result, SocketChannel sc) { System.out.println(result); } private static ServerSocketChannel buildServerSocketChannel() throws IOException { ServerSocketChannel channel = ServerSocketChannel.open(); channel.configureBlocking( false );//使通道为非阻塞 ServerSocket ss = channel.socket();//创建基于NIO通道的socket连接 ss.bind(new InetSocketAddress(LISTEN_PORT));//新建socket通道的端口 //将NIO通道选绑定到择器,当然绑定后分配的主键为skey return channel; } private static void register(ServerSocketChannel ssc, Selector selector, int ops) throws ClosedChannelException { SelectionKey key = ssc.register(selector, ops); System.out.println(&quot;selectKey hashCode=&quot; + key.hashCode()); } }","headline":"NIO-BIO-AIO","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"Java 的 IO 模型经历了从 BIO 到 NIO 再到 AIO 的演进，每一次升级都是为了更高效地处理网络通信和文件操作。理解这三种 IO 模型的原理和适用场景，是构建高性能 Java 网络应用的基础。本文将从概念对比出发，深入讲解 NIO 的核心组件（Channel、Buffer、Selector），并通过完整的代码示例展示 AIO 和 NIO 多路复用的实现方式。 一、BIO、NIO、AIO 概念对比 在开始之前需要明确一点：即便是 NIO，本地文件 IO 依然是 Block 操作的，NIO 主要是解决网络 IO 的问题。 而且本质都需要操作系统层次的支持。 1.1 三种模型的区别 BIO（Blocking IO）：传统的 java.io 包，基于流模型实现，交互方式是同步阻塞的。在读入输入流或写出输出流时，线程会一直阻塞在那里，直到读写动作完成。优点是代码简单直观；缺点是 IO 效率和扩展性很低，容易成为应用性能瓶颈。 NIO（Non-blocking IO）：Java 1.4 引入的 java.nio 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。 AIO（Asynchronous IO）：Java 1.7 引入，是 NIO 的升级版本，提供了异步非阻塞的 IO 操作方式。异步 IO 是基于事件和回调机制实现的，应用操作之后会直接返回，不会阻塞在那里，当后台处理完成后操作系统会通知相应的线程进行后续操作。 深入理解 BIO、NIO、AIO：https://zhuanlan.zhihu.com/p/51453522 1.2 结合 select/poll/epoll 理解 NIO NIO 的多路复用能力在底层依赖操作系统提供的 select/poll/epoll 等系统调用。Selector 本质上就是对这些系统调用的 Java 封装。 参考：https://www.jianshu.com/p/ef418ccf2f7d 二、Stream（BIO）vs Channel（NIO） 从编程模型上看，BIO 和 NIO 的核心区别体现在 Stream 和 Channel 的差异上： 特性 Stream（BIO） Channel（NIO） 方向 单向（InputStream / OutputStream） 双向（同时支持读写） 阻塞 阻塞式 支持非阻塞 数据单位 字节/字符流 数据块（Buffer） 异步支持 不支持 支持 NIO 流是以数据块为单位来处理的，缓冲区就是用于读写的数据块。缓冲区的 IO 操作由底层操作系统实现，效率很高。 参考： 各种 Channel Demo：https://blog.csdn.net/dd864140130/article/details/50327649 Channel &amp; Buffer 的使用：https://www.cnblogs.com/fwnboke/p/8529604.html 三、Buffer 的读写机制 Buffer 是 NIO 中最核心的概念之一。它相当于在操作系统与程序之间开辟了一片共享的缓冲区进行读写，效率远高于传统的流式操作。 由于 Buffer 支持读写两种操作且共用同一块缓冲区，在读写模式切换时需要进行相应的状态转换。 3.1 三个关键属性 position：读的时候表示可以从哪里开始读，写的时候表示现在可以从哪里开始写 limit：读的时候表示最大可读位置，写的时候表示最大可写位置 capacity：缓冲区的总容量，创建后不可改变 3.2 flip() 与 clear() 这两个方法是 Buffer 读写模式切换的关键。无论读写，position 都要从 0 开始： class Buffer{ public final Buffer flip() { limit = position; position = 0; mark = -1; return this; } public final Buffer clear() { position = 0; limit = capacity; mark = -1; return this; } } flip()：从写模式切换到读模式。将 limit 设为当前 position（即已写入数据的末尾），将 position 重置为 0（从头开始读） clear()：从读模式切换到写模式。将 position 重置为 0，将 limit 设为 capacity（可以写满整个缓冲区） 参考： https://www.cnblogs.com/yaowen/p/9173443.html https://blog.csdn.net/u013096088/article/details/78638245 四、Scatter 与 Gather NIO 还提供了分散读取和聚集写入的能力： Scatter（分散读取）：允许将一个 Channel 中的数据分散地依次写入多个 Buffer 中存储 Gather（聚集写入）：允许将多个 Buffer 中的数据按某种顺序写入一个 Channel 中 这在处理具有固定格式的协议数据时非常有用，可以将消息头和消息体分别读入不同的 Buffer。 参考：https://blog.csdn.net/lemon89/article/details/47152635 allocateDirect 直接缓冲区 ByteBuffer.allocateDirect() 创建的是直接缓冲区，它使用的是堆外内存（Native Memory），避免了 JVM 堆和操作系统之间的数据拷贝，适合大量 IO 操作的场景。但分配和回收的成本较高，适合长期使用的缓冲区。 参考：https://www.jianshu.com/p/c0e7462f9e1d 五、AIO 实战：AsynchronousServerSocketChannel AIO 是真正的异步 IO，accept() 和 read()/write() 都不会阻塞当前线程。以下是一个简单的 AIO 服务端示例： import java.net.InetSocketAddress; import java.nio.ByteBuffer; import java.nio.channels.AsynchronousServerSocketChannel; import java.nio.channels.AsynchronousSocketChannel; import java.util.concurrent.Future; public class Server { public static void main(String[] args) { try { Server server = new Server(); } catch (Exception e) { e.printStackTrace(); } } public Server() throws Exception { AsynchronousServerSocketChannel serverSocketChannel = AsynchronousServerSocketChannel.open(); InetSocketAddress inetSocketAddress = new InetSocketAddress(&quot;localhost&quot;, 80); serverSocketChannel.bind(inetSocketAddress); Future&lt;AsynchronousSocketChannel&gt; accept; while (true) { // accept()不会阻塞。 accept = serverSocketChannel.accept(); System.out.println(&quot;=================&quot;); System.out.println(&quot;服务器等待连接...&quot;); AsynchronousSocketChannel socketChannel = accept.get();// get()方法将阻塞。 System.out.println(&quot;服务器接受连接&quot;); System.out.println(&quot;服务器与&quot; + socketChannel.getRemoteAddress() + &quot;建立连接&quot;); ByteBuffer buffer = ByteBuffer.wrap(&quot;demo&quot;.getBytes()); Future&lt;Integer&gt; write=socketChannel.write(buffer); while(!write.isDone()) { Thread.sleep(10); } System.out.println(&quot;服务器发送数据完毕.&quot;); socketChannel.close(); } } } 这个示例中，serverSocketChannel.accept() 返回一个 Future 对象而不会阻塞，真正的阻塞发生在 accept.get() 调用处。这种模式允许在等待连接的同时做其他事情（虽然本例中没有展示）。在实际项目中，通常会使用 CompletionHandler 回调模式来替代 Future 轮询。 六、NIO 多路复用实战：ServerSocketChannel + Selector 以下是一个完整的 NIO 多路复用服务端示例，展示了如何用一个线程处理多个客户端连接： import java.io.IOException; import java.net.Inet4Address; import java.net.InetSocketAddress; import java.net.ServerSocket; import java.net.SocketAddress; import java.nio.ByteBuffer; import java.nio.channels.*; import java.util.Iterator; import java.util.Set; public class SelectorServer { private static int LISTEN_PORT = 5300; public static void main(String[] args) { /* ServerSocketChannel ServerSocket SocketChannel Selector SelectionKey */ try { ServerSocketChannel ssc = buildServerSocketChannel(); Selector selector = Selector.open(); SelectionKey skey = ssc.register( selector, SelectionKey.OP_ACCEPT ); ByteBuffer echoBuffer = ByteBuffer.allocate(128); printSelectorKeys(selector); System.out.println(&quot;channel 准备就绪！&quot;); while(true) { int num = selector.select();//获取通道内是否有选择器的关心事件 if (num &lt; 1) { continue; } Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();//获取通道内关心事件的集合 Iterator&lt;SelectionKey&gt; it = selectedKeys.iterator(); while (it.hasNext()) { //遍历每个key SelectionKey key = it.next(); it.remove(); System.out.println(&quot;key hashCode=&quot; + key.hashCode()); if (key.isAcceptable()) { // 有新的socket链接进来 ServerSocketChannel serverChanel = (ServerSocketChannel)key.channel(); SocketChannel sc = serverChanel.accept(); sc.configureBlocking( false ); SelectionKey newKey = sc.register( selector, SelectionKey.OP_READ ); System.out.println( &quot;Got connection from &quot;+sc ); printSelectorKeys(selector); } if (key.isReadable()) { // 有请求进来 SocketChannel sc = (SocketChannel)key.channel(); System.out.println(&quot;address:&quot; + sc.socket().getPort()); int bytesEchoed = 0; while((bytesEchoed = sc.read(echoBuffer))&gt; 0){ System.out.println(&quot;bytesEchoed:&quot;+bytesEchoed); } echoBuffer.flip(); if (bytesEchoed == -1) { System.out.println(&quot;connect finish!over!&quot;); sc.close(); printSelectorKeys(selector); break; } byte [] content = new byte[echoBuffer.limit()]; echoBuffer.get(content); String result=new String(content, &quot;utf-8&quot;); doPost(result,sc); echoBuffer.clear(); } } } } catch (IOException e) { e.printStackTrace(); } } private static void printSelectorKeys(Selector selector) { Set&lt;SelectionKey&gt; keys = selector.keys(); Iterator&lt;SelectionKey&gt; iterator = keys.iterator(); while (iterator.hasNext()) { SelectionKey key = iterator.next(); System.out.println(&quot;all:selectKey hashCode=&quot; + key.hashCode()); } } private static void doPost(String result, SocketChannel sc) { System.out.println(result); } private static ServerSocketChannel buildServerSocketChannel() throws IOException { ServerSocketChannel channel = ServerSocketChannel.open(); channel.configureBlocking( false );//使通道为非阻塞 ServerSocket ss = channel.socket();//创建基于NIO通道的socket连接 ss.bind(new InetSocketAddress(LISTEN_PORT));//新建socket通道的端口 //将NIO通道选绑定到择器,当然绑定后分配的主键为skey return channel; } private static void register(ServerSocketChannel ssc, Selector selector, int ops) throws ClosedChannelException { SelectionKey key = ssc.register(selector, ops); System.out.println(&quot;selectKey hashCode=&quot; + key.hashCode()); } } 这段代码的核心工作流程： 创建 ServerSocketChannel 并设置为非阻塞模式 创建 Selector 并将 ServerSocketChannel 注册到 Selector 上，关注 OP_ACCEPT 事件 事件循环：调用 selector.select() 阻塞等待事件到达 处理 Accept 事件：接受新连接，将新的 SocketChannel 注册到 Selector 上，关注 OP_READ 事件 处理 Read 事件：读取客户端发送的数据，通过 Buffer 进行数据交换 这就是 NIO 多路复用的核心——一个 Selector 线程可以同时监听多个 Channel 的 IO 事件，避免了为每个连接创建一个线程的开销，是构建高并发网络服务的基础模式。 七、总结 模型 同步/异步 阻塞/非阻塞 适用场景 BIO 同步 阻塞 连接数少、对延迟不敏感的场景 NIO 同步 非阻塞 连接数多、但每个连接传输数据量不大的场景（如聊天服务器） AIO 异步 非阻塞 连接数多且每个连接传输数据量大的场景（如文件服务器） 在实际项目中，直接使用 NIO 编程较为复杂（需要处理半包/粘包、连接管理等问题），因此通常会使用 Netty 这样的网络框架来屏蔽底层细节。但理解 BIO/NIO/AIO 的原理，是深入理解 Netty 等框架设计思想的前提。","headline":"Java IO 模型详解：BIO、NIO 与 AIO 的原理、区别与实战","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html">&laquo; Java Concurrent</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html">&laquo; Java 并发编程核心：从锁机制到...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html">多路复用select poll e... &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html">IO 多路复用深入解析：selec... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">NIO-BIO-AIO</h1>
+    <h1 class="asset-name entry-title">Java IO 模型详解：BIO、NIO 与 AIO 的原理、区别与实战</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,76 +97,157 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="写在前面">写在前面</h4>
-<ul>
-  <li>即便是NIO，本地文件IO依然是Block操作的，NIO主要是解决网络IO的问题。</li>
-  <li>本质都是需要操作系统层次的支持。</li>
-</ul>
+      <p>Java 的 IO 模型经历了从 BIO 到 NIO 再到 AIO 的演进，每一次升级都是为了更高效地处理网络通信和文件操作。理解这三种 IO 模型的原理和适用场景，是构建高性能 Java 网络应用的基础。本文将从概念对比出发，深入讲解 NIO 的核心组件（Channel、Buffer、Selector），并通过完整的代码示例展示 AIO 和 NIO 多路复用的实现方式。</p>
 
-<h4 id="bionioaio区别">BIO、NIO、AIO区别</h4>
-<ul>
-  <li>BIO 就是传统的 java.io 包，它是基于流模型实现的，交互的方式是同步、阻塞方式，也就是说在读入输入流或者输出流时，在读写动作完成之前，线程会一直阻塞在那里，它们之间的调用时可靠的线性顺序。它的有点就是代码比较简单、直观；缺点就是 IO 的效率和扩展性很低，容易成为应用性能瓶颈。</li>
-  <li>NIO 是 Java 1.4 引入的 java.nio 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。</li>
-  <li>AIO 是 Java 1.7 之后引入的包，是 NIO 的升级版本，提供了异步非堵塞的 IO 操作方式，所以人们叫它 AIO（Asynchronous IO），异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。</li>
-  <li>深入理解BIO、NIO、AIO <a href="https://zhuanlan.zhihu.com/p/51453522">https://zhuanlan.zhihu.com/p/51453522</a></li>
-</ul>
+<hr />
 
-<h4 id="结合selectpollepoll看nio">结合select/poll/epoll看NIO</h4>
-<p><a href="https://www.jianshu.com/p/ef418ccf2f7d">https://www.jianshu.com/p/ef418ccf2f7d</a></p>
+<h3 id="一bionioaio-概念对比">一、BIO、NIO、AIO 概念对比</h3>
 
-<h4 id="streambio-与-channel-nio">Stream（BIO) 与 Channel (NIO)</h4>
+<p>在开始之前需要明确一点：<strong>即便是 NIO，本地文件 IO 依然是 Block 操作的，NIO 主要是解决网络 IO 的问题。</strong> 而且本质都需要操作系统层次的支持。</p>
+
+<h4 id="11-三种模型的区别">1.1 三种模型的区别</h4>
+
 <ul>
-  <li>Stream不支持异步</li>
-  <li>Channel同时支持读写</li>
-  <li>NIO流是以数据块为单位来处理，缓冲区就是用于读写的数据块。缓冲区的IO操作是由底层操作系统实现的，效率很快。</li>
-  <li>各种Channel Demo <a href="https://blog.csdn.net/dd864140130/article/details/50327649">https://blog.csdn.net/dd864140130/article/details/50327649</a></li>
-  <li>Channel &amp; Buffer的使用<a href="https://www.cnblogs.com/fwnboke/p/8529604.html">https://www.cnblogs.com/fwnboke/p/8529604.html</a>
-    <h4 id="buffer的读取与写入">Buffer的读取与写入</h4>
+  <li>
+    <p><strong>BIO（Blocking IO）</strong>：传统的 <code class="language-plaintext highlighter-rouge">java.io</code> 包，基于流模型实现，交互方式是同步阻塞的。在读入输入流或写出输出流时，线程会一直阻塞在那里，直到读写动作完成。优点是代码简单直观；缺点是 IO 效率和扩展性很低，容易成为应用性能瓶颈。</p>
   </li>
-  <li>Buffer相当于，操作系统与程序之间共同开辟了一份缓冲区共同读写，效率更高</li>
-  <li>本质上Buffer支持读写，又共用同一个缓冲区，在读写切换时确实需要进行相关操作</li>
-  <li>3个重要的属性</li>
-  <li>position:读的时候表示可以从哪里开始读，写的时候表示现在可以从哪里开始写。</li>
-  <li>limit:读的时候表示可以最大可读位置，写的时候表示最大可写的位置。</li>
-  <li>capacity：容量</li>
-  <li>flip() &amp; clear()，不论读写position都要从0开始
-    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Buffer</span><span class="o">{</span>
+  <li>
+    <p><strong>NIO（Non-blocking IO）</strong>：Java 1.4 引入的 <code class="language-plaintext highlighter-rouge">java.nio</code> 包，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层高性能的数据操作方式。</p>
+  </li>
+  <li>
+    <p><strong>AIO（Asynchronous IO）</strong>：Java 1.7 引入，是 NIO 的升级版本，提供了异步非阻塞的 IO 操作方式。异步 IO 是基于事件和回调机制实现的，应用操作之后会直接返回，不会阻塞在那里，当后台处理完成后操作系统会通知相应的线程进行后续操作。</p>
+  </li>
+  <li>
+    <p>深入理解 BIO、NIO、AIO：<a href="https://zhuanlan.zhihu.com/p/51453522">https://zhuanlan.zhihu.com/p/51453522</a></p>
+  </li>
+</ul>
+
+<h4 id="12-结合-selectpollepoll-理解-nio">1.2 结合 select/poll/epoll 理解 NIO</h4>
+
+<p>NIO 的多路复用能力在底层依赖操作系统提供的 select/poll/epoll 等系统调用。Selector 本质上就是对这些系统调用的 Java 封装。</p>
+
+<p>参考：<a href="https://www.jianshu.com/p/ef418ccf2f7d">https://www.jianshu.com/p/ef418ccf2f7d</a></p>
+
+<hr />
+
+<h3 id="二streambiovs-channelnio">二、Stream（BIO）vs Channel（NIO）</h3>
+
+<p>从编程模型上看，BIO 和 NIO 的核心区别体现在 Stream 和 Channel 的差异上：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>特性</th>
+      <th>Stream（BIO）</th>
+      <th>Channel（NIO）</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>方向</td>
+      <td>单向（InputStream / OutputStream）</td>
+      <td>双向（同时支持读写）</td>
+    </tr>
+    <tr>
+      <td>阻塞</td>
+      <td>阻塞式</td>
+      <td>支持非阻塞</td>
+    </tr>
+    <tr>
+      <td>数据单位</td>
+      <td>字节/字符流</td>
+      <td>数据块（Buffer）</td>
+    </tr>
+    <tr>
+      <td>异步支持</td>
+      <td>不支持</td>
+      <td>支持</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>NIO 流是以数据块为单位来处理的，缓冲区就是用于读写的数据块。缓冲区的 IO 操作由底层操作系统实现，效率很高。</p>
+
+<p>参考：</p>
+<ul>
+  <li>各种 Channel Demo：<a href="https://blog.csdn.net/dd864140130/article/details/50327649">https://blog.csdn.net/dd864140130/article/details/50327649</a></li>
+  <li>Channel &amp; Buffer 的使用：<a href="https://www.cnblogs.com/fwnboke/p/8529604.html">https://www.cnblogs.com/fwnboke/p/8529604.html</a></li>
+</ul>
+
+<hr />
+
+<h3 id="三buffer-的读写机制">三、Buffer 的读写机制</h3>
+
+<p>Buffer 是 NIO 中最核心的概念之一。它相当于在操作系统与程序之间开辟了一片共享的缓冲区进行读写，效率远高于传统的流式操作。</p>
+
+<p>由于 Buffer 支持读写两种操作且共用同一块缓冲区，在读写模式切换时需要进行相应的状态转换。</p>
+
+<h4 id="31-三个关键属性">3.1 三个关键属性</h4>
+
+<ul>
+  <li><strong>position</strong>：读的时候表示可以从哪里开始读，写的时候表示现在可以从哪里开始写</li>
+  <li><strong>limit</strong>：读的时候表示最大可读位置，写的时候表示最大可写位置</li>
+  <li><strong>capacity</strong>：缓冲区的总容量，创建后不可改变</li>
+</ul>
+
+<h4 id="32-flip-与-clear">3.2 flip() 与 clear()</h4>
+
+<p>这两个方法是 Buffer 读写模式切换的关键。无论读写，position 都要从 0 开始：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Buffer</span><span class="o">{</span>
 <span class="kd">public</span> <span class="kd">final</span> <span class="nc">Buffer</span> <span class="nf">flip</span><span class="o">()</span> <span class="o">{</span>
-      <span class="n">limit</span> <span class="o">=</span> <span class="n">position</span><span class="o">;</span>
-      <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-      <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
-      <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="n">position</span><span class="o">;</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
 <span class="o">}</span>
 <span class="kd">public</span> <span class="kd">final</span> <span class="nc">Buffer</span> <span class="nf">clear</span><span class="o">()</span> <span class="o">{</span>
-      <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-      <span class="n">limit</span> <span class="o">=</span> <span class="n">capacity</span><span class="o">;</span>
-      <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
-      <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
-  <span class="o">}</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="n">capacity</span><span class="o">;</span>
+        <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div>    </div>
-  </li>
-  <li>参考
-    <ul>
-      <li><a href="https://www.cnblogs.com/yaowen/p/9173443.html">https://www.cnblogs.com/yaowen/p/9173443.html</a></li>
-      <li><a href="https://blog.csdn.net/u013096088/article/details/78638245">https://blog.csdn.net/u013096088/article/details/78638245</a></li>
-    </ul>
-  </li>
-</ul>
+</code></pre></div></div>
 
-<h4 id="java-nioscatter-与-gather">Java NIO：Scatter 与 Gather</h4>
 <ul>
-  <li>Scatter 是指允许将一个channel中的数据分散的依次写入多个buffer中存储</li>
-  <li>Gather 是指允许将多个buffer中的数据按某种顺序写入一个channel中</li>
-  <li><a href="https://blog.csdn.net/lemon89/article/details/47152635">https://blog.csdn.net/lemon89/article/details/47152635</a></li>
+  <li><code class="language-plaintext highlighter-rouge">flip()</code>：从写模式切换到读模式。将 limit 设为当前 position（即已写入数据的末尾），将 position 重置为 0（从头开始读）</li>
+  <li><code class="language-plaintext highlighter-rouge">clear()</code>：从读模式切换到写模式。将 position 重置为 0，将 limit 设为 capacity（可以写满整个缓冲区）</li>
 </ul>
 
-<h4 id="allocatedirect直接缓冲区">allocateDirect直接缓冲区</h4>
+<p>参考：</p>
 <ul>
-  <li>“IO与NIO ”重点概念整理<a href="https://www.jianshu.com/p/c0e7462f9e1d">https://www.jianshu.com/p/c0e7462f9e1d</a></li>
+  <li><a href="https://www.cnblogs.com/yaowen/p/9173443.html">https://www.cnblogs.com/yaowen/p/9173443.html</a></li>
+  <li><a href="https://blog.csdn.net/u013096088/article/details/78638245">https://blog.csdn.net/u013096088/article/details/78638245</a></li>
 </ul>
 
-<h4 id="asynchronousserversocketchannel">AsynchronousServerSocketChannel</h4>
+<hr />
+
+<h3 id="四scatter-与-gather">四、Scatter 与 Gather</h3>
+
+<p>NIO 还提供了分散读取和聚集写入的能力：</p>
+
+<ul>
+  <li><strong>Scatter（分散读取）</strong>：允许将一个 Channel 中的数据分散地依次写入多个 Buffer 中存储</li>
+  <li><strong>Gather（聚集写入）</strong>：允许将多个 Buffer 中的数据按某种顺序写入一个 Channel 中</li>
+</ul>
+
+<p>这在处理具有固定格式的协议数据时非常有用，可以将消息头和消息体分别读入不同的 Buffer。</p>
+
+<p>参考：<a href="https://blog.csdn.net/lemon89/article/details/47152635">https://blog.csdn.net/lemon89/article/details/47152635</a></p>
+
+<h4 id="allocatedirect-直接缓冲区">allocateDirect 直接缓冲区</h4>
+
+<p><code class="language-plaintext highlighter-rouge">ByteBuffer.allocateDirect()</code> 创建的是直接缓冲区，它使用的是堆外内存（Native Memory），避免了 JVM 堆和操作系统之间的数据拷贝，适合大量 IO 操作的场景。但分配和回收的成本较高，适合长期使用的缓冲区。</p>
+
+<p>参考：<a href="https://www.jianshu.com/p/c0e7462f9e1d">https://www.jianshu.com/p/c0e7462f9e1d</a></p>
+
+<hr />
+
+<h3 id="五aio-实战asynchronousserversocketchannel">五、AIO 实战：AsynchronousServerSocketChannel</h3>
+
+<p>AIO 是真正的异步 IO，<code class="language-plaintext highlighter-rouge">accept()</code> 和 <code class="language-plaintext highlighter-rouge">read()/write()</code> 都不会阻塞当前线程。以下是一个简单的 AIO 服务端示例：</p>
+
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.ByteBuffer</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.channels.AsynchronousServerSocketChannel</span><span class="o">;</span>
@@ -213,7 +294,15 @@
 	<span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
-<h4 id="serversocketchannelselector实现多路复用io">ServerSocketChannel+Selector实现多路复用io</h4>
+
+<p>这个示例中，<code class="language-plaintext highlighter-rouge">serverSocketChannel.accept()</code> 返回一个 <code class="language-plaintext highlighter-rouge">Future</code> 对象而不会阻塞，真正的阻塞发生在 <code class="language-plaintext highlighter-rouge">accept.get()</code> 调用处。这种模式允许在等待连接的同时做其他事情（虽然本例中没有展示）。在实际项目中，通常会使用 <code class="language-plaintext highlighter-rouge">CompletionHandler</code> 回调模式来替代 Future 轮询。</p>
+
+<hr />
+
+<h3 id="六nio-多路复用实战serversocketchannel--selector">六、NIO 多路复用实战：ServerSocketChannel + Selector</h3>
+
+<p>以下是一个完整的 NIO 多路复用服务端示例，展示了如何用一个线程处理多个客户端连接：</p>
+
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.net.Inet4Address</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
@@ -321,6 +410,55 @@
 <span class="o">}</span>
 </code></pre></div></div>
 
+<p>这段代码的核心工作流程：</p>
+
+<ol>
+  <li><strong>创建 ServerSocketChannel</strong> 并设置为非阻塞模式</li>
+  <li><strong>创建 Selector</strong> 并将 ServerSocketChannel 注册到 Selector 上，关注 <code class="language-plaintext highlighter-rouge">OP_ACCEPT</code> 事件</li>
+  <li><strong>事件循环</strong>：调用 <code class="language-plaintext highlighter-rouge">selector.select()</code> 阻塞等待事件到达</li>
+  <li><strong>处理 Accept 事件</strong>：接受新连接，将新的 SocketChannel 注册到 Selector 上，关注 <code class="language-plaintext highlighter-rouge">OP_READ</code> 事件</li>
+  <li><strong>处理 Read 事件</strong>：读取客户端发送的数据，通过 Buffer 进行数据交换</li>
+</ol>
+
+<p>这就是 NIO 多路复用的核心——<strong>一个 Selector 线程可以同时监听多个 Channel 的 IO 事件</strong>，避免了为每个连接创建一个线程的开销，是构建高并发网络服务的基础模式。</p>
+
+<hr />
+
+<h3 id="七总结">七、总结</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>模型</th>
+      <th>同步/异步</th>
+      <th>阻塞/非阻塞</th>
+      <th>适用场景</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>BIO</td>
+      <td>同步</td>
+      <td>阻塞</td>
+      <td>连接数少、对延迟不敏感的场景</td>
+    </tr>
+    <tr>
+      <td>NIO</td>
+      <td>同步</td>
+      <td>非阻塞</td>
+      <td>连接数多、但每个连接传输数据量不大的场景（如聊天服务器）</td>
+    </tr>
+    <tr>
+      <td>AIO</td>
+      <td>异步</td>
+      <td>非阻塞</td>
+      <td>连接数多且每个连接传输数据量大的场景（如文件服务器）</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>在实际项目中，直接使用 NIO 编程较为复杂（需要处理半包/粘包、连接管理等问题），因此通常会使用 Netty 这样的网络框架来屏蔽底层细节。但理解 BIO/NIO/AIO 的原理，是深入理解 Netty 等框架设计思想的前提。</p>
+
     </div>
   </div>
 
@@ -351,33 +489,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

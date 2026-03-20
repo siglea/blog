@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Jekyll! - Code & Coffee</title>
+  <title>Jekyll 静态博客搭建指南：从零开始打造个人技术博客 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Welcome to Jekyll! | Code &amp; Coffee</title>
+<title>Jekyll 静态博客搭建指南：从零开始打造个人技术博客 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Welcome to Jekyll!" />
+<meta property="og:title" content="Jekyll 静态博客搭建指南：从零开始打造个人技术博客" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated. To add new posts, simply add a file in the _posts directory that follows the convention YYYY-MM-DD-name-of-post.ext and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works. Jekyll also offers powerful support for code snippets: def print_hi(name) puts &quot;Hi, #{name}&quot; end print_hi(&#39;Tom&#39;) #=&gt; prints &#39;Hi, Tom&#39; to STDOUT. Check out the Jekyll docs for more info on how to get the most out of Jekyll. File all bugs/feature requests at Jekyll’s GitHub repo. If you have questions, you can ask them on Jekyll Talk." />
-<meta property="og:description" content="You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated. To add new posts, simply add a file in the _posts directory that follows the convention YYYY-MM-DD-name-of-post.ext and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works. Jekyll also offers powerful support for code snippets: def print_hi(name) puts &quot;Hi, #{name}&quot; end print_hi(&#39;Tom&#39;) #=&gt; prints &#39;Hi, Tom&#39; to STDOUT. Check out the Jekyll docs for more info on how to get the most out of Jekyll. File all bugs/feature requests at Jekyll’s GitHub repo. If you have questions, you can ask them on Jekyll Talk." />
+<meta name="description" content="对于技术人来说，拥有一个个人博客是梳理知识、建立影响力的有效途径。相比 WordPress 等动态博客系统，Jekyll 以其简洁、免费托管（GitHub Pages）和对 Markdown 的原生支持，成为了程序员群体中最受欢迎的静态博客方案之一。 为什么选择 Jekyll 特性 说明 静态网站 无需数据库和服务器端语言，纯 HTML/CSS/JS Markdown 写作 用 Markdown 专注内容，不用操心排版 GitHub Pages 免费托管 推送到 GitHub 即自动部署，零运维成本 丰富的主题生态 大量开源主题可选，也可以完全自定义 Liquid 模板引擎 灵活的模板语法，支持变量、循环、条件判断 SEO 友好 生成纯静态页面，加载快，搜索引擎友好 环境准备 Jekyll 基于 Ruby 构建，安装前需要准备 Ruby 环境： # macOS（使用 Homebrew） brew install ruby gem install bundler jekyll # Ubuntu / Debian sudo apt-get install ruby-full build-essential gem install bundler jekyll # 验证安装 jekyll -v 快速开始 创建新站点 # 创建新的 Jekyll 项目 jekyll new my-blog # 进入项目目录 cd my-blog # 启动本地开发服务器 bundle exec jekyll serve 执行 jekyll serve 后，访问 http://localhost:4000 即可看到博客。Jekyll 会监听文件变化并自动重新生成站点，修改后刷新浏览器即可看到效果。 项目结构 my-blog/ ├── _config.yml # 站点配置文件 ├── _posts/ # 博客文章目录 │ └── 2019-05-14-welcome.md ├── _layouts/ # 页面布局模板 │ ├── default.html │ └── post.html ├── _includes/ # 可复用的页面片段 │ ├── header.html │ └── footer.html ├── _sass/ # Sass 样式文件 ├── assets/ # 静态资源（图片、CSS、JS） ├── _site/ # 生成的静态站点（不要手动修改） ├── Gemfile # Ruby 依赖管理 └── index.html # 首页 撰写文章 文件命名规范 文章放在 _posts 目录下，文件名必须遵循以下格式： YYYY-MM-DD-title.md 例如：2019-05-14-welcome-to-jekyll.md Front Matter（前置元数据） 每篇文章开头需要用 YAML 格式声明元数据： --- layout: post title: &quot;文章标题&quot; date: 2019-05-14 17:46:56 +0800 tags: - Ruby - Jekyll categories: - 技术 --- 字段 说明 layout 使用的布局模板，通常为 post title 文章标题 date 发布日期和时区 tags 标签列表，用于分类检索 categories 分类，会影响生成的 URL 路径 Markdown 写作 Front Matter 之后就是正文，使用标准 Markdown 语法。Jekyll 默认使用 kramdown 作为 Markdown 解析器，支持表格、脚注、代码高亮等扩展语法。 代码高亮 Jekyll 内置了对代码片段的强力支持。可以使用 Liquid 标签或标准 Markdown 语法： 方式一：Liquid 标签 def print_hi(name) puts &quot;Hi, #{name}&quot; end print_hi(&#39;Tom&#39;) #=&gt; prints &#39;Hi, Tom&#39; to STDOUT. 方式二：Markdown 围栏代码块 ```ruby def print_hi(name) puts &quot;Hi, #{name}&quot; end ``` 两种方式效果相同，推荐使用 Markdown 围栏代码块，更简洁通用。 站点配置（_config.yml） _config.yml 是 Jekyll 的核心配置文件： title: My Tech Blog description: 分享技术，记录成长 url: &quot;https://username.github.io&quot; baseurl: &quot;&quot; # 构建设置 markdown: kramdown permalink: /:categories/:year/:month/:day/:title.html # 分页 paginate: 10 paginate_path: &quot;/page:num/&quot; # 排除不需要生成的文件 exclude: - Gemfile - Gemfile.lock - node_modules - README.md 注意：修改 _config.yml 后需要重启 jekyll serve 才能生效，不会自动重新加载。 部署到 GitHub Pages GitHub Pages 原生支持 Jekyll，部署流程极为简单： # 1. 在 GitHub 创建仓库：username.github.io # 2. 初始化 Git 并推送 cd my-blog git init git add . git commit -m &quot;Initial blog setup&quot; git remote add origin https://github.com/username/username.github.io.git git push -u origin master # 3. 访问 https://username.github.io 查看博客 如果使用项目仓库（非 username.github.io），需要在仓库 Settings → Pages 中配置发布分支。 常用技巧 草稿功能 将未完成的文章放在 _drafts 目录下（无需日期前缀），本地预览时加 --drafts 参数： bundle exec jekyll serve --drafts 自定义域名 在仓库根目录创建 CNAME 文件，写入自定义域名： blog.example.com 然后在域名 DNS 中添加 CNAME 记录指向 username.github.io。 评论系统 Jekyll 是静态站点，不自带评论功能。常见的第三方评论方案： Disqus：国际主流，但国内访问较慢 Gitalk：基于 GitHub Issues，适合技术博客 Utterances：同样基于 GitHub Issues，更轻量 Valine：基于 LeanCloud，无需登录即可评论 搜索功能 可以使用 jekyll-search 插件或基于 lunr.js 实现客户端全文搜索，无需后端支持。 常见问题 问题 解决方案 中文文件名导致构建失败 避免使用中文文件名，用拼音或英文替代 本地预览正常但 GitHub Pages 报错 检查是否使用了 GitHub Pages 不支持的插件 样式错乱 检查 _config.yml 中的 baseurl 配置 文章不显示 确认文件名日期格式正确且日期不是未来日期 构建缓慢 使用 --incremental 参数开启增量构建 推荐资源 Jekyll 官方文档 Jekyll GitHub 仓库 Jekyll Talk 社区 Jekyll Themes - 免费主题集合 总结 Jekyll 是一个”刚刚好”的博客方案——足够简单让你专注于写作，又足够灵活支持各种自定义需求。配合 GitHub Pages 的免费托管，你可以零成本拥有一个专业的技术博客。如果你一直在犹豫要不要开始写博客，不妨就从 jekyll new 开始吧。" />
+<meta property="og:description" content="对于技术人来说，拥有一个个人博客是梳理知识、建立影响力的有效途径。相比 WordPress 等动态博客系统，Jekyll 以其简洁、免费托管（GitHub Pages）和对 Markdown 的原生支持，成为了程序员群体中最受欢迎的静态博客方案之一。 为什么选择 Jekyll 特性 说明 静态网站 无需数据库和服务器端语言，纯 HTML/CSS/JS Markdown 写作 用 Markdown 专注内容，不用操心排版 GitHub Pages 免费托管 推送到 GitHub 即自动部署，零运维成本 丰富的主题生态 大量开源主题可选，也可以完全自定义 Liquid 模板引擎 灵活的模板语法，支持变量、循环、条件判断 SEO 友好 生成纯静态页面，加载快，搜索引擎友好 环境准备 Jekyll 基于 Ruby 构建，安装前需要准备 Ruby 环境： # macOS（使用 Homebrew） brew install ruby gem install bundler jekyll # Ubuntu / Debian sudo apt-get install ruby-full build-essential gem install bundler jekyll # 验证安装 jekyll -v 快速开始 创建新站点 # 创建新的 Jekyll 项目 jekyll new my-blog # 进入项目目录 cd my-blog # 启动本地开发服务器 bundle exec jekyll serve 执行 jekyll serve 后，访问 http://localhost:4000 即可看到博客。Jekyll 会监听文件变化并自动重新生成站点，修改后刷新浏览器即可看到效果。 项目结构 my-blog/ ├── _config.yml # 站点配置文件 ├── _posts/ # 博客文章目录 │ └── 2019-05-14-welcome.md ├── _layouts/ # 页面布局模板 │ ├── default.html │ └── post.html ├── _includes/ # 可复用的页面片段 │ ├── header.html │ └── footer.html ├── _sass/ # Sass 样式文件 ├── assets/ # 静态资源（图片、CSS、JS） ├── _site/ # 生成的静态站点（不要手动修改） ├── Gemfile # Ruby 依赖管理 └── index.html # 首页 撰写文章 文件命名规范 文章放在 _posts 目录下，文件名必须遵循以下格式： YYYY-MM-DD-title.md 例如：2019-05-14-welcome-to-jekyll.md Front Matter（前置元数据） 每篇文章开头需要用 YAML 格式声明元数据： --- layout: post title: &quot;文章标题&quot; date: 2019-05-14 17:46:56 +0800 tags: - Ruby - Jekyll categories: - 技术 --- 字段 说明 layout 使用的布局模板，通常为 post title 文章标题 date 发布日期和时区 tags 标签列表，用于分类检索 categories 分类，会影响生成的 URL 路径 Markdown 写作 Front Matter 之后就是正文，使用标准 Markdown 语法。Jekyll 默认使用 kramdown 作为 Markdown 解析器，支持表格、脚注、代码高亮等扩展语法。 代码高亮 Jekyll 内置了对代码片段的强力支持。可以使用 Liquid 标签或标准 Markdown 语法： 方式一：Liquid 标签 def print_hi(name) puts &quot;Hi, #{name}&quot; end print_hi(&#39;Tom&#39;) #=&gt; prints &#39;Hi, Tom&#39; to STDOUT. 方式二：Markdown 围栏代码块 ```ruby def print_hi(name) puts &quot;Hi, #{name}&quot; end ``` 两种方式效果相同，推荐使用 Markdown 围栏代码块，更简洁通用。 站点配置（_config.yml） _config.yml 是 Jekyll 的核心配置文件： title: My Tech Blog description: 分享技术，记录成长 url: &quot;https://username.github.io&quot; baseurl: &quot;&quot; # 构建设置 markdown: kramdown permalink: /:categories/:year/:month/:day/:title.html # 分页 paginate: 10 paginate_path: &quot;/page:num/&quot; # 排除不需要生成的文件 exclude: - Gemfile - Gemfile.lock - node_modules - README.md 注意：修改 _config.yml 后需要重启 jekyll serve 才能生效，不会自动重新加载。 部署到 GitHub Pages GitHub Pages 原生支持 Jekyll，部署流程极为简单： # 1. 在 GitHub 创建仓库：username.github.io # 2. 初始化 Git 并推送 cd my-blog git init git add . git commit -m &quot;Initial blog setup&quot; git remote add origin https://github.com/username/username.github.io.git git push -u origin master # 3. 访问 https://username.github.io 查看博客 如果使用项目仓库（非 username.github.io），需要在仓库 Settings → Pages 中配置发布分支。 常用技巧 草稿功能 将未完成的文章放在 _drafts 目录下（无需日期前缀），本地预览时加 --drafts 参数： bundle exec jekyll serve --drafts 自定义域名 在仓库根目录创建 CNAME 文件，写入自定义域名： blog.example.com 然后在域名 DNS 中添加 CNAME 记录指向 username.github.io。 评论系统 Jekyll 是静态站点，不自带评论功能。常见的第三方评论方案： Disqus：国际主流，但国内访问较慢 Gitalk：基于 GitHub Issues，适合技术博客 Utterances：同样基于 GitHub Issues，更轻量 Valine：基于 LeanCloud，无需登录即可评论 搜索功能 可以使用 jekyll-search 插件或基于 lunr.js 实现客户端全文搜索，无需后端支持。 常见问题 问题 解决方案 中文文件名导致构建失败 避免使用中文文件名，用拼音或英文替代 本地预览正常但 GitHub Pages 报错 检查是否使用了 GitHub Pages 不支持的插件 样式错乱 检查 _config.yml 中的 baseurl 配置 文章不显示 确认文件名日期格式正确且日期不是未来日期 构建缓慢 使用 --incremental 参数开启增量构建 推荐资源 Jekyll 官方文档 Jekyll GitHub 仓库 Jekyll Talk 社区 Jekyll Themes - 免费主题集合 总结 Jekyll 是一个”刚刚好”的博客方案——足够简单让你专注于写作，又足够灵活支持各种自定义需求。配合 GitHub Pages 的免费托管，你可以零成本拥有一个专业的技术博客。如果你一直在犹豫要不要开始写博客，不妨就从 jekyll new 开始吧。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-05-14T17:46:56+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Welcome to Jekyll!" />
+<meta property="twitter:title" content="Jekyll 静态博客搭建指南：从零开始打造个人技术博客" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-05-14T17:46:56+08:00","datePublished":"2019-05-14T17:46:56+08:00","description":"You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated. To add new posts, simply add a file in the _posts directory that follows the convention YYYY-MM-DD-name-of-post.ext and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works. Jekyll also offers powerful support for code snippets: def print_hi(name) puts &quot;Hi, #{name}&quot; end print_hi(&#39;Tom&#39;) #=&gt; prints &#39;Hi, Tom&#39; to STDOUT. Check out the Jekyll docs for more info on how to get the most out of Jekyll. File all bugs/feature requests at Jekyll’s GitHub repo. If you have questions, you can ask them on Jekyll Talk.","headline":"Welcome to Jekyll!","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-05-14T17:46:56+08:00","datePublished":"2019-05-14T17:46:56+08:00","description":"对于技术人来说，拥有一个个人博客是梳理知识、建立影响力的有效途径。相比 WordPress 等动态博客系统，Jekyll 以其简洁、免费托管（GitHub Pages）和对 Markdown 的原生支持，成为了程序员群体中最受欢迎的静态博客方案之一。 为什么选择 Jekyll 特性 说明 静态网站 无需数据库和服务器端语言，纯 HTML/CSS/JS Markdown 写作 用 Markdown 专注内容，不用操心排版 GitHub Pages 免费托管 推送到 GitHub 即自动部署，零运维成本 丰富的主题生态 大量开源主题可选，也可以完全自定义 Liquid 模板引擎 灵活的模板语法，支持变量、循环、条件判断 SEO 友好 生成纯静态页面，加载快，搜索引擎友好 环境准备 Jekyll 基于 Ruby 构建，安装前需要准备 Ruby 环境： # macOS（使用 Homebrew） brew install ruby gem install bundler jekyll # Ubuntu / Debian sudo apt-get install ruby-full build-essential gem install bundler jekyll # 验证安装 jekyll -v 快速开始 创建新站点 # 创建新的 Jekyll 项目 jekyll new my-blog # 进入项目目录 cd my-blog # 启动本地开发服务器 bundle exec jekyll serve 执行 jekyll serve 后，访问 http://localhost:4000 即可看到博客。Jekyll 会监听文件变化并自动重新生成站点，修改后刷新浏览器即可看到效果。 项目结构 my-blog/ ├── _config.yml # 站点配置文件 ├── _posts/ # 博客文章目录 │ └── 2019-05-14-welcome.md ├── _layouts/ # 页面布局模板 │ ├── default.html │ └── post.html ├── _includes/ # 可复用的页面片段 │ ├── header.html │ └── footer.html ├── _sass/ # Sass 样式文件 ├── assets/ # 静态资源（图片、CSS、JS） ├── _site/ # 生成的静态站点（不要手动修改） ├── Gemfile # Ruby 依赖管理 └── index.html # 首页 撰写文章 文件命名规范 文章放在 _posts 目录下，文件名必须遵循以下格式： YYYY-MM-DD-title.md 例如：2019-05-14-welcome-to-jekyll.md Front Matter（前置元数据） 每篇文章开头需要用 YAML 格式声明元数据： --- layout: post title: &quot;文章标题&quot; date: 2019-05-14 17:46:56 +0800 tags: - Ruby - Jekyll categories: - 技术 --- 字段 说明 layout 使用的布局模板，通常为 post title 文章标题 date 发布日期和时区 tags 标签列表，用于分类检索 categories 分类，会影响生成的 URL 路径 Markdown 写作 Front Matter 之后就是正文，使用标准 Markdown 语法。Jekyll 默认使用 kramdown 作为 Markdown 解析器，支持表格、脚注、代码高亮等扩展语法。 代码高亮 Jekyll 内置了对代码片段的强力支持。可以使用 Liquid 标签或标准 Markdown 语法： 方式一：Liquid 标签 def print_hi(name) puts &quot;Hi, #{name}&quot; end print_hi(&#39;Tom&#39;) #=&gt; prints &#39;Hi, Tom&#39; to STDOUT. 方式二：Markdown 围栏代码块 ```ruby def print_hi(name) puts &quot;Hi, #{name}&quot; end ``` 两种方式效果相同，推荐使用 Markdown 围栏代码块，更简洁通用。 站点配置（_config.yml） _config.yml 是 Jekyll 的核心配置文件： title: My Tech Blog description: 分享技术，记录成长 url: &quot;https://username.github.io&quot; baseurl: &quot;&quot; # 构建设置 markdown: kramdown permalink: /:categories/:year/:month/:day/:title.html # 分页 paginate: 10 paginate_path: &quot;/page:num/&quot; # 排除不需要生成的文件 exclude: - Gemfile - Gemfile.lock - node_modules - README.md 注意：修改 _config.yml 后需要重启 jekyll serve 才能生效，不会自动重新加载。 部署到 GitHub Pages GitHub Pages 原生支持 Jekyll，部署流程极为简单： # 1. 在 GitHub 创建仓库：username.github.io # 2. 初始化 Git 并推送 cd my-blog git init git add . git commit -m &quot;Initial blog setup&quot; git remote add origin https://github.com/username/username.github.io.git git push -u origin master # 3. 访问 https://username.github.io 查看博客 如果使用项目仓库（非 username.github.io），需要在仓库 Settings → Pages 中配置发布分支。 常用技巧 草稿功能 将未完成的文章放在 _drafts 目录下（无需日期前缀），本地预览时加 --drafts 参数： bundle exec jekyll serve --drafts 自定义域名 在仓库根目录创建 CNAME 文件，写入自定义域名： blog.example.com 然后在域名 DNS 中添加 CNAME 记录指向 username.github.io。 评论系统 Jekyll 是静态站点，不自带评论功能。常见的第三方评论方案： Disqus：国际主流，但国内访问较慢 Gitalk：基于 GitHub Issues，适合技术博客 Utterances：同样基于 GitHub Issues，更轻量 Valine：基于 LeanCloud，无需登录即可评论 搜索功能 可以使用 jekyll-search 插件或基于 lunr.js 实现客户端全文搜索，无需后端支持。 常见问题 问题 解决方案 中文文件名导致构建失败 避免使用中文文件名，用拼音或英文替代 本地预览正常但 GitHub Pages 报错 检查是否使用了 GitHub Pages 不支持的插件 样式错乱 检查 _config.yml 中的 baseurl 配置 文章不显示 确认文件名日期格式正确且日期不是未来日期 构建缓慢 使用 --incremental 参数开启增量构建 推荐资源 Jekyll 官方文档 Jekyll GitHub 仓库 Jekyll Talk 社区 Jekyll Themes - 免费主题集合 总结 Jekyll 是一个”刚刚好”的博客方案——足够简单让你专注于写作，又足够灵活支持各种自定义需求。配合 GitHub Pages 的免费托管，你可以零成本拥有一个专业的技术博客。如果你一直在犹豫要不要开始写博客，不妨就从 jekyll new 开始吧。","headline":"Jekyll 静态博客搭建指南：从零开始打造个人技术博客","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/02/27/aws-developer-associate-code-deploy-quick-note.html">&laquo; aws developer ass...</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/02/27/aws-developer-associate-code-deploy-quick-note.html">&laquo; AWS CodeDeploy 部署...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html">TCP/IP十问 &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html">深入理解TCP/IP协议：从三次握... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">Welcome to Jekyll!</h1>
+    <h1 class="asset-name entry-title">Jekyll 静态博客搭建指南：从零开始打造个人技术博客</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,11 +97,163 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <p>You’ll find this post in your <code class="language-plaintext highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="language-plaintext highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
+      <p>对于技术人来说，拥有一个个人博客是梳理知识、建立影响力的有效途径。相比 WordPress 等动态博客系统，Jekyll 以其简洁、免费托管（GitHub Pages）和对 Markdown 的原生支持，成为了程序员群体中最受欢迎的静态博客方案之一。</p>
 
-<p>To add new posts, simply add a file in the <code class="language-plaintext highlighter-rouge">_posts</code> directory that follows the convention <code class="language-plaintext highlighter-rouge">YYYY-MM-DD-name-of-post.ext</code> and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.</p>
+<h3 id="为什么选择-jekyll">为什么选择 Jekyll</h3>
 
-<p>Jekyll also offers powerful support for code snippets:</p>
+<table>
+  <thead>
+    <tr>
+      <th>特性</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>静态网站</td>
+      <td>无需数据库和服务器端语言，纯 HTML/CSS/JS</td>
+    </tr>
+    <tr>
+      <td>Markdown 写作</td>
+      <td>用 Markdown 专注内容，不用操心排版</td>
+    </tr>
+    <tr>
+      <td>GitHub Pages 免费托管</td>
+      <td>推送到 GitHub 即自动部署，零运维成本</td>
+    </tr>
+    <tr>
+      <td>丰富的主题生态</td>
+      <td>大量开源主题可选，也可以完全自定义</td>
+    </tr>
+    <tr>
+      <td>Liquid 模板引擎</td>
+      <td>灵活的模板语法，支持变量、循环、条件判断</td>
+    </tr>
+    <tr>
+      <td>SEO 友好</td>
+      <td>生成纯静态页面，加载快，搜索引擎友好</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="环境准备">环境准备</h3>
+
+<p>Jekyll 基于 Ruby 构建，安装前需要准备 Ruby 环境：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># macOS（使用 Homebrew）</span>
+brew <span class="nb">install </span>ruby
+gem <span class="nb">install </span>bundler jekyll
+
+<span class="c"># Ubuntu / Debian</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>ruby-full build-essential
+gem <span class="nb">install </span>bundler jekyll
+
+<span class="c"># 验证安装</span>
+jekyll <span class="nt">-v</span>
+</code></pre></div></div>
+
+<h3 id="快速开始">快速开始</h3>
+
+<h4 id="创建新站点">创建新站点</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建新的 Jekyll 项目</span>
+jekyll new my-blog
+
+<span class="c"># 进入项目目录</span>
+<span class="nb">cd </span>my-blog
+
+<span class="c"># 启动本地开发服务器</span>
+bundle <span class="nb">exec </span>jekyll serve
+</code></pre></div></div>
+
+<p>执行 <code class="language-plaintext highlighter-rouge">jekyll serve</code> 后，访问 <code class="language-plaintext highlighter-rouge">http://localhost:4000</code> 即可看到博客。Jekyll 会监听文件变化并自动重新生成站点，修改后刷新浏览器即可看到效果。</p>
+
+<h4 id="项目结构">项目结构</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>my-blog/
+├── _config.yml          # 站点配置文件
+├── _posts/              # 博客文章目录
+│   └── 2019-05-14-welcome.md
+├── _layouts/            # 页面布局模板
+│   ├── default.html
+│   └── post.html
+├── _includes/           # 可复用的页面片段
+│   ├── header.html
+│   └── footer.html
+├── _sass/               # Sass 样式文件
+├── assets/              # 静态资源（图片、CSS、JS）
+├── _site/               # 生成的静态站点（不要手动修改）
+├── Gemfile              # Ruby 依赖管理
+└── index.html           # 首页
+</code></pre></div></div>
+
+<h3 id="撰写文章">撰写文章</h3>
+
+<h4 id="文件命名规范">文件命名规范</h4>
+
+<p>文章放在 <code class="language-plaintext highlighter-rouge">_posts</code> 目录下，文件名必须遵循以下格式：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>YYYY-MM-DD-title.md
+</code></pre></div></div>
+
+<p>例如：<code class="language-plaintext highlighter-rouge">2019-05-14-welcome-to-jekyll.md</code></p>
+
+<h4 id="front-matter前置元数据">Front Matter（前置元数据）</h4>
+
+<p>每篇文章开头需要用 YAML 格式声明元数据：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">---</span>
+<span class="na">layout</span><span class="pi">:</span> <span class="s">post</span>
+<span class="na">title</span><span class="pi">:</span>  <span class="s2">"</span><span class="s">文章标题"</span>
+<span class="na">date</span><span class="pi">:</span>   <span class="s">2019-05-14 17:46:56 +0800</span>
+<span class="na">tags</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="s">Ruby</span>
+<span class="pi">-</span> <span class="s">Jekyll</span>
+<span class="na">categories</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="s">技术</span>
+<span class="nn">---</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>字段</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>layout</td>
+      <td>使用的布局模板，通常为 <code class="language-plaintext highlighter-rouge">post</code></td>
+    </tr>
+    <tr>
+      <td>title</td>
+      <td>文章标题</td>
+    </tr>
+    <tr>
+      <td>date</td>
+      <td>发布日期和时区</td>
+    </tr>
+    <tr>
+      <td>tags</td>
+      <td>标签列表，用于分类检索</td>
+    </tr>
+    <tr>
+      <td>categories</td>
+      <td>分类，会影响生成的 URL 路径</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="markdown-写作">Markdown 写作</h4>
+
+<p>Front Matter 之后就是正文，使用标准 Markdown 语法。Jekyll 默认使用 kramdown 作为 Markdown 解析器，支持表格、脚注、代码高亮等扩展语法。</p>
+
+<h3 id="代码高亮">代码高亮</h3>
+
+<p>Jekyll 内置了对代码片段的强力支持。可以使用 Liquid 标签或标准 Markdown 语法：</p>
+
+<p><strong>方式一：Liquid 标签</strong></p>
 
 <figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
   <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
@@ -109,8 +261,141 @@
 <span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
 <span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
 
-<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>
+<p><strong>方式二：Markdown 围栏代码块</strong></p>
 
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">```</span><span class="nl">ruby
+</span><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+<span class="p">```</span>
+</code></pre></div></div>
+
+<p>两种方式效果相同，推荐使用 Markdown 围栏代码块，更简洁通用。</p>
+
+<h3 id="站点配置_configyml">站点配置（_config.yml）</h3>
+
+<p><code class="language-plaintext highlighter-rouge">_config.yml</code> 是 Jekyll 的核心配置文件：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">title</span><span class="pi">:</span> <span class="s">My Tech Blog</span>
+<span class="na">description</span><span class="pi">:</span> <span class="s">分享技术，记录成长</span>
+<span class="na">url</span><span class="pi">:</span> <span class="s2">"</span><span class="s">https://username.github.io"</span>
+<span class="na">baseurl</span><span class="pi">:</span> <span class="s2">"</span><span class="s">"</span>
+
+<span class="c1"># 构建设置</span>
+<span class="na">markdown</span><span class="pi">:</span> <span class="s">kramdown</span>
+<span class="na">permalink</span><span class="pi">:</span> <span class="s">/:categories/:year/:month/:day/:title.html</span>
+
+<span class="c1"># 分页</span>
+<span class="na">paginate</span><span class="pi">:</span> <span class="m">10</span>
+<span class="na">paginate_path</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/page:num/"</span>
+
+<span class="c1"># 排除不需要生成的文件</span>
+<span class="na">exclude</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">Gemfile</span>
+  <span class="pi">-</span> <span class="s">Gemfile.lock</span>
+  <span class="pi">-</span> <span class="s">node_modules</span>
+  <span class="pi">-</span> <span class="s">README.md</span>
+</code></pre></div></div>
+
+<p>注意：修改 <code class="language-plaintext highlighter-rouge">_config.yml</code> 后需要重启 <code class="language-plaintext highlighter-rouge">jekyll serve</code> 才能生效，不会自动重新加载。</p>
+
+<h3 id="部署到-github-pages">部署到 GitHub Pages</h3>
+
+<p>GitHub Pages 原生支持 Jekyll，部署流程极为简单：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 在 GitHub 创建仓库：username.github.io</span>
+
+<span class="c"># 2. 初始化 Git 并推送</span>
+<span class="nb">cd </span>my-blog
+git init
+git add <span class="nb">.</span>
+git commit <span class="nt">-m</span> <span class="s2">"Initial blog setup"</span>
+git remote add origin https://github.com/username/username.github.io.git
+git push <span class="nt">-u</span> origin master
+
+<span class="c"># 3. 访问 https://username.github.io 查看博客</span>
+</code></pre></div></div>
+
+<p>如果使用项目仓库（非 <code class="language-plaintext highlighter-rouge">username.github.io</code>），需要在仓库 Settings → Pages 中配置发布分支。</p>
+
+<h3 id="常用技巧">常用技巧</h3>
+
+<h4 id="草稿功能">草稿功能</h4>
+
+<p>将未完成的文章放在 <code class="language-plaintext highlighter-rouge">_drafts</code> 目录下（无需日期前缀），本地预览时加 <code class="language-plaintext highlighter-rouge">--drafts</code> 参数：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle <span class="nb">exec </span>jekyll serve <span class="nt">--drafts</span>
+</code></pre></div></div>
+
+<h4 id="自定义域名">自定义域名</h4>
+
+<p>在仓库根目录创建 <code class="language-plaintext highlighter-rouge">CNAME</code> 文件，写入自定义域名：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>blog.example.com
+</code></pre></div></div>
+
+<p>然后在域名 DNS 中添加 CNAME 记录指向 <code class="language-plaintext highlighter-rouge">username.github.io</code>。</p>
+
+<h4 id="评论系统">评论系统</h4>
+
+<p>Jekyll 是静态站点，不自带评论功能。常见的第三方评论方案：</p>
+
+<ul>
+  <li><strong>Disqus</strong>：国际主流，但国内访问较慢</li>
+  <li><strong>Gitalk</strong>：基于 GitHub Issues，适合技术博客</li>
+  <li><strong>Utterances</strong>：同样基于 GitHub Issues，更轻量</li>
+  <li><strong>Valine</strong>：基于 LeanCloud，无需登录即可评论</li>
+</ul>
+
+<h4 id="搜索功能">搜索功能</h4>
+
+<p>可以使用 <code class="language-plaintext highlighter-rouge">jekyll-search</code> 插件或基于 <code class="language-plaintext highlighter-rouge">lunr.js</code> 实现客户端全文搜索，无需后端支持。</p>
+
+<h3 id="常见问题">常见问题</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>问题</th>
+      <th>解决方案</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>中文文件名导致构建失败</td>
+      <td>避免使用中文文件名，用拼音或英文替代</td>
+    </tr>
+    <tr>
+      <td>本地预览正常但 GitHub Pages 报错</td>
+      <td>检查是否使用了 GitHub Pages 不支持的插件</td>
+    </tr>
+    <tr>
+      <td>样式错乱</td>
+      <td>检查 <code class="language-plaintext highlighter-rouge">_config.yml</code> 中的 <code class="language-plaintext highlighter-rouge">baseurl</code> 配置</td>
+    </tr>
+    <tr>
+      <td>文章不显示</td>
+      <td>确认文件名日期格式正确且日期不是未来日期</td>
+    </tr>
+    <tr>
+      <td>构建缓慢</td>
+      <td>使用 <code class="language-plaintext highlighter-rouge">--incremental</code> 参数开启增量构建</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="推荐资源">推荐资源</h3>
+
+<ul>
+  <li><a href="https://jekyllrb.com/docs/home">Jekyll 官方文档</a></li>
+  <li><a href="https://github.com/jekyll/jekyll">Jekyll GitHub 仓库</a></li>
+  <li><a href="https://talk.jekyllrb.com/">Jekyll Talk 社区</a></li>
+  <li><a href="http://jekyllthemes.org/">Jekyll Themes</a> - 免费主题集合</li>
+</ul>
+
+<h3 id="总结">总结</h3>
+
+<p>Jekyll 是一个”刚刚好”的博客方案——足够简单让你专注于写作，又足够灵活支持各种自定义需求。配合 GitHub Pages 的免费托管，你可以零成本拥有一个专业的技术博客。如果你一直在犹豫要不要开始写博客，不妨就从 <code class="language-plaintext highlighter-rouge">jekyll new</code> 开始吧。</p>
 
     </div>
   </div>
@@ -140,33 +425,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

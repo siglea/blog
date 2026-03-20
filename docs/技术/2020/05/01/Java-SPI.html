@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> Java SPI  - Code & Coffee</title>
+  <title>Java SPI 机制详解：面向接口编程的服务发现利器 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Java SPI | Code &amp; Coffee</title>
+<title>Java SPI 机制详解：面向接口编程的服务发现利器 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Java SPI" />
+<meta property="og:title" content="Java SPI 机制详解：面向接口编程的服务发现利器" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。 Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。 在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。 public final class ServiceLoader&lt;S&gt; implements Iterable&lt;S&gt; { private static final String PREFIX = &quot;META-INF/services/&quot;; public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) { ClassLoader cl = Thread.currentThread().getContextClassLoader(); return ServiceLoader.load(service, cl); } } https://blog.csdn.net/sweatOtt/article/details/83055191 https://juejin.im/post/5af952fdf265da0b9e652de3 https://www.jianshu.com/p/46b42f7f593c" />
-<meta property="og:description" content="SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。 Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。 在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。 public final class ServiceLoader&lt;S&gt; implements Iterable&lt;S&gt; { private static final String PREFIX = &quot;META-INF/services/&quot;; public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) { ClassLoader cl = Thread.currentThread().getContextClassLoader(); return ServiceLoader.load(service, cl); } } https://blog.csdn.net/sweatOtt/article/details/83055191 https://juejin.im/post/5af952fdf265da0b9e652de3 https://www.jianshu.com/p/46b42f7f593c" />
+<meta name="description" content="在 Java 的世界中，面向接口编程是一个被反复强调的设计原则。但接口定义了契约之后，如何优雅地发现和加载具体的实现类呢？Java SPI（Service Provider Interface）机制为这个问题提供了一个标准化的解决方案。从 JDBC 驱动加载到 Dubbo 的扩展点，SPI 的身影无处不在。 什么是 SPI SPI 全称 Service Provider Interface，是 Java 提供的一套用来被第三方实现或扩展的接口发现机制。它的核心思想是：框架定义接口，第三方提供实现，框架通过约定的方式自动发现并加载实现类。 与传统的 API 调用不同： API：实现方提供接口和实现，调用方直接使用 SPI：调用方定义接口规范，实现方按照规范提供实现，调用方通过发现机制找到实现 API 模式：框架提供接口 + 实现 → 业务方调用 SPI 模式：框架提供接口 → 第三方提供实现 → 框架自动发现并加载 工作原理 Java SPI 的工作机制遵循约定优于配置的原则： 定义一个接口（Service Interface） 第三方在 JAR 包的 META-INF/services/ 目录下创建一个以接口全限定名命名的文件 文件内容为实现类的全限定名（每行一个） 通过 java.util.ServiceLoader 加载所有实现类 ServiceLoader 核心源码 public final class ServiceLoader&lt;S&gt; implements Iterable&lt;S&gt; { // 约定的配置文件路径前缀 private static final String PREFIX = &quot;META-INF/services/&quot;; public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) { ClassLoader cl = Thread.currentThread().getContextClassLoader(); return ServiceLoader.load(service, cl); } // 内部使用 LazyIterator 延迟加载 // 读取 META-INF/services/ 下的配置文件 // 通过 Class.forName() 加载实现类 // 通过 newInstance() 创建实例 } ServiceLoader 的核心逻辑就是：使用当前线程的 ClassLoader 去 META-INF/services/ 目录下寻找以接口名命名的配置文件，读取其中的实现类名并通过反射实例化。 实战示例 下面通过一个完整的示例来演示 SPI 的使用。 Step 1：定义接口 package com.example.spi; public interface MessageService { void sendMessage(String message); } Step 2：提供实现 package com.example.spi.impl; import com.example.spi.MessageService; public class EmailMessageService implements MessageService { @Override public void sendMessage(String message) { System.out.println(&quot;Sending email: &quot; + message); } } public class SmsMessageService implements MessageService { @Override public void sendMessage(String message) { System.out.println(&quot;Sending SMS: &quot; + message); } } Step 3：注册实现（关键步骤） 在 resources/META-INF/services/ 目录下创建文件： 文件名：com.example.spi.MessageService com.example.spi.impl.EmailMessageService com.example.spi.impl.SmsMessageService Step 4：使用 ServiceLoader 加载 import java.util.ServiceLoader; public class Application { public static void main(String[] args) { ServiceLoader&lt;MessageService&gt; loader = ServiceLoader.load(MessageService.class); for (MessageService service : loader) { service.sendMessage(&quot;Hello SPI!&quot;); } // 输出： // Sending email: Hello SPI! // Sending SMS: Hello SPI! } } JDBC 中的 SPI 应用 JDBC 是 Java SPI 最经典的应用场景。在 JDBC 4.0 之前，加载数据库驱动需要显式调用： // JDBC 4.0 之前 Class.forName(&quot;com.mysql.jdbc.Driver&quot;); Connection conn = DriverManager.getConnection(url, user, password); JDBC 4.0 之后，利用 SPI 机制实现了驱动的自动发现： // JDBC 4.0 之后，无需 Class.forName Connection conn = DriverManager.getConnection(url, user, password); 这是因为 MySQL 驱动 JAR 包中包含了 SPI 配置文件： # META-INF/services/java.sql.Driver com.mysql.cj.jdbc.Driver DriverManager 在初始化时通过 ServiceLoader 自动扫描并加载所有 java.sql.Driver 的实现，从而实现了”引入 JAR 包即可使用”的效果。 SPI 在框架中的应用 Dubbo 的扩展点机制 Dubbo 对 Java SPI 进行了增强，实现了自己的扩展点加载机制（ExtensionLoader），解决了原生 SPI 的一些不足： // Dubbo SPI 扩展点定义 @SPI(&quot;dubbo&quot;) // 默认使用 dubbo 协议 public interface Protocol { @Adaptive &lt;T&gt; Exporter&lt;T&gt; export(Invoker&lt;T&gt; invoker); @Adaptive &lt;T&gt; Invoker&lt;T&gt; refer(Class&lt;T&gt; type, URL url); } Dubbo 的配置文件格式也不同于标准 SPI，采用 KV 格式： # META-INF/dubbo/org.apache.dubbo.rpc.Protocol dubbo=org.apache.dubbo.rpc.protocol.dubbo.DubboProtocol http=org.apache.dubbo.rpc.protocol.http.HttpProtocol grpc=org.apache.dubbo.rpc.protocol.grpc.GrpcProtocol Spring Boot 的自动配置 Spring Boot 的自动配置本质上也借鉴了 SPI 思想： # META-INF/spring.factories org.springframework.boot.autoconfigure.EnableAutoConfiguration=\ com.example.MyAutoConfiguration,\ com.example.AnotherAutoConfiguration Spring Boot 通过 SpringFactoriesLoader 扫描所有 JAR 包中的 spring.factories 文件，自动加载配置类。 Java SPI 的不足 问题 说明 全量加载 无法按需加载，会实例化所有实现类，造成资源浪费 无法指定实现 不支持通过名称获取特定实现 线程安全 ServiceLoader 本身不是线程安全的 异常处理弱 某个实现类加载失败会导致整个迭代失败 无 IoC/AOP 不支持依赖注入和面向切面编程 这也是为什么 Dubbo 和 Spring Boot 都对 SPI 进行了增强。 自定义增强版 SPI 可以参考 Dubbo 的思路，对 Java SPI 进行增强： public class EnhancedServiceLoader&lt;S&gt; { private Map&lt;String, Class&lt;? extends S&gt;&gt; extensionClasses; private Map&lt;String, S&gt; extensionInstances = new ConcurrentHashMap&lt;&gt;(); // 按名称获取指定实现 public S getExtension(String name) { S instance = extensionInstances.get(name); if (instance == null) { synchronized (this) { instance = extensionInstances.get(name); if (instance == null) { instance = createExtension(name); extensionInstances.put(name, instance); } } } return instance; } private S createExtension(String name) { Class&lt;? extends S&gt; clazz = extensionClasses.get(name); if (clazz == null) { throw new IllegalArgumentException(&quot;No extension: &quot; + name); } try { return clazz.getDeclaredConstructor().newInstance(); } catch (Exception e) { throw new RuntimeException(&quot;Failed to create extension: &quot; + name, e); } } } ClassLoader 与 SPI 的关系 SPI 机制的底层依赖于 ClassLoader。值得注意的是，ServiceLoader 使用的是线程上下文 ClassLoader（Thread Context ClassLoader），而不是加载 ServiceLoader 自身的 Bootstrap ClassLoader。 这是因为 ServiceLoader 位于 rt.jar（由 Bootstrap ClassLoader 加载），但 SPI 实现类通常在应用的 classpath 上（由 Application ClassLoader 加载）。根据双亲委派模型，Bootstrap ClassLoader 无法向下委托给 Application ClassLoader，因此需要通过线程上下文 ClassLoader 打破这一限制。 // ServiceLoader 内部使用线程上下文 ClassLoader ClassLoader cl = Thread.currentThread().getContextClassLoader(); 这也是理解 Java SPI 必须要了解的一个重要细节。 总结 Java SPI 提供了一种标准化的服务发现机制，实现了接口与实现的解耦。它的设计思想简洁而强大：通过 META-INF/services/ 目录下的配置文件，让框架能够自动发现并加载第三方提供的实现类。虽然原生 SPI 存在全量加载、无法按需选择等局限，但它的核心思想已经深刻影响了 Dubbo、Spring Boot 等主流框架的扩展机制设计。理解 SPI 机制，不仅有助于理解这些框架的运作原理，也为设计可扩展的软件架构提供了重要的参考范式。" />
+<meta property="og:description" content="在 Java 的世界中，面向接口编程是一个被反复强调的设计原则。但接口定义了契约之后，如何优雅地发现和加载具体的实现类呢？Java SPI（Service Provider Interface）机制为这个问题提供了一个标准化的解决方案。从 JDBC 驱动加载到 Dubbo 的扩展点，SPI 的身影无处不在。 什么是 SPI SPI 全称 Service Provider Interface，是 Java 提供的一套用来被第三方实现或扩展的接口发现机制。它的核心思想是：框架定义接口，第三方提供实现，框架通过约定的方式自动发现并加载实现类。 与传统的 API 调用不同： API：实现方提供接口和实现，调用方直接使用 SPI：调用方定义接口规范，实现方按照规范提供实现，调用方通过发现机制找到实现 API 模式：框架提供接口 + 实现 → 业务方调用 SPI 模式：框架提供接口 → 第三方提供实现 → 框架自动发现并加载 工作原理 Java SPI 的工作机制遵循约定优于配置的原则： 定义一个接口（Service Interface） 第三方在 JAR 包的 META-INF/services/ 目录下创建一个以接口全限定名命名的文件 文件内容为实现类的全限定名（每行一个） 通过 java.util.ServiceLoader 加载所有实现类 ServiceLoader 核心源码 public final class ServiceLoader&lt;S&gt; implements Iterable&lt;S&gt; { // 约定的配置文件路径前缀 private static final String PREFIX = &quot;META-INF/services/&quot;; public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) { ClassLoader cl = Thread.currentThread().getContextClassLoader(); return ServiceLoader.load(service, cl); } // 内部使用 LazyIterator 延迟加载 // 读取 META-INF/services/ 下的配置文件 // 通过 Class.forName() 加载实现类 // 通过 newInstance() 创建实例 } ServiceLoader 的核心逻辑就是：使用当前线程的 ClassLoader 去 META-INF/services/ 目录下寻找以接口名命名的配置文件，读取其中的实现类名并通过反射实例化。 实战示例 下面通过一个完整的示例来演示 SPI 的使用。 Step 1：定义接口 package com.example.spi; public interface MessageService { void sendMessage(String message); } Step 2：提供实现 package com.example.spi.impl; import com.example.spi.MessageService; public class EmailMessageService implements MessageService { @Override public void sendMessage(String message) { System.out.println(&quot;Sending email: &quot; + message); } } public class SmsMessageService implements MessageService { @Override public void sendMessage(String message) { System.out.println(&quot;Sending SMS: &quot; + message); } } Step 3：注册实现（关键步骤） 在 resources/META-INF/services/ 目录下创建文件： 文件名：com.example.spi.MessageService com.example.spi.impl.EmailMessageService com.example.spi.impl.SmsMessageService Step 4：使用 ServiceLoader 加载 import java.util.ServiceLoader; public class Application { public static void main(String[] args) { ServiceLoader&lt;MessageService&gt; loader = ServiceLoader.load(MessageService.class); for (MessageService service : loader) { service.sendMessage(&quot;Hello SPI!&quot;); } // 输出： // Sending email: Hello SPI! // Sending SMS: Hello SPI! } } JDBC 中的 SPI 应用 JDBC 是 Java SPI 最经典的应用场景。在 JDBC 4.0 之前，加载数据库驱动需要显式调用： // JDBC 4.0 之前 Class.forName(&quot;com.mysql.jdbc.Driver&quot;); Connection conn = DriverManager.getConnection(url, user, password); JDBC 4.0 之后，利用 SPI 机制实现了驱动的自动发现： // JDBC 4.0 之后，无需 Class.forName Connection conn = DriverManager.getConnection(url, user, password); 这是因为 MySQL 驱动 JAR 包中包含了 SPI 配置文件： # META-INF/services/java.sql.Driver com.mysql.cj.jdbc.Driver DriverManager 在初始化时通过 ServiceLoader 自动扫描并加载所有 java.sql.Driver 的实现，从而实现了”引入 JAR 包即可使用”的效果。 SPI 在框架中的应用 Dubbo 的扩展点机制 Dubbo 对 Java SPI 进行了增强，实现了自己的扩展点加载机制（ExtensionLoader），解决了原生 SPI 的一些不足： // Dubbo SPI 扩展点定义 @SPI(&quot;dubbo&quot;) // 默认使用 dubbo 协议 public interface Protocol { @Adaptive &lt;T&gt; Exporter&lt;T&gt; export(Invoker&lt;T&gt; invoker); @Adaptive &lt;T&gt; Invoker&lt;T&gt; refer(Class&lt;T&gt; type, URL url); } Dubbo 的配置文件格式也不同于标准 SPI，采用 KV 格式： # META-INF/dubbo/org.apache.dubbo.rpc.Protocol dubbo=org.apache.dubbo.rpc.protocol.dubbo.DubboProtocol http=org.apache.dubbo.rpc.protocol.http.HttpProtocol grpc=org.apache.dubbo.rpc.protocol.grpc.GrpcProtocol Spring Boot 的自动配置 Spring Boot 的自动配置本质上也借鉴了 SPI 思想： # META-INF/spring.factories org.springframework.boot.autoconfigure.EnableAutoConfiguration=\ com.example.MyAutoConfiguration,\ com.example.AnotherAutoConfiguration Spring Boot 通过 SpringFactoriesLoader 扫描所有 JAR 包中的 spring.factories 文件，自动加载配置类。 Java SPI 的不足 问题 说明 全量加载 无法按需加载，会实例化所有实现类，造成资源浪费 无法指定实现 不支持通过名称获取特定实现 线程安全 ServiceLoader 本身不是线程安全的 异常处理弱 某个实现类加载失败会导致整个迭代失败 无 IoC/AOP 不支持依赖注入和面向切面编程 这也是为什么 Dubbo 和 Spring Boot 都对 SPI 进行了增强。 自定义增强版 SPI 可以参考 Dubbo 的思路，对 Java SPI 进行增强： public class EnhancedServiceLoader&lt;S&gt; { private Map&lt;String, Class&lt;? extends S&gt;&gt; extensionClasses; private Map&lt;String, S&gt; extensionInstances = new ConcurrentHashMap&lt;&gt;(); // 按名称获取指定实现 public S getExtension(String name) { S instance = extensionInstances.get(name); if (instance == null) { synchronized (this) { instance = extensionInstances.get(name); if (instance == null) { instance = createExtension(name); extensionInstances.put(name, instance); } } } return instance; } private S createExtension(String name) { Class&lt;? extends S&gt; clazz = extensionClasses.get(name); if (clazz == null) { throw new IllegalArgumentException(&quot;No extension: &quot; + name); } try { return clazz.getDeclaredConstructor().newInstance(); } catch (Exception e) { throw new RuntimeException(&quot;Failed to create extension: &quot; + name, e); } } } ClassLoader 与 SPI 的关系 SPI 机制的底层依赖于 ClassLoader。值得注意的是，ServiceLoader 使用的是线程上下文 ClassLoader（Thread Context ClassLoader），而不是加载 ServiceLoader 自身的 Bootstrap ClassLoader。 这是因为 ServiceLoader 位于 rt.jar（由 Bootstrap ClassLoader 加载），但 SPI 实现类通常在应用的 classpath 上（由 Application ClassLoader 加载）。根据双亲委派模型，Bootstrap ClassLoader 无法向下委托给 Application ClassLoader，因此需要通过线程上下文 ClassLoader 打破这一限制。 // ServiceLoader 内部使用线程上下文 ClassLoader ClassLoader cl = Thread.currentThread().getContextClassLoader(); 这也是理解 Java SPI 必须要了解的一个重要细节。 总结 Java SPI 提供了一种标准化的服务发现机制，实现了接口与实现的解耦。它的设计思想简洁而强大：通过 META-INF/services/ 目录下的配置文件，让框架能够自动发现并加载第三方提供的实现类。虽然原生 SPI 存在全量加载、无法按需选择等局限，但它的核心思想已经深刻影响了 Dubbo、Spring Boot 等主流框架的扩展机制设计。理解 SPI 机制，不仅有助于理解这些框架的运作原理，也为设计可扩展的软件架构提供了重要的参考范式。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-05-01T19:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Java SPI" />
+<meta property="twitter:title" content="Java SPI 机制详解：面向接口编程的服务发现利器" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-05-01T19:25:00+08:00","datePublished":"2020-05-01T19:25:00+08:00","description":"SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。 Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。 在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。 public final class ServiceLoader&lt;S&gt; implements Iterable&lt;S&gt; { private static final String PREFIX = &quot;META-INF/services/&quot;; public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) { ClassLoader cl = Thread.currentThread().getContextClassLoader(); return ServiceLoader.load(service, cl); } } https://blog.csdn.net/sweatOtt/article/details/83055191 https://juejin.im/post/5af952fdf265da0b9e652de3 https://www.jianshu.com/p/46b42f7f593c","headline":"Java SPI","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-05-01T19:25:00+08:00","datePublished":"2020-05-01T19:25:00+08:00","description":"在 Java 的世界中，面向接口编程是一个被反复强调的设计原则。但接口定义了契约之后，如何优雅地发现和加载具体的实现类呢？Java SPI（Service Provider Interface）机制为这个问题提供了一个标准化的解决方案。从 JDBC 驱动加载到 Dubbo 的扩展点，SPI 的身影无处不在。 什么是 SPI SPI 全称 Service Provider Interface，是 Java 提供的一套用来被第三方实现或扩展的接口发现机制。它的核心思想是：框架定义接口，第三方提供实现，框架通过约定的方式自动发现并加载实现类。 与传统的 API 调用不同： API：实现方提供接口和实现，调用方直接使用 SPI：调用方定义接口规范，实现方按照规范提供实现，调用方通过发现机制找到实现 API 模式：框架提供接口 + 实现 → 业务方调用 SPI 模式：框架提供接口 → 第三方提供实现 → 框架自动发现并加载 工作原理 Java SPI 的工作机制遵循约定优于配置的原则： 定义一个接口（Service Interface） 第三方在 JAR 包的 META-INF/services/ 目录下创建一个以接口全限定名命名的文件 文件内容为实现类的全限定名（每行一个） 通过 java.util.ServiceLoader 加载所有实现类 ServiceLoader 核心源码 public final class ServiceLoader&lt;S&gt; implements Iterable&lt;S&gt; { // 约定的配置文件路径前缀 private static final String PREFIX = &quot;META-INF/services/&quot;; public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) { ClassLoader cl = Thread.currentThread().getContextClassLoader(); return ServiceLoader.load(service, cl); } // 内部使用 LazyIterator 延迟加载 // 读取 META-INF/services/ 下的配置文件 // 通过 Class.forName() 加载实现类 // 通过 newInstance() 创建实例 } ServiceLoader 的核心逻辑就是：使用当前线程的 ClassLoader 去 META-INF/services/ 目录下寻找以接口名命名的配置文件，读取其中的实现类名并通过反射实例化。 实战示例 下面通过一个完整的示例来演示 SPI 的使用。 Step 1：定义接口 package com.example.spi; public interface MessageService { void sendMessage(String message); } Step 2：提供实现 package com.example.spi.impl; import com.example.spi.MessageService; public class EmailMessageService implements MessageService { @Override public void sendMessage(String message) { System.out.println(&quot;Sending email: &quot; + message); } } public class SmsMessageService implements MessageService { @Override public void sendMessage(String message) { System.out.println(&quot;Sending SMS: &quot; + message); } } Step 3：注册实现（关键步骤） 在 resources/META-INF/services/ 目录下创建文件： 文件名：com.example.spi.MessageService com.example.spi.impl.EmailMessageService com.example.spi.impl.SmsMessageService Step 4：使用 ServiceLoader 加载 import java.util.ServiceLoader; public class Application { public static void main(String[] args) { ServiceLoader&lt;MessageService&gt; loader = ServiceLoader.load(MessageService.class); for (MessageService service : loader) { service.sendMessage(&quot;Hello SPI!&quot;); } // 输出： // Sending email: Hello SPI! // Sending SMS: Hello SPI! } } JDBC 中的 SPI 应用 JDBC 是 Java SPI 最经典的应用场景。在 JDBC 4.0 之前，加载数据库驱动需要显式调用： // JDBC 4.0 之前 Class.forName(&quot;com.mysql.jdbc.Driver&quot;); Connection conn = DriverManager.getConnection(url, user, password); JDBC 4.0 之后，利用 SPI 机制实现了驱动的自动发现： // JDBC 4.0 之后，无需 Class.forName Connection conn = DriverManager.getConnection(url, user, password); 这是因为 MySQL 驱动 JAR 包中包含了 SPI 配置文件： # META-INF/services/java.sql.Driver com.mysql.cj.jdbc.Driver DriverManager 在初始化时通过 ServiceLoader 自动扫描并加载所有 java.sql.Driver 的实现，从而实现了”引入 JAR 包即可使用”的效果。 SPI 在框架中的应用 Dubbo 的扩展点机制 Dubbo 对 Java SPI 进行了增强，实现了自己的扩展点加载机制（ExtensionLoader），解决了原生 SPI 的一些不足： // Dubbo SPI 扩展点定义 @SPI(&quot;dubbo&quot;) // 默认使用 dubbo 协议 public interface Protocol { @Adaptive &lt;T&gt; Exporter&lt;T&gt; export(Invoker&lt;T&gt; invoker); @Adaptive &lt;T&gt; Invoker&lt;T&gt; refer(Class&lt;T&gt; type, URL url); } Dubbo 的配置文件格式也不同于标准 SPI，采用 KV 格式： # META-INF/dubbo/org.apache.dubbo.rpc.Protocol dubbo=org.apache.dubbo.rpc.protocol.dubbo.DubboProtocol http=org.apache.dubbo.rpc.protocol.http.HttpProtocol grpc=org.apache.dubbo.rpc.protocol.grpc.GrpcProtocol Spring Boot 的自动配置 Spring Boot 的自动配置本质上也借鉴了 SPI 思想： # META-INF/spring.factories org.springframework.boot.autoconfigure.EnableAutoConfiguration=\\ com.example.MyAutoConfiguration,\\ com.example.AnotherAutoConfiguration Spring Boot 通过 SpringFactoriesLoader 扫描所有 JAR 包中的 spring.factories 文件，自动加载配置类。 Java SPI 的不足 问题 说明 全量加载 无法按需加载，会实例化所有实现类，造成资源浪费 无法指定实现 不支持通过名称获取特定实现 线程安全 ServiceLoader 本身不是线程安全的 异常处理弱 某个实现类加载失败会导致整个迭代失败 无 IoC/AOP 不支持依赖注入和面向切面编程 这也是为什么 Dubbo 和 Spring Boot 都对 SPI 进行了增强。 自定义增强版 SPI 可以参考 Dubbo 的思路，对 Java SPI 进行增强： public class EnhancedServiceLoader&lt;S&gt; { private Map&lt;String, Class&lt;? extends S&gt;&gt; extensionClasses; private Map&lt;String, S&gt; extensionInstances = new ConcurrentHashMap&lt;&gt;(); // 按名称获取指定实现 public S getExtension(String name) { S instance = extensionInstances.get(name); if (instance == null) { synchronized (this) { instance = extensionInstances.get(name); if (instance == null) { instance = createExtension(name); extensionInstances.put(name, instance); } } } return instance; } private S createExtension(String name) { Class&lt;? extends S&gt; clazz = extensionClasses.get(name); if (clazz == null) { throw new IllegalArgumentException(&quot;No extension: &quot; + name); } try { return clazz.getDeclaredConstructor().newInstance(); } catch (Exception e) { throw new RuntimeException(&quot;Failed to create extension: &quot; + name, e); } } } ClassLoader 与 SPI 的关系 SPI 机制的底层依赖于 ClassLoader。值得注意的是，ServiceLoader 使用的是线程上下文 ClassLoader（Thread Context ClassLoader），而不是加载 ServiceLoader 自身的 Bootstrap ClassLoader。 这是因为 ServiceLoader 位于 rt.jar（由 Bootstrap ClassLoader 加载），但 SPI 实现类通常在应用的 classpath 上（由 Application ClassLoader 加载）。根据双亲委派模型，Bootstrap ClassLoader 无法向下委托给 Application ClassLoader，因此需要通过线程上下文 ClassLoader 打破这一限制。 // ServiceLoader 内部使用线程上下文 ClassLoader ClassLoader cl = Thread.currentThread().getContextClassLoader(); 这也是理解 Java SPI 必须要了解的一个重要细节。 总结 Java SPI 提供了一种标准化的服务发现机制，实现了接口与实现的解耦。它的设计思想简洁而强大：通过 META-INF/services/ 目录下的配置文件，让框架能够自动发现并加载第三方提供的实现类。虽然原生 SPI 存在全量加载、无法按需选择等局限，但它的核心思想已经深刻影响了 Dubbo、Spring Boot 等主流框架的扩展机制设计。理解 SPI 机制，不仅有助于理解这些框架的运作原理，也为设计可扩展的软件架构提供了重要的参考范式。","headline":"Java SPI 机制详解：面向接口编程的服务发现利器","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html">&laquo;  Dubbo </a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Dubbo.html">&laquo; Dubbo 分布式服务框架：架构设...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html"> BigData  &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/05/01/BigData.html">大数据技术栈全景：Hadoop、S... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title"> Java SPI </h1>
+    <h1 class="asset-name entry-title">Java SPI 机制详解：面向接口编程的服务发现利器</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,26 +97,264 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <p>SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。
-Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。
-在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。</p>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
-    <span class="kd">implements</span> <span class="nc">Iterable</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span>
-<span class="o">{</span>
+      <p>在 Java 的世界中，面向接口编程是一个被反复强调的设计原则。但接口定义了契约之后，如何优雅地发现和加载具体的实现类呢？Java SPI（Service Provider Interface）机制为这个问题提供了一个标准化的解决方案。从 JDBC 驱动加载到 Dubbo 的扩展点，SPI 的身影无处不在。</p>
 
+<h3 id="什么是-spi">什么是 SPI</h3>
+
+<p>SPI 全称 <strong>Service Provider Interface</strong>，是 Java 提供的一套用来被第三方实现或扩展的接口发现机制。它的核心思想是：<strong>框架定义接口，第三方提供实现，框架通过约定的方式自动发现并加载实现类</strong>。</p>
+
+<p>与传统的 API 调用不同：</p>
+<ul>
+  <li><strong>API</strong>：实现方提供接口和实现，调用方直接使用</li>
+  <li><strong>SPI</strong>：调用方定义接口规范，实现方按照规范提供实现，调用方通过发现机制找到实现</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>API 模式：框架提供接口 + 实现 → 业务方调用
+SPI 模式：框架提供接口 → 第三方提供实现 → 框架自动发现并加载
+</code></pre></div></div>
+
+<h3 id="工作原理">工作原理</h3>
+
+<p>Java SPI 的工作机制遵循<strong>约定优于配置</strong>的原则：</p>
+
+<ol>
+  <li>定义一个接口（Service Interface）</li>
+  <li>第三方在 JAR 包的 <code class="language-plaintext highlighter-rouge">META-INF/services/</code> 目录下创建一个以接口全限定名命名的文件</li>
+  <li>文件内容为实现类的全限定名（每行一个）</li>
+  <li>通过 <code class="language-plaintext highlighter-rouge">java.util.ServiceLoader</code> 加载所有实现类</li>
+</ol>
+
+<h4 id="serviceloader-核心源码">ServiceLoader 核心源码</h4>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="nc">Iterable</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="c1">// 约定的配置文件路径前缀</span>
     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">PREFIX</span> <span class="o">=</span> <span class="s">"META-INF/services/"</span><span class="o">;</span>
+
     <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="nf">load</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
-            <span class="nc">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
-            <span class="k">return</span> <span class="nc">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
+        <span class="nc">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
+        <span class="k">return</span> <span class="nc">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">cl</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 内部使用 LazyIterator 延迟加载</span>
+    <span class="c1">// 读取 META-INF/services/ 下的配置文件</span>
+    <span class="c1">// 通过 Class.forName() 加载实现类</span>
+    <span class="c1">// 通过 newInstance() 创建实例</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">ServiceLoader</code> 的核心逻辑就是：使用当前线程的 ClassLoader 去 <code class="language-plaintext highlighter-rouge">META-INF/services/</code> 目录下寻找以接口名命名的配置文件，读取其中的实现类名并通过反射实例化。</p>
+
+<h3 id="实战示例">实战示例</h3>
+
+<p>下面通过一个完整的示例来演示 SPI 的使用。</p>
+
+<h4 id="step-1定义接口">Step 1：定义接口</h4>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nn">com.example.spi</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MessageService</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="nf">sendMessage</span><span class="o">(</span><span class="nc">String</span> <span class="n">message</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="step-2提供实现">Step 2：提供实现</h4>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nn">com.example.spi.impl</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.example.spi.MessageService</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmailMessageService</span> <span class="kd">implements</span> <span class="nc">MessageService</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendMessage</span><span class="o">(</span><span class="nc">String</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Sending email: "</span> <span class="o">+</span> <span class="n">message</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SmsMessageService</span> <span class="kd">implements</span> <span class="nc">MessageService</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendMessage</span><span class="o">(</span><span class="nc">String</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Sending SMS: "</span> <span class="o">+</span> <span class="n">message</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
-<p><a href="https://blog.csdn.net/sweatOtt/article/details/83055191">https://blog.csdn.net/sweatOtt/article/details/83055191</a></p>
+<h4 id="step-3注册实现关键步骤">Step 3：注册实现（关键步骤）</h4>
 
-<p><a href="https://juejin.im/post/5af952fdf265da0b9e652de3">https://juejin.im/post/5af952fdf265da0b9e652de3</a></p>
+<p>在 <code class="language-plaintext highlighter-rouge">resources/META-INF/services/</code> 目录下创建文件：</p>
 
-<p><a href="https://www.jianshu.com/p/46b42f7f593c">https://www.jianshu.com/p/46b42f7f593c</a></p>
+<p>文件名：<code class="language-plaintext highlighter-rouge">com.example.spi.MessageService</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>com.example.spi.impl.EmailMessageService
+com.example.spi.impl.SmsMessageService
+</code></pre></div></div>
+
+<h4 id="step-4使用-serviceloader-加载">Step 4：使用 ServiceLoader 加载</h4>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.util.ServiceLoader</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Application</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">ServiceLoader</span><span class="o">&lt;</span><span class="nc">MessageService</span><span class="o">&gt;</span> <span class="n">loader</span> <span class="o">=</span> <span class="nc">ServiceLoader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="nc">MessageService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        
+        <span class="k">for</span> <span class="o">(</span><span class="nc">MessageService</span> <span class="n">service</span> <span class="o">:</span> <span class="n">loader</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">service</span><span class="o">.</span><span class="na">sendMessage</span><span class="o">(</span><span class="s">"Hello SPI!"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="c1">// 输出：</span>
+        <span class="c1">// Sending email: Hello SPI!</span>
+        <span class="c1">// Sending SMS: Hello SPI!</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="jdbc-中的-spi-应用">JDBC 中的 SPI 应用</h3>
+
+<p>JDBC 是 Java SPI 最经典的应用场景。在 JDBC 4.0 之前，加载数据库驱动需要显式调用：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// JDBC 4.0 之前</span>
+<span class="nc">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">"com.mysql.jdbc.Driver"</span><span class="o">);</span>
+<span class="nc">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="nc">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">user</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>JDBC 4.0 之后，利用 SPI 机制实现了驱动的自动发现：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// JDBC 4.0 之后，无需 Class.forName</span>
+<span class="nc">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="nc">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">user</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>这是因为 MySQL 驱动 JAR 包中包含了 SPI 配置文件：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># META-INF/services/java.sql.Driver
+com.mysql.cj.jdbc.Driver
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">DriverManager</code> 在初始化时通过 <code class="language-plaintext highlighter-rouge">ServiceLoader</code> 自动扫描并加载所有 <code class="language-plaintext highlighter-rouge">java.sql.Driver</code> 的实现，从而实现了”引入 JAR 包即可使用”的效果。</p>
+
+<h3 id="spi-在框架中的应用">SPI 在框架中的应用</h3>
+
+<h4 id="dubbo-的扩展点机制">Dubbo 的扩展点机制</h4>
+
+<p>Dubbo 对 Java SPI 进行了增强，实现了自己的扩展点加载机制（ExtensionLoader），解决了原生 SPI 的一些不足：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Dubbo SPI 扩展点定义</span>
+<span class="nd">@SPI</span><span class="o">(</span><span class="s">"dubbo"</span><span class="o">)</span>  <span class="c1">// 默认使用 dubbo 协议</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Protocol</span> <span class="o">{</span>
+    <span class="nd">@Adaptive</span>
+    <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nc">Exporter</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nf">export</span><span class="o">(</span><span class="nc">Invoker</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">invoker</span><span class="o">);</span>
+    
+    <span class="nd">@Adaptive</span>
+    <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nc">Invoker</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nf">refer</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">type</span><span class="o">,</span> <span class="no">URL</span> <span class="n">url</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Dubbo 的配置文件格式也不同于标准 SPI，采用 KV 格式：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># META-INF/dubbo/org.apache.dubbo.rpc.Protocol
+dubbo=org.apache.dubbo.rpc.protocol.dubbo.DubboProtocol
+http=org.apache.dubbo.rpc.protocol.http.HttpProtocol
+grpc=org.apache.dubbo.rpc.protocol.grpc.GrpcProtocol
+</code></pre></div></div>
+
+<h4 id="spring-boot-的自动配置">Spring Boot 的自动配置</h4>
+
+<p>Spring Boot 的自动配置本质上也借鉴了 SPI 思想：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># META-INF/spring.factories
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.example.MyAutoConfiguration,\
+  com.example.AnotherAutoConfiguration
+</code></pre></div></div>
+
+<p>Spring Boot 通过 <code class="language-plaintext highlighter-rouge">SpringFactoriesLoader</code> 扫描所有 JAR 包中的 <code class="language-plaintext highlighter-rouge">spring.factories</code> 文件，自动加载配置类。</p>
+
+<h3 id="java-spi-的不足">Java SPI 的不足</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>问题</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>全量加载</td>
+      <td>无法按需加载，会实例化所有实现类，造成资源浪费</td>
+    </tr>
+    <tr>
+      <td>无法指定实现</td>
+      <td>不支持通过名称获取特定实现</td>
+    </tr>
+    <tr>
+      <td>线程安全</td>
+      <td>ServiceLoader 本身不是线程安全的</td>
+    </tr>
+    <tr>
+      <td>异常处理弱</td>
+      <td>某个实现类加载失败会导致整个迭代失败</td>
+    </tr>
+    <tr>
+      <td>无 IoC/AOP</td>
+      <td>不支持依赖注入和面向切面编程</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>这也是为什么 Dubbo 和 Spring Boot 都对 SPI 进行了增强。</p>
+
+<h3 id="自定义增强版-spi">自定义增强版 SPI</h3>
+
+<p>可以参考 Dubbo 的思路，对 Java SPI 进行增强：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EnhancedServiceLoader</span><span class="o">&lt;</span><span class="no">S</span><span class="o">&gt;</span> <span class="o">{</span>
+    
+    <span class="kd">private</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="no">S</span><span class="o">&gt;&gt;</span> <span class="n">extensionClasses</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="no">S</span><span class="o">&gt;</span> <span class="n">extensionInstances</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;&gt;();</span>
+    
+    <span class="c1">// 按名称获取指定实现</span>
+    <span class="kd">public</span> <span class="no">S</span> <span class="nf">getExtension</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="no">S</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">extensionInstances</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kd">synchronized</span> <span class="o">(</span><span class="k">this</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">instance</span> <span class="o">=</span> <span class="n">extensionInstances</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">instance</span> <span class="o">=</span> <span class="n">createExtension</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+                    <span class="n">extensionInstances</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">instance</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="kd">private</span> <span class="no">S</span> <span class="nf">createExtension</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="no">S</span><span class="o">&gt;</span> <span class="n">clazz</span> <span class="o">=</span> <span class="n">extensionClasses</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">clazz</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"No extension: "</span> <span class="o">+</span> <span class="n">name</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">clazz</span><span class="o">.</span><span class="na">getDeclaredConstructor</span><span class="o">().</span><span class="na">newInstance</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"Failed to create extension: "</span> <span class="o">+</span> <span class="n">name</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="classloader-与-spi-的关系">ClassLoader 与 SPI 的关系</h3>
+
+<p>SPI 机制的底层依赖于 ClassLoader。值得注意的是，ServiceLoader 使用的是<strong>线程上下文 ClassLoader</strong>（Thread Context ClassLoader），而不是加载 ServiceLoader 自身的 Bootstrap ClassLoader。</p>
+
+<p>这是因为 <code class="language-plaintext highlighter-rouge">ServiceLoader</code> 位于 <code class="language-plaintext highlighter-rouge">rt.jar</code>（由 Bootstrap ClassLoader 加载），但 SPI 实现类通常在应用的 classpath 上（由 Application ClassLoader 加载）。根据双亲委派模型，Bootstrap ClassLoader 无法向下委托给 Application ClassLoader，因此需要通过线程上下文 ClassLoader 打破这一限制。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// ServiceLoader 内部使用线程上下文 ClassLoader</span>
+<span class="nc">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
+</code></pre></div></div>
+
+<p>这也是理解 Java SPI 必须要了解的一个重要细节。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>Java SPI 提供了一种标准化的服务发现机制，实现了接口与实现的解耦。它的设计思想简洁而强大：通过 <code class="language-plaintext highlighter-rouge">META-INF/services/</code> 目录下的配置文件，让框架能够自动发现并加载第三方提供的实现类。虽然原生 SPI 存在全量加载、无法按需选择等局限，但它的核心思想已经深刻影响了 Dubbo、Spring Boot 等主流框架的扩展机制设计。理解 SPI 机制，不仅有助于理解这些框架的运作原理，也为设计可扩展的软件架构提供了重要的参考范式。</p>
 
     </div>
   </div>
@@ -146,33 +384,33 @@ Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义C
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

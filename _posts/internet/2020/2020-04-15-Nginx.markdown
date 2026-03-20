@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  " Nginx "
+title:  "Nginx 配置详解：location 匹配、全局变量与 Rewrite 规则"
 date:   2020-04-04 11:25:00
 tags:
 - 网络
@@ -8,7 +8,17 @@ tags:
 categories:
 - 技术
 ---
-#### location 优先级从高到低
+
+Nginx 是目前使用最广泛的高性能 Web 服务器和反向代理服务器之一。无论是静态资源托管、反向代理、负载均衡，还是 API 网关，Nginx 都能胜任。而要用好 Nginx，深入理解其配置语法是必不可少的。本文将围绕 Nginx 中最核心的三个配置主题展开：**location 匹配规则**、**全局变量**和 **Rewrite 规则**。
+
+---
+
+### 一、location 匹配规则
+
+`location` 指令是 Nginx 配置中最重要也最容易混淆的部分。它决定了一个请求 URL 将被哪段配置块处理。理解其匹配优先级，是写出正确 Nginx 配置的前提。
+
+#### 1.1 优先级从高到低
+
 ```shell 
 1. location =    # 精准匹配
 2. location ^~   # 带参前缀匹配
@@ -17,7 +27,13 @@ categories:
 5. location /a   # 普通前缀匹配，优先级低于带参数前缀匹配。
 6. location /    # 任何没有匹配成功的，都会匹配这里处理
 ```
-#### location 示例
+
+简单来说，Nginx 的匹配逻辑是：**先精准、再前缀（带 `^~`）、再正则、最后普通前缀**。精准匹配一旦命中直接使用，`^~` 前缀匹配命中后不再尝试正则，而普通前缀匹配命中后还会继续尝试正则匹配。
+
+#### 1.2 location 匹配示例
+
+下面通过一组完整的示例来理解各种 location 的匹配行为：
+
 ```shell
 
 location  = / {
@@ -27,7 +43,7 @@ location  = / {
 # 匹配成功： / 
 
 location / {
-    # 匹配任何请求，因为所有请求都是以”/“开始
+    # 匹配任何请求，因为所有请求都是以"/"开始
     # 但是更长字符匹配或者正则表达式匹配会优先匹配
   [ configuration B ] 
 }
@@ -77,7 +93,13 @@ location ~ /images/abc/ {
     [ configuration H ] 
 }
 ```
-#### 命名 location
+
+这个示例清楚地展示了 `^~` 的"拦截"效果——一旦前缀匹配命中了 `^~`，后续的正则匹配将被跳过。
+
+#### 1.3 命名 location
+
+除了上述路径匹配，Nginx 还支持命名 location，常与 `try_files` 配合使用，用于定义内部重定向的目标：
+
 ```shell 
 location / {
     try_files $uri $uri/ @custom
@@ -86,7 +108,15 @@ location @custom {
     # ...do something
 }
 ```
-#### 全局变量
+
+当请求的 URI 既不匹配文件也不匹配目录时，就会被转发到 `@custom` 这个命名 location 处理。
+
+---
+
+### 二、Nginx 全局变量
+
+Nginx 内置了丰富的全局变量，可以在配置文件中直接引用，用于日志记录、条件判断、URL 重写等场景：
+
 ```shell
 $args ： #这个变量等于请求行中的参数，同$query_string
 $content_length ： 请求头中的Content-length字段。
@@ -106,18 +136,40 @@ $server_protocol ： 请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
 $server_addr ： 服务器地址，在完成一次系统调用后可以确定这个值。
 $server_name ： 服务器名称。
 $server_port ： 请求到达服务器的端口号。
-$request_uri ： 包含请求参数的原始URI，不包含主机名，如：”/foo/bar.php?arg=baz”。
-$uri ： 不带请求参数的当前URI，$uri不包含主机名，如”/foo/bar.html”。
+$request_uri ： 包含请求参数的原始URI，不包含主机名，如："/foo/bar.php?arg=baz"。
+$uri ： 不带请求参数的当前URI，$uri不包含主机名，如"/foo/bar.html"。
 $document_uri ： 与$uri相同。
 ```
-#### Rewrite规则
-- rewrite功能就是，使用nginx提供的全局变量或自己设置的变量，结合正则表达式和标志位实现url重写以及重定向。rewrite只能放在server{},location{},if{}中，并且只能对域名后边的除去传递的参数外的字符串起作用，例如 http://seanlook.com/a/we/index.php?id=1&u=str 只对/a/we/index.php重写。语法rewrite regex replacement [flag];
-- 如果相对域名或参数字符串起作用，可以使用全局变量匹配，也可以使用proxy_pass反向代理。
-- 表明看rewrite和location功能有点像，都能实现跳转，主要区别在于rewrite是在同一域名内更改获取资源的路径，而location是对一类路径做控制访问或反向代理，可以proxy_pass到其他机器。很多情况下rewrite也会写在location里，它们的执行顺序是：
-    - 执行server块的rewrite指令
-    - 执行location匹配
-    - 执行选定的location中的rewrite指令
-- 如果其中某步URI被重写，则重新循环执行1-3，直到找到真实存在的文件；循环超过10次，则返回500 Internal Server Error错误。    
+
+其中最常用的几个：`$remote_addr`（客户端 IP）、`$request_uri`（原始请求 URI）、`$args`（查询参数）、`$host`（请求的主机名）。在编写日志格式、配置反向代理 Header 传递时会频繁使用。
+
+---
+
+### 三、Rewrite 规则
+
+Rewrite 是 Nginx 中实现 URL 重写和重定向的核心功能，使用 Nginx 提供的全局变量或自定义变量，结合正则表达式和标志位实现。
+
+#### 3.1 基本语法
+
+```
+rewrite regex replacement [flag];
+```
+
+Rewrite 只能放在 `server{}`、`location{}`、`if{}` 中，并且只对域名后边的除去传递的参数外的字符串起作用。例如 `http://seanlook.com/a/we/index.php?id=1&u=str` 只对 `/a/we/index.php` 重写。
+
+如果需要对域名或参数字符串起作用，可以使用全局变量匹配，也可以使用 `proxy_pass` 反向代理。
+
+#### 3.2 Rewrite 与 location 的关系
+
+表面看 rewrite 和 location 功能有点像，都能实现跳转，主要区别在于：**rewrite 是在同一域名内更改获取资源的路径，而 location 是对一类路径做控制访问或反向代理**，可以 `proxy_pass` 到其他机器。很多情况下 rewrite 也会写在 location 里，它们的执行顺序是：
+
+1. 执行 server 块的 rewrite 指令
+2. 执行 location 匹配
+3. 执行选定的 location 中的 rewrite 指令
+
+如果其中某步 URI 被重写，则重新循环执行 1-3，直到找到真实存在的文件；循环超过10次，则返回 500 Internal Server Error 错误。
+
+#### 3.3 实用 Rewrite 示例
 
 ```shell
 执行搜索
@@ -133,15 +185,24 @@ $document_uri ： 与$uri相同。
 重写规则         rewrite ^/user/([0-9]+)/(.+)$ /user.php?id=$1&name=$2?;
 
 多个参数
-有些网站对字符串参数使用不同的语法，例如 通过斜线“/”来分隔非命名参数
+有些网站对字符串参数使用不同的语法，例如 通过斜线"/"来分隔非命名参数
 请求的URL //hqidi.com/index.php/param1/param2/param3
 重写后URL //hqidi.com/index.php?p1=param1&p2=param2&p3=param3
 重写规则         rewrite ^/index.php/(.*)/(.*)/(.*)$ /index.php?p1=$1&p2=$2&p3=$3?;
 ```
 
+这些示例展示了 Rewrite 最常见的应用场景：将 SEO 友好的 URL 映射到后端实际的请求路径。
+
+---
+
+### 四、总结
+
+Nginx 的配置看似简单，但 location 匹配优先级、Rewrite 执行顺序等细节很容易出错。掌握本文介绍的三个核心主题——location 匹配规则、全局变量和 Rewrite 规则——就能覆盖大部分日常 Nginx 配置需求。在实际工作中，建议先理清匹配优先级再编写配置，避免出现预期外的路由行为。
+
 #### 参考
-- location 配置一 <https://segmentfault.com/a/1190000022315733>
-- location 配置二 <https://segmentfault.com/a/1190000022407797>
-- Nginx 架构原理科普 <https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ>
-- OpenResty 概要及原理科普 <https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw>
-- 微服务网关 Kong 科普 <https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g>
+
+- location 配置一：<https://segmentfault.com/a/1190000022315733>
+- location 配置二：<https://segmentfault.com/a/1190000022407797>
+- Nginx 架构原理科普：<https://mp.weixin.qq.com/s/V09fS0fHq6KJJZ3c1AuEyQ>
+- OpenResty 概要及原理科普：<https://mp.weixin.qq.com/s/rhIXgxuL_w_GvOwGZPGDkw>
+- 微服务网关 Kong 科普：<https://mp.weixin.qq.com/s/P7DTKAf8w3DhJJ6ODlRf8g>

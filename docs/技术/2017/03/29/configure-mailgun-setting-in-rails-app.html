@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configure Mailgun settings in Rails app - Code & Coffee</title>
+  <title>Rails 应用集成 Mailgun 邮件服务：从配置到踩坑全记录 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Configure Mailgun settings in Rails app | Code &amp; Coffee</title>
+<title>Rails 应用集成 Mailgun 邮件服务：从配置到踩坑全记录 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Configure Mailgun settings in Rails app" />
+<meta property="og:title" content="Rails 应用集成 Mailgun 邮件服务：从配置到踩坑全记录" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Recently I’m learning to create a Rails 5 api only application with an android mobile application. I want to send a activation email after user registered from the android app, and I found there is a free Mailgun add-on on Heroku. It’s perfect choice to start to play with because you can send up to 100 messages/hour without being charged. The documentation is good enough but I do found several steps confusing. Firstly, you need to create a Mailgun account and add your credit card information, otherwise you can’t send to recipents other than authorized ones(which means test only). Then, use the test domain(XXX@XXX.mailgun.org) to ensure Mailgun not being blocked by your test mail address(In my case I use qq mail at first, it actually blocks all traffic from mailgun). After that, you need to add a custom domain. Go to your domain name provider and configure DNS settings as following the steps of Mailgun instructions. In my case I use Namecheap and it took me a while(a cup of coffee) for Mailgun to verify my domain. After your custom domain is active, configure your development environment and make sure it works. In my case I use smtp instead of api call, the settings are for example: config.action_mailer.delivery_method = :smtp config.action_mailer.smtp_settings = { :address =&gt; &quot;smtp.mailgun.org&quot;, :port =&gt; 587, :domain =&gt; mydomain.club&#39;, :user_name =&gt; &quot;postmaster@mydomain.club&quot;, :password =&gt; XXXX } Then start your rails server and see if the mail was delivered. I spent quite a few hours here because at first my emails weren’t delivered. I refered to the log and showed Mailgun accepted the mail address, and one minute later a ESP throttling message showed up. The reason is Mailgun being blocked by certain ISP(like qq mail, in this case I have to use an extra mail hosting service), so I couldn’t see any mail sent inbox. If OK in development environemnt, change your production settings as well, it should work as well." />
-<meta property="og:description" content="Recently I’m learning to create a Rails 5 api only application with an android mobile application. I want to send a activation email after user registered from the android app, and I found there is a free Mailgun add-on on Heroku. It’s perfect choice to start to play with because you can send up to 100 messages/hour without being charged. The documentation is good enough but I do found several steps confusing. Firstly, you need to create a Mailgun account and add your credit card information, otherwise you can’t send to recipents other than authorized ones(which means test only). Then, use the test domain(XXX@XXX.mailgun.org) to ensure Mailgun not being blocked by your test mail address(In my case I use qq mail at first, it actually blocks all traffic from mailgun). After that, you need to add a custom domain. Go to your domain name provider and configure DNS settings as following the steps of Mailgun instructions. In my case I use Namecheap and it took me a while(a cup of coffee) for Mailgun to verify my domain. After your custom domain is active, configure your development environment and make sure it works. In my case I use smtp instead of api call, the settings are for example: config.action_mailer.delivery_method = :smtp config.action_mailer.smtp_settings = { :address =&gt; &quot;smtp.mailgun.org&quot;, :port =&gt; 587, :domain =&gt; mydomain.club&#39;, :user_name =&gt; &quot;postmaster@mydomain.club&quot;, :password =&gt; XXXX } Then start your rails server and see if the mail was delivered. I spent quite a few hours here because at first my emails weren’t delivered. I refered to the log and showed Mailgun accepted the mail address, and one minute later a ESP throttling message showed up. The reason is Mailgun being blocked by certain ISP(like qq mail, in this case I have to use an extra mail hosting service), so I couldn’t see any mail sent inbox. If OK in development environemnt, change your production settings as well, it should work as well." />
+<meta name="description" content="在 Web 应用开发中，发送邮件是一个基础但不可或缺的功能——用户注册激活、密码重置、通知推送都离不开它。对于中小项目来说，自建邮件服务器成本高且维护复杂，使用第三方邮件服务是更务实的选择。本文记录了在 Rails 5 API 应用中集成 Mailgun 邮件服务的完整过程，包括配置步骤和实际遇到的坑。 为什么选择 Mailgun 在 SendGrid、Amazon SES、Mailgun 等主流邮件服务中，Mailgun 有几个优势： Heroku 免费插件：在 Heroku 上可以直接添加 Mailgun add-on，无需额外注册 免费额度：每小时 100 封邮件的免费额度，对开发和小项目足够 API 和 SMTP 双模式：既可以通过 RESTful API 发送，也支持传统 SMTP 协议 文档完善：官方文档质量较高，各语言 SDK 齐全 配置步骤 第一步：创建 Mailgun 账号 注册 Mailgun 账号后，有一个容易忽略的关键点：必须绑定信用卡。否则你只能向”已授权收件人”发送邮件（即测试模式），无法向真实用户发送。 第二步：验证发送域名 Mailgun 默认提供一个沙箱域名（sandbox*.mailgun.org），建议先用它来测试流程是否跑通。 使用沙箱域名测试的意义：排除域名 DNS 配置问题的干扰，确认 Mailgun 本身能正常工作，以及目标邮箱是否会拦截 Mailgun 的邮件。 确认沙箱域名可用后，配置自定义域名： 在 Mailgun 控制台添加你的域名 到域名服务商（如 Namecheap、Cloudflare）配置 DNS 记录： TXT 记录：SPF 和 DKIM 验证，证明你有权从该域名发送邮件 MX 记录：如果需要接收邮件 CNAME 记录：用于邮件追踪 等待 Mailgun 验证（通常几分钟到几小时不等） 第三步：配置 Rails Action Mailer 在 Rails 中，邮件发送通过 Action Mailer 处理。以 SMTP 方式为例，在对应环境配置文件中添加： 开发环境 config/environments/development.rb： config.action_mailer.delivery_method = :smtp config.action_mailer.smtp_settings = { address: &#39;smtp.mailgun.org&#39;, port: 587, domain: &#39;mydomain.club&#39;, user_name: &#39;postmaster@mydomain.club&#39;, password: ENV[&#39;MAILGUN_SMTP_PASSWORD&#39;], authentication: &#39;plain&#39;, enable_starttls_auto: true } 几个注意事项： 密码不要硬编码：使用环境变量（ENV[&#39;MAILGUN_SMTP_PASSWORD&#39;]）存储敏感信息 端口选择：587 是推荐端口（STARTTLS），也可以使用 465（SSL） domain：填写你在 Mailgun 验证过的域名 生产环境 config/environments/production.rb 使用相同配置，只需确保环境变量在服务器上正确设置。 第四步：创建 Mailer class UserMailer &lt; ApplicationMailer def activation_email(user) @user = user @activation_url = &quot;https://mydomain.club/activate?token=#{user.activation_token}&quot; mail(to: @user.email, subject: &#39;请激活您的账号&#39;) end end 在用户注册后调用： UserMailer.activation_email(@user).deliver_later 使用 deliver_later 而非 deliver_now，将邮件发送任务放入后台队列（如 Sidekiq），避免阻塞请求。 踩坑记录 坑 1：ISP/ESP 拦截 这是最耗时的问题。在测试过程中，邮件发送日志显示 Mailgun 已接受（Accepted），但收件人始终收不到。一分钟后 Mailgun 日志中出现 ESP throttling 警告。 原因：某些邮件服务商（如 QQ 邮箱）会拦截来自 Mailgun 等第三方邮件平台的流量，将其识别为潜在垃圾邮件。 解决方案： 换用 Gmail、Outlook 等对第三方邮件服务更友好的邮箱测试 确保 SPF 和 DKIM DNS 记录配置正确 对于必须发送到 QQ 邮箱的场景，可能需要额外的邮件中转服务 坑 2：沙箱域名的收件人限制 使用沙箱域名时，只能向在 Mailgun 控制台中”Authorized Recipients”列表中的邮箱发送。这不是 bug，而是 Mailgun 防止滥用的机制。 坑 3：DNS 验证延迟 配置 DNS 记录后，Mailgun 验证可能不会立即通过。Namecheap 的 DNS 传播可能需要 5-30 分钟，某些情况下更久。耐心等待即可。 SMTP vs API 模式对比 Mailgun 支持两种发送方式，选择取决于你的需求： 特性 SMTP API 集成难度 低（Rails 内置 SMTP 支持） 需要安装 SDK 或手写 HTTP 请求 性能 较低（需要建立 SMTP 连接） 较高（HTTP 请求更轻量） 灵活性 受限于 SMTP 协议 支持模板、批量发送、标签等高级功能 适用场景 小规模、快速集成 大规模、需要高级功能 对于生产环境的大规模发送，推荐使用 API 模式配合 mailgun-ruby gem。 总结 在 Rails 应用中集成 Mailgun 的核心步骤： 注册账号并绑定信用卡 先用沙箱域名验证流程，再配置自定义域名 配置 DNS（SPF、DKIM）并等待验证 在 Rails 中配置 Action Mailer 的 SMTP 设置 使用 deliver_later 异步发送邮件 最大的坑在于邮件可达性——ISP 拦截、DNS 配置不当、发件人信誉度不足都可能导致邮件无法送达。建议开发阶段使用 letter_opener gem 在浏览器中预览邮件，确认内容无误后再进行实际发送测试。" />
+<meta property="og:description" content="在 Web 应用开发中，发送邮件是一个基础但不可或缺的功能——用户注册激活、密码重置、通知推送都离不开它。对于中小项目来说，自建邮件服务器成本高且维护复杂，使用第三方邮件服务是更务实的选择。本文记录了在 Rails 5 API 应用中集成 Mailgun 邮件服务的完整过程，包括配置步骤和实际遇到的坑。 为什么选择 Mailgun 在 SendGrid、Amazon SES、Mailgun 等主流邮件服务中，Mailgun 有几个优势： Heroku 免费插件：在 Heroku 上可以直接添加 Mailgun add-on，无需额外注册 免费额度：每小时 100 封邮件的免费额度，对开发和小项目足够 API 和 SMTP 双模式：既可以通过 RESTful API 发送，也支持传统 SMTP 协议 文档完善：官方文档质量较高，各语言 SDK 齐全 配置步骤 第一步：创建 Mailgun 账号 注册 Mailgun 账号后，有一个容易忽略的关键点：必须绑定信用卡。否则你只能向”已授权收件人”发送邮件（即测试模式），无法向真实用户发送。 第二步：验证发送域名 Mailgun 默认提供一个沙箱域名（sandbox*.mailgun.org），建议先用它来测试流程是否跑通。 使用沙箱域名测试的意义：排除域名 DNS 配置问题的干扰，确认 Mailgun 本身能正常工作，以及目标邮箱是否会拦截 Mailgun 的邮件。 确认沙箱域名可用后，配置自定义域名： 在 Mailgun 控制台添加你的域名 到域名服务商（如 Namecheap、Cloudflare）配置 DNS 记录： TXT 记录：SPF 和 DKIM 验证，证明你有权从该域名发送邮件 MX 记录：如果需要接收邮件 CNAME 记录：用于邮件追踪 等待 Mailgun 验证（通常几分钟到几小时不等） 第三步：配置 Rails Action Mailer 在 Rails 中，邮件发送通过 Action Mailer 处理。以 SMTP 方式为例，在对应环境配置文件中添加： 开发环境 config/environments/development.rb： config.action_mailer.delivery_method = :smtp config.action_mailer.smtp_settings = { address: &#39;smtp.mailgun.org&#39;, port: 587, domain: &#39;mydomain.club&#39;, user_name: &#39;postmaster@mydomain.club&#39;, password: ENV[&#39;MAILGUN_SMTP_PASSWORD&#39;], authentication: &#39;plain&#39;, enable_starttls_auto: true } 几个注意事项： 密码不要硬编码：使用环境变量（ENV[&#39;MAILGUN_SMTP_PASSWORD&#39;]）存储敏感信息 端口选择：587 是推荐端口（STARTTLS），也可以使用 465（SSL） domain：填写你在 Mailgun 验证过的域名 生产环境 config/environments/production.rb 使用相同配置，只需确保环境变量在服务器上正确设置。 第四步：创建 Mailer class UserMailer &lt; ApplicationMailer def activation_email(user) @user = user @activation_url = &quot;https://mydomain.club/activate?token=#{user.activation_token}&quot; mail(to: @user.email, subject: &#39;请激活您的账号&#39;) end end 在用户注册后调用： UserMailer.activation_email(@user).deliver_later 使用 deliver_later 而非 deliver_now，将邮件发送任务放入后台队列（如 Sidekiq），避免阻塞请求。 踩坑记录 坑 1：ISP/ESP 拦截 这是最耗时的问题。在测试过程中，邮件发送日志显示 Mailgun 已接受（Accepted），但收件人始终收不到。一分钟后 Mailgun 日志中出现 ESP throttling 警告。 原因：某些邮件服务商（如 QQ 邮箱）会拦截来自 Mailgun 等第三方邮件平台的流量，将其识别为潜在垃圾邮件。 解决方案： 换用 Gmail、Outlook 等对第三方邮件服务更友好的邮箱测试 确保 SPF 和 DKIM DNS 记录配置正确 对于必须发送到 QQ 邮箱的场景，可能需要额外的邮件中转服务 坑 2：沙箱域名的收件人限制 使用沙箱域名时，只能向在 Mailgun 控制台中”Authorized Recipients”列表中的邮箱发送。这不是 bug，而是 Mailgun 防止滥用的机制。 坑 3：DNS 验证延迟 配置 DNS 记录后，Mailgun 验证可能不会立即通过。Namecheap 的 DNS 传播可能需要 5-30 分钟，某些情况下更久。耐心等待即可。 SMTP vs API 模式对比 Mailgun 支持两种发送方式，选择取决于你的需求： 特性 SMTP API 集成难度 低（Rails 内置 SMTP 支持） 需要安装 SDK 或手写 HTTP 请求 性能 较低（需要建立 SMTP 连接） 较高（HTTP 请求更轻量） 灵活性 受限于 SMTP 协议 支持模板、批量发送、标签等高级功能 适用场景 小规模、快速集成 大规模、需要高级功能 对于生产环境的大规模发送，推荐使用 API 模式配合 mailgun-ruby gem。 总结 在 Rails 应用中集成 Mailgun 的核心步骤： 注册账号并绑定信用卡 先用沙箱域名验证流程，再配置自定义域名 配置 DNS（SPF、DKIM）并等待验证 在 Rails 中配置 Action Mailer 的 SMTP 设置 使用 deliver_later 异步发送邮件 最大的坑在于邮件可达性——ISP 拦截、DNS 配置不当、发件人信誉度不足都可能导致邮件无法送达。建议开发阶段使用 letter_opener gem 在浏览器中预览邮件，确认内容无误后再进行实际发送测试。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-03-29T20:15:09+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Configure Mailgun settings in Rails app" />
+<meta property="twitter:title" content="Rails 应用集成 Mailgun 邮件服务：从配置到踩坑全记录" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2017-03-29T20:15:09+08:00","datePublished":"2017-03-29T20:15:09+08:00","description":"Recently I’m learning to create a Rails 5 api only application with an android mobile application. I want to send a activation email after user registered from the android app, and I found there is a free Mailgun add-on on Heroku. It’s perfect choice to start to play with because you can send up to 100 messages/hour without being charged. The documentation is good enough but I do found several steps confusing. Firstly, you need to create a Mailgun account and add your credit card information, otherwise you can’t send to recipents other than authorized ones(which means test only). Then, use the test domain(XXX@XXX.mailgun.org) to ensure Mailgun not being blocked by your test mail address(In my case I use qq mail at first, it actually blocks all traffic from mailgun). After that, you need to add a custom domain. Go to your domain name provider and configure DNS settings as following the steps of Mailgun instructions. In my case I use Namecheap and it took me a while(a cup of coffee) for Mailgun to verify my domain. After your custom domain is active, configure your development environment and make sure it works. In my case I use smtp instead of api call, the settings are for example: config.action_mailer.delivery_method = :smtp config.action_mailer.smtp_settings = { :address =&gt; &quot;smtp.mailgun.org&quot;, :port =&gt; 587, :domain =&gt; mydomain.club&#39;, :user_name =&gt; &quot;postmaster@mydomain.club&quot;, :password =&gt; XXXX } Then start your rails server and see if the mail was delivered. I spent quite a few hours here because at first my emails weren’t delivered. I refered to the log and showed Mailgun accepted the mail address, and one minute later a ESP throttling message showed up. The reason is Mailgun being blocked by certain ISP(like qq mail, in this case I have to use an extra mail hosting service), so I couldn’t see any mail sent inbox. If OK in development environemnt, change your production settings as well, it should work as well.","headline":"Configure Mailgun settings in Rails app","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2017-03-29T20:15:09+08:00","datePublished":"2017-03-29T20:15:09+08:00","description":"在 Web 应用开发中，发送邮件是一个基础但不可或缺的功能——用户注册激活、密码重置、通知推送都离不开它。对于中小项目来说，自建邮件服务器成本高且维护复杂，使用第三方邮件服务是更务实的选择。本文记录了在 Rails 5 API 应用中集成 Mailgun 邮件服务的完整过程，包括配置步骤和实际遇到的坑。 为什么选择 Mailgun 在 SendGrid、Amazon SES、Mailgun 等主流邮件服务中，Mailgun 有几个优势： Heroku 免费插件：在 Heroku 上可以直接添加 Mailgun add-on，无需额外注册 免费额度：每小时 100 封邮件的免费额度，对开发和小项目足够 API 和 SMTP 双模式：既可以通过 RESTful API 发送，也支持传统 SMTP 协议 文档完善：官方文档质量较高，各语言 SDK 齐全 配置步骤 第一步：创建 Mailgun 账号 注册 Mailgun 账号后，有一个容易忽略的关键点：必须绑定信用卡。否则你只能向”已授权收件人”发送邮件（即测试模式），无法向真实用户发送。 第二步：验证发送域名 Mailgun 默认提供一个沙箱域名（sandbox*.mailgun.org），建议先用它来测试流程是否跑通。 使用沙箱域名测试的意义：排除域名 DNS 配置问题的干扰，确认 Mailgun 本身能正常工作，以及目标邮箱是否会拦截 Mailgun 的邮件。 确认沙箱域名可用后，配置自定义域名： 在 Mailgun 控制台添加你的域名 到域名服务商（如 Namecheap、Cloudflare）配置 DNS 记录： TXT 记录：SPF 和 DKIM 验证，证明你有权从该域名发送邮件 MX 记录：如果需要接收邮件 CNAME 记录：用于邮件追踪 等待 Mailgun 验证（通常几分钟到几小时不等） 第三步：配置 Rails Action Mailer 在 Rails 中，邮件发送通过 Action Mailer 处理。以 SMTP 方式为例，在对应环境配置文件中添加： 开发环境 config/environments/development.rb： config.action_mailer.delivery_method = :smtp config.action_mailer.smtp_settings = { address: &#39;smtp.mailgun.org&#39;, port: 587, domain: &#39;mydomain.club&#39;, user_name: &#39;postmaster@mydomain.club&#39;, password: ENV[&#39;MAILGUN_SMTP_PASSWORD&#39;], authentication: &#39;plain&#39;, enable_starttls_auto: true } 几个注意事项： 密码不要硬编码：使用环境变量（ENV[&#39;MAILGUN_SMTP_PASSWORD&#39;]）存储敏感信息 端口选择：587 是推荐端口（STARTTLS），也可以使用 465（SSL） domain：填写你在 Mailgun 验证过的域名 生产环境 config/environments/production.rb 使用相同配置，只需确保环境变量在服务器上正确设置。 第四步：创建 Mailer class UserMailer &lt; ApplicationMailer def activation_email(user) @user = user @activation_url = &quot;https://mydomain.club/activate?token=#{user.activation_token}&quot; mail(to: @user.email, subject: &#39;请激活您的账号&#39;) end end 在用户注册后调用： UserMailer.activation_email(@user).deliver_later 使用 deliver_later 而非 deliver_now，将邮件发送任务放入后台队列（如 Sidekiq），避免阻塞请求。 踩坑记录 坑 1：ISP/ESP 拦截 这是最耗时的问题。在测试过程中，邮件发送日志显示 Mailgun 已接受（Accepted），但收件人始终收不到。一分钟后 Mailgun 日志中出现 ESP throttling 警告。 原因：某些邮件服务商（如 QQ 邮箱）会拦截来自 Mailgun 等第三方邮件平台的流量，将其识别为潜在垃圾邮件。 解决方案： 换用 Gmail、Outlook 等对第三方邮件服务更友好的邮箱测试 确保 SPF 和 DKIM DNS 记录配置正确 对于必须发送到 QQ 邮箱的场景，可能需要额外的邮件中转服务 坑 2：沙箱域名的收件人限制 使用沙箱域名时，只能向在 Mailgun 控制台中”Authorized Recipients”列表中的邮箱发送。这不是 bug，而是 Mailgun 防止滥用的机制。 坑 3：DNS 验证延迟 配置 DNS 记录后，Mailgun 验证可能不会立即通过。Namecheap 的 DNS 传播可能需要 5-30 分钟，某些情况下更久。耐心等待即可。 SMTP vs API 模式对比 Mailgun 支持两种发送方式，选择取决于你的需求： 特性 SMTP API 集成难度 低（Rails 内置 SMTP 支持） 需要安装 SDK 或手写 HTTP 请求 性能 较低（需要建立 SMTP 连接） 较高（HTTP 请求更轻量） 灵活性 受限于 SMTP 协议 支持模板、批量发送、标签等高级功能 适用场景 小规模、快速集成 大规模、需要高级功能 对于生产环境的大规模发送，推荐使用 API 模式配合 mailgun-ruby gem。 总结 在 Rails 应用中集成 Mailgun 的核心步骤： 注册账号并绑定信用卡 先用沙箱域名验证流程，再配置自定义域名 配置 DNS（SPF、DKIM）并等待验证 在 Rails 中配置 Action Mailer 的 SMTP 设置 使用 deliver_later 异步发送邮件 最大的坑在于邮件可达性——ISP 拦截、DNS 配置不当、发件人信誉度不足都可能导致邮件无法送达。建议开发阶段使用 letter_opener gem 在浏览器中预览邮件，确认内容无误后再进行实际发送测试。","headline":"Rails 应用集成 Mailgun 邮件服务：从配置到踩坑全记录","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -73,13 +73,13 @@
     <div class="entry-location">
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/10/23/plot-financial-data-super-basic.html">Plot Financial Da... &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/10/23/plot-financial-data-super-basic.html">Python 金融数据可视化入门：... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">Configure Mailgun settings in Rails app</h1>
+    <h1 class="asset-name entry-title">Rails 应用集成 Mailgun 邮件服务：从配置到踩坑全记录</h1>
   </div>
 
   <div class="asset-meta">
@@ -95,28 +95,165 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <p>Recently I’m learning to create a Rails 5 api only application with an android mobile application. I want to send a activation email after user registered from the android app, and I found there is a free Mailgun add-on on Heroku. It’s perfect choice to start to play with because you can send up to 100 messages/hour without being charged. The documentation is good enough but I do found several steps confusing.</p>
+      <p>在 Web 应用开发中，发送邮件是一个基础但不可或缺的功能——用户注册激活、密码重置、通知推送都离不开它。对于中小项目来说，自建邮件服务器成本高且维护复杂，使用第三方邮件服务是更务实的选择。本文记录了在 Rails 5 API 应用中集成 Mailgun 邮件服务的完整过程，包括配置步骤和实际遇到的坑。</p>
 
-<p>Firstly, you need to create a Mailgun account and add your credit card information, otherwise you can’t send to recipents other than authorized ones(which means test only).</p>
+<h2 id="为什么选择-mailgun">为什么选择 Mailgun</h2>
 
-<p>Then, use the test domain(XXX@XXX.mailgun.org) to ensure Mailgun not being blocked by your test mail address(In my case I use qq mail at first, it actually blocks all traffic from mailgun). After that, you need to add a custom domain. Go to your domain name provider and configure DNS settings as following the steps of Mailgun instructions. In my case I use Namecheap and it took me a while(a cup of coffee) for Mailgun to verify my domain.</p>
+<p>在 SendGrid、Amazon SES、Mailgun 等主流邮件服务中，Mailgun 有几个优势：</p>
 
-<p>After your custom domain is active, configure your development environment and make sure it works. In my case I use smtp instead of api call, the settings are for example:</p>
+<ul>
+  <li><strong>Heroku 免费插件</strong>：在 Heroku 上可以直接添加 Mailgun add-on，无需额外注册</li>
+  <li><strong>免费额度</strong>：每小时 100 封邮件的免费额度，对开发和小项目足够</li>
+  <li><strong>API 和 SMTP 双模式</strong>：既可以通过 RESTful API 发送，也支持传统 SMTP 协议</li>
+  <li><strong>文档完善</strong>：官方文档质量较高，各语言 SDK 齐全</li>
+</ul>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-	:address =&gt; "smtp.mailgun.org",
-	:port =&gt; 587,
-	:domain =&gt; mydomain.club',
-	:user_name =&gt; "postmaster@mydomain.club",
-	:password =&gt; XXXX
-  }
+<h2 id="配置步骤">配置步骤</h2>
+
+<h3 id="第一步创建-mailgun-账号">第一步：创建 Mailgun 账号</h3>
+
+<p>注册 Mailgun 账号后，有一个容易忽略的关键点：<strong>必须绑定信用卡</strong>。否则你只能向”已授权收件人”发送邮件（即测试模式），无法向真实用户发送。</p>
+
+<h3 id="第二步验证发送域名">第二步：验证发送域名</h3>
+
+<p>Mailgun 默认提供一个沙箱域名（<code class="language-plaintext highlighter-rouge">sandbox*.mailgun.org</code>），建议先用它来测试流程是否跑通。</p>
+
+<p><strong>使用沙箱域名测试的意义</strong>：排除域名 DNS 配置问题的干扰，确认 Mailgun 本身能正常工作，以及目标邮箱是否会拦截 Mailgun 的邮件。</p>
+
+<p>确认沙箱域名可用后，配置自定义域名：</p>
+
+<ol>
+  <li>在 Mailgun 控制台添加你的域名</li>
+  <li>到域名服务商（如 Namecheap、Cloudflare）配置 DNS 记录：
+    <ul>
+      <li><strong>TXT 记录</strong>：SPF 和 DKIM 验证，证明你有权从该域名发送邮件</li>
+      <li><strong>MX 记录</strong>：如果需要接收邮件</li>
+      <li><strong>CNAME 记录</strong>：用于邮件追踪</li>
+    </ul>
+  </li>
+  <li>等待 Mailgun 验证（通常几分钟到几小时不等）</li>
+</ol>
+
+<h3 id="第三步配置-rails-action-mailer">第三步：配置 Rails Action Mailer</h3>
+
+<p>在 Rails 中，邮件发送通过 Action Mailer 处理。以 SMTP 方式为例，在对应环境配置文件中添加：</p>
+
+<p><strong>开发环境</strong> <code class="language-plaintext highlighter-rouge">config/environments/development.rb</code>：</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">config</span><span class="p">.</span><span class="nf">action_mailer</span><span class="p">.</span><span class="nf">delivery_method</span> <span class="o">=</span> <span class="ss">:smtp</span>
+<span class="n">config</span><span class="p">.</span><span class="nf">action_mailer</span><span class="p">.</span><span class="nf">smtp_settings</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">address:              </span><span class="s1">'smtp.mailgun.org'</span><span class="p">,</span>
+  <span class="ss">port:                 </span><span class="mi">587</span><span class="p">,</span>
+  <span class="ss">domain:               </span><span class="s1">'mydomain.club'</span><span class="p">,</span>
+  <span class="ss">user_name:            </span><span class="s1">'postmaster@mydomain.club'</span><span class="p">,</span>
+  <span class="ss">password:             </span><span class="no">ENV</span><span class="p">[</span><span class="s1">'MAILGUN_SMTP_PASSWORD'</span><span class="p">],</span>
+  <span class="ss">authentication:       </span><span class="s1">'plain'</span><span class="p">,</span>
+  <span class="ss">enable_starttls_auto: </span><span class="kp">true</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>Then start your rails server and see if the mail was delivered. I spent quite a few hours here because at first my emails weren’t delivered. I refered to the log and showed Mailgun accepted the mail address, and one minute later a ESP throttling message showed up. The reason is Mailgun being blocked by certain ISP(like qq mail, in this case I have to use an extra mail hosting service), so I couldn’t see any mail sent inbox.</p>
+<p>几个注意事项：</p>
 
-<p>If OK in development environemnt, change your production settings as well, it should work as well.</p>
+<ul>
+  <li><strong>密码不要硬编码</strong>：使用环境变量（<code class="language-plaintext highlighter-rouge">ENV['MAILGUN_SMTP_PASSWORD']</code>）存储敏感信息</li>
+  <li><strong>端口选择</strong>：587 是推荐端口（STARTTLS），也可以使用 465（SSL）</li>
+  <li><strong>domain</strong>：填写你在 Mailgun 验证过的域名</li>
+</ul>
 
+<p><strong>生产环境</strong> <code class="language-plaintext highlighter-rouge">config/environments/production.rb</code> 使用相同配置，只需确保环境变量在服务器上正确设置。</p>
+
+<h3 id="第四步创建-mailer">第四步：创建 Mailer</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">UserMailer</span> <span class="o">&lt;</span> <span class="no">ApplicationMailer</span>
+  <span class="k">def</span> <span class="nf">activation_email</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+    <span class="vi">@user</span> <span class="o">=</span> <span class="n">user</span>
+    <span class="vi">@activation_url</span> <span class="o">=</span> <span class="s2">"https://mydomain.club/activate?token=</span><span class="si">#{</span><span class="n">user</span><span class="p">.</span><span class="nf">activation_token</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">mail</span><span class="p">(</span><span class="ss">to: </span><span class="vi">@user</span><span class="p">.</span><span class="nf">email</span><span class="p">,</span> <span class="ss">subject: </span><span class="s1">'请激活您的账号'</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>在用户注册后调用：</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">UserMailer</span><span class="p">.</span><span class="nf">activation_email</span><span class="p">(</span><span class="vi">@user</span><span class="p">).</span><span class="nf">deliver_later</span>
+</code></pre></div></div>
+
+<p>使用 <code class="language-plaintext highlighter-rouge">deliver_later</code> 而非 <code class="language-plaintext highlighter-rouge">deliver_now</code>，将邮件发送任务放入后台队列（如 Sidekiq），避免阻塞请求。</p>
+
+<h2 id="踩坑记录">踩坑记录</h2>
+
+<h3 id="坑-1ispesp-拦截">坑 1：ISP/ESP 拦截</h3>
+
+<p>这是最耗时的问题。在测试过程中，邮件发送日志显示 Mailgun 已接受（Accepted），但收件人始终收不到。一分钟后 Mailgun 日志中出现 <strong>ESP throttling</strong> 警告。</p>
+
+<p><strong>原因</strong>：某些邮件服务商（如 QQ 邮箱）会拦截来自 Mailgun 等第三方邮件平台的流量，将其识别为潜在垃圾邮件。</p>
+
+<p><strong>解决方案</strong>：</p>
+<ul>
+  <li>换用 Gmail、Outlook 等对第三方邮件服务更友好的邮箱测试</li>
+  <li>确保 SPF 和 DKIM DNS 记录配置正确</li>
+  <li>对于必须发送到 QQ 邮箱的场景，可能需要额外的邮件中转服务</li>
+</ul>
+
+<h3 id="坑-2沙箱域名的收件人限制">坑 2：沙箱域名的收件人限制</h3>
+
+<p>使用沙箱域名时，只能向在 Mailgun 控制台中”Authorized Recipients”列表中的邮箱发送。这不是 bug，而是 Mailgun 防止滥用的机制。</p>
+
+<h3 id="坑-3dns-验证延迟">坑 3：DNS 验证延迟</h3>
+
+<p>配置 DNS 记录后，Mailgun 验证可能不会立即通过。Namecheap 的 DNS 传播可能需要 5-30 分钟，某些情况下更久。耐心等待即可。</p>
+
+<h2 id="smtp-vs-api-模式对比">SMTP vs API 模式对比</h2>
+
+<p>Mailgun 支持两种发送方式，选择取决于你的需求：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>特性</th>
+      <th>SMTP</th>
+      <th>API</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>集成难度</td>
+      <td>低（Rails 内置 SMTP 支持）</td>
+      <td>需要安装 SDK 或手写 HTTP 请求</td>
+    </tr>
+    <tr>
+      <td>性能</td>
+      <td>较低（需要建立 SMTP 连接）</td>
+      <td>较高（HTTP 请求更轻量）</td>
+    </tr>
+    <tr>
+      <td>灵活性</td>
+      <td>受限于 SMTP 协议</td>
+      <td>支持模板、批量发送、标签等高级功能</td>
+    </tr>
+    <tr>
+      <td>适用场景</td>
+      <td>小规模、快速集成</td>
+      <td>大规模、需要高级功能</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>对于生产环境的大规模发送，推荐使用 API 模式配合 <code class="language-plaintext highlighter-rouge">mailgun-ruby</code> gem。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>在 Rails 应用中集成 Mailgun 的核心步骤：</p>
+
+<ol>
+  <li>注册账号并绑定信用卡</li>
+  <li>先用沙箱域名验证流程，再配置自定义域名</li>
+  <li>配置 DNS（SPF、DKIM）并等待验证</li>
+  <li>在 Rails 中配置 Action Mailer 的 SMTP 设置</li>
+  <li>使用 <code class="language-plaintext highlighter-rouge">deliver_later</code> 异步发送邮件</li>
+</ol>
+
+<p>最大的坑在于邮件可达性——ISP 拦截、DNS 配置不当、发件人信誉度不足都可能导致邮件无法送达。建议开发阶段使用 <code class="language-plaintext highlighter-rouge">letter_opener</code> gem 在浏览器中预览邮件，确认内容无误后再进行实际发送测试。</p>
 
     </div>
   </div>
@@ -146,33 +283,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

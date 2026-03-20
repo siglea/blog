@@ -1,42 +1,69 @@
 ---
 layout: post
-title:  " BigData "
+title:  "大数据技术栈全景：Hadoop、Storm、HBase 与实时计算"
 date:   2020-05-01 11:25:00
 tags:
 - BigData
 categories:
 - 技术
 ---
-Hadoop官方教程 <http://hadoop.apache.org/docs/r1.0.4/cn/quickstart.html>
-<img src="{{ site.baseurl }}/img/bigdata.jpeg" width="600px">
-#### Hadoop基础知识
-- HDFS
-    - NameNode：FsImage、Editlog（HDFS日志文件）
-    - Secondary NameNode
-    - DataNode
-- MapReduce
-    - JobTracker
-    - TaskTracker
-        - MapTask
-        - ReduceTask
-- NameNodeHA方案
-    - Secondary NN会定期的从NN中读取editlog，与自己存储的Image进行合并形成新的metadata image
-    - backup NN实时得到editlog，当NN宕掉后，手动切换到Backup NN；
-    - Avatar NameNode，这是Facebook提供的一种HA方案，将client访问hadoop的editlog放在NFS中，Standby NN能够实时拿到editlog；DataNode需要同时与Active NN和Standby NN report block信息；
-    - Hadoop HA 是 Hadoop 2.x 中新添加的特性，包括 NameNode HA 和 ResourceManager HA。
 
-#### Storm基础知识
-- Nimbus：负责在集群里面发送代码，分配工作给机器，并且监控状态。全局只有一个。相当于master的角色。
-- Supervisor：监听分配给它那台机器的工作，根据需要启动/关闭工作进程Worker。每一个要运行Storm的机器上都要部署一个，并且，按照机器的配置设定上面分配的槽位数。
-- zookeeper：Storm重点依赖的外部资源。Nimbus和Supervisor甚至实际运行的Worker都是把心跳保存在Zookeeper上的。Nimbus也是根据Zookeerper上的心跳和任务运行状况，进行调度和任务分配的。两者之间的调度器。
-- Spout：在一个topology中产生源数据流的组件。通常情况下spout会从外部数据源中读取数据，然后转换为topology内部的源数据。Spout是一个主动的角色，其接口中有个nextTuple()函数，storm框架会不停地调用此函数，用户只要在其中生成源数据即可。
-- Bolt：在一个topology中接受数据然后执行处理的组件。Bolt可以执行过滤、函数操作、合并、写数据库等任何操作。Bolt是一个被动的角色，其接口中有个execute(Tuple input)函数,在接受到消息后会调用此函数，用户可以在其中执行自己想要的操作。   
-- Topology：storm中运行的一个实时应用程序，因为各个组件间的消息流动形成逻辑上的一个拓扑结构。
-- Worker：具体处理组建逻辑的进程，
-- Task：不再与物理进程对应，是处理任务的线程，
-- Stream：源源不断传递的tuple就组成了stream。
-- Tuple:一次消息传递的基本单元。本来应该是一个key-value的map，但是由于各个组件间传递的tuple的字段名称已经事先定义好，所以tuple中只要按序填入各个value就行了，所以就是一个value list.
-- 一个 spout 向拓扑提供数据，多个 bolt 完成统计任务
+大数据技术经过十余年的发展，已经形成了从离线批处理到实时流计算的完整生态。本文将系统梳理大数据技术栈中的核心组件——Hadoop 的分布式存储与计算、Storm 的实时流处理、HBase 的海量数据存储，以及它们之间的协作关系，帮助读者建立对大数据技术全景的宏观认知。
+
+**官方资料：** Hadoop 官方教程 <http://hadoop.apache.org/docs/r1.0.4/cn/quickstart.html>
+
+<img src="{{ site.baseurl }}/img/bigdata.jpeg" width="600px">
+
+---
+
+### 一、Hadoop 基础知识
+
+Hadoop 是大数据生态的基石，主要由分布式文件系统 HDFS 和分布式计算框架 MapReduce 两大核心组件构成。
+
+#### 1.1 HDFS 架构
+
+- **NameNode**：管理文件系统元数据，核心数据结构包括 FsImage（文件系统镜像）和 EditLog（HDFS 日志文件）
+- **Secondary NameNode**：辅助 NameNode 进行元数据合并，并非 NameNode 的热备
+- **DataNode**：实际存储数据块的工作节点
+
+#### 1.2 MapReduce 架构
+
+- **JobTracker**：负责任务调度和资源管理
+- **TaskTracker**：执行具体的计算任务
+  - **MapTask**：执行 Map 阶段的数据处理
+  - **ReduceTask**：执行 Reduce 阶段的数据汇总
+
+#### 1.3 NameNode 高可用方案
+
+HDFS 的 NameNode 是单点，其高可用方案经历了多个发展阶段：
+
+1. **Secondary NameNode**：定期从 NameNode 读取 EditLog，与自己存储的 Image 合并形成新的 metadata image。这是最基础的方案，但不能做到自动故障切换。
+2. **Backup NameNode**：实时获取 EditLog，当 NameNode 宕掉后需手动切换到 Backup NN。
+3. **Avatar NameNode**：Facebook 提供的 HA 方案，将 client 访问 Hadoop 的 EditLog 放在 NFS 中，Standby NN 能够实时拿到 EditLog；DataNode 需要同时与 Active NN 和 Standby NN 汇报 block 信息。
+4. **Hadoop HA（2.x）**：Hadoop 2.x 新增的标准特性，包括 NameNode HA 和 ResourceManager HA，基于 ZooKeeper 实现自动故障切换。
+
+---
+
+### 二、Storm 实时计算框架
+
+Storm 是一个分布式实时计算系统，能够可靠地处理无界数据流。
+
+#### 2.1 核心组件
+
+- **Nimbus**：全局唯一的主控节点（相当于 Master），负责在集群里发送代码、分配工作给机器并监控状态。
+- **Supervisor**：部署在每台工作机器上，监听分配给它的工作，根据需要启动/关闭工作进程 Worker。按照机器配置设定上面分配的槽位数。
+- **ZooKeeper**：Storm 重点依赖的外部资源。Nimbus 和 Supervisor 甚至实际运行的 Worker 都把心跳保存在 ZooKeeper 上。Nimbus 根据 ZooKeeper 上的心跳和任务运行状况进行调度和任务分配。
+- **Spout**：拓扑中的数据源组件，通常从外部数据源读取数据并转换为拓扑内部的源数据流。Spout 是一个主动角色，其 `nextTuple()` 函数会被 Storm 框架不停调用。
+- **Bolt**：接收数据并执行处理的组件，可以执行过滤、函数操作、合并、写数据库等任何操作。Bolt 是一个被动角色，在接收到消息后调用 `execute(Tuple input)` 函数。
+- **Topology**：Storm 中运行的实时应用程序，各组件间的消息流动形成逻辑上的拓扑结构。
+- **Worker**：具体处理组件逻辑的进程。
+- **Task**：处理任务的线程，不再与物理进程一一对应。
+- **Stream**：源源不断传递的 Tuple 组成 Stream。
+- **Tuple**：消息传递的基本单元，本质上是一个 value list（因为字段名称已事先定义好）。
+
+#### 2.2 Storm 拓扑示例
+
+一个 Spout 向拓扑提供数据，多个 Bolt 完成统计任务：
 
 ```java
 package storm.analytics;
@@ -66,65 +93,101 @@ public class TopologyStarter {
     }
 }  
 ```
-- Storm教程 <https://www.w3cschool.cn/storm/qk761jzb.html>
 
-#### Storm命名方式
-- Storm暴风雨：其组件大多也以气象名词命名
-- spout龙卷：形象的理解是把原始数据卷进Storm流式计算中
-- bolt雷电：从spout或者其他bolt中接收数据进行处理或者输出
-- nimbus雨云：主控节点，存在单点问题，不过可以用watchdog来保证其可用性，fast-fail后马上就启动
-- topology拓扑：Storm的任务单元，形象的理解拓扑的点是spout或者bolt，之间的数据流是线，整个构成一个拓扑
+**参考：** Storm 教程 <https://www.w3cschool.cn/storm/qk761jzb.html>
 
-#### storm为什么接Kafka
-- 系统解耦
-- storm没有自己的存储只负责计算
-- 可以通过kafka控制流量
+#### 2.3 Storm 命名由来
 
-#### Storm应用场景
-- 日志分析，例如应用系统产生大量的业务日志，这些例如网关系统的API调用情况日志，这些日志，不太适合马上存入数据库，需要进行加工，日志文件的量又非常大，所以没法直接统计，这时候可以通过Storm来进行分析。
-- 大数据实时统计，互联网的数据量是海量的时候，没有办法在数据库层面直接SQL来进行统计，需要对于产生的数据，进行二次加工，然后产出结果，正好把实时变化的数据流到storm中处理一遍。
-- 一淘-实时分析系统pora：实时分析用户的属性，并反馈给搜索引擎。最初，用户属性分析是通过每天在云梯上定时运行的MR job来完成的。为了满足实时性的要求，希望能够实时分析用户的行为日志，将最新的用户属性反馈给搜索引擎，能够为用户展现最贴近其当前需求的结果。
-- 携程-网站性能监控：实时分析系统监控携程网的网站性能。利用HTML5提供的performance标准获得可用的指标，并记录日志。Storm集群实时分析日志和入库。使用DRPC聚合成报表，通过历史数据对比等判断规则，触发预警事件。
-- 收集游戏中的数据，运营或者开发者可以在上线后几秒钟得到持续不断更新的游戏监控报告和分析结果，然后马上针对游戏的参数和平衡性进行调整。这样就能够大大缩短游戏迭代周期，加强游戏的生命力（实际上，zynga就是这么干的！虽然使用的不是Storm……Zynga研发之道探秘：用数据说话）
-- 推荐系统：有时候在实时处理时会从mysql及hadoop中获取数据库中的信息，例如在电影推荐系统中，传入数据为：用户当前点播电影信息，从数据库中获取的是该用户之前的一些点播电影信息统计，例如点播最多的电影类型、最近点播的电影类型，及其社交关系中点播信息，结合本次点击及从数据库中获取的信息，生成推荐数据，推荐给该用户。并且该次点击记录将会更新其数据库中的参考信息，这样就是实现了简单的智能推荐。
+Storm（暴风雨）的组件大多以气象名词命名，这种命名方式形象而有趣：
 
-#### HDFS+Hive 与 HBase+Phoenix的区别
-- Hive中的表是纯逻辑表，就只是表的定义等，即表的元数据。Hive本身不存储数据，它完全依赖HDFS和MapReduce。这样就可以将结构化的数据文件映射为为一张数据库表，并提供完整的SQL查询功能，并将SQL语句最终转换为MapReduce任务进行运行。 而HBase表是物理表，适合存放非结构化的数据。                            
-    1. 两者分别是什么？
-        - Apache Hive是数据仓库。通过Hive可以使用HQL语言查询存放在HDFS上的数据。HQL是一种类SQL语言，这种语言最终被转化为Map/Reduce. 虽然Hive提供了SQL查询功能，但是Hive不能够进行交互查询–因为它是基于MapReduce算法。
-        - Apache Hbase Key/Value，基础单元是cell，它运行在HDFS之上。和Hive不一样，Hbase的能够在它的数据库上实时运行，而不是运行MapReduce任务。
-    1. 两者的特点
-        - Hive帮助熟悉SQL的人运行MapReduce任务。因为它是JDBC兼容的。运行Hive查询会花费很长时间，因为它会默认遍历表中所有的数据。但可以通过Hive的分区来控制。因为这样一来文件大小是固定的，就这么大一块存储空间，从固定空间里查数据是很快的。
-        - HBase通过存储key/value来工作。注意版本的功能。你可以用Hadoop作为静态数据仓库，HBase作为数据存储，放那些进行一些操作会改变的数据。
-    1. 限制
-        - Hive目前不支持更新操作。另外，由于hive在hadoop上运行批量操作，它需要花费很长的时间，通常是几分钟到几个小时才可以获取到查询的结果。Hive必须提供预先定义好的schema将文件和目录映射到列，并且Hive与ACID不兼容。
-        - HBase查询是通过特定的语言来编写的，这种语言需要重新学习。类SQL的功能可以通过Apache Phonenix实现，但这是以必须提供schema为代价的。另外，Hbase也并不是兼容所有的ACID特性，虽然它支持某些特性。最后但不是最重要的–为了运行Hbase，Zookeeper是必须的，zookeeper是一个用来进行分布式协调的服务，这些服务包括配置服务，维护元信息和命名空间服务。
-    1. 应用场景
-        - Hive适合用来对一段时间内的数据进行分析查询，例如，用来计算趋势或者网站的日志。Hive不应该用来进行实时的查询。因为它需要很长时间才可以返回结果。
-        - Hbase非常适合用来进行大数据的实时查询。Facebook用Hbase进行消息和实时的分析。它也可以用来统计Facebook的连接数。
-    1. 两者关系
-        - Hive和Pig都可以与HBase组合使用，Hive和Pig还为HBase提供了高层语言支持，使得在HBase上进行数据统计处理变的非常简单
-        - Hive与HBase，都是在Hadoop体系使用
-    1. 总结
-        - Hive和Hbase是两种基于Hadoop的不同技术–Hive是一种类SQL的引擎，并且运行MapReduce任务，Hbase是一种在Hadoop之上的NoSQL 的Key/vale数据库。当然，这两种工具是可以同时使用的。就像用Google来搜索，用FaceBook进行社交一样，Hive可以用来进行统计查询，HBase可以用来进行实时查询，数据也可以从Hive写到Hbase，设置再从Hbase写回Hive。
-    1. 其他
-        - Pig是接近脚本方式去描述MapReduce，Hive则用的是SQL。近似理解为SQL ON Hadoop
-    1. Hive & Mysql数据互导 sqoop
-    
-#### Hadoop & Spark & Storm
-- Hadoop，是实现了MapReduce的思想，将数据切片计算来处理大量的离线数据。Hadoop处理的数据必须是已经存放在HDFS上或者类似HBase的数据库中，所以Hadoop实现的时候是通过移动计算到这些存放数据的机器上来提高效率。
-  适合于离线的批量数据处理适用于对实时性要求极低的场景。
-- Storm，可以用来处理源源不断流进来的消息，处理之后将结果写入到某个存储中去。实时性方面做得极好。(可以脱离Hadoop体系单独使用)
-- Spark，是一个基于内存计算的开源集群计算系统，目的是更快速的进行数据分析。Spark由加州伯克利大学AMP实验室Matei为主的小团队使用Scala开发，类似于Hadoop MapReduce的通用并行计算框架，Spark基于Map Reduce算法实现的分布式计算，拥有Hadoop MapReduce所具有的优点，但不同于MapReduce的是Job中间输出和结果可以保存在内存中，从而不再需要读写HDFS，因此Spark能更好地适用于数据挖掘与机器学习等需要迭代的Map Reduce的算法。
-  (可以简单理解为"另一种形式的MapReduce"或者是第二代"引擎"，需要在Hadoop体系使用)
+- **Spout（龙卷）**：形象地理解为把原始数据"卷进"Storm 流式计算中
+- **Bolt（雷电）**：从 Spout 或其他 Bolt 中接收数据进行处理或输出
+- **Nimbus（雨云）**：主控节点，存在单点问题，但可以用 watchdog 保证可用性，fast-fail 后马上启动
+- **Topology（拓扑）**：Storm 的任务单元，Spout/Bolt 是点，数据流是线，整体构成拓扑
 
-#### flume & kafka & storm
-- flume收集日志，推到kafka缓冲一下，storm消费计算，最终结果存储
-- 基于Flume的美团日志收集系统 <https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html>
+#### 2.4 为什么 Storm 要接 Kafka
+
+- **系统解耦**：Storm 专注计算，Kafka 负责消息存储和缓冲
+- **Storm 没有自己的存储**：只负责计算，需要外部系统提供数据源
+- **流量控制**：可以通过 Kafka 控制进入 Storm 的数据流量
+
+#### 2.5 Storm 应用场景
+
+Storm 在以下场景中表现出色：
+
+- **日志分析**：应用系统产生大量业务日志（如网关 API 调用日志），量大且不适合直接入库，通过 Storm 进行实时加工分析。
+- **大数据实时统计**：海量数据无法在数据库层面直接 SQL 统计，需要对产生的数据进行二次加工后产出结果。
+- **实时分析系统**：一淘的 PORA 系统——实时分析用户属性并反馈给搜索引擎，替代了之前每天定时运行的 MR Job。
+- **网站性能监控**：携程利用 HTML5 performance 标准获取指标，Storm 集群实时分析日志并入库，通过 DRPC 聚合报表并触发预警。
+- **游戏数据分析**：收集游戏中的数据，运营者可在上线后几秒钟内得到持续更新的监控报告，大幅缩短游戏迭代周期。
+- **推荐系统**：结合用户当前点击和历史数据生成实时推荐，如电影推荐系统中结合社交关系和点播记录进行智能推荐。
+
+---
+
+### 三、HDFS+Hive 与 HBase+Phoenix 的区别
+
+理解 Hive 和 HBase 的区别是掌握大数据存储方案选型的关键。Hive 中的表是**纯逻辑表**（元数据），本身不存储数据，完全依赖 HDFS 和 MapReduce；而 HBase 表是**物理表**，适合存放非结构化数据。
+
+#### 3.1 它们分别是什么
+
+- **Apache Hive**：数据仓库，通过 HQL（类 SQL 语言）查询存放在 HDFS 上的数据，HQL 最终被转化为 MapReduce 任务。Hive 不能进行交互式查询，因为它基于 MapReduce。
+- **Apache HBase**：Key/Value 数据库，基础单元是 Cell，运行在 HDFS 之上。与 Hive 不同，HBase 能够在数据库上实时运行查询。
+
+#### 3.2 各自的特点
+
+- **Hive**：帮助熟悉 SQL 的人运行 MapReduce 任务（JDBC 兼容）。查询会花费较长时间（默认遍历全表），但可以通过分区来优化。
+- **HBase**：通过存储 Key/Value 工作，支持版本控制。适合作为数据存储层，存放会动态变化的数据。
+
+#### 3.3 限制
+
+- **Hive**：不支持更新操作；基于 Hadoop 批量操作，查询通常需要几分钟到几个小时；必须提供预定义 schema；与 ACID 不兼容。
+- **HBase**：查询语言需要重新学习（类 SQL 功能可通过 Apache Phoenix 实现，但以提供 schema 为代价）；不兼容所有 ACID 特性；运行 HBase 必须部署 ZooKeeper。
+
+#### 3.4 应用场景
+
+- **Hive**：适合对一段时间内的数据进行分析查询，如计算趋势或网站日志分析。不适合实时查询。
+- **HBase**：适合大数据的实时查询。Facebook 用 HBase 进行消息处理和实时分析。
+
+#### 3.5 两者关系
+
+Hive 和 Pig 都可以与 HBase 组合使用，为 HBase 提供高层语言支持。两者都在 Hadoop 体系中使用，数据可以从 Hive 写到 HBase，甚至再从 HBase 写回 Hive。
+
+#### 3.6 其他
+
+- **Pig** 是接近脚本方式去描述 MapReduce，Hive 则用 SQL。近似理解为 SQL ON Hadoop。
+- **Hive 与 MySQL 数据互导**：使用 Sqoop 工具。
+
+---
+
+### 四、Hadoop、Spark 与 Storm 的对比
+
+这三者定位不同，适用于不同的数据处理场景：
+
+- **Hadoop**：实现了 MapReduce 思想，将数据切片计算来处理大量的**离线数据**。数据必须已存放在 HDFS 或 HBase 中，通过移动计算到数据所在的机器来提高效率。适合对实时性要求极低的场景。
+
+- **Storm**：处理源源不断流进来的消息，处理后将结果写入存储。在**实时性**方面做得极好。可以脱离 Hadoop 体系单独使用。
+
+- **Spark**：基于内存计算的开源集群计算系统，由 UC Berkeley AMP 实验室使用 Scala 开发。类似于 Hadoop MapReduce 的通用并行计算框架，但 Job 中间输出和结果可以保存在内存中，不再需要读写 HDFS。因此 Spark 能更好地适用于数据挖掘与机器学习等需要迭代的算法。可以简单理解为"另一种形式的 MapReduce"或第二代"引擎"，需要在 Hadoop 体系使用。
+
+---
+
+### 五、Flume + Kafka + Storm 实时处理架构
+
+这是大数据实时处理中最经典的架构组合：
+
+- **Flume** 收集日志，推到 **Kafka** 缓冲一下，**Storm** 消费计算，最终结果存储
+
+**参考资料：**
+- 基于 Flume 的美团日志收集系统 <https://tech.meituan.com/2013/12/09/meituan-flume-log-system-architecture-and-design.html>
 - 流式数据采集和计算 <https://blog.csdn.net/yezonggang/article/details/85034069>
-- Flume+Kafka+Storm+Redis构建大数据实时处理系统：实时统计网站PV、UV+展示 <https://blog.51cto.com/xpleaf/2104160>
+- Flume+Kafka+Storm+Redis 构建大数据实时处理系统 <https://blog.51cto.com/xpleaf/2104160>
 
-#### 搭建单机Hadoop
+---
+
+### 六、搭建单机 Hadoop
+
+以下是在单机环境下快速搭建 Hadoop 的步骤：
+
 ```shell
 # 1. 配置环境变量
 export JAVA_HOME=/home/java/jdk1.8
@@ -156,7 +219,10 @@ start-dfs.sh
 start-yarn.sh
 ```  
 
-#### 搭建单机HBase
+---
+
+### 七、搭建单机 HBase
+
 ```shell
 # 1. 搭建好Hadoop
 # 2. 创建目录
@@ -200,7 +266,9 @@ get 'Student','1001',{COLUMN=>'username',VERSIONS=>5} # 查询指定版本的数
 alter 'test1',{NAME=>'body',TTL=>'15552000'},{NAME=>'meta', TTL=>'15552000'} #指定TTL
 
 ```
-#### 本地存储结构
+
+#### 7.1 本地存储结构
+
 ```shell
 # /hbase/data/default/stu/8ca25fe0d49972b2efb4c36537daf1a2/cf1/d89f620da4754e1092402b577f589f8a
 data：目录即是Hbase自动生成的用来存储所有表数据的一个目录
@@ -210,71 +278,86 @@ stu：就是一张表，其实就是一个文件夹
 cf1：就是这个region中第一个列簇所对应的一个store
 d89f620da4754e1092402b577f589f8a：这就是用来存储真实数据的hfile
 ```
-#### HBase二级索引方案
-- 基于Coprocessor方案
-    - 华为的hindex 
-    - Apache Phoenix
-    - Phoenix二级索引特点：
-        - Covered Indexes(覆盖索引) ：把关注的数据字段也附在索引表上，只需要通过索引表就能返回所要查询的数据（列）， 所以索引的列必须包含所需查询的列(SELECT的列和WHERE的列)。
-        - Functional indexes(函数索引)： 索引不局限于列，支持任意的表达式来创建索引。
-        - Global indexes(全局索引)：适用于读多写少场景。通过维护全局索引表，所有的更新和写操作都会引起索引的更新，写入性能受到影响。 在读数据时，Phoenix SQL会基于索引字段，执行快速查询。
-        - Local indexes(本地索引)：适用于写多读少场景。 在数据写入时，索引数据和表数据都会存储在本地。在数据读取时， 由于无法预先确定region的位置，所以在读取数据时需要检查每个region（以找到索引数据），会带来一定性能（网络）开销。
-    - Lily HBase Indexer
-    - Solr/es
 
-#### 只能基于rowkey查询，关键看如何设计
-- 不支持where条件查询只能按照rowkey来查询
-- RowFilter
+---
 
-#### HBase高可用 CP
-<https://mp.weixin.qq.com/s/Mw-r2AhuIsHwArd4xJ-_fQ>
+### 八、HBase 深入解析
 
-#### HMaster作用
-HMaster在功能上主要负责Table表和HRegion的管理工作，具体包括：
-1. Master负责DDL操作，比如建表、删表，而RegionServer负责DML操作，比如数据的读写操作等。
-2. 管理HRegion服务器的负载均衡，调整HRegion分布；
-3. 在HRegion分裂后，负责新HRegion的分配；
-4. 在HRegion服务器停机后，负责失效HRegion服务器上的HRegion迁移。
+#### 8.1 二级索引方案
 
-#### Hadoop Region寻址方式(通过zookeeper.META)
-- 第 1 步:Client请求ZK获取.META.所在的RegionServer的地址。
-- 第 2 步:Client请求.META.所在的RegionServer获取访问数据所在的RegionServer地址，client会将.META.的相关信息cache下来，以便下一次快速访问。
-- 第 3 步:Client请求数据所在的RegionServer，获取所需要的数据。
+HBase 原生只支持基于 RowKey 的查询，二级索引是扩展查询能力的关键。主要方案包括：
 
-#### HBase的写入流程
-- 获取 RegionServer
-- 第 1 步:Client 获取数据写入的 Region 所在的 RegionServer
-- 第 2 步:请求写 Hlog, Hlog 存储在 HDFS，当 RegionServer 出现异常，需要使用 Hlog 来恢复数据。
-- 第 3 步:请求写 MemStore,只有当写 Hlog 和写 MemStore 都成功了才算请求写入完成。MemStore 后续会逐渐刷到 HDFS 中。
+**基于 Coprocessor 的方案：**
+
+- **华为 HIndex**
+- **Apache Phoenix**，其二级索引特点：
+  - **Covered Indexes（覆盖索引）**：把关注的数据字段也附在索引表上，只需通过索引表就能返回所要查询的数据
+  - **Functional Indexes（函数索引）**：索引不局限于列，支持任意表达式创建索引
+  - **Global Indexes（全局索引）**：适用于读多写少场景，所有写操作都会引起索引更新
+  - **Local Indexes（本地索引）**：适用于写多读少场景，索引数据和表数据都存储在本地
+- **Lily HBase Indexer**
+- **Solr/Elasticsearch**
+
+#### 8.2 RowKey 查询设计
+
+HBase 只能基于 RowKey 查询，不支持 WHERE 条件查询，关键看如何设计 RowKey。可以使用 RowFilter 进行过滤。
+
+#### 8.3 HBase 高可用（CP）
+
+HBase 在 CAP 理论中属于 CP 系统，优先保证一致性和分区容忍性。
+
+**参考：** <https://mp.weixin.qq.com/s/Mw-r2AhuIsHwArd4xJ-_fQ>
+
+#### 8.4 HMaster 的作用
+
+HMaster 在功能上主要负责 Table 表和 HRegion 的管理工作：
+
+1. Master 负责 DDL 操作（建表、删表），RegionServer 负责 DML 操作（数据读写）
+2. 管理 HRegion 服务器的负载均衡，调整 HRegion 分布
+3. 在 HRegion 分裂后，负责新 HRegion 的分配
+4. 在 HRegion 服务器停机后，负责失效 HRegion 服务器上的 HRegion 迁移
+
+#### 8.5 Region 寻址方式（通过 ZooKeeper + .META.）
+
+- **第 1 步**：Client 请求 ZK 获取 .META. 所在的 RegionServer 的地址
+- **第 2 步**：Client 请求 .META. 所在的 RegionServer 获取访问数据所在的 RegionServer 地址，Client 会将 .META. 的相关信息 cache 下来以便下次快速访问
+- **第 3 步**：Client 请求数据所在的 RegionServer，获取所需要的数据
+
+#### 8.6 HBase 的写入流程
+
+1. Client 获取数据写入的 Region 所在的 RegionServer
+2. 请求写 HLog（HLog 存储在 HDFS，当 RegionServer 出现异常时用于恢复数据）
+3. 请求写 MemStore——只有当写 HLog 和写 MemStore 都成功了才算请求写入完成。MemStore 后续会逐渐刷到 HDFS 中。
       
-#### HBase全局内存控制
-1. 这个全局的参数是控制内存整体的使用情况，当所有 memstore 占整个 heap 的最大比 例的时候，会触发刷盘的操作。这个参数是 hbase.regionserver.global.memstore.upperLimit，默认为整个 heap 内存的 40%。 但这并不意味着全局内存触发的刷盘操作会将所有的 MemStore 都进行输盘，而是通过 另外一个参数 hbase.regionserver.global.memstore.lowerLimit 来控制，默认是整个 heap 内存的 35%。当 flush 到所有 memstore 占整个 heap 内存的比率为 35%的时 候，就停止刷盘。这么做主要是为了减少刷盘对业务带来的影响，实现平滑系统负载的 目的。
-MemStore 达到上限
-2. 当 MemStore 的大小达到 hbase.hregion.memstore.flush.size 大小的时候会触发刷
-盘，默认 128M 大小
-RegionServer 的 Hlog 数量达到上限
-3. 前面说到 Hlog 为了保证 Hbase 数据的一致性，那么如果 Hlog 太多的话，会导致故障 恢复的时间太长，因此 Hbase 会对 Hlog 的最大个数做限制。当达到 Hlog 的最大个数 的时候，会强制刷盘。这个参数是 hase.regionserver.max.logs，默认是 32 个。
-手工触发
-4. 可以通过 hbase shell 或者 java api 手工触发 flush 的操作。
-关闭 RegionServer 触发
-5. 在正常关闭 RegionServer 会触发刷盘的操作，全部数据刷盘后就不需要再使用 Hlog 恢
-复数据。
-Region 使用 HLOG 恢复完数据后触发
-6. :当 RegionServer 出现故障的时候，其上面的 Region 会迁移到其他正常的 RegionServer 上，在恢复完 Region 的数据后，会触发刷盘，当刷盘完成后才会提供给 业务访问。
+#### 8.7 HBase 全局内存控制
 
-#### HBase中zookeeper的作用
-- Zookeeper是HBase HA的解决方案，是整个集群的协调器，
-通过Zookeeper保证了至少有一个HMaster处于active状态，
-HMaster并不直接参与数据的读写操作，当我们使用HBase的API的时候，当我们想用HBase的API去读取数据的时候，我们并不需要知道HMaster的地址、也不需要知道RegionServer的地址，我们只需要知道Zookeeper集群的地址就可以了
-- HMaster启动将系统加载到Zookeeper，Zookeeper保存了HBase集群region的信息、meta的信息等等
-- 维护着RegionServer的状态信息，知道哪些数据需要从哪些RegionServer去读取
-- <https://mp.weixin.qq.com/s/ryc4B7IMLyGhHsZAArS96w>
+HBase 的内存刷盘策略分为多个触发条件：
 
-#### 参考
-- 用HBase实现亿级Feed <https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ>
-- HBase案例 <https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw>
-- HBase面试题 <https://www.jianshu.com/p/9ecd4367e6d0>
-- es结合Hbase <https://zhuanlan.zhihu.com/p/87563468>
-- Hbase和Cassandra比较 <https://blog.csdn.net/aa5305123/article/details/83142514>
+1. **全局 MemStore 上限**：当所有 MemStore 占整个 Heap 的比例达到 `hbase.regionserver.global.memstore.upperLimit`（默认 40%）时触发刷盘，flush 到 `lowerLimit`（默认 35%）时停止，以平滑系统负载。
+2. **单个 MemStore 上限**：当 MemStore 大小达到 `hbase.hregion.memstore.flush.size`（默认 128MB）时触发刷盘。
+3. **HLog 数量上限**：当达到 `hbase.regionserver.max.logs`（默认 32 个）时强制刷盘，避免故障恢复时间过长。
+4. **手工触发**：通过 HBase Shell 或 Java API 手工触发 flush 操作。
+5. **关闭 RegionServer**：正常关闭时会触发全部数据刷盘。
+6. **Region 恢复后**：RegionServer 故障后，Region 迁移到其他 RegionServer 并恢复完数据后触发刷盘。
+
+#### 8.8 HBase 中 ZooKeeper 的作用
+
+- ZooKeeper 是 HBase HA 的解决方案和整个集群的协调器
+- 通过 ZooKeeper 保证至少有一个 HMaster 处于 Active 状态
+- 使用 HBase API 读取数据时，不需要知道 HMaster 或 RegionServer 的地址，只需知道 ZooKeeper 集群的地址即可
+- HMaster 启动时将系统信息加载到 ZooKeeper，ZooKeeper 保存了 HBase 集群 Region 的信息、META 的信息等
+- 维护着 RegionServer 的状态信息，知道哪些数据需要从哪些 RegionServer 读取
+
+**参考：** <https://mp.weixin.qq.com/s/ryc4B7IMLyGhHsZAArS96w>
+
+---
+
+### 九、参考资料
+
+- 用 HBase 实现亿级 Feed <https://mp.weixin.qq.com/s/kY2hYTuE1tR6HmgdfnmyiQ>
+- HBase 案例 <https://mp.weixin.qq.com/s/ieGZq3rZ-guIsm4hIRtHDw>
+- HBase 面试题 <https://www.jianshu.com/p/9ecd4367e6d0>
+- ES 结合 HBase <https://zhuanlan.zhihu.com/p/87563468>
+- HBase 和 Cassandra 比较 <https://blog.csdn.net/aa5305123/article/details/83142514>
 - 白话大数据 <https://www.zhihu.com/question/27974418/answer/156227565>
-- 一步步搭建Hadoop体系 <https://blog.csdn.net/qazwsxpcm/article/list/2?t=1>
+- 一步步搭建 Hadoop 体系 <https://blog.csdn.net/qazwsxpcm/article/list/2?t=1>

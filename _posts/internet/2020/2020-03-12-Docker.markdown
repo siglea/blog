@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Docker"
+title:  "Docker 容器技术入门：从原理到实践，再到容器编排生态"
 date:   2020-03-12 23:25:00 +0900
 comments: true
 tags:
@@ -8,112 +8,199 @@ tags:
 categories:
 - 技术
 ---
-#### Docker原理 ☆☆☆
-- cgroups (2006年 linux推出)
-- namespace
 
-#### Docker Hello World!
+Docker 是当今最流行的容器化技术，它彻底改变了应用的开发、交付和运行方式。本文将从 Docker 的底层原理出发，通过常用命令实战，逐步深入到容器编排和云平台生态的全景概览。
+
+---
+
+## 一、Docker 底层原理
+
+Docker 的核心技术基础来自 Linux 内核的两个关键特性：
+
+- **cgroups（Control Groups，2006 年 Linux 推出）**：用于限制、记录和隔离进程组使用的物理资源（CPU、内存、磁盘 IO 等）。cgroups 使得 Docker 能够为每个容器分配有限的系统资源。
+- **namespace（命名空间）**：提供了进程级别的资源隔离，包括 PID、Network、Mount、User 等命名空间。namespace 使得容器内的进程"看到"的是一个独立的操作系统环境。
+
+这两项技术的结合，使得 Docker 容器既能实现进程级别的隔离，又几乎没有虚拟机的性能开销。
+
+---
+
+## 二、Docker 基础命令实战
+
+### 2.1 Hello World
+
+Docker 的第一步，总是从运行一个简单的容器开始：
+
 ```shell
 docker run hello-world
 docker run ubuntu:15.10 /bin/echo "Hello world"
 ```
-#### Docker pull Image
-```shell 
+
+### 2.2 拉取镜像
+
+从 Docker Hub 拉取官方镜像：
+
+```shell
 docker pull library/hello-world
 ```
-#### docker run nginx
+
+### 2.3 运行 Nginx
+
 ```shell
 docker run --name my_nginx_v1 -p 8080:80 -d nginx:v1
-## --name nginx-test：容器名称。
-## -p 8080:80： 端口进行映射，将本地 8080 端口映射到容器内部的 80 端口。
-## -d nginx： 设置容器在在后台一直运行。
 ```
-<https://www.runoob.com/docker/docker-install-nginx.html>
 
-#### docker run springboot
+参数说明：
+- `--name my_nginx_v1`：指定容器名称
+- `-p 8080:80`：将本地 8080 端口映射到容器内部的 80 端口
+- `-d`：在后台运行容器
+
+参考：<https://www.runoob.com/docker/docker-install-nginx.html>
+
+### 2.4 运行 Spring Boot 应用
+
 ```shell
 docker run -p 8080:8080 -t springboot/spring-boot-docker
 ```
-<http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html>
-#### 查看运行的容器
+
+参考：<http://www.ityouknow.com/springboot/2018/03/19/spring-boot-docker.html>
+
+### 2.5 查看运行中的容器
+
 ```shell
 docker ps
 docker ps -a
-# 输出详情介绍：
-## CONTAINER ID: 容器 ID。
-## IMAGE: 使用的镜像。
-## COMMAND: 启动容器时运行的命令。
-## CREATED: 容器的创建时间。
-
-## STATUS: 容器状态。
-## 状态有7种：
-### created（已创建）
-### restarting（重启中）
-### running（运行中）
-### removing（迁移中）
-### paused（暂停）
-### exited（停止）
-### dead（死亡）
-
-## PORTS: 容器的端口信息和使用的连接类型（tcp\udp）。
-## NAMES: 自动分配的容器名称。
 ```
-#### 查看容器内的标准输出日志
+
+输出字段说明：
+
+| 字段 | 含义 |
+|------|------|
+| CONTAINER ID | 容器 ID |
+| IMAGE | 使用的镜像 |
+| COMMAND | 启动容器时运行的命令 |
+| CREATED | 容器的创建时间 |
+| STATUS | 容器状态 |
+| PORTS | 端口信息和连接类型（tcp/udp） |
+| NAMES | 容器名称 |
+
+容器的 7 种状态：created（已创建）、restarting（重启中）、running（运行中）、removing（迁移中）、paused（暂停）、exited（停止）、dead（死亡）。
+
+### 2.6 查看容器日志
+
 ```shell
 docker logs 2b1b7a428627
 ```
-#### 启动/重启/停止容器
+
+### 2.7 启动 / 重启 / 停止容器
+
 ```shell
-docker start/restart amazing_cori
+docker start amazing_cori
+docker restart amazing_cori
 docker stop 2b1b7a428627
 ```
-#### 删除容器/镜像
+
+### 2.8 删除容器和镜像
+
 ```shell
-docker rm 20ca2a70ee13
-docker rmi ec49dbd13cf5
+docker rm 20ca2a70ee13     # 删除容器
+docker rmi ec49dbd13cf5    # 删除镜像
 ```
-#### Compose Machine Swarm
-```shell
 
-```
-<http://www.ityouknow.com/docker/2018/03/22/docker-compose.html>
-#### docker中run和start的区别
-- docker run 后面指定的是一个镜像
-- 而docker start指定的是一个容器
-- docker run是利用镜像生成容器，并启动容器，而docker start是启动一个之前生成过的容器
+### 2.9 run 与 start 的区别
 
-#### Dockerfile 命令详解
-<http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html>
+这是初学者容易混淆的概念：
 
-<http://www.ityouknow.com/docker.html>
+- `docker run` 后面指定的是一个**镜像**，它会基于镜像创建一个新容器并启动
+- `docker start` 后面指定的是一个**容器**，它启动的是一个之前已经创建过的容器
 
-#### Cloud Foundry和 Kubernetes 的区别
-<https://blog.csdn.net/qq_30154571/article/details/84955097>
+简言之：run = 创建 + 启动，start = 启动已有容器。
 
-#### Cloud Foundry 与Kubernetes: CF/K8s结合简史
-<https://blog.csdn.net/zhanggongsw/article/details/79948420>
+---
 
-#### 阿里飞天云Apsara Stack和OpenStack
+## 三、Dockerfile
+
+Dockerfile 是构建 Docker 镜像的蓝图，通过一系列指令定义了镜像的构建过程。掌握 Dockerfile 的编写是容器化应用的基本功。
+
+参考：
+- Dockerfile 命令详解 <http://www.ityouknow.com/docker/2018/03/15/docker-dockerfile-command-introduction.html>
+- Docker 系列文章 <http://www.ityouknow.com/docker.html>
+
+---
+
+## 四、Compose、Machine 与 Swarm
+
+Docker 生态中有三个重要的编排工具：
+
+- **Docker Compose**：用于定义和运行多容器应用，通过 `docker-compose.yml` 文件声明式地管理服务、网络和卷
+- **Docker Machine**：用于在本地或远程主机上自动化安装 Docker 引擎
+- **Docker Swarm**：Docker 原生的集群管理和编排工具，提供服务发现、负载均衡和滚动更新等功能
+
+参考：<http://www.ityouknow.com/docker/2018/03/22/docker-compose.html>
+
+---
+
+## 五、容器编排与云平台生态
+
+容器技术的发展催生了丰富的编排和云平台生态。理解这些平台之间的关系和差异，有助于在实际项目中做出合理的技术选型。
+
+### 5.1 Cloud Foundry 与 Kubernetes
+
+Cloud Foundry 是一个开源的 PaaS 平台，专注于应用的部署和运维。Kubernetes 则是容器编排的事实标准，专注于容器的调度和管理。两者可以结合使用——Cloud Foundry 提供应用抽象，Kubernetes 提供基础设施编排。
+
+参考：
+- Cloud Foundry和Kubernetes的区别 <https://blog.csdn.net/qq_30154571/article/details/84955097>
+- CF/K8s结合简史 <https://blog.csdn.net/zhanggongsw/article/details/79948420>
+
+### 5.2 阿里飞天云 Apsara Stack 与 OpenStack
+
+- **Apsara Stack**：阿里云的企业级混合云平台，底层基于飞天操作系统
+- **OpenStack**：开源的云计算基础设施平台，提供 IaaS 层的虚拟化资源管理
+
+参考：
 - <https://blog.csdn.net/liuxiao723846/article/details/82630926>
 - <https://www.csdn.net/gather_21/MtTaYg1sNTY5Mi1ibG9n.html>
 
-#### Kubernetes vs OpenStack
+### 5.3 Kubernetes 与 OpenStack
+
+Kubernetes 和 OpenStack 并不是竞争关系，而是互补的：OpenStack 管理虚拟机级别的基础设施，Kubernetes 管理容器级别的应用编排。在很多企业中，Kubernetes 运行在 OpenStack 提供的虚拟机之上。
+
+参考：
 - <https://blog.csdn.net/luanpeng825485697/article/details/86706131>
 - <https://blog.csdn.net/dualvencsdn/article/details/79207281>
 - <https://www.kubernetes.org.cn/2121.html>
 - <https://www.cnblogs.com/goldsunshine/p/9872142.html>
 
-#### Google Kubernetes & Docker Swarm & Mesos Marathon
+### 5.4 容器编排三巨头：Kubernetes vs Docker Swarm vs Mesos Marathon
+
+| 平台 | 定位 | 特点 |
+|------|------|------|
+| **Kubernetes** | 容器编排标准 | 功能最丰富，生态最完善，学习曲线较陡 |
+| **Docker Swarm** | Docker 原生编排 | 简单易用，与 Docker 集成度高，功能相对基础 |
+| **Mesos Marathon** | 通用资源调度 | 适合超大规模集群，可同时管理容器和非容器负载 |
+
+目前 Kubernetes 已经成为容器编排的事实标准，Docker Swarm 适合小规模或入门场景，Mesos 在大规模数据中心场景中仍有优势。
+
+参考：
 - <https://www.kubernetes.org.cn/757.html>
 - <https://www.zhihu.com/question/55391506>
 - <https://www.cnblogs.com/wzj4858/p/7910883.html>
 - <http://dockone.io/article/823>
 - <https://zhuanlan.zhihu.com/p/28301108>
 
-#### 国内外PaaS服务一览
-<https://www.jianshu.com/p/a4b9be650fa4>
+### 5.5 国内外 PaaS 服务一览
 
+PaaS（Platform as a Service）层为开发者提供了应用运行时环境，屏蔽了底层基础设施的复杂性。
 
+参考：<https://www.jianshu.com/p/a4b9be650fa4>
 
-<https://mp.weixin.qq.com/s/_m_ZV9LdbQQqFbshxIgWrA>
-<https://mp.weixin.qq.com/s/u0LRq_NNkCtU3wkdMdYlUA>
+---
+
+## 总结
+
+Docker 从底层的 cgroups + namespace 实现了轻量级的进程隔离，通过镜像机制解决了环境一致性问题，再通过 Compose/Swarm/Kubernetes 等工具实现了从单机到集群的编排管理。理解 Docker 的原理和生态，是现代后端工程师的必备技能。
+
+在技术选型时，建议遵循"由简到繁"的原则：单机开发用 Docker CLI，多容器编排用 Docker Compose，集群化部署用 Kubernetes。
+
+参考：
+- <https://mp.weixin.qq.com/s/_m_ZV9LdbQQqFbshxIgWrA>
+- <https://mp.weixin.qq.com/s/u0LRq_NNkCtU3wkdMdYlUA>

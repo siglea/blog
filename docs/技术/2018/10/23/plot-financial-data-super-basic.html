@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plot Financial Data Using Matplotlib (super basic) - Code & Coffee</title>
+  <title>Python 金融数据可视化入门：用 Matplotlib 绘制股票走势图 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Plot Financial Data Using Matplotlib (super basic) | Code &amp; Coffee</title>
+<title>Python 金融数据可视化入门：用 Matplotlib 绘制股票走势图 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Plot Financial Data Using Matplotlib (super basic)" />
+<meta property="og:title" content="Python 金融数据可视化入门：用 Matplotlib 绘制股票走势图" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="import libraries In order to plot the data, we need to import libraries for dataframe and plot, also set plot inline if you’re using a notebook. import numpy as np import pandas as pd import matplotlib.pyplot as plt %matplotlib inline plot stock price Code is super simple, you just need to set the index of the dataframe to timestamp. If you find the figure to small, use pylab to set the figure size. from pylab import rcParams rcParams[&#39;figure.figsize&#39;] = 50,13 apple_data = market_train_df[market_train_df[&#39;assetCode&#39;] == &#39;AAPL.O&#39;] apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid = True) compare multiple plots Then I’m trying to sanitize the data by looking at the figure it self, I want to plot all suspicious assets. for code in suspicious_asset_code: apple_data = market_train_df[market_train_df[&#39;assetCode&#39;] == code] apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid = True) This only gives me one figure with all assets, it’s ugly. I want to plot them one by one. Subplot will give you figures put up together, use # treat the whole figure as a grid, specify how many rows and columns you wanna plot and the index of the current sub plot fig.add_subplot(row, columns, index) Then you’ll get graphs all together to detect abnormal data." />
-<meta property="og:description" content="import libraries In order to plot the data, we need to import libraries for dataframe and plot, also set plot inline if you’re using a notebook. import numpy as np import pandas as pd import matplotlib.pyplot as plt %matplotlib inline plot stock price Code is super simple, you just need to set the index of the dataframe to timestamp. If you find the figure to small, use pylab to set the figure size. from pylab import rcParams rcParams[&#39;figure.figsize&#39;] = 50,13 apple_data = market_train_df[market_train_df[&#39;assetCode&#39;] == &#39;AAPL.O&#39;] apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid = True) compare multiple plots Then I’m trying to sanitize the data by looking at the figure it self, I want to plot all suspicious assets. for code in suspicious_asset_code: apple_data = market_train_df[market_train_df[&#39;assetCode&#39;] == code] apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid = True) This only gives me one figure with all assets, it’s ugly. I want to plot them one by one. Subplot will give you figures put up together, use # treat the whole figure as a grid, specify how many rows and columns you wanna plot and the index of the current sub plot fig.add_subplot(row, columns, index) Then you’ll get graphs all together to detect abnormal data." />
+<meta name="description" content="在量化金融和数据分析领域，数据可视化是最基础也最重要的技能之一。一张清晰的走势图往往比一万行数据更能揭示趋势和异常。Python 凭借 Matplotlib、Pandas 等强大的生态，成为金融数据分析的首选语言。本文将通过一个实际案例——绘制苹果公司股价走势图，介绍如何用 Python 进行基础的金融数据可视化。 环境准备 导入必要的库 金融数据可视化需要三个核心库： import numpy as np import pandas as pd import matplotlib.pyplot as plt %matplotlib inline 库 用途 numpy 数值计算基础库，提供高效的数组操作 pandas 数据处理与分析，DataFrame 是其核心数据结构 matplotlib Python 最经典的绑图库，pyplot 模块提供了类似 MATLAB 的绑图接口 %matplotlib inline 是 Jupyter Notebook 的魔法命令，使图表直接在 Notebook 中内联显示，而不是弹出新窗口。 绑制单只股票走势图 基本绘图 假设我们已经有了一个包含股票市场数据的 DataFrame market_train_df，要绘制苹果（AAPL）的收盘价走势： from pylab import rcParams rcParams[&#39;figure.figsize&#39;] = 50, 13 apple_data = market_train_df[market_train_df[&#39;assetCode&#39;] == &#39;AAPL.O&#39;] apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid = True) 代码解析： rcParams[&#39;figure.figsize&#39;] = 50, 13：设置图表尺寸为 50×13 英寸。金融时间序列数据通常时间跨度长、数据点密集，较大的图表尺寸能避免数据点过于拥挤 过滤数据：通过 assetCode == &#39;AAPL.O&#39; 筛选苹果公司的数据（.O 后缀通常表示在特定交易所上市） set_index(&#39;time&#39;)：将时间列设为 DataFrame 的索引，Pandas 会自动将其作为 X 轴 [&#39;close&#39;].plot(grid=True)：选取收盘价列并绘图，grid=True 添加网格线便于读数 图表美化建议 在实际项目中，可以进一步美化图表： fig, ax = plt.subplots(figsize=(50, 13)) apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(ax=ax, grid=True, linewidth=1.5, color=&#39;#1f77b4&#39;) ax.set_title(&#39;AAPL Stock Price&#39;, fontsize=20) ax.set_xlabel(&#39;Date&#39;, fontsize=14) ax.set_ylabel(&#39;Close Price (USD)&#39;, fontsize=14) plt.tight_layout() plt.show() 多股票对比分析 在同一张图中叠加绘制 在数据清洗过程中，我们经常需要通过可视化来发现异常数据。比如要检查一组”可疑”股票的走势： for code in suspicious_asset_code: asset_data = market_train_df[market_train_df[&#39;assetCode&#39;] == code] asset_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid=True) 这种方式会把所有股票画在同一张图上。当股票数量较多或价格量级差异大时，图表会变得难以辨认。 使用子图（Subplot）分别展示 更好的做法是使用 subplot 将每只股票画在独立的子图中： fig.add_subplot(rows, columns, index) 参数说明： rows：子图网格的行数 columns：子图网格的列数 index：当前子图的位置（从 1 开始，按行优先编号） 完整示例： fig = plt.figure(figsize=(50, 30)) for i, code in enumerate(suspicious_asset_code): ax = fig.add_subplot(len(suspicious_asset_code), 1, i + 1) asset_data = market_train_df[market_train_df[&#39;assetCode&#39;] == code] asset_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(ax=ax, grid=True) ax.set_title(code, fontsize=14) plt.tight_layout() plt.show() 这样每只股票都有独立的坐标系，方便逐一检查数据异常——比如价格突然归零、出现负值、或者走势明显不合理的情况。 进阶技巧 如果你需要更专业的金融图表，以下库值得关注： mplfinance：专门用于绘制 K 线图（蜡烛图），支持成交量、均线等叠加 plotly：交互式图表库，支持缩放、悬停查看数据点等功能，非常适合探索性分析 seaborn：基于 Matplotlib 的高级统计可视化库，默认样式更美观 总结 数据可视化是金融数据分析的第一步，也是最直觉的质量检查手段。本文介绍的 Matplotlib 基础绑图技巧虽然简单，但在实际工作中非常实用： 使用 set_index + plot 快速绑制时间序列 通过 rcParams 调整图表尺寸适应数据密度 使用 subplot 对比多组数据，发现异常 掌握这些基础之后，可以根据实际需求选择更专业的可视化工具，构建更丰富的金融数据分析流程。" />
+<meta property="og:description" content="在量化金融和数据分析领域，数据可视化是最基础也最重要的技能之一。一张清晰的走势图往往比一万行数据更能揭示趋势和异常。Python 凭借 Matplotlib、Pandas 等强大的生态，成为金融数据分析的首选语言。本文将通过一个实际案例——绘制苹果公司股价走势图，介绍如何用 Python 进行基础的金融数据可视化。 环境准备 导入必要的库 金融数据可视化需要三个核心库： import numpy as np import pandas as pd import matplotlib.pyplot as plt %matplotlib inline 库 用途 numpy 数值计算基础库，提供高效的数组操作 pandas 数据处理与分析，DataFrame 是其核心数据结构 matplotlib Python 最经典的绑图库，pyplot 模块提供了类似 MATLAB 的绑图接口 %matplotlib inline 是 Jupyter Notebook 的魔法命令，使图表直接在 Notebook 中内联显示，而不是弹出新窗口。 绑制单只股票走势图 基本绘图 假设我们已经有了一个包含股票市场数据的 DataFrame market_train_df，要绘制苹果（AAPL）的收盘价走势： from pylab import rcParams rcParams[&#39;figure.figsize&#39;] = 50, 13 apple_data = market_train_df[market_train_df[&#39;assetCode&#39;] == &#39;AAPL.O&#39;] apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid = True) 代码解析： rcParams[&#39;figure.figsize&#39;] = 50, 13：设置图表尺寸为 50×13 英寸。金融时间序列数据通常时间跨度长、数据点密集，较大的图表尺寸能避免数据点过于拥挤 过滤数据：通过 assetCode == &#39;AAPL.O&#39; 筛选苹果公司的数据（.O 后缀通常表示在特定交易所上市） set_index(&#39;time&#39;)：将时间列设为 DataFrame 的索引，Pandas 会自动将其作为 X 轴 [&#39;close&#39;].plot(grid=True)：选取收盘价列并绘图，grid=True 添加网格线便于读数 图表美化建议 在实际项目中，可以进一步美化图表： fig, ax = plt.subplots(figsize=(50, 13)) apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(ax=ax, grid=True, linewidth=1.5, color=&#39;#1f77b4&#39;) ax.set_title(&#39;AAPL Stock Price&#39;, fontsize=20) ax.set_xlabel(&#39;Date&#39;, fontsize=14) ax.set_ylabel(&#39;Close Price (USD)&#39;, fontsize=14) plt.tight_layout() plt.show() 多股票对比分析 在同一张图中叠加绘制 在数据清洗过程中，我们经常需要通过可视化来发现异常数据。比如要检查一组”可疑”股票的走势： for code in suspicious_asset_code: asset_data = market_train_df[market_train_df[&#39;assetCode&#39;] == code] asset_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid=True) 这种方式会把所有股票画在同一张图上。当股票数量较多或价格量级差异大时，图表会变得难以辨认。 使用子图（Subplot）分别展示 更好的做法是使用 subplot 将每只股票画在独立的子图中： fig.add_subplot(rows, columns, index) 参数说明： rows：子图网格的行数 columns：子图网格的列数 index：当前子图的位置（从 1 开始，按行优先编号） 完整示例： fig = plt.figure(figsize=(50, 30)) for i, code in enumerate(suspicious_asset_code): ax = fig.add_subplot(len(suspicious_asset_code), 1, i + 1) asset_data = market_train_df[market_train_df[&#39;assetCode&#39;] == code] asset_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(ax=ax, grid=True) ax.set_title(code, fontsize=14) plt.tight_layout() plt.show() 这样每只股票都有独立的坐标系，方便逐一检查数据异常——比如价格突然归零、出现负值、或者走势明显不合理的情况。 进阶技巧 如果你需要更专业的金融图表，以下库值得关注： mplfinance：专门用于绘制 K 线图（蜡烛图），支持成交量、均线等叠加 plotly：交互式图表库，支持缩放、悬停查看数据点等功能，非常适合探索性分析 seaborn：基于 Matplotlib 的高级统计可视化库，默认样式更美观 总结 数据可视化是金融数据分析的第一步，也是最直觉的质量检查手段。本文介绍的 Matplotlib 基础绑图技巧虽然简单，但在实际工作中非常实用： 使用 set_index + plot 快速绑制时间序列 通过 rcParams 调整图表尺寸适应数据密度 使用 subplot 对比多组数据，发现异常 掌握这些基础之后，可以根据实际需求选择更专业的可视化工具，构建更丰富的金融数据分析流程。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/23/plot-financial-data-super-basic.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/23/plot-financial-data-super-basic.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-10-23T20:30:09+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Plot Financial Data Using Matplotlib (super basic)" />
+<meta property="twitter:title" content="Python 金融数据可视化入门：用 Matplotlib 绘制股票走势图" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2018-10-23T20:30:09+08:00","datePublished":"2018-10-23T20:30:09+08:00","description":"import libraries In order to plot the data, we need to import libraries for dataframe and plot, also set plot inline if you’re using a notebook. import numpy as np import pandas as pd import matplotlib.pyplot as plt %matplotlib inline plot stock price Code is super simple, you just need to set the index of the dataframe to timestamp. If you find the figure to small, use pylab to set the figure size. from pylab import rcParams rcParams[&#39;figure.figsize&#39;] = 50,13 apple_data = market_train_df[market_train_df[&#39;assetCode&#39;] == &#39;AAPL.O&#39;] apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid = True) compare multiple plots Then I’m trying to sanitize the data by looking at the figure it self, I want to plot all suspicious assets. for code in suspicious_asset_code: apple_data = market_train_df[market_train_df[&#39;assetCode&#39;] == code] apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid = True) This only gives me one figure with all assets, it’s ugly. I want to plot them one by one. Subplot will give you figures put up together, use # treat the whole figure as a grid, specify how many rows and columns you wanna plot and the index of the current sub plot fig.add_subplot(row, columns, index) Then you’ll get graphs all together to detect abnormal data.","headline":"Plot Financial Data Using Matplotlib (super basic)","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/23/plot-financial-data-super-basic.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/23/plot-financial-data-super-basic.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2018-10-23T20:30:09+08:00","datePublished":"2018-10-23T20:30:09+08:00","description":"在量化金融和数据分析领域，数据可视化是最基础也最重要的技能之一。一张清晰的走势图往往比一万行数据更能揭示趋势和异常。Python 凭借 Matplotlib、Pandas 等强大的生态，成为金融数据分析的首选语言。本文将通过一个实际案例——绘制苹果公司股价走势图，介绍如何用 Python 进行基础的金融数据可视化。 环境准备 导入必要的库 金融数据可视化需要三个核心库： import numpy as np import pandas as pd import matplotlib.pyplot as plt %matplotlib inline 库 用途 numpy 数值计算基础库，提供高效的数组操作 pandas 数据处理与分析，DataFrame 是其核心数据结构 matplotlib Python 最经典的绑图库，pyplot 模块提供了类似 MATLAB 的绑图接口 %matplotlib inline 是 Jupyter Notebook 的魔法命令，使图表直接在 Notebook 中内联显示，而不是弹出新窗口。 绑制单只股票走势图 基本绘图 假设我们已经有了一个包含股票市场数据的 DataFrame market_train_df，要绘制苹果（AAPL）的收盘价走势： from pylab import rcParams rcParams[&#39;figure.figsize&#39;] = 50, 13 apple_data = market_train_df[market_train_df[&#39;assetCode&#39;] == &#39;AAPL.O&#39;] apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid = True) 代码解析： rcParams[&#39;figure.figsize&#39;] = 50, 13：设置图表尺寸为 50×13 英寸。金融时间序列数据通常时间跨度长、数据点密集，较大的图表尺寸能避免数据点过于拥挤 过滤数据：通过 assetCode == &#39;AAPL.O&#39; 筛选苹果公司的数据（.O 后缀通常表示在特定交易所上市） set_index(&#39;time&#39;)：将时间列设为 DataFrame 的索引，Pandas 会自动将其作为 X 轴 [&#39;close&#39;].plot(grid=True)：选取收盘价列并绘图，grid=True 添加网格线便于读数 图表美化建议 在实际项目中，可以进一步美化图表： fig, ax = plt.subplots(figsize=(50, 13)) apple_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(ax=ax, grid=True, linewidth=1.5, color=&#39;#1f77b4&#39;) ax.set_title(&#39;AAPL Stock Price&#39;, fontsize=20) ax.set_xlabel(&#39;Date&#39;, fontsize=14) ax.set_ylabel(&#39;Close Price (USD)&#39;, fontsize=14) plt.tight_layout() plt.show() 多股票对比分析 在同一张图中叠加绘制 在数据清洗过程中，我们经常需要通过可视化来发现异常数据。比如要检查一组”可疑”股票的走势： for code in suspicious_asset_code: asset_data = market_train_df[market_train_df[&#39;assetCode&#39;] == code] asset_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(grid=True) 这种方式会把所有股票画在同一张图上。当股票数量较多或价格量级差异大时，图表会变得难以辨认。 使用子图（Subplot）分别展示 更好的做法是使用 subplot 将每只股票画在独立的子图中： fig.add_subplot(rows, columns, index) 参数说明： rows：子图网格的行数 columns：子图网格的列数 index：当前子图的位置（从 1 开始，按行优先编号） 完整示例： fig = plt.figure(figsize=(50, 30)) for i, code in enumerate(suspicious_asset_code): ax = fig.add_subplot(len(suspicious_asset_code), 1, i + 1) asset_data = market_train_df[market_train_df[&#39;assetCode&#39;] == code] asset_data.set_index(&#39;time&#39;)[&#39;close&#39;].plot(ax=ax, grid=True) ax.set_title(code, fontsize=14) plt.tight_layout() plt.show() 这样每只股票都有独立的坐标系，方便逐一检查数据异常——比如价格突然归零、出现负值、或者走势明显不合理的情况。 进阶技巧 如果你需要更专业的金融图表，以下库值得关注： mplfinance：专门用于绘制 K 线图（蜡烛图），支持成交量、均线等叠加 plotly：交互式图表库，支持缩放、悬停查看数据点等功能，非常适合探索性分析 seaborn：基于 Matplotlib 的高级统计可视化库，默认样式更美观 总结 数据可视化是金融数据分析的第一步，也是最直觉的质量检查手段。本文介绍的 Matplotlib 基础绑图技巧虽然简单，但在实际工作中非常实用： 使用 set_index + plot 快速绑制时间序列 通过 rcParams 调整图表尺寸适应数据密度 使用 subplot 对比多组数据，发现异常 掌握这些基础之后，可以根据实际需求选择更专业的可视化工具，构建更丰富的金融数据分析流程。","headline":"Python 金融数据可视化入门：用 Matplotlib 绘制股票走势图","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/23/plot-financial-data-super-basic.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/23/plot-financial-data-super-basic.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html">&laquo; Configure Mailgun...</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2017/03/29/configure-mailgun-setting-in-rails-app.html">&laquo; Rails 应用集成 Mailgu...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/10/25/serialize-non-activerecord-model-in-rails.html">Serialize Non-Act... &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/10/25/serialize-non-activerecord-model-in-rails.html">在Rails中使用ActiveMo... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">Plot Financial Data Using Matplotlib (super basic)</h1>
+    <h1 class="asset-name entry-title">Python 金融数据可视化入门：用 Matplotlib 绘制股票走势图</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,39 +97,148 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h2 id="import-libraries">import libraries</h2>
-<p>In order to plot the data, we need to import libraries for dataframe and plot, also set plot inline if you’re  using a notebook.</p>
+      <p>在量化金融和数据分析领域，数据可视化是最基础也最重要的技能之一。一张清晰的走势图往往比一万行数据更能揭示趋势和异常。Python 凭借 Matplotlib、Pandas 等强大的生态，成为金融数据分析的首选语言。本文将通过一个实际案例——绘制苹果公司股价走势图，介绍如何用 Python 进行基础的金融数据可视化。</p>
+
+<h2 id="环境准备">环境准备</h2>
+
+<h3 id="导入必要的库">导入必要的库</h3>
+
+<p>金融数据可视化需要三个核心库：</p>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
 <span class="kn">import</span> <span class="n">pandas</span> <span class="k">as</span> <span class="n">pd</span>
 <span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
 </code></pre></div></div>
 
-<h2 id="plot-stock-price">plot stock price</h2>
-<p>Code is super simple, you just need to set the index of the dataframe to timestamp. If you find the figure to small, use pylab to set the figure size.</p>
+<table>
+  <thead>
+    <tr>
+      <th>库</th>
+      <th>用途</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">numpy</code></td>
+      <td>数值计算基础库，提供高效的数组操作</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">pandas</code></td>
+      <td>数据处理与分析，DataFrame 是其核心数据结构</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">matplotlib</code></td>
+      <td>Python 最经典的绑图库，<code class="language-plaintext highlighter-rouge">pyplot</code> 模块提供了类似 MATLAB 的绑图接口</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code class="language-plaintext highlighter-rouge">%matplotlib inline</code> 是 Jupyter Notebook 的魔法命令，使图表直接在 Notebook 中内联显示，而不是弹出新窗口。</p>
+
+<h2 id="绑制单只股票走势图">绑制单只股票走势图</h2>
+
+<h3 id="基本绘图">基本绘图</h3>
+
+<p>假设我们已经有了一个包含股票市场数据的 DataFrame <code class="language-plaintext highlighter-rouge">market_train_df</code>，要绘制苹果（AAPL）的收盘价走势：</p>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">pylab</span> <span class="kn">import</span> <span class="n">rcParams</span>
-<span class="n">rcParams</span><span class="p">[</span><span class="sh">'</span><span class="s">figure.figsize</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span><span class="mi">13</span>
+<span class="n">rcParams</span><span class="p">[</span><span class="sh">'</span><span class="s">figure.figsize</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">13</span>
+
 <span class="n">apple_data</span> <span class="o">=</span> <span class="n">market_train_df</span><span class="p">[</span><span class="n">market_train_df</span><span class="p">[</span><span class="sh">'</span><span class="s">assetCode</span><span class="sh">'</span><span class="p">]</span> <span class="o">==</span> <span class="sh">'</span><span class="s">AAPL.O</span><span class="sh">'</span><span class="p">]</span>
 <span class="n">apple_data</span><span class="p">.</span><span class="nf">set_index</span><span class="p">(</span><span class="sh">'</span><span class="s">time</span><span class="sh">'</span><span class="p">)[</span><span class="sh">'</span><span class="s">close</span><span class="sh">'</span><span class="p">].</span><span class="nf">plot</span><span class="p">(</span><span class="n">grid</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
 </code></pre></div></div>
+
 <p><img src="/blog/img/python-plot-financial-data-1.png" style="height:50%" /></p>
 
-<h2 id="compare-multiple-plots">compare multiple plots</h2>
-<p>Then I’m trying to sanitize the data by looking at the figure it self, I want to plot all suspicious assets.</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">suspicious_asset_code</span><span class="p">:</span>
-    <span class="n">apple_data</span> <span class="o">=</span> <span class="n">market_train_df</span><span class="p">[</span><span class="n">market_train_df</span><span class="p">[</span><span class="sh">'</span><span class="s">assetCode</span><span class="sh">'</span><span class="p">]</span> <span class="o">==</span> <span class="n">code</span><span class="p">]</span>
-    <span class="n">apple_data</span><span class="p">.</span><span class="nf">set_index</span><span class="p">(</span><span class="sh">'</span><span class="s">time</span><span class="sh">'</span><span class="p">)[</span><span class="sh">'</span><span class="s">close</span><span class="sh">'</span><span class="p">].</span><span class="nf">plot</span><span class="p">(</span><span class="n">grid</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+<p>代码解析：</p>
+
+<ol>
+  <li><strong><code class="language-plaintext highlighter-rouge">rcParams['figure.figsize'] = 50, 13</code></strong>：设置图表尺寸为 50×13 英寸。金融时间序列数据通常时间跨度长、数据点密集，较大的图表尺寸能避免数据点过于拥挤</li>
+  <li><strong>过滤数据</strong>：通过 <code class="language-plaintext highlighter-rouge">assetCode == 'AAPL.O'</code> 筛选苹果公司的数据（<code class="language-plaintext highlighter-rouge">.O</code> 后缀通常表示在特定交易所上市）</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">set_index('time')</code></strong>：将时间列设为 DataFrame 的索引，Pandas 会自动将其作为 X 轴</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">['close'].plot(grid=True)</code></strong>：选取收盘价列并绘图，<code class="language-plaintext highlighter-rouge">grid=True</code> 添加网格线便于读数</li>
+</ol>
+
+<h3 id="图表美化建议">图表美化建议</h3>
+
+<p>在实际项目中，可以进一步美化图表：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">13</span><span class="p">))</span>
+<span class="n">apple_data</span><span class="p">.</span><span class="nf">set_index</span><span class="p">(</span><span class="sh">'</span><span class="s">time</span><span class="sh">'</span><span class="p">)[</span><span class="sh">'</span><span class="s">close</span><span class="sh">'</span><span class="p">].</span><span class="nf">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">#1f77b4</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">.</span><span class="nf">set_title</span><span class="p">(</span><span class="sh">'</span><span class="s">AAPL Stock Price</span><span class="sh">'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">.</span><span class="nf">set_xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Date</span><span class="sh">'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">.</span><span class="nf">set_ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Close Price (USD)</span><span class="sh">'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
 </code></pre></div></div>
+
+<h2 id="多股票对比分析">多股票对比分析</h2>
+
+<h3 id="在同一张图中叠加绘制">在同一张图中叠加绘制</h3>
+
+<p>在数据清洗过程中，我们经常需要通过可视化来发现异常数据。比如要检查一组”可疑”股票的走势：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">suspicious_asset_code</span><span class="p">:</span>
+    <span class="n">asset_data</span> <span class="o">=</span> <span class="n">market_train_df</span><span class="p">[</span><span class="n">market_train_df</span><span class="p">[</span><span class="sh">'</span><span class="s">assetCode</span><span class="sh">'</span><span class="p">]</span> <span class="o">==</span> <span class="n">code</span><span class="p">]</span>
+    <span class="n">asset_data</span><span class="p">.</span><span class="nf">set_index</span><span class="p">(</span><span class="sh">'</span><span class="s">time</span><span class="sh">'</span><span class="p">)[</span><span class="sh">'</span><span class="s">close</span><span class="sh">'</span><span class="p">].</span><span class="nf">plot</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
 <p><img src="/blog/img/python-financial-plot-2.png" style="height:50%" /></p>
 
-<p>This only gives me one figure with all assets, it’s ugly. I want to plot them one by one.</p>
+<p>这种方式会把所有股票画在同一张图上。当股票数量较多或价格量级差异大时，图表会变得难以辨认。</p>
 
-<p>Subplot will give you figures put up together, use</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># treat the whole figure as a grid, specify how many rows and columns you wanna plot and the index of the current sub plot
-</span><span class="n">fig</span><span class="p">.</span><span class="nf">add_subplot</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+<h3 id="使用子图subplot分别展示">使用子图（Subplot）分别展示</h3>
+
+<p>更好的做法是使用 <code class="language-plaintext highlighter-rouge">subplot</code> 将每只股票画在独立的子图中：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fig</span><span class="p">.</span><span class="nf">add_subplot</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
 </code></pre></div></div>
-<p>Then you’ll get graphs all together to detect abnormal data.
-<img src="/blog/img/python-plot-subplot.png" style="height:50%" /></p>
+
+<p>参数说明：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">rows</code>：子图网格的行数</li>
+  <li><code class="language-plaintext highlighter-rouge">columns</code>：子图网格的列数</li>
+  <li><code class="language-plaintext highlighter-rouge">index</code>：当前子图的位置（从 1 开始，按行优先编号）</li>
+</ul>
+
+<p>完整示例：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">code</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">suspicious_asset_code</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="p">.</span><span class="nf">add_subplot</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">suspicious_asset_code</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">asset_data</span> <span class="o">=</span> <span class="n">market_train_df</span><span class="p">[</span><span class="n">market_train_df</span><span class="p">[</span><span class="sh">'</span><span class="s">assetCode</span><span class="sh">'</span><span class="p">]</span> <span class="o">==</span> <span class="n">code</span><span class="p">]</span>
+    <span class="n">asset_data</span><span class="p">.</span><span class="nf">set_index</span><span class="p">(</span><span class="sh">'</span><span class="s">time</span><span class="sh">'</span><span class="p">)[</span><span class="sh">'</span><span class="s">close</span><span class="sh">'</span><span class="p">].</span><span class="nf">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">.</span><span class="nf">set_title</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="/blog/img/python-plot-subplot.png" style="height:50%" /></p>
+
+<p>这样每只股票都有独立的坐标系，方便逐一检查数据异常——比如价格突然归零、出现负值、或者走势明显不合理的情况。</p>
+
+<h2 id="进阶技巧">进阶技巧</h2>
+
+<p>如果你需要更专业的金融图表，以下库值得关注：</p>
+
+<ul>
+  <li><strong>mplfinance</strong>：专门用于绘制 K 线图（蜡烛图），支持成交量、均线等叠加</li>
+  <li><strong>plotly</strong>：交互式图表库，支持缩放、悬停查看数据点等功能，非常适合探索性分析</li>
+  <li><strong>seaborn</strong>：基于 Matplotlib 的高级统计可视化库，默认样式更美观</li>
+</ul>
+
+<h2 id="总结">总结</h2>
+
+<p>数据可视化是金融数据分析的第一步，也是最直觉的质量检查手段。本文介绍的 Matplotlib 基础绑图技巧虽然简单，但在实际工作中非常实用：</p>
+
+<ol>
+  <li>使用 <code class="language-plaintext highlighter-rouge">set_index</code> + <code class="language-plaintext highlighter-rouge">plot</code> 快速绑制时间序列</li>
+  <li>通过 <code class="language-plaintext highlighter-rouge">rcParams</code> 调整图表尺寸适应数据密度</li>
+  <li>使用 <code class="language-plaintext highlighter-rouge">subplot</code> 对比多组数据，发现异常</li>
+</ol>
+
+<p>掌握这些基础之后，可以根据实际需求选择更专业的可视化工具，构建更丰富的金融数据分析流程。</p>
 
     </div>
   </div>
@@ -141,7 +250,9 @@
       
       <li>标签：
         
-        <a href="/blog/tag/programming/">programming</a>
+        <a href="/blog/tag/programming/">programming</a>, 
+        
+        <a href="/blog/tag/python/">python</a>
         
       </li>
       
@@ -159,33 +270,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

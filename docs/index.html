@@ -67,7 +67,7 @@
 <div class="entry-asset asset hentry">
   <div class="asset-header">
     <h2 class="asset-name entry-title">
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html" rel="bookmark">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html" rel="bookmark">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
     </h2>
     
     <div id="asset-tags">
@@ -83,7 +83,7 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <p>DDDRedis 的并发竞争问题如何解决 Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis 对于多个客户端连接并不存在竞争，但是在业务客户端对 Redis 进行并发访问时会发生连接超时、数据转换错误、阻塞、客户端关闭连接等问题，这些问题均是由于客户端连接混乱造成 解决方法： 客户端加锁（synchronized） 乐观锁（redis 的命令 watch）： 当执行多键值事务操作时，Redis 不仅要求这些键值需要落在同一个 Redis 实例上，还要求落在同一个 slot 上，所以 redis 的事务比较鸡肋 不过可以想办法遵循 ...</p>
+      <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三个主题展开：Redis 的并发竞争问题及解决方案、MongoDB 的核心架构特点，以及 LMAX Disruptor 并发框架的设计思想。Redis 的并发竞争问题及解决方案问题本质Redis 采用单进程单线程模型处理命令，所有客户端请求通过队列串行执行。这意味着 Redis 服务端本身不存在竞争条件——但问题出在客户端。当多个业务客户端同时对 Redis 进行并发操作时，可能出现： 连接超时和阻塞 数据读写的竞态条件（Read-Mod...</p>
     </div>
     <div class="asset-more-link">
       <p><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">继续阅读全文 &raquo;</a></p>
@@ -109,72 +109,72 @@
       
       <li>
         <span>2020年07月26日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       </li>
       
       <li>
         <span>2020年07月20日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       </li>
       
       <li>
         <span>2020年07月18日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       </li>
       
       <li>
         <span>2020年07月15日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/15/JVM-Note.html"> Jvm（四）Note</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/15/JVM-Note.html">深入 JVM：Class 文件结构、字节码执行引擎与运行期优化</a>
       </li>
       
       <li>
         <span>2020年07月15日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/15/Tree.html">Tree</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/15/Tree.html">树形数据结构详解：从二叉树到B+树的演进与数据库索引应用</a>
       </li>
       
       <li>
         <span>2020年07月13日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html">Case of online system</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html">大型互联网系统架构实战案例解析</a>
       </li>
       
       <li>
         <span>2020年07月08日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html">Netty In Action</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html">Netty 实战：从核心组件到高性能网络编程</a>
       </li>
       
       <li>
         <span>2020年07月08日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html">DotDot</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html">Java核心知识点精讲：并发编程、集合框架与JVM底层机制</a>
       </li>
       
       <li>
         <span>2020年07月07日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html">用户画像之标签数据开发</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html">用户画像标签体系建设：从离线到实时的全链路开发实践</a>
       </li>
       
       <li>
         <span>2020年07月07日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html">用户画像之标签存储</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile2.html">用户画像系统中的标签存储方案详解</a>
       </li>
       
       <li>
         <span>2020年06月30日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html">myBatis</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/30/myBatis.html">MyBatis 深度解析：框架原理、核心特性与最佳实践</a>
       </li>
       
       <li>
         <span>2020年06月29日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html">HTTP-HTTPS</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/29/HTTP-HTTPS.html">从 HTTP 到 HTTPS：协议演进、SSL/TLS 握手与安全攻防全解</a>
       </li>
       
       <li>
         <span>2020年06月27日 &raquo; </span>
-        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/27/JavaAgent-Instrument.html">JavaAgent-Instrument</a>
+        <a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/27/JavaAgent-Instrument.html">深入理解 Java Agent 与字节码增强技术</a>
       </li>
       
       <li>
         <span>2020年06月25日 &raquo; </span>
-        <a href="/blog/%E9%9A%8F%E6%89%8B%E8%AE%B0/2020/06/25/MckinseyMethodology.html">麦肯锡方法</a>
+        <a href="/blog/%E9%9A%8F%E6%89%8B%E8%AE%B0/2020/06/25/MckinseyMethodology.html">《麦肯锡方法》读书笔记：结构化思维与问题解决之道</a>
       </li>
       
     </ul>
@@ -220,7 +220,7 @@
                 
                 <li>
                   <a href="/blog/tag/python/">python</a>
-                  <span class="count">(1)</span>
+                  <span class="count">(2)</span>
                 </li>
                 
                 <li>

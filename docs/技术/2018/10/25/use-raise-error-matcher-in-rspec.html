@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Use `raise_error` matcher in Rspec - Code & Coffee</title>
+  <title>RSpec 中 raise_error 匹配器的正确用法与常见陷阱 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Use raise_error matcher in Rspec | Code &amp; Coffee</title>
+<title>RSpec 中 raise_error 匹配器的正确用法与常见陷阱 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Use raise_error matcher in Rspec" />
+<meta property="og:title" content="RSpec 中 raise_error 匹配器的正确用法与常见陷阱" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Yesterday I came accross a tricky useage of raise_error matcher in rspec, first I try to use the one line syntax is_expected.to it { is_expected.to raise_error(SomeError) } but I got an eror which stops the test before the test is finished. It is confusing in the first time, because is_expected.to is shortcut for expect(subject). Then I found this excellent explanation in Github isses. So expect(subject) is not a block, subject is executed instantly, so rspec will stop before evaluating raise_error matcher. In order to make it work, we can make subject itself a block subject { -&gt; { raise SomeError } } it { is_expected.to raise_error(SomeError) } But this syntax is creepy, instead it’s better to use subject { raise SomeError } expect { subject }.to raise_error(SomeError)" />
-<meta property="og:description" content="Yesterday I came accross a tricky useage of raise_error matcher in rspec, first I try to use the one line syntax is_expected.to it { is_expected.to raise_error(SomeError) } but I got an eror which stops the test before the test is finished. It is confusing in the first time, because is_expected.to is shortcut for expect(subject). Then I found this excellent explanation in Github isses. So expect(subject) is not a block, subject is executed instantly, so rspec will stop before evaluating raise_error matcher. In order to make it work, we can make subject itself a block subject { -&gt; { raise SomeError } } it { is_expected.to raise_error(SomeError) } But this syntax is creepy, instead it’s better to use subject { raise SomeError } expect { subject }.to raise_error(SomeError)" />
+<meta name="description" content="在 Ruby 项目的测试中，验证代码是否正确抛出异常是一个常见需求。RSpec 提供了 raise_error 匹配器来处理这类断言，但它的使用方式有一个不太直觉的”坑”——如果你用错了语法，测试会在断言之前就崩溃。本文将深入解析这个问题的原因，并给出正确的写法。 问题场景 假设我们有一段代码，在某些条件下会抛出 SomeError 异常，我们想测试这个行为。最自然的写法可能是： it { is_expected.to raise_error(SomeError) } 然而运行这个测试后，你不会看到绿色的通过信息，而是看到测试直接报错中断了——异常在 raise_error 有机会捕获之前就已经抛出。 根本原因：值表达式 vs 块表达式 理解这个问题的关键在于区分 RSpec 中的两种 expect 形式： 值表达式（Value Expression） expect(subject) 这里 subject 会被立即求值，其返回值传给 expect。如果 subject 在求值过程中抛出了异常，异常会直接冒泡到测试框架，raise_error 匹配器根本没有机会介入。 is_expected.to 是 expect(subject).to 的简写，所以它本质上也是值表达式。 块表达式（Block Expression） expect { subject } 这里传给 expect 的是一个块（Block），代码不会立即执行。raise_error 匹配器会在自己的上下文中执行这个块，并捕获其中抛出的异常进行匹配。 这就是为什么 raise_error 必须配合块表达式使用。 正确写法 写法一：直接使用块表达式（推荐） subject { some_method_that_raises } it &#39;raises SomeError&#39; do expect { subject }.to raise_error(SomeError) end 这是最清晰、最常用的写法。expect { subject } 将 subject 的执行包装在块中，raise_error 可以正确捕获异常。 写法二：将 subject 定义为 Lambda subject { -&gt; { raise SomeError } } it { is_expected.to raise_error(SomeError) } 这种写法将 subject 本身定义为一个 Lambda（Proc 对象），所以 expect(subject) 求值得到的是一个 Lambda 而不是异常。RSpec 检测到 subject 是一个 callable 对象时，会自动调用它。 虽然语法上更紧凑，但 Lambda 包装的写法可读性较差，在团队协作中不推荐。 更多 raise_error 用法 raise_error 匹配器支持多种匹配方式： 匹配异常类型 expect { dangerous_operation }.to raise_error(ArgumentError) 匹配异常消息 expect { dangerous_operation }.to raise_error(&quot;invalid input&quot;) 同时匹配类型和消息 expect { dangerous_operation }.to raise_error(ArgumentError, &quot;invalid input&quot;) 使用正则匹配消息 expect { dangerous_operation }.to raise_error(ArgumentError, /invalid/) 使用块进行复杂断言 expect { dangerous_operation }.to raise_error(ArgumentError) do |error| expect(error.message).to include(&quot;invalid&quot;) expect(error.cause).to be_nil end 验证不抛出异常 expect { safe_operation }.not_to raise_error 注意：not_to raise_error 后面不要指定具体异常类型。expect { x }.not_to raise_error(SomeError) 这种写法已经被 RSpec 废弃，因为它可能掩盖其他意料之外的异常。 类似的块匹配器 除了 raise_error，RSpec 中还有其他需要块表达式的匹配器： expect { @count += 1 }.to change { @count }.by(1) expect { post :create, params: { user: attrs } }.to change(User, :count).by(1) expect { long_running_task }.to perform_under(200).ms expect { puts &quot;hello&quot; }.to output(&quot;hello\n&quot;).to_stdout 这些匹配器的共同特点是：它们需要观察一段代码执行前后的变化或执行过程中的行为，因此必须使用块表达式。 总结 写法 是否正确 原因 expect(subject).to raise_error(...) 错误 subject 立即求值，异常在匹配前抛出 is_expected.to raise_error(...) 错误 等价于上面的写法 expect { subject }.to raise_error(...) 正确 块延迟执行，匹配器可以捕获异常 subject { -&gt; { ... } } + is_expected.to 正确但不推荐 可读性差 核心原则：凡是需要观察代码执行行为（而非返回值）的匹配器，都必须使用块表达式 expect { ... }。 参考资料：RSpec GitHub Issue #805 - raise_error 与 is_expected 的讨论" />
+<meta property="og:description" content="在 Ruby 项目的测试中，验证代码是否正确抛出异常是一个常见需求。RSpec 提供了 raise_error 匹配器来处理这类断言，但它的使用方式有一个不太直觉的”坑”——如果你用错了语法，测试会在断言之前就崩溃。本文将深入解析这个问题的原因，并给出正确的写法。 问题场景 假设我们有一段代码，在某些条件下会抛出 SomeError 异常，我们想测试这个行为。最自然的写法可能是： it { is_expected.to raise_error(SomeError) } 然而运行这个测试后，你不会看到绿色的通过信息，而是看到测试直接报错中断了——异常在 raise_error 有机会捕获之前就已经抛出。 根本原因：值表达式 vs 块表达式 理解这个问题的关键在于区分 RSpec 中的两种 expect 形式： 值表达式（Value Expression） expect(subject) 这里 subject 会被立即求值，其返回值传给 expect。如果 subject 在求值过程中抛出了异常，异常会直接冒泡到测试框架，raise_error 匹配器根本没有机会介入。 is_expected.to 是 expect(subject).to 的简写，所以它本质上也是值表达式。 块表达式（Block Expression） expect { subject } 这里传给 expect 的是一个块（Block），代码不会立即执行。raise_error 匹配器会在自己的上下文中执行这个块，并捕获其中抛出的异常进行匹配。 这就是为什么 raise_error 必须配合块表达式使用。 正确写法 写法一：直接使用块表达式（推荐） subject { some_method_that_raises } it &#39;raises SomeError&#39; do expect { subject }.to raise_error(SomeError) end 这是最清晰、最常用的写法。expect { subject } 将 subject 的执行包装在块中，raise_error 可以正确捕获异常。 写法二：将 subject 定义为 Lambda subject { -&gt; { raise SomeError } } it { is_expected.to raise_error(SomeError) } 这种写法将 subject 本身定义为一个 Lambda（Proc 对象），所以 expect(subject) 求值得到的是一个 Lambda 而不是异常。RSpec 检测到 subject 是一个 callable 对象时，会自动调用它。 虽然语法上更紧凑，但 Lambda 包装的写法可读性较差，在团队协作中不推荐。 更多 raise_error 用法 raise_error 匹配器支持多种匹配方式： 匹配异常类型 expect { dangerous_operation }.to raise_error(ArgumentError) 匹配异常消息 expect { dangerous_operation }.to raise_error(&quot;invalid input&quot;) 同时匹配类型和消息 expect { dangerous_operation }.to raise_error(ArgumentError, &quot;invalid input&quot;) 使用正则匹配消息 expect { dangerous_operation }.to raise_error(ArgumentError, /invalid/) 使用块进行复杂断言 expect { dangerous_operation }.to raise_error(ArgumentError) do |error| expect(error.message).to include(&quot;invalid&quot;) expect(error.cause).to be_nil end 验证不抛出异常 expect { safe_operation }.not_to raise_error 注意：not_to raise_error 后面不要指定具体异常类型。expect { x }.not_to raise_error(SomeError) 这种写法已经被 RSpec 废弃，因为它可能掩盖其他意料之外的异常。 类似的块匹配器 除了 raise_error，RSpec 中还有其他需要块表达式的匹配器： expect { @count += 1 }.to change { @count }.by(1) expect { post :create, params: { user: attrs } }.to change(User, :count).by(1) expect { long_running_task }.to perform_under(200).ms expect { puts &quot;hello&quot; }.to output(&quot;hello\n&quot;).to_stdout 这些匹配器的共同特点是：它们需要观察一段代码执行前后的变化或执行过程中的行为，因此必须使用块表达式。 总结 写法 是否正确 原因 expect(subject).to raise_error(...) 错误 subject 立即求值，异常在匹配前抛出 is_expected.to raise_error(...) 错误 等价于上面的写法 expect { subject }.to raise_error(...) 正确 块延迟执行，匹配器可以捕获异常 subject { -&gt; { ... } } + is_expected.to 正确但不推荐 可读性差 核心原则：凡是需要观察代码执行行为（而非返回值）的匹配器，都必须使用块表达式 expect { ... }。 参考资料：RSpec GitHub Issue #805 - raise_error 与 is_expected 的讨论" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-10-25T10:30:09+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Use raise_error matcher in Rspec" />
+<meta property="twitter:title" content="RSpec 中 raise_error 匹配器的正确用法与常见陷阱" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2018-10-25T10:30:09+08:00","datePublished":"2018-10-25T10:30:09+08:00","description":"Yesterday I came accross a tricky useage of raise_error matcher in rspec, first I try to use the one line syntax is_expected.to it { is_expected.to raise_error(SomeError) } but I got an eror which stops the test before the test is finished. It is confusing in the first time, because is_expected.to is shortcut for expect(subject). Then I found this excellent explanation in Github isses. So expect(subject) is not a block, subject is executed instantly, so rspec will stop before evaluating raise_error matcher. In order to make it work, we can make subject itself a block subject { -&gt; { raise SomeError } } it { is_expected.to raise_error(SomeError) } But this syntax is creepy, instead it’s better to use subject { raise SomeError } expect { subject }.to raise_error(SomeError)","headline":"Use raise_error matcher in Rspec","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2018-10-25T10:30:09+08:00","datePublished":"2018-10-25T10:30:09+08:00","description":"在 Ruby 项目的测试中，验证代码是否正确抛出异常是一个常见需求。RSpec 提供了 raise_error 匹配器来处理这类断言，但它的使用方式有一个不太直觉的”坑”——如果你用错了语法，测试会在断言之前就崩溃。本文将深入解析这个问题的原因，并给出正确的写法。 问题场景 假设我们有一段代码，在某些条件下会抛出 SomeError 异常，我们想测试这个行为。最自然的写法可能是： it { is_expected.to raise_error(SomeError) } 然而运行这个测试后，你不会看到绿色的通过信息，而是看到测试直接报错中断了——异常在 raise_error 有机会捕获之前就已经抛出。 根本原因：值表达式 vs 块表达式 理解这个问题的关键在于区分 RSpec 中的两种 expect 形式： 值表达式（Value Expression） expect(subject) 这里 subject 会被立即求值，其返回值传给 expect。如果 subject 在求值过程中抛出了异常，异常会直接冒泡到测试框架，raise_error 匹配器根本没有机会介入。 is_expected.to 是 expect(subject).to 的简写，所以它本质上也是值表达式。 块表达式（Block Expression） expect { subject } 这里传给 expect 的是一个块（Block），代码不会立即执行。raise_error 匹配器会在自己的上下文中执行这个块，并捕获其中抛出的异常进行匹配。 这就是为什么 raise_error 必须配合块表达式使用。 正确写法 写法一：直接使用块表达式（推荐） subject { some_method_that_raises } it &#39;raises SomeError&#39; do expect { subject }.to raise_error(SomeError) end 这是最清晰、最常用的写法。expect { subject } 将 subject 的执行包装在块中，raise_error 可以正确捕获异常。 写法二：将 subject 定义为 Lambda subject { -&gt; { raise SomeError } } it { is_expected.to raise_error(SomeError) } 这种写法将 subject 本身定义为一个 Lambda（Proc 对象），所以 expect(subject) 求值得到的是一个 Lambda 而不是异常。RSpec 检测到 subject 是一个 callable 对象时，会自动调用它。 虽然语法上更紧凑，但 Lambda 包装的写法可读性较差，在团队协作中不推荐。 更多 raise_error 用法 raise_error 匹配器支持多种匹配方式： 匹配异常类型 expect { dangerous_operation }.to raise_error(ArgumentError) 匹配异常消息 expect { dangerous_operation }.to raise_error(&quot;invalid input&quot;) 同时匹配类型和消息 expect { dangerous_operation }.to raise_error(ArgumentError, &quot;invalid input&quot;) 使用正则匹配消息 expect { dangerous_operation }.to raise_error(ArgumentError, /invalid/) 使用块进行复杂断言 expect { dangerous_operation }.to raise_error(ArgumentError) do |error| expect(error.message).to include(&quot;invalid&quot;) expect(error.cause).to be_nil end 验证不抛出异常 expect { safe_operation }.not_to raise_error 注意：not_to raise_error 后面不要指定具体异常类型。expect { x }.not_to raise_error(SomeError) 这种写法已经被 RSpec 废弃，因为它可能掩盖其他意料之外的异常。 类似的块匹配器 除了 raise_error，RSpec 中还有其他需要块表达式的匹配器： expect { @count += 1 }.to change { @count }.by(1) expect { post :create, params: { user: attrs } }.to change(User, :count).by(1) expect { long_running_task }.to perform_under(200).ms expect { puts &quot;hello&quot; }.to output(&quot;hello\\n&quot;).to_stdout 这些匹配器的共同特点是：它们需要观察一段代码执行前后的变化或执行过程中的行为，因此必须使用块表达式。 总结 写法 是否正确 原因 expect(subject).to raise_error(...) 错误 subject 立即求值，异常在匹配前抛出 is_expected.to raise_error(...) 错误 等价于上面的写法 expect { subject }.to raise_error(...) 正确 块延迟执行，匹配器可以捕获异常 subject { -&gt; { ... } } + is_expected.to 正确但不推荐 可读性差 核心原则：凡是需要观察代码执行行为（而非返回值）的匹配器，都必须使用块表达式 expect { ... }。 参考资料：RSpec GitHub Issue #805 - raise_error 与 is_expected 的讨论","headline":"RSpec 中 raise_error 匹配器的正确用法与常见陷阱","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/10/25/serialize-non-activerecord-model-in-rails.html">&laquo; Serialize Non-Act...</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/10/25/serialize-non-activerecord-model-in-rails.html">&laquo; 在Rails中使用ActiveMo...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html">Numpy学习笔记 &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html">NumPy入门指南：数组操作、切片... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">Use `raise_error` matcher in Rspec</h1>
+    <h1 class="asset-name entry-title">RSpec 中 raise_error 匹配器的正确用法与常见陷阱</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,29 +97,154 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <p>Yesterday I came accross a tricky useage of <code class="language-plaintext highlighter-rouge">raise_error</code> matcher in rspec, first I try to use the one line syntax <code class="language-plaintext highlighter-rouge">is_expected.to</code></p>
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
+      <p>在 Ruby 项目的测试中，验证代码是否正确抛出异常是一个常见需求。RSpec 提供了 <code class="language-plaintext highlighter-rouge">raise_error</code> 匹配器来处理这类断言，但它的使用方式有一个不太直觉的”坑”——如果你用错了语法，测试会在断言之前就崩溃。本文将深入解析这个问题的原因，并给出正确的写法。</p>
+
+<h2 id="问题场景">问题场景</h2>
+
+<p>假设我们有一段代码，在某些条件下会抛出 <code class="language-plaintext highlighter-rouge">SomeError</code> 异常，我们想测试这个行为。最自然的写法可能是：</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
 </code></pre></div></div>
 
-<p>but I got an eror which stops the test before the test is finished.</p>
+<p>然而运行这个测试后，你不会看到绿色的通过信息，而是看到测试直接报错中断了——异常在 <code class="language-plaintext highlighter-rouge">raise_error</code> 有机会捕获之前就已经抛出。</p>
 
-<p>It is confusing in the first time, because <code class="language-plaintext highlighter-rouge">is_expected.to</code> is shortcut for <code class="language-plaintext highlighter-rouge">expect(subject)</code>.</p>
+<h2 id="根本原因值表达式-vs-块表达式">根本原因：值表达式 vs 块表达式</h2>
 
-<p>Then I found this <a href="https://github.com/rspec/rspec-expectations/issues/805#issuecomment-112239820">excellent explanation</a> in Github isses.</p>
+<p>理解这个问题的关键在于区分 RSpec 中的两种 <code class="language-plaintext highlighter-rouge">expect</code> 形式：</p>
 
-<p>So <code class="language-plaintext highlighter-rouge">expect(subject)</code> is not a block, subject is executed instantly, so rspec will stop before evaluating <code class="language-plaintext highlighter-rouge">raise_error</code> matcher.</p>
+<h3 id="值表达式value-expression">值表达式（Value Expression）</h3>
 
-<p>In order to make it work, we can make subject itself a block</p>
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span> <span class="p">}</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">expect</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>这里 <code class="language-plaintext highlighter-rouge">subject</code> 会被<strong>立即求值</strong>，其返回值传给 <code class="language-plaintext highlighter-rouge">expect</code>。如果 <code class="language-plaintext highlighter-rouge">subject</code> 在求值过程中抛出了异常，异常会直接冒泡到测试框架，<code class="language-plaintext highlighter-rouge">raise_error</code> 匹配器根本没有机会介入。</p>
+
+<p><code class="language-plaintext highlighter-rouge">is_expected.to</code> 是 <code class="language-plaintext highlighter-rouge">expect(subject).to</code> 的简写，所以它本质上也是值表达式。</p>
+
+<h3 id="块表达式block-expression">块表达式（Block Expression）</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">expect</span> <span class="p">{</span> <span class="n">subject</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>这里传给 <code class="language-plaintext highlighter-rouge">expect</code> 的是一个<strong>块（Block）</strong>，代码不会立即执行。<code class="language-plaintext highlighter-rouge">raise_error</code> 匹配器会在自己的上下文中执行这个块，并捕获其中抛出的异常进行匹配。</p>
+
+<p>这就是为什么 <code class="language-plaintext highlighter-rouge">raise_error</code> <strong>必须配合块表达式使用</strong>。</p>
+
+<h2 id="正确写法">正确写法</h2>
+
+<h3 id="写法一直接使用块表达式推荐">写法一：直接使用块表达式（推荐）</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="n">some_method_that_raises</span> <span class="p">}</span>
+
+<span class="n">it</span> <span class="s1">'raises SomeError'</span> <span class="k">do</span>
+  <span class="n">expect</span> <span class="p">{</span> <span class="n">subject</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>这是最清晰、最常用的写法。<code class="language-plaintext highlighter-rouge">expect { subject }</code> 将 <code class="language-plaintext highlighter-rouge">subject</code> 的执行包装在块中，<code class="language-plaintext highlighter-rouge">raise_error</code> 可以正确捕获异常。</p>
+
+<h3 id="写法二将-subject-定义为-lambda">写法二：将 subject 定义为 Lambda</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span> <span class="p">}</span>
 
 <span class="n">it</span> <span class="p">{</span> <span class="n">is_expected</span><span class="p">.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span> <span class="p">}</span>
 </code></pre></div></div>
 
-<p>But this syntax is creepy, instead it’s better to use</p>
-<div class="language-rb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subject</span> <span class="p">{</span> <span class="k">raise</span> <span class="no">SomeError</span> <span class="p">}</span>
+<p>这种写法将 <code class="language-plaintext highlighter-rouge">subject</code> 本身定义为一个 Lambda（Proc 对象），所以 <code class="language-plaintext highlighter-rouge">expect(subject)</code> 求值得到的是一个 Lambda 而不是异常。RSpec 检测到 <code class="language-plaintext highlighter-rouge">subject</code> 是一个 callable 对象时，会自动调用它。</p>
 
-<span class="n">expect</span> <span class="p">{</span> <span class="n">subject</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">SomeError</span><span class="p">)</span>
+<p>虽然语法上更紧凑，但 Lambda 包装的写法可读性较差，在团队协作中不推荐。</p>
+
+<h2 id="更多-raise_error-用法">更多 raise_error 用法</h2>
+
+<p><code class="language-plaintext highlighter-rouge">raise_error</code> 匹配器支持多种匹配方式：</p>
+
+<h3 id="匹配异常类型">匹配异常类型</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">expect</span> <span class="p">{</span> <span class="n">dangerous_operation</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span>
 </code></pre></div></div>
+
+<h3 id="匹配异常消息">匹配异常消息</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">expect</span> <span class="p">{</span> <span class="n">dangerous_operation</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="s2">"invalid input"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="同时匹配类型和消息">同时匹配类型和消息</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">expect</span> <span class="p">{</span> <span class="n">dangerous_operation</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">,</span> <span class="s2">"invalid input"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="使用正则匹配消息">使用正则匹配消息</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">expect</span> <span class="p">{</span> <span class="n">dangerous_operation</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">,</span> <span class="sr">/invalid/</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="使用块进行复杂断言">使用块进行复杂断言</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">expect</span> <span class="p">{</span> <span class="n">dangerous_operation</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">error</span><span class="o">|</span>
+  <span class="n">expect</span><span class="p">(</span><span class="n">error</span><span class="p">.</span><span class="nf">message</span><span class="p">).</span><span class="nf">to</span> <span class="kp">include</span><span class="p">(</span><span class="s2">"invalid"</span><span class="p">)</span>
+  <span class="n">expect</span><span class="p">(</span><span class="n">error</span><span class="p">.</span><span class="nf">cause</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_nil</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h3 id="验证不抛出异常">验证不抛出异常</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">expect</span> <span class="p">{</span> <span class="n">safe_operation</span> <span class="p">}.</span><span class="nf">not_to</span> <span class="n">raise_error</span>
+</code></pre></div></div>
+
+<p>注意：<code class="language-plaintext highlighter-rouge">not_to raise_error</code> 后面不要指定具体异常类型。<code class="language-plaintext highlighter-rouge">expect { x }.not_to raise_error(SomeError)</code> 这种写法已经被 RSpec 废弃，因为它可能掩盖其他意料之外的异常。</p>
+
+<h2 id="类似的块匹配器">类似的块匹配器</h2>
+
+<p>除了 <code class="language-plaintext highlighter-rouge">raise_error</code>，RSpec 中还有其他需要块表达式的匹配器：</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">expect</span> <span class="p">{</span> <span class="vi">@count</span> <span class="o">+=</span> <span class="mi">1</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">change</span> <span class="p">{</span> <span class="vi">@count</span> <span class="p">}.</span><span class="nf">by</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">expect</span> <span class="p">{</span> <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">params: </span><span class="p">{</span> <span class="ss">user: </span><span class="n">attrs</span> <span class="p">}</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">change</span><span class="p">(</span><span class="no">User</span><span class="p">,</span> <span class="ss">:count</span><span class="p">).</span><span class="nf">by</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">expect</span> <span class="p">{</span> <span class="n">long_running_task</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">perform_under</span><span class="p">(</span><span class="mi">200</span><span class="p">).</span><span class="nf">ms</span>
+
+<span class="n">expect</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">"hello"</span> <span class="p">}.</span><span class="nf">to</span> <span class="n">output</span><span class="p">(</span><span class="s2">"hello</span><span class="se">\n</span><span class="s2">"</span><span class="p">).</span><span class="nf">to_stdout</span>
+</code></pre></div></div>
+
+<p>这些匹配器的共同特点是：它们需要观察<strong>一段代码执行前后的变化</strong>或<strong>执行过程中的行为</strong>，因此必须使用块表达式。</p>
+
+<h2 id="总结">总结</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>写法</th>
+      <th>是否正确</th>
+      <th>原因</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">expect(subject).to raise_error(...)</code></td>
+      <td>错误</td>
+      <td>subject 立即求值，异常在匹配前抛出</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">is_expected.to raise_error(...)</code></td>
+      <td>错误</td>
+      <td>等价于上面的写法</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">expect { subject }.to raise_error(...)</code></td>
+      <td>正确</td>
+      <td>块延迟执行，匹配器可以捕获异常</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">subject { -&gt; { ... } }</code> + <code class="language-plaintext highlighter-rouge">is_expected.to</code></td>
+      <td>正确但不推荐</td>
+      <td>可读性差</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>核心原则：<strong>凡是需要观察代码执行行为（而非返回值）的匹配器，都必须使用块表达式 <code class="language-plaintext highlighter-rouge">expect { ... }</code></strong>。</p>
+
+<p>参考资料：<a href="https://github.com/rspec/rspec-expectations/issues/805#issuecomment-112239820">RSpec GitHub Issue #805 - raise_error 与 is_expected 的讨论</a></p>
 
     </div>
   </div>
@@ -149,33 +274,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

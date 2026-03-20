@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Numpy学习笔记 - Code & Coffee</title>
+  <title>NumPy入门指南：数组操作、切片与广播机制详解 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Numpy学习笔记 | Code &amp; Coffee</title>
+<title>NumPy入门指南：数组操作、切片与广播机制详解 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Numpy学习笔记" />
+<meta property="og:title" content="NumPy入门指南：数组操作、切片与广播机制详解" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="np.array construct ndarray from python array ndim: 返回值有几个括弧 dtype: 也是object，指定ndarray的型, 必须整个数列都是一个型的 a = np.array([1, 2, 3,4,5], ndmin = 2, dtype=complex) # =&gt; [[ 1.+0.j, 2.+0.j, 3.+0.j]] np.dtype dtype是object而不是常数 np.int32是type class，和np.dtype不同 dt = np.dtype(np.int32) ndarray.shape overwrite shape can reshape the array, reshape后维度不会变， 原来的array会被覆盖 reshape会返回新的array a = np.array([[1,2,3],[4,5,6]]) a.shape = (3,2) b = a.reshape((6, 1)) ndarray.ndim 返回维度（int） 新建np array np.empty (default dtype float 64) np.ones (default dtype float 64) np.zeros (default dtype float 64) shape can be (1, 2) or [1, 2] 如果只指定int，默认是int64 从既存的array创建 原来的array和ndarray一定是两个object np.asarray (list or tuple) ！⚠️tuple的元素对齐返回值不同 np.asarray(1,2,3),(4,5,6)) #返回二元数组，dtype是int np.asarray(1,2,3),(4,5)) #返回一元数组，dtype是object np.arange dtype是int，输入float的时候小数点部分会被切掉 endpoint=False会把最后那个数也加进去 np.arange(5, dtype = float) np.linspace base是log space的底，default是0（线性） np.linspace(10,20,5) # 起点，终点，点数 slice use slice method a = np.arange(10) s = slice(2,7,2) [start:stop:step] a[2:7:2] 二元数组的情况下 a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[1] == a[1, :] a[:, 1] == a[..., 1] # =&gt; True boolean slicing a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[a &gt; 5] # =&gt; 返回一位数组 boradcasting 两个ndarray shape相同时，操作是element-wise 可以boardcast的情况：形状完全相同，形状(n, 1)和(n, m)的情况" />
-<meta property="og:description" content="np.array construct ndarray from python array ndim: 返回值有几个括弧 dtype: 也是object，指定ndarray的型, 必须整个数列都是一个型的 a = np.array([1, 2, 3,4,5], ndmin = 2, dtype=complex) # =&gt; [[ 1.+0.j, 2.+0.j, 3.+0.j]] np.dtype dtype是object而不是常数 np.int32是type class，和np.dtype不同 dt = np.dtype(np.int32) ndarray.shape overwrite shape can reshape the array, reshape后维度不会变， 原来的array会被覆盖 reshape会返回新的array a = np.array([[1,2,3],[4,5,6]]) a.shape = (3,2) b = a.reshape((6, 1)) ndarray.ndim 返回维度（int） 新建np array np.empty (default dtype float 64) np.ones (default dtype float 64) np.zeros (default dtype float 64) shape can be (1, 2) or [1, 2] 如果只指定int，默认是int64 从既存的array创建 原来的array和ndarray一定是两个object np.asarray (list or tuple) ！⚠️tuple的元素对齐返回值不同 np.asarray(1,2,3),(4,5,6)) #返回二元数组，dtype是int np.asarray(1,2,3),(4,5)) #返回一元数组，dtype是object np.arange dtype是int，输入float的时候小数点部分会被切掉 endpoint=False会把最后那个数也加进去 np.arange(5, dtype = float) np.linspace base是log space的底，default是0（线性） np.linspace(10,20,5) # 起点，终点，点数 slice use slice method a = np.arange(10) s = slice(2,7,2) [start:stop:step] a[2:7:2] 二元数组的情况下 a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[1] == a[1, :] a[:, 1] == a[..., 1] # =&gt; True boolean slicing a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[a &gt; 5] # =&gt; 返回一位数组 boradcasting 两个ndarray shape相同时，操作是element-wise 可以boardcast的情况：形状完全相同，形状(n, 1)和(n, m)的情况" />
+<meta name="description" content="引言 NumPy（Numerical Python）是 Python 科学计算生态的基石，几乎所有数据分析和机器学习库（如 Pandas、Scikit-learn、TensorFlow）都建立在它之上。NumPy 的核心是 ndarray（N-dimensional array）——一个高效的多维数组对象，支持向量化运算，性能远超 Python 原生列表。本文将从数组创建、形状操作、切片索引到广播机制，系统性地介绍 NumPy 的基础用法。 np.array：从 Python 列表创建数组 np.array 是最基本的数组创建方式，它接受 Python 列表或元组并转换为 ndarray。 关键属性： ndim：数组的维度数（嵌套层数） dtype：数组元素的数据类型，整个数组中所有元素必须是同一类型 a = np.array([1, 2, 3,4,5], ndmin = 2, dtype=complex) # =&gt; [[ 1.+0.j, 2.+0.j, 3.+0.j]] ndmin=2 强制将结果提升为至少 2 维，dtype=complex 将所有元素转换为复数类型。 np.dtype：数据类型对象 dtype 在 NumPy 中是一个对象而非简单的常量。需要区分 np.int32（type class）和 np.dtype（dtype 对象）： dt = np.dtype(np.int32) np.dtype 可以描述更复杂的数据结构（如结构化数组），而 np.int32 只是一个类型标识符。 ndarray.shape：数组形状 shape 属性返回数组各维度的大小。直接修改 shape 可以原地 reshape（会覆盖原数组），而 reshape() 方法返回新数组： a = np.array([[1,2,3],[4,5,6]]) a.shape = (3,2) b = a.reshape((6, 1)) 需要注意：reshape 后维度不会改变元素总数，即各维度之积必须等于元素总数。reshape 返回新数组，不影响原数组；直接赋值 shape 则是原地操作。 ndarray.ndim：维度数 ndim 返回一个整数，表示数组的维度。例如一维数组的 ndim 为 1，二维数组为 2。 创建数组的常用函数 NumPy 提供了多种快捷的数组创建方式： 函数 说明 默认 dtype np.empty(shape) 创建未初始化的数组（值随机） float64 np.ones(shape) 创建全 1 数组 float64 np.zeros(shape) 创建全 0 数组 float64 shape 参数可以是元组 (1, 2) 或列表 [1, 2]。如果只指定 int 类型（如 dtype=int），默认使用 int64。 从已有数据创建数组 np.asarray 可以将 Python 列表或元组转换为 ndarray。转换后的 ndarray 与原始数据一定是两个独立的对象。 需要特别注意元组的对齐规则： np.asarray(1,2,3),(4,5,6)) #返回二元数组，dtype是int np.asarray(1,2,3),(4,5)) #返回一元数组，dtype是object 当元组中各子序列长度一致时，NumPy 可以推断为规整的多维数组；长度不一致时退化为包含 Python 对象的一维数组。 np.arange：等差数列 np.arange 类似 Python 的 range，但返回 ndarray： np.arange(5, dtype = float) 默认 dtype 为 int。输入浮点数时小数部分会被截断（如果指定了 int dtype）。endpoint=False 参数可以控制是否包含终点值。 np.linspace：等间隔序列 np.linspace 生成指定数量的等间隔点，适合需要精确控制点数的场景： np.linspace(10,20,5) # 起点，终点，点数 三个参数分别是起始值、终止值和生成的元素个数。默认包含终点。np.logspace 是其对数版本，base 参数控制对数的底（默认为 10）。 切片与索引 NumPy 数组的切片索引功能比 Python 列表更强大，支持多维切片和布尔索引。 方法一：slice 对象 a = np.arange(10) s = slice(2,7,2) 方法二：冒号语法 [start:stop:step] a[2:7:2] 对于多维数组，可以在各维度上独立切片： a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[1] == a[1, :] a[:, 1] == a[..., 1] # =&gt; True 其中 ...（省略号）表示”选取其余所有维度”，在高维数组操作中非常实用。 方法三：布尔索引 a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[a &gt; 5] # =&gt; 返回一维数组 布尔索引根据条件筛选元素，结果总是一维数组。这在数据清洗和条件过滤中极为常用。 广播机制（Broadcasting） 广播是 NumPy 最强大的特性之一，它允许不同形状的数组进行算术运算。 规则 形状完全相同时，操作是逐元素（element-wise）进行的 可广播的条件：从尾部维度开始对齐，每个维度的大小要么相同，要么其中一个为 1 例如，形状为 (n, 1) 的数组可以与形状为 (n, m) 的数组进行广播运算——NumPy 会自动将 (n, 1) 沿第二维”复制”为 (n, m)。 广播的意义在于避免了显式的数据复制，既节省内存又提升性能。理解广播规则是高效使用 NumPy 的关键。 总结 NumPy 的核心价值在于用 C 语言实现的 ndarray 和向量化运算，使得 Python 在数值计算领域具备了与 MATLAB 等专业工具媲美的性能。掌握数组创建（array、zeros、arange、linspace）、形状操作（shape、reshape）、切片索引（冒号语法、布尔索引）和广播机制，就具备了使用 NumPy 进行数据处理和科学计算的基础能力。建议在实际练习中多关注 dtype 的隐式转换和广播规则的边界情况，这是初学者最容易踩坑的地方。" />
+<meta property="og:description" content="引言 NumPy（Numerical Python）是 Python 科学计算生态的基石，几乎所有数据分析和机器学习库（如 Pandas、Scikit-learn、TensorFlow）都建立在它之上。NumPy 的核心是 ndarray（N-dimensional array）——一个高效的多维数组对象，支持向量化运算，性能远超 Python 原生列表。本文将从数组创建、形状操作、切片索引到广播机制，系统性地介绍 NumPy 的基础用法。 np.array：从 Python 列表创建数组 np.array 是最基本的数组创建方式，它接受 Python 列表或元组并转换为 ndarray。 关键属性： ndim：数组的维度数（嵌套层数） dtype：数组元素的数据类型，整个数组中所有元素必须是同一类型 a = np.array([1, 2, 3,4,5], ndmin = 2, dtype=complex) # =&gt; [[ 1.+0.j, 2.+0.j, 3.+0.j]] ndmin=2 强制将结果提升为至少 2 维，dtype=complex 将所有元素转换为复数类型。 np.dtype：数据类型对象 dtype 在 NumPy 中是一个对象而非简单的常量。需要区分 np.int32（type class）和 np.dtype（dtype 对象）： dt = np.dtype(np.int32) np.dtype 可以描述更复杂的数据结构（如结构化数组），而 np.int32 只是一个类型标识符。 ndarray.shape：数组形状 shape 属性返回数组各维度的大小。直接修改 shape 可以原地 reshape（会覆盖原数组），而 reshape() 方法返回新数组： a = np.array([[1,2,3],[4,5,6]]) a.shape = (3,2) b = a.reshape((6, 1)) 需要注意：reshape 后维度不会改变元素总数，即各维度之积必须等于元素总数。reshape 返回新数组，不影响原数组；直接赋值 shape 则是原地操作。 ndarray.ndim：维度数 ndim 返回一个整数，表示数组的维度。例如一维数组的 ndim 为 1，二维数组为 2。 创建数组的常用函数 NumPy 提供了多种快捷的数组创建方式： 函数 说明 默认 dtype np.empty(shape) 创建未初始化的数组（值随机） float64 np.ones(shape) 创建全 1 数组 float64 np.zeros(shape) 创建全 0 数组 float64 shape 参数可以是元组 (1, 2) 或列表 [1, 2]。如果只指定 int 类型（如 dtype=int），默认使用 int64。 从已有数据创建数组 np.asarray 可以将 Python 列表或元组转换为 ndarray。转换后的 ndarray 与原始数据一定是两个独立的对象。 需要特别注意元组的对齐规则： np.asarray(1,2,3),(4,5,6)) #返回二元数组，dtype是int np.asarray(1,2,3),(4,5)) #返回一元数组，dtype是object 当元组中各子序列长度一致时，NumPy 可以推断为规整的多维数组；长度不一致时退化为包含 Python 对象的一维数组。 np.arange：等差数列 np.arange 类似 Python 的 range，但返回 ndarray： np.arange(5, dtype = float) 默认 dtype 为 int。输入浮点数时小数部分会被截断（如果指定了 int dtype）。endpoint=False 参数可以控制是否包含终点值。 np.linspace：等间隔序列 np.linspace 生成指定数量的等间隔点，适合需要精确控制点数的场景： np.linspace(10,20,5) # 起点，终点，点数 三个参数分别是起始值、终止值和生成的元素个数。默认包含终点。np.logspace 是其对数版本，base 参数控制对数的底（默认为 10）。 切片与索引 NumPy 数组的切片索引功能比 Python 列表更强大，支持多维切片和布尔索引。 方法一：slice 对象 a = np.arange(10) s = slice(2,7,2) 方法二：冒号语法 [start:stop:step] a[2:7:2] 对于多维数组，可以在各维度上独立切片： a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[1] == a[1, :] a[:, 1] == a[..., 1] # =&gt; True 其中 ...（省略号）表示”选取其余所有维度”，在高维数组操作中非常实用。 方法三：布尔索引 a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[a &gt; 5] # =&gt; 返回一维数组 布尔索引根据条件筛选元素，结果总是一维数组。这在数据清洗和条件过滤中极为常用。 广播机制（Broadcasting） 广播是 NumPy 最强大的特性之一，它允许不同形状的数组进行算术运算。 规则 形状完全相同时，操作是逐元素（element-wise）进行的 可广播的条件：从尾部维度开始对齐，每个维度的大小要么相同，要么其中一个为 1 例如，形状为 (n, 1) 的数组可以与形状为 (n, m) 的数组进行广播运算——NumPy 会自动将 (n, 1) 沿第二维”复制”为 (n, m)。 广播的意义在于避免了显式的数据复制，既节省内存又提升性能。理解广播规则是高效使用 NumPy 的关键。 总结 NumPy 的核心价值在于用 C 语言实现的 ndarray 和向量化运算，使得 Python 在数值计算领域具备了与 MATLAB 等专业工具媲美的性能。掌握数组创建（array、zeros、arange、linspace）、形状操作（shape、reshape）、切片索引（冒号语法、布尔索引）和广播机制，就具备了使用 NumPy 进行数据处理和科学计算的基础能力。建议在实际练习中多关注 dtype 的隐式转换和广播规则的边界情况，这是初学者最容易踩坑的地方。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-12-26T09:30:09+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Numpy学习笔记" />
+<meta property="twitter:title" content="NumPy入门指南：数组操作、切片与广播机制详解" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2018-12-26T09:30:09+08:00","datePublished":"2018-12-26T09:30:09+08:00","description":"np.array construct ndarray from python array ndim: 返回值有几个括弧 dtype: 也是object，指定ndarray的型, 必须整个数列都是一个型的 a = np.array([1, 2, 3,4,5], ndmin = 2, dtype=complex) # =&gt; [[ 1.+0.j, 2.+0.j, 3.+0.j]] np.dtype dtype是object而不是常数 np.int32是type class，和np.dtype不同 dt = np.dtype(np.int32) ndarray.shape overwrite shape can reshape the array, reshape后维度不会变， 原来的array会被覆盖 reshape会返回新的array a = np.array([[1,2,3],[4,5,6]]) a.shape = (3,2) b = a.reshape((6, 1)) ndarray.ndim 返回维度（int） 新建np array np.empty (default dtype float 64) np.ones (default dtype float 64) np.zeros (default dtype float 64) shape can be (1, 2) or [1, 2] 如果只指定int，默认是int64 从既存的array创建 原来的array和ndarray一定是两个object np.asarray (list or tuple) ！⚠️tuple的元素对齐返回值不同 np.asarray(1,2,3),(4,5,6)) #返回二元数组，dtype是int np.asarray(1,2,3),(4,5)) #返回一元数组，dtype是object np.arange dtype是int，输入float的时候小数点部分会被切掉 endpoint=False会把最后那个数也加进去 np.arange(5, dtype = float) np.linspace base是log space的底，default是0（线性） np.linspace(10,20,5) # 起点，终点，点数 slice use slice method a = np.arange(10) s = slice(2,7,2) [start:stop:step] a[2:7:2] 二元数组的情况下 a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[1] == a[1, :] a[:, 1] == a[..., 1] # =&gt; True boolean slicing a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[a &gt; 5] # =&gt; 返回一位数组 boradcasting 两个ndarray shape相同时，操作是element-wise 可以boardcast的情况：形状完全相同，形状(n, 1)和(n, m)的情况","headline":"Numpy学习笔记","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2018-12-26T09:30:09+08:00","datePublished":"2018-12-26T09:30:09+08:00","description":"引言 NumPy（Numerical Python）是 Python 科学计算生态的基石，几乎所有数据分析和机器学习库（如 Pandas、Scikit-learn、TensorFlow）都建立在它之上。NumPy 的核心是 ndarray（N-dimensional array）——一个高效的多维数组对象，支持向量化运算，性能远超 Python 原生列表。本文将从数组创建、形状操作、切片索引到广播机制，系统性地介绍 NumPy 的基础用法。 np.array：从 Python 列表创建数组 np.array 是最基本的数组创建方式，它接受 Python 列表或元组并转换为 ndarray。 关键属性： ndim：数组的维度数（嵌套层数） dtype：数组元素的数据类型，整个数组中所有元素必须是同一类型 a = np.array([1, 2, 3,4,5], ndmin = 2, dtype=complex) # =&gt; [[ 1.+0.j, 2.+0.j, 3.+0.j]] ndmin=2 强制将结果提升为至少 2 维，dtype=complex 将所有元素转换为复数类型。 np.dtype：数据类型对象 dtype 在 NumPy 中是一个对象而非简单的常量。需要区分 np.int32（type class）和 np.dtype（dtype 对象）： dt = np.dtype(np.int32) np.dtype 可以描述更复杂的数据结构（如结构化数组），而 np.int32 只是一个类型标识符。 ndarray.shape：数组形状 shape 属性返回数组各维度的大小。直接修改 shape 可以原地 reshape（会覆盖原数组），而 reshape() 方法返回新数组： a = np.array([[1,2,3],[4,5,6]]) a.shape = (3,2) b = a.reshape((6, 1)) 需要注意：reshape 后维度不会改变元素总数，即各维度之积必须等于元素总数。reshape 返回新数组，不影响原数组；直接赋值 shape 则是原地操作。 ndarray.ndim：维度数 ndim 返回一个整数，表示数组的维度。例如一维数组的 ndim 为 1，二维数组为 2。 创建数组的常用函数 NumPy 提供了多种快捷的数组创建方式： 函数 说明 默认 dtype np.empty(shape) 创建未初始化的数组（值随机） float64 np.ones(shape) 创建全 1 数组 float64 np.zeros(shape) 创建全 0 数组 float64 shape 参数可以是元组 (1, 2) 或列表 [1, 2]。如果只指定 int 类型（如 dtype=int），默认使用 int64。 从已有数据创建数组 np.asarray 可以将 Python 列表或元组转换为 ndarray。转换后的 ndarray 与原始数据一定是两个独立的对象。 需要特别注意元组的对齐规则： np.asarray(1,2,3),(4,5,6)) #返回二元数组，dtype是int np.asarray(1,2,3),(4,5)) #返回一元数组，dtype是object 当元组中各子序列长度一致时，NumPy 可以推断为规整的多维数组；长度不一致时退化为包含 Python 对象的一维数组。 np.arange：等差数列 np.arange 类似 Python 的 range，但返回 ndarray： np.arange(5, dtype = float) 默认 dtype 为 int。输入浮点数时小数部分会被截断（如果指定了 int dtype）。endpoint=False 参数可以控制是否包含终点值。 np.linspace：等间隔序列 np.linspace 生成指定数量的等间隔点，适合需要精确控制点数的场景： np.linspace(10,20,5) # 起点，终点，点数 三个参数分别是起始值、终止值和生成的元素个数。默认包含终点。np.logspace 是其对数版本，base 参数控制对数的底（默认为 10）。 切片与索引 NumPy 数组的切片索引功能比 Python 列表更强大，支持多维切片和布尔索引。 方法一：slice 对象 a = np.arange(10) s = slice(2,7,2) 方法二：冒号语法 [start:stop:step] a[2:7:2] 对于多维数组，可以在各维度上独立切片： a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[1] == a[1, :] a[:, 1] == a[..., 1] # =&gt; True 其中 ...（省略号）表示”选取其余所有维度”，在高维数组操作中非常实用。 方法三：布尔索引 a = np.array([[1,2,3],[3,4,5],[4,5,6]]) a[a &gt; 5] # =&gt; 返回一维数组 布尔索引根据条件筛选元素，结果总是一维数组。这在数据清洗和条件过滤中极为常用。 广播机制（Broadcasting） 广播是 NumPy 最强大的特性之一，它允许不同形状的数组进行算术运算。 规则 形状完全相同时，操作是逐元素（element-wise）进行的 可广播的条件：从尾部维度开始对齐，每个维度的大小要么相同，要么其中一个为 1 例如，形状为 (n, 1) 的数组可以与形状为 (n, m) 的数组进行广播运算——NumPy 会自动将 (n, 1) 沿第二维”复制”为 (n, m)。 广播的意义在于避免了显式的数据复制，既节省内存又提升性能。理解广播规则是高效使用 NumPy 的关键。 总结 NumPy 的核心价值在于用 C 语言实现的 ndarray 和向量化运算，使得 Python 在数值计算领域具备了与 MATLAB 等专业工具媲美的性能。掌握数组创建（array、zeros、arange、linspace）、形状操作（shape、reshape）、切片索引（冒号语法、布尔索引）和广播机制，就具备了使用 NumPy 进行数据处理和科学计算的基础能力。建议在实际练习中多关注 dtype 的隐式转换和广播规则的边界情况，这是初学者最容易踩坑的地方。","headline":"NumPy入门指南：数组操作、切片与广播机制详解","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html">&laquo; Use `raise_error`...</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/10/25/use-raise-error-matcher-in-rspec.html">&laquo; RSpec 中 raise_err...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html">aws developer ass... &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html">深入理解 AWS IAM：身份与访... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">Numpy学习笔记</h1>
+    <h1 class="asset-name entry-title">NumPy入门指南：数组操作、切片与广播机制详解</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,113 +97,185 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h2 id="nparray">np.array</h2>
+      <h3 id="引言">引言</h3>
+
+<p>NumPy（Numerical Python）是 Python 科学计算生态的基石，几乎所有数据分析和机器学习库（如 Pandas、Scikit-learn、TensorFlow）都建立在它之上。NumPy 的核心是 <code class="language-plaintext highlighter-rouge">ndarray</code>（N-dimensional array）——一个高效的多维数组对象，支持向量化运算，性能远超 Python 原生列表。本文将从数组创建、形状操作、切片索引到广播机制，系统性地介绍 NumPy 的基础用法。</p>
+
+<hr />
+
+<h3 id="nparray从-python-列表创建数组">np.array：从 Python 列表创建数组</h3>
+
+<p><code class="language-plaintext highlighter-rouge">np.array</code> 是最基本的数组创建方式，它接受 Python 列表或元组并转换为 ndarray。</p>
+
+<p>关键属性：</p>
 <ul>
-  <li>construct ndarray from python array</li>
-  <li>ndim: 返回值有几个括弧</li>
-  <li>dtype: 也是object，指定ndarray的型, 必须整个数列都是一个型的
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ndmin</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+  <li><strong>ndim</strong>：数组的维度数（嵌套层数）</li>
+  <li><strong>dtype</strong>：数组元素的数据类型，整个数组中所有元素必须是同一类型</li>
+</ul>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">ndmin</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
 <span class="c1"># =&gt; [[ 1.+0.j,  2.+0.j,  3.+0.j]]
-</span></code></pre></div>    </div>
-  </li>
-</ul>
+</span></code></pre></div></div>
 
-<h2 id="npdtype">np.dtype</h2>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">dtype</code>是object而不是常数</li>
-  <li><code class="language-plaintext highlighter-rouge">np.int32</code>是type class，和<code class="language-plaintext highlighter-rouge">np.dtype</code>不同
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">dtype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">int32</span><span class="p">)</span>
-</code></pre></div>    </div>
-  </li>
-</ul>
+<p><code class="language-plaintext highlighter-rouge">ndmin=2</code> 强制将结果提升为至少 2 维，<code class="language-plaintext highlighter-rouge">dtype=complex</code> 将所有元素转换为复数类型。</p>
 
-<h2 id="ndarrayshape">ndarray.shape</h2>
-<ul>
-  <li>overwrite shape can reshape the array, reshape后维度不会变， 原来的array会被覆盖</li>
-  <li>reshape会返回新的array
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+<hr />
+
+<h3 id="npdtype数据类型对象">np.dtype：数据类型对象</h3>
+
+<p><code class="language-plaintext highlighter-rouge">dtype</code> 在 NumPy 中是一个<strong>对象</strong>而非简单的常量。需要区分 <code class="language-plaintext highlighter-rouge">np.int32</code>（type class）和 <code class="language-plaintext highlighter-rouge">np.dtype</code>（dtype 对象）：</p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">dtype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">int32</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">np.dtype</code> 可以描述更复杂的数据结构（如结构化数组），而 <code class="language-plaintext highlighter-rouge">np.int32</code> 只是一个类型标识符。</p>
+
+<hr />
+
+<h3 id="ndarrayshape数组形状">ndarray.shape：数组形状</h3>
+
+<p><code class="language-plaintext highlighter-rouge">shape</code> 属性返回数组各维度的大小。直接修改 <code class="language-plaintext highlighter-rouge">shape</code> 可以原地 reshape（会覆盖原数组），而 <code class="language-plaintext highlighter-rouge">reshape()</code> 方法返回新数组：</p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
 <span class="n">a</span><span class="p">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="nf">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-</code></pre></div>    </div>
-  </li>
-</ul>
+</code></pre></div></div>
 
-<h2 id="ndarrayndim">ndarray.ndim</h2>
-<ul>
-  <li>返回维度（int）</li>
-</ul>
+<p>需要注意：reshape 后维度不会改变元素总数，即各维度之积必须等于元素总数。<code class="language-plaintext highlighter-rouge">reshape</code> 返回新数组，不影响原数组；直接赋值 <code class="language-plaintext highlighter-rouge">shape</code> 则是原地操作。</p>
 
-<h2 id="新建np-array">新建np array</h2>
-<ol>
-  <li>np.empty (default dtype float 64)</li>
-  <li>np.ones (default dtype float 64)</li>
-  <li>np.zeros (default dtype float 64)
-    <ul>
-      <li>shape can be <code class="language-plaintext highlighter-rouge">(1, 2)</code> or <code class="language-plaintext highlighter-rouge">[1, 2]</code></li>
-      <li>如果只指定<code class="language-plaintext highlighter-rouge">int</code>，默认是<code class="language-plaintext highlighter-rouge">int64</code></li>
-    </ul>
-  </li>
-</ol>
+<hr />
 
-<h2 id="从既存的array创建">从既存的array创建</h2>
-<ul>
-  <li>原来的array和ndarray一定是两个object
-    <ol>
-      <li>np.asarray (list or tuple)</li>
-    </ol>
-  </li>
-  <li>！⚠️tuple的元素对齐返回值不同
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="p">.</span><span class="nf">asarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span> <span class="c1">#返回二元数组，dtype是int
+<h3 id="ndarrayndim维度数">ndarray.ndim：维度数</h3>
+
+<p><code class="language-plaintext highlighter-rouge">ndim</code> 返回一个整数，表示数组的维度。例如一维数组的 <code class="language-plaintext highlighter-rouge">ndim</code> 为 1，二维数组为 2。</p>
+
+<hr />
+
+<h3 id="创建数组的常用函数">创建数组的常用函数</h3>
+
+<p>NumPy 提供了多种快捷的数组创建方式：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>函数</th>
+      <th>说明</th>
+      <th>默认 dtype</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">np.empty(shape)</code></td>
+      <td>创建未初始化的数组（值随机）</td>
+      <td>float64</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">np.ones(shape)</code></td>
+      <td>创建全 1 数组</td>
+      <td>float64</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">np.zeros(shape)</code></td>
+      <td>创建全 0 数组</td>
+      <td>float64</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code class="language-plaintext highlighter-rouge">shape</code> 参数可以是元组 <code class="language-plaintext highlighter-rouge">(1, 2)</code> 或列表 <code class="language-plaintext highlighter-rouge">[1, 2]</code>。如果只指定 <code class="language-plaintext highlighter-rouge">int</code> 类型（如 <code class="language-plaintext highlighter-rouge">dtype=int</code>），默认使用 <code class="language-plaintext highlighter-rouge">int64</code>。</p>
+
+<hr />
+
+<h3 id="从已有数据创建数组">从已有数据创建数组</h3>
+
+<p><code class="language-plaintext highlighter-rouge">np.asarray</code> 可以将 Python 列表或元组转换为 ndarray。转换后的 ndarray 与原始数据一定是两个独立的对象。</p>
+
+<p>需要特别注意元组的对齐规则：</p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="p">.</span><span class="nf">asarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span> <span class="c1">#返回二元数组，dtype是int
 </span><span class="n">np</span><span class="p">.</span><span class="nf">asarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span> <span class="c1">#返回一元数组，dtype是object
-</span></code></pre></div>    </div>
-  </li>
-</ul>
+</span></code></pre></div></div>
 
-<h2 id="nparange">np.arange</h2>
-<ul>
-  <li>dtype是int，输入float的时候小数点部分会被切掉</li>
-  <li><code class="language-plaintext highlighter-rouge">endpoint=False</code>会把最后那个数也加进去
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="p">.</span><span class="nf">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
-</code></pre></div>    </div>
-  </li>
-</ul>
+<p>当元组中各子序列长度一致时，NumPy 可以推断为规整的多维数组；长度不一致时退化为包含 Python 对象的一维数组。</p>
 
-<h2 id="nplinspace">np.linspace</h2>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">base</code>是log space的底，default是0（线性）
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="p">.</span><span class="nf">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># 起点，终点，点数
-</span></code></pre></div>    </div>
-  </li>
-</ul>
+<hr />
 
-<h2 id="slice">slice</h2>
-<ol>
-  <li>use <code class="language-plaintext highlighter-rouge">slice</code> method
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<h3 id="nparange等差数列">np.arange：等差数列</h3>
+
+<p><code class="language-plaintext highlighter-rouge">np.arange</code> 类似 Python 的 <code class="language-plaintext highlighter-rouge">range</code>，但返回 ndarray：</p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="p">.</span><span class="nf">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>默认 dtype 为 int。输入浮点数时小数部分会被截断（如果指定了 int dtype）。<code class="language-plaintext highlighter-rouge">endpoint=False</code> 参数可以控制是否包含终点值。</p>
+
+<hr />
+
+<h3 id="nplinspace等间隔序列">np.linspace：等间隔序列</h3>
+
+<p><code class="language-plaintext highlighter-rouge">np.linspace</code> 生成指定数量的等间隔点，适合需要精确控制点数的场景：</p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="p">.</span><span class="nf">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># 起点，终点，点数
+</span></code></pre></div></div>
+
+<p>三个参数分别是起始值、终止值和生成的元素个数。默认包含终点。<code class="language-plaintext highlighter-rouge">np.logspace</code> 是其对数版本，<code class="language-plaintext highlighter-rouge">base</code> 参数控制对数的底（默认为 10）。</p>
+
+<hr />
+
+<h3 id="切片与索引">切片与索引</h3>
+
+<p>NumPy 数组的切片索引功能比 Python 列表更强大，支持多维切片和布尔索引。</p>
+
+<h4 id="方法一slice-对象">方法一：slice 对象</h4>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">s</span> <span class="o">=</span> <span class="nf">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-</code></pre></div>    </div>
-  </li>
-  <li>[start:stop:step]
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">7</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
-</code></pre></div>    </div>
-    <p>二元数组的情况下</p>
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+</code></pre></div></div>
+
+<h4 id="方法二冒号语法-startstopstep">方法二：冒号语法 [start:stop:step]</h4>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">7</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>对于多维数组，可以在各维度上独立切片：</p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
 <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
 <span class="n">a</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">[...,</span> <span class="mi">1</span><span class="p">]</span> <span class="c1"># =&gt; True
-</span></code></pre></div>    </div>
-  </li>
-  <li>boolean slicing
-    <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
-<span class="n">a</span><span class="p">[</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">]</span> <span class="c1"># =&gt; 返回一位数组
-</span></code></pre></div>    </div>
-  </li>
+</span></code></pre></div></div>
+
+<p>其中 <code class="language-plaintext highlighter-rouge">...</code>（省略号）表示”选取其余所有维度”，在高维数组操作中非常实用。</p>
+
+<h4 id="方法三布尔索引">方法三：布尔索引</h4>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
+<span class="n">a</span><span class="p">[</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">]</span> <span class="c1"># =&gt; 返回一维数组
+</span></code></pre></div></div>
+
+<p>布尔索引根据条件筛选元素，结果总是一维数组。这在数据清洗和条件过滤中极为常用。</p>
+
+<hr />
+
+<h3 id="广播机制broadcasting">广播机制（Broadcasting）</h3>
+
+<p>广播是 NumPy 最强大的特性之一，它允许不同形状的数组进行算术运算。</p>
+
+<h4 id="规则">规则</h4>
+
+<ol>
+  <li><strong>形状完全相同</strong>时，操作是逐元素（element-wise）进行的</li>
+  <li><strong>可广播的条件</strong>：从尾部维度开始对齐，每个维度的大小要么相同，要么其中一个为 1</li>
 </ol>
 
-<h2 id="boradcasting">boradcasting</h2>
-<ol>
-  <li>两个ndarray shape相同时，操作是element-wise</li>
-  <li>可以boardcast的情况：形状完全相同，形状(n, 1)和(n, m)的情况</li>
-</ol>
+<p>例如，形状为 <code class="language-plaintext highlighter-rouge">(n, 1)</code> 的数组可以与形状为 <code class="language-plaintext highlighter-rouge">(n, m)</code> 的数组进行广播运算——NumPy 会自动将 <code class="language-plaintext highlighter-rouge">(n, 1)</code> 沿第二维”复制”为 <code class="language-plaintext highlighter-rouge">(n, m)</code>。</p>
+
+<p>广播的意义在于避免了显式的数据复制，既节省内存又提升性能。理解广播规则是高效使用 NumPy 的关键。</p>
+
+<hr />
+
+<h3 id="总结">总结</h3>
+
+<p>NumPy 的核心价值在于用 C 语言实现的 ndarray 和向量化运算，使得 Python 在数值计算领域具备了与 MATLAB 等专业工具媲美的性能。掌握数组创建（<code class="language-plaintext highlighter-rouge">array</code>、<code class="language-plaintext highlighter-rouge">zeros</code>、<code class="language-plaintext highlighter-rouge">arange</code>、<code class="language-plaintext highlighter-rouge">linspace</code>）、形状操作（<code class="language-plaintext highlighter-rouge">shape</code>、<code class="language-plaintext highlighter-rouge">reshape</code>）、切片索引（冒号语法、布尔索引）和广播机制，就具备了使用 NumPy 进行数据处理和科学计算的基础能力。建议在实际练习中多关注 <code class="language-plaintext highlighter-rouge">dtype</code> 的隐式转换和广播规则的边界情况，这是初学者最容易踩坑的地方。</p>
 
     </div>
   </div>
@@ -233,33 +305,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

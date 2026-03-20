@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>分布式监控 - Code & Coffee</title>
+  <title>微服务可观测性三大支柱：Logging、Tracing 与 Metrics 全解析 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>分布式监控 | Code &amp; Coffee</title>
+<title>微服务可观测性三大支柱：Logging、Tracing 与 Metrics 全解析 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="分布式监控" />
+<meta property="og:title" content="微服务可观测性三大支柱：Logging、Tracing 与 Metrics 全解析" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="微服务中的监控分根据作用领域分为三大类，Logging，Tracing，Metrics。 Logging - 用于记录离散的事件。例如，应用程序的调试信息或错误信息。它是我们诊断问题的依据。比如我们说的ELK就是基于Logging。 Metrics - 用于记录可聚合的数据。例如，队列的当前深度可被定义为一个度量值，在元素入队或出队时被更新；HTTP 请求个数可被定义为一个计数器，新请求到来时进行累。prometheus专注于Metrics领域。 Tracing - 用于记录请求范围内的信息。例如，一次远程方法调用的执行过程和耗时。它是我们排查系统性能问题的利器。最常用的有Skywalking，ping-point，zipkin。 参考 一些好用的开源监控工具汇总 https://mp.weixin.qq.com/s/3eDrbITbi66e3dzwYJPmeQ 基于SkyWalking的分布式跟踪系统 https://mp.weixin.qq.com/s?__biz=MzAwMTk4NjM1MA==&amp;mid=2247484337&amp;idx=1&amp;sn=e9d5ce0423b70f73279fc86011085d44&amp;source=41" />
-<meta property="og:description" content="微服务中的监控分根据作用领域分为三大类，Logging，Tracing，Metrics。 Logging - 用于记录离散的事件。例如，应用程序的调试信息或错误信息。它是我们诊断问题的依据。比如我们说的ELK就是基于Logging。 Metrics - 用于记录可聚合的数据。例如，队列的当前深度可被定义为一个度量值，在元素入队或出队时被更新；HTTP 请求个数可被定义为一个计数器，新请求到来时进行累。prometheus专注于Metrics领域。 Tracing - 用于记录请求范围内的信息。例如，一次远程方法调用的执行过程和耗时。它是我们排查系统性能问题的利器。最常用的有Skywalking，ping-point，zipkin。 参考 一些好用的开源监控工具汇总 https://mp.weixin.qq.com/s/3eDrbITbi66e3dzwYJPmeQ 基于SkyWalking的分布式跟踪系统 https://mp.weixin.qq.com/s?__biz=MzAwMTk4NjM1MA==&amp;mid=2247484337&amp;idx=1&amp;sn=e9d5ce0423b70f73279fc86011085d44&amp;source=41" />
+<meta name="description" content="当系统从单体架构演进到微服务架构后，一个请求可能需要经过十几个服务的协作才能完成。一旦出现问题，传统的”看日志、查数据库”的排查方式变得力不从心。这时候，构建完善的可观测性（Observability）体系就成为微服务治理的核心课题。 什么是可观测性 可观测性（Observability）源自控制论，指的是通过系统的外部输出来推断其内部状态的能力。在微服务语境下，可观测性意味着我们能够回答以下问题： 系统现在的状态是什么？（健康还是异常？） 某个请求经历了哪些服务？每一步耗时多少？ 为什么这个请求失败了？根因在哪个环节？ 可观测性由三大支柱构成：Logging（日志）、Tracing（链路追踪）、Metrics（指标）。 三大支柱详解 一、Logging（日志） 日志用于记录离散的事件，是最传统也最基础的观测手段。 记录内容：应用程序运行时的调试信息、错误信息、业务事件等。 典型方案：ELK Stack ELK 是 Elasticsearch + Logstash + Kibana 的组合，是目前最流行的日志收集与分析方案： 应用日志 → Filebeat(采集) → Logstash(清洗/转换) → Elasticsearch(存储/索引) → Kibana(可视化) 组件 职责 Filebeat 轻量级日志采集器，安装在应用服务器上 Logstash 日志清洗和转换，支持丰富的 filter 插件 Elasticsearch 分布式搜索引擎，提供全文检索和聚合分析 Kibana 可视化面板，支持日志查询和仪表盘制作 日志最佳实践： 结构化日志：使用 JSON 格式输出日志，便于机器解析 { &quot;timestamp&quot;: &quot;2024-01-15T10:30:00Z&quot;, &quot;level&quot;: &quot;ERROR&quot;, &quot;service&quot;: &quot;order-service&quot;, &quot;traceId&quot;: &quot;abc123&quot;, &quot;message&quot;: &quot;Failed to create order&quot;, &quot;userId&quot;: &quot;user_456&quot;, &quot;errorCode&quot;: &quot;INVENTORY_INSUFFICIENT&quot; } 统一 TraceId：在日志中携带链路追踪 ID，实现日志与 Trace 的关联 合理的日志级别：避免在循环中打 INFO 日志，ERROR 日志应包含足够的上下文 日志脱敏：敏感信息（手机号、身份证号等）不应明文出现在日志中 二、Metrics（指标） Metrics 用于记录可聚合的数据，关注的是系统运行的趋势和状态。 核心特点： 数值型，可以做数学运算（求和、平均、百分位等） 时间序列数据，天然适合做趋势分析和告警 典型方案：Prometheus + Grafana Prometheus 是 CNCF 项目，专注于 Metrics 领域，采用 Pull 模型主动拉取指标数据。 应用(暴露/metrics端点) ← Prometheus(定期拉取) → Grafana(可视化) → AlertManager(告警) 四种指标类型： 类型 说明 示例 Counter 只增不减的计数器 HTTP 请求总数、错误总数 Gauge 可增可减的仪表盘 当前连接数、队列深度、CPU 使用率 Histogram 数据分布统计 请求延迟分布（P50/P95/P99） Summary 类似 Histogram，客户端计算分位数 响应时间百分位 监控的黄金指标（Google SRE 四个黄金信号）： 延迟（Latency）：请求处理时间 流量（Traffic）：系统负载量，如 QPS 错误率（Errors）：失败请求占比 饱和度（Saturation）：资源使用程度，如 CPU、内存、磁盘 三、Tracing（链路追踪） Tracing 用于记录请求范围内的完整调用链路，是排查分布式系统性能问题的利器。 核心概念： Trace：一次完整的请求链路，由多个 Span 组成 Span：一个工作单元，代表一次 RPC 调用或本地方法调用 SpanContext：在服务间传递的上下文，包含 TraceId 和 SpanId 典型方案对比： 工具 特点 侵入性 存储 SkyWalking 基于 Java Agent，无侵入 低 ES / H2 / MySQL Zipkin Twitter 开源，轻量级 中（需埋点） ES / MySQL / Cassandra Pinpoint 韩国 Naver 开源，UI 美观 低（Java Agent） HBase Jaeger Uber 开源，CNCF 项目 中 ES / Cassandra SkyWalking 架构： 应用(Java Agent自动埋点) ↓ gRPC SkyWalking OAP Server(分析和聚合) ↓ Storage(Elasticsearch) ↓ SkyWalking UI(拓扑图/调用链/指标) SkyWalking 的最大优势在于基于 Java Agent 的字节码增强技术，无需修改业务代码即可实现自动埋点，支持 HTTP、RPC、数据库、MQ 等多种调用的追踪。 三大支柱的协作 三大支柱不是孤立存在的，而是通过 TraceId 实现串联： 用户报告请求失败 → 从 Metrics 大盘发现错误率上升 通过 Tracing 找到失败请求的完整调用链，定位到某个下游服务超时 通过 TraceId 在 Logging 中检索具体的错误日志，查看详细的异常堆栈 这种从宏观到微观的排查路径：Metrics → Tracing → Logging，是微服务故障排查的标准范式。 实际落地建议 从 Metrics 开始：如果团队刚开始建设可观测性，优先接入 Prometheus + Grafana，成本低、见效快 按需引入 Tracing：当服务调用链超过 3 层时，就应该考虑引入链路追踪 统一日志规范：在团队层面制定日志格式标准和级别规范，避免日志混乱 合理采样：Tracing 全量采集对存储和性能有较大影响，建议使用采样策略（如 1% 采样 + 错误请求全采） 告警收敛：避免告警风暴，设置合理的告警阈值和收敛规则 开源监控工具全景 领域 工具 Metrics Prometheus、InfluxDB、OpenTSDB Logging ELK、Loki（Grafana）、Fluentd Tracing SkyWalking、Jaeger、Zipkin 综合平台 Datadog、New Relic、阿里云 ARMS 基础监控 Zabbix、Nagios、Open-Falcon 总结 可观测性不是锦上添花，而是微服务架构下的必需品。Logging 提供事件级的详细信息，Metrics 提供系统级的趋势数据，Tracing 提供请求级的链路视图——三者相辅相成，缺一不可。在技术选型时，根据团队规模和业务复杂度选择合适的工具组合，从简单开始逐步完善，远比追求一步到位更加务实。" />
+<meta property="og:description" content="当系统从单体架构演进到微服务架构后，一个请求可能需要经过十几个服务的协作才能完成。一旦出现问题，传统的”看日志、查数据库”的排查方式变得力不从心。这时候，构建完善的可观测性（Observability）体系就成为微服务治理的核心课题。 什么是可观测性 可观测性（Observability）源自控制论，指的是通过系统的外部输出来推断其内部状态的能力。在微服务语境下，可观测性意味着我们能够回答以下问题： 系统现在的状态是什么？（健康还是异常？） 某个请求经历了哪些服务？每一步耗时多少？ 为什么这个请求失败了？根因在哪个环节？ 可观测性由三大支柱构成：Logging（日志）、Tracing（链路追踪）、Metrics（指标）。 三大支柱详解 一、Logging（日志） 日志用于记录离散的事件，是最传统也最基础的观测手段。 记录内容：应用程序运行时的调试信息、错误信息、业务事件等。 典型方案：ELK Stack ELK 是 Elasticsearch + Logstash + Kibana 的组合，是目前最流行的日志收集与分析方案： 应用日志 → Filebeat(采集) → Logstash(清洗/转换) → Elasticsearch(存储/索引) → Kibana(可视化) 组件 职责 Filebeat 轻量级日志采集器，安装在应用服务器上 Logstash 日志清洗和转换，支持丰富的 filter 插件 Elasticsearch 分布式搜索引擎，提供全文检索和聚合分析 Kibana 可视化面板，支持日志查询和仪表盘制作 日志最佳实践： 结构化日志：使用 JSON 格式输出日志，便于机器解析 { &quot;timestamp&quot;: &quot;2024-01-15T10:30:00Z&quot;, &quot;level&quot;: &quot;ERROR&quot;, &quot;service&quot;: &quot;order-service&quot;, &quot;traceId&quot;: &quot;abc123&quot;, &quot;message&quot;: &quot;Failed to create order&quot;, &quot;userId&quot;: &quot;user_456&quot;, &quot;errorCode&quot;: &quot;INVENTORY_INSUFFICIENT&quot; } 统一 TraceId：在日志中携带链路追踪 ID，实现日志与 Trace 的关联 合理的日志级别：避免在循环中打 INFO 日志，ERROR 日志应包含足够的上下文 日志脱敏：敏感信息（手机号、身份证号等）不应明文出现在日志中 二、Metrics（指标） Metrics 用于记录可聚合的数据，关注的是系统运行的趋势和状态。 核心特点： 数值型，可以做数学运算（求和、平均、百分位等） 时间序列数据，天然适合做趋势分析和告警 典型方案：Prometheus + Grafana Prometheus 是 CNCF 项目，专注于 Metrics 领域，采用 Pull 模型主动拉取指标数据。 应用(暴露/metrics端点) ← Prometheus(定期拉取) → Grafana(可视化) → AlertManager(告警) 四种指标类型： 类型 说明 示例 Counter 只增不减的计数器 HTTP 请求总数、错误总数 Gauge 可增可减的仪表盘 当前连接数、队列深度、CPU 使用率 Histogram 数据分布统计 请求延迟分布（P50/P95/P99） Summary 类似 Histogram，客户端计算分位数 响应时间百分位 监控的黄金指标（Google SRE 四个黄金信号）： 延迟（Latency）：请求处理时间 流量（Traffic）：系统负载量，如 QPS 错误率（Errors）：失败请求占比 饱和度（Saturation）：资源使用程度，如 CPU、内存、磁盘 三、Tracing（链路追踪） Tracing 用于记录请求范围内的完整调用链路，是排查分布式系统性能问题的利器。 核心概念： Trace：一次完整的请求链路，由多个 Span 组成 Span：一个工作单元，代表一次 RPC 调用或本地方法调用 SpanContext：在服务间传递的上下文，包含 TraceId 和 SpanId 典型方案对比： 工具 特点 侵入性 存储 SkyWalking 基于 Java Agent，无侵入 低 ES / H2 / MySQL Zipkin Twitter 开源，轻量级 中（需埋点） ES / MySQL / Cassandra Pinpoint 韩国 Naver 开源，UI 美观 低（Java Agent） HBase Jaeger Uber 开源，CNCF 项目 中 ES / Cassandra SkyWalking 架构： 应用(Java Agent自动埋点) ↓ gRPC SkyWalking OAP Server(分析和聚合) ↓ Storage(Elasticsearch) ↓ SkyWalking UI(拓扑图/调用链/指标) SkyWalking 的最大优势在于基于 Java Agent 的字节码增强技术，无需修改业务代码即可实现自动埋点，支持 HTTP、RPC、数据库、MQ 等多种调用的追踪。 三大支柱的协作 三大支柱不是孤立存在的，而是通过 TraceId 实现串联： 用户报告请求失败 → 从 Metrics 大盘发现错误率上升 通过 Tracing 找到失败请求的完整调用链，定位到某个下游服务超时 通过 TraceId 在 Logging 中检索具体的错误日志，查看详细的异常堆栈 这种从宏观到微观的排查路径：Metrics → Tracing → Logging，是微服务故障排查的标准范式。 实际落地建议 从 Metrics 开始：如果团队刚开始建设可观测性，优先接入 Prometheus + Grafana，成本低、见效快 按需引入 Tracing：当服务调用链超过 3 层时，就应该考虑引入链路追踪 统一日志规范：在团队层面制定日志格式标准和级别规范，避免日志混乱 合理采样：Tracing 全量采集对存储和性能有较大影响，建议使用采样策略（如 1% 采样 + 错误请求全采） 告警收敛：避免告警风暴，设置合理的告警阈值和收敛规则 开源监控工具全景 领域 工具 Metrics Prometheus、InfluxDB、OpenTSDB Logging ELK、Loki（Grafana）、Fluentd Tracing SkyWalking、Jaeger、Zipkin 综合平台 Datadog、New Relic、阿里云 ARMS 基础监控 Zabbix、Nagios、Open-Falcon 总结 可观测性不是锦上添花，而是微服务架构下的必需品。Logging 提供事件级的详细信息，Metrics 提供系统级的趋势数据，Tracing 提供请求级的链路视图——三者相辅相成，缺一不可。在技术选型时，根据团队规模和业务复杂度选择合适的工具组合，从简单开始逐步完善，远比追求一步到位更加务实。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DistributionMonitor.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DistributionMonitor.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-11-12T10:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="分布式监控" />
+<meta property="twitter:title" content="微服务可观测性三大支柱：Logging、Tracing 与 Metrics 全解析" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"微服务中的监控分根据作用领域分为三大类，Logging，Tracing，Metrics。 Logging - 用于记录离散的事件。例如，应用程序的调试信息或错误信息。它是我们诊断问题的依据。比如我们说的ELK就是基于Logging。 Metrics - 用于记录可聚合的数据。例如，队列的当前深度可被定义为一个度量值，在元素入队或出队时被更新；HTTP 请求个数可被定义为一个计数器，新请求到来时进行累。prometheus专注于Metrics领域。 Tracing - 用于记录请求范围内的信息。例如，一次远程方法调用的执行过程和耗时。它是我们排查系统性能问题的利器。最常用的有Skywalking，ping-point，zipkin。 参考 一些好用的开源监控工具汇总 https://mp.weixin.qq.com/s/3eDrbITbi66e3dzwYJPmeQ 基于SkyWalking的分布式跟踪系统 https://mp.weixin.qq.com/s?__biz=MzAwMTk4NjM1MA==&amp;mid=2247484337&amp;idx=1&amp;sn=e9d5ce0423b70f73279fc86011085d44&amp;source=41","headline":"分布式监控","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DistributionMonitor.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DistributionMonitor.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"当系统从单体架构演进到微服务架构后，一个请求可能需要经过十几个服务的协作才能完成。一旦出现问题，传统的”看日志、查数据库”的排查方式变得力不从心。这时候，构建完善的可观测性（Observability）体系就成为微服务治理的核心课题。 什么是可观测性 可观测性（Observability）源自控制论，指的是通过系统的外部输出来推断其内部状态的能力。在微服务语境下，可观测性意味着我们能够回答以下问题： 系统现在的状态是什么？（健康还是异常？） 某个请求经历了哪些服务？每一步耗时多少？ 为什么这个请求失败了？根因在哪个环节？ 可观测性由三大支柱构成：Logging（日志）、Tracing（链路追踪）、Metrics（指标）。 三大支柱详解 一、Logging（日志） 日志用于记录离散的事件，是最传统也最基础的观测手段。 记录内容：应用程序运行时的调试信息、错误信息、业务事件等。 典型方案：ELK Stack ELK 是 Elasticsearch + Logstash + Kibana 的组合，是目前最流行的日志收集与分析方案： 应用日志 → Filebeat(采集) → Logstash(清洗/转换) → Elasticsearch(存储/索引) → Kibana(可视化) 组件 职责 Filebeat 轻量级日志采集器，安装在应用服务器上 Logstash 日志清洗和转换，支持丰富的 filter 插件 Elasticsearch 分布式搜索引擎，提供全文检索和聚合分析 Kibana 可视化面板，支持日志查询和仪表盘制作 日志最佳实践： 结构化日志：使用 JSON 格式输出日志，便于机器解析 { &quot;timestamp&quot;: &quot;2024-01-15T10:30:00Z&quot;, &quot;level&quot;: &quot;ERROR&quot;, &quot;service&quot;: &quot;order-service&quot;, &quot;traceId&quot;: &quot;abc123&quot;, &quot;message&quot;: &quot;Failed to create order&quot;, &quot;userId&quot;: &quot;user_456&quot;, &quot;errorCode&quot;: &quot;INVENTORY_INSUFFICIENT&quot; } 统一 TraceId：在日志中携带链路追踪 ID，实现日志与 Trace 的关联 合理的日志级别：避免在循环中打 INFO 日志，ERROR 日志应包含足够的上下文 日志脱敏：敏感信息（手机号、身份证号等）不应明文出现在日志中 二、Metrics（指标） Metrics 用于记录可聚合的数据，关注的是系统运行的趋势和状态。 核心特点： 数值型，可以做数学运算（求和、平均、百分位等） 时间序列数据，天然适合做趋势分析和告警 典型方案：Prometheus + Grafana Prometheus 是 CNCF 项目，专注于 Metrics 领域，采用 Pull 模型主动拉取指标数据。 应用(暴露/metrics端点) ← Prometheus(定期拉取) → Grafana(可视化) → AlertManager(告警) 四种指标类型： 类型 说明 示例 Counter 只增不减的计数器 HTTP 请求总数、错误总数 Gauge 可增可减的仪表盘 当前连接数、队列深度、CPU 使用率 Histogram 数据分布统计 请求延迟分布（P50/P95/P99） Summary 类似 Histogram，客户端计算分位数 响应时间百分位 监控的黄金指标（Google SRE 四个黄金信号）： 延迟（Latency）：请求处理时间 流量（Traffic）：系统负载量，如 QPS 错误率（Errors）：失败请求占比 饱和度（Saturation）：资源使用程度，如 CPU、内存、磁盘 三、Tracing（链路追踪） Tracing 用于记录请求范围内的完整调用链路，是排查分布式系统性能问题的利器。 核心概念： Trace：一次完整的请求链路，由多个 Span 组成 Span：一个工作单元，代表一次 RPC 调用或本地方法调用 SpanContext：在服务间传递的上下文，包含 TraceId 和 SpanId 典型方案对比： 工具 特点 侵入性 存储 SkyWalking 基于 Java Agent，无侵入 低 ES / H2 / MySQL Zipkin Twitter 开源，轻量级 中（需埋点） ES / MySQL / Cassandra Pinpoint 韩国 Naver 开源，UI 美观 低（Java Agent） HBase Jaeger Uber 开源，CNCF 项目 中 ES / Cassandra SkyWalking 架构： 应用(Java Agent自动埋点) ↓ gRPC SkyWalking OAP Server(分析和聚合) ↓ Storage(Elasticsearch) ↓ SkyWalking UI(拓扑图/调用链/指标) SkyWalking 的最大优势在于基于 Java Agent 的字节码增强技术，无需修改业务代码即可实现自动埋点，支持 HTTP、RPC、数据库、MQ 等多种调用的追踪。 三大支柱的协作 三大支柱不是孤立存在的，而是通过 TraceId 实现串联： 用户报告请求失败 → 从 Metrics 大盘发现错误率上升 通过 Tracing 找到失败请求的完整调用链，定位到某个下游服务超时 通过 TraceId 在 Logging 中检索具体的错误日志，查看详细的异常堆栈 这种从宏观到微观的排查路径：Metrics → Tracing → Logging，是微服务故障排查的标准范式。 实际落地建议 从 Metrics 开始：如果团队刚开始建设可观测性，优先接入 Prometheus + Grafana，成本低、见效快 按需引入 Tracing：当服务调用链超过 3 层时，就应该考虑引入链路追踪 统一日志规范：在团队层面制定日志格式标准和级别规范，避免日志混乱 合理采样：Tracing 全量采集对存储和性能有较大影响，建议使用采样策略（如 1% 采样 + 错误请求全采） 告警收敛：避免告警风暴，设置合理的告警阈值和收敛规则 开源监控工具全景 领域 工具 Metrics Prometheus、InfluxDB、OpenTSDB Logging ELK、Loki（Grafana）、Fluentd Tracing SkyWalking、Jaeger、Zipkin 综合平台 Datadog、New Relic、阿里云 ARMS 基础监控 Zabbix、Nagios、Open-Falcon 总结 可观测性不是锦上添花，而是微服务架构下的必需品。Logging 提供事件级的详细信息，Metrics 提供系统级的趋势数据，Tracing 提供请求级的链路视图——三者相辅相成，缺一不可。在技术选型时，根据团队规模和业务复杂度选择合适的工具组合，从简单开始逐步完善，远比追求一步到位更加务实。","headline":"微服务可观测性三大支柱：Logging、Tracing 与 Metrics 全解析","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DistributionMonitor.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DistributionMonitor.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/SplitService.html">&laquo; 微服务拆分原则</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/SplitService.html">&laquo; 微服务拆分的艺术：原则、方法与领域...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html">风控与规则引擎 &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html">风控系统与规则引擎：架构设计与技术... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">分布式监控</h1>
+    <h1 class="asset-name entry-title">微服务可观测性三大支柱：Logging、Tracing 与 Metrics 全解析</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,23 +97,267 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="微服务中的监控分根据作用领域分为三大类loggingtracingmetrics">微服务中的监控分根据作用领域分为三大类，Logging，Tracing，Metrics。</h4>
-<ul>
-  <li>Logging - 用于记录离散的事件。例如，应用程序的调试信息或错误信息。它是我们诊断问题的依据。比如我们说的ELK就是基于Logging。</li>
-  <li>Metrics - 用于记录可聚合的数据。例如，队列的当前深度可被定义为一个度量值，在元素入队或出队时被更新；HTTP 请求个数可被定义为一个计数器，新请求到来时进行累。prometheus专注于Metrics领域。</li>
-  <li>Tracing - 用于记录请求范围内的信息。例如，一次远程方法调用的执行过程和耗时。它是我们排查系统性能问题的利器。最常用的有Skywalking，ping-point，zipkin。</li>
-</ul>
+      <p>当系统从单体架构演进到微服务架构后，一个请求可能需要经过十几个服务的协作才能完成。一旦出现问题，传统的”看日志、查数据库”的排查方式变得力不从心。这时候，构建完善的可观测性（Observability）体系就成为微服务治理的核心课题。</p>
 
-<h4 id="参考">参考</h4>
-<ul>
-  <li>一些好用的开源监控工具汇总</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/3eDrbITbi66e3dzwYJPmeQ">https://mp.weixin.qq.com/s/3eDrbITbi66e3dzwYJPmeQ</a></p>
+<h3 id="什么是可观测性">什么是可观测性</h3>
+
+<p>可观测性（Observability）源自控制论，指的是通过系统的外部输出来推断其内部状态的能力。在微服务语境下，可观测性意味着我们能够回答以下问题：</p>
 
 <ul>
-  <li>基于SkyWalking的分布式跟踪系统</li>
+  <li>系统现在的状态是什么？（健康还是异常？）</li>
+  <li>某个请求经历了哪些服务？每一步耗时多少？</li>
+  <li>为什么这个请求失败了？根因在哪个环节？</li>
 </ul>
-<p><a href="https://mp.weixin.qq.com/s?__biz=MzAwMTk4NjM1MA==&amp;mid=2247484337&amp;idx=1&amp;sn=e9d5ce0423b70f73279fc86011085d44&amp;source=41">https://mp.weixin.qq.com/s?__biz=MzAwMTk4NjM1MA==&amp;mid=2247484337&amp;idx=1&amp;sn=e9d5ce0423b70f73279fc86011085d44&amp;source=41</a></p>
+
+<p>可观测性由三大支柱构成：<strong>Logging（日志）</strong>、<strong>Tracing（链路追踪）</strong>、<strong>Metrics（指标）</strong>。</p>
+
+<h3 id="三大支柱详解">三大支柱详解</h3>
+
+<h4 id="一logging日志">一、Logging（日志）</h4>
+
+<p>日志用于记录<strong>离散的事件</strong>，是最传统也最基础的观测手段。</p>
+
+<p><strong>记录内容</strong>：应用程序运行时的调试信息、错误信息、业务事件等。</p>
+
+<p><strong>典型方案：ELK Stack</strong></p>
+
+<p>ELK 是 Elasticsearch + Logstash + Kibana 的组合，是目前最流行的日志收集与分析方案：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>应用日志 → Filebeat(采集) → Logstash(清洗/转换) → Elasticsearch(存储/索引) → Kibana(可视化)
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>组件</th>
+      <th>职责</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Filebeat</td>
+      <td>轻量级日志采集器，安装在应用服务器上</td>
+    </tr>
+    <tr>
+      <td>Logstash</td>
+      <td>日志清洗和转换，支持丰富的 filter 插件</td>
+    </tr>
+    <tr>
+      <td>Elasticsearch</td>
+      <td>分布式搜索引擎，提供全文检索和聚合分析</td>
+    </tr>
+    <tr>
+      <td>Kibana</td>
+      <td>可视化面板，支持日志查询和仪表盘制作</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>日志最佳实践</strong>：</p>
+
+<ol>
+  <li><strong>结构化日志</strong>：使用 JSON 格式输出日志，便于机器解析</li>
+</ol>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"level"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ERROR"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"service"</span><span class="p">:</span><span class="w"> </span><span class="s2">"order-service"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"traceId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"abc123"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Failed to create order"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"userId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user_456"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"errorCode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"INVENTORY_INSUFFICIENT"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<ol>
+  <li><strong>统一 TraceId</strong>：在日志中携带链路追踪 ID，实现日志与 Trace 的关联</li>
+  <li><strong>合理的日志级别</strong>：避免在循环中打 INFO 日志，ERROR 日志应包含足够的上下文</li>
+  <li><strong>日志脱敏</strong>：敏感信息（手机号、身份证号等）不应明文出现在日志中</li>
+</ol>
+
+<h4 id="二metrics指标">二、Metrics（指标）</h4>
+
+<p>Metrics 用于记录<strong>可聚合的数据</strong>，关注的是系统运行的趋势和状态。</p>
+
+<p><strong>核心特点</strong>：</p>
+<ul>
+  <li>数值型，可以做数学运算（求和、平均、百分位等）</li>
+  <li>时间序列数据，天然适合做趋势分析和告警</li>
+</ul>
+
+<p><strong>典型方案：Prometheus + Grafana</strong></p>
+
+<p>Prometheus 是 CNCF 项目，专注于 Metrics 领域，采用 Pull 模型主动拉取指标数据。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>应用(暴露/metrics端点) ← Prometheus(定期拉取) → Grafana(可视化) 
+                                              → AlertManager(告警)
+</code></pre></div></div>
+
+<p><strong>四种指标类型</strong>：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>类型</th>
+      <th>说明</th>
+      <th>示例</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Counter</td>
+      <td>只增不减的计数器</td>
+      <td>HTTP 请求总数、错误总数</td>
+    </tr>
+    <tr>
+      <td>Gauge</td>
+      <td>可增可减的仪表盘</td>
+      <td>当前连接数、队列深度、CPU 使用率</td>
+    </tr>
+    <tr>
+      <td>Histogram</td>
+      <td>数据分布统计</td>
+      <td>请求延迟分布（P50/P95/P99）</td>
+    </tr>
+    <tr>
+      <td>Summary</td>
+      <td>类似 Histogram，客户端计算分位数</td>
+      <td>响应时间百分位</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>监控的黄金指标（Google SRE 四个黄金信号）</strong>：</p>
+
+<ol>
+  <li><strong>延迟（Latency）</strong>：请求处理时间</li>
+  <li><strong>流量（Traffic）</strong>：系统负载量，如 QPS</li>
+  <li><strong>错误率（Errors）</strong>：失败请求占比</li>
+  <li><strong>饱和度（Saturation）</strong>：资源使用程度，如 CPU、内存、磁盘</li>
+</ol>
+
+<h4 id="三tracing链路追踪">三、Tracing（链路追踪）</h4>
+
+<p>Tracing 用于记录<strong>请求范围内的完整调用链路</strong>，是排查分布式系统性能问题的利器。</p>
+
+<p><strong>核心概念</strong>：</p>
+<ul>
+  <li><strong>Trace</strong>：一次完整的请求链路，由多个 Span 组成</li>
+  <li><strong>Span</strong>：一个工作单元，代表一次 RPC 调用或本地方法调用</li>
+  <li><strong>SpanContext</strong>：在服务间传递的上下文，包含 TraceId 和 SpanId</li>
+</ul>
+
+<p><strong>典型方案对比</strong>：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>工具</th>
+      <th>特点</th>
+      <th>侵入性</th>
+      <th>存储</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SkyWalking</td>
+      <td>基于 Java Agent，无侵入</td>
+      <td>低</td>
+      <td>ES / H2 / MySQL</td>
+    </tr>
+    <tr>
+      <td>Zipkin</td>
+      <td>Twitter 开源，轻量级</td>
+      <td>中（需埋点）</td>
+      <td>ES / MySQL / Cassandra</td>
+    </tr>
+    <tr>
+      <td>Pinpoint</td>
+      <td>韩国 Naver 开源，UI 美观</td>
+      <td>低（Java Agent）</td>
+      <td>HBase</td>
+    </tr>
+    <tr>
+      <td>Jaeger</td>
+      <td>Uber 开源，CNCF 项目</td>
+      <td>中</td>
+      <td>ES / Cassandra</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>SkyWalking 架构</strong>：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>应用(Java Agent自动埋点)
+        ↓ gRPC
+SkyWalking OAP Server(分析和聚合)
+        ↓
+Storage(Elasticsearch)
+        ↓
+SkyWalking UI(拓扑图/调用链/指标)
+</code></pre></div></div>
+
+<p>SkyWalking 的最大优势在于基于 Java Agent 的<strong>字节码增强技术</strong>，无需修改业务代码即可实现自动埋点，支持 HTTP、RPC、数据库、MQ 等多种调用的追踪。</p>
+
+<h3 id="三大支柱的协作">三大支柱的协作</h3>
+
+<p>三大支柱不是孤立存在的，而是通过 <strong>TraceId</strong> 实现串联：</p>
+
+<ol>
+  <li>用户报告请求失败 → 从 <strong>Metrics</strong> 大盘发现错误率上升</li>
+  <li>通过 <strong>Tracing</strong> 找到失败请求的完整调用链，定位到某个下游服务超时</li>
+  <li>通过 TraceId 在 <strong>Logging</strong> 中检索具体的错误日志，查看详细的异常堆栈</li>
+</ol>
+
+<p>这种从宏观到微观的排查路径：<strong>Metrics → Tracing → Logging</strong>，是微服务故障排查的标准范式。</p>
+
+<h3 id="实际落地建议">实际落地建议</h3>
+
+<ol>
+  <li><strong>从 Metrics 开始</strong>：如果团队刚开始建设可观测性，优先接入 Prometheus + Grafana，成本低、见效快</li>
+  <li><strong>按需引入 Tracing</strong>：当服务调用链超过 3 层时，就应该考虑引入链路追踪</li>
+  <li><strong>统一日志规范</strong>：在团队层面制定日志格式标准和级别规范，避免日志混乱</li>
+  <li><strong>合理采样</strong>：Tracing 全量采集对存储和性能有较大影响，建议使用采样策略（如 1% 采样 + 错误请求全采）</li>
+  <li><strong>告警收敛</strong>：避免告警风暴，设置合理的告警阈值和收敛规则</li>
+</ol>
+
+<h3 id="开源监控工具全景">开源监控工具全景</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>领域</th>
+      <th>工具</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Metrics</td>
+      <td>Prometheus、InfluxDB、OpenTSDB</td>
+    </tr>
+    <tr>
+      <td>Logging</td>
+      <td>ELK、Loki（Grafana）、Fluentd</td>
+    </tr>
+    <tr>
+      <td>Tracing</td>
+      <td>SkyWalking、Jaeger、Zipkin</td>
+    </tr>
+    <tr>
+      <td>综合平台</td>
+      <td>Datadog、New Relic、阿里云 ARMS</td>
+    </tr>
+    <tr>
+      <td>基础监控</td>
+      <td>Zabbix、Nagios、Open-Falcon</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="总结">总结</h3>
+
+<p>可观测性不是锦上添花，而是微服务架构下的必需品。Logging 提供事件级的详细信息，Metrics 提供系统级的趋势数据，Tracing 提供请求级的链路视图——三者相辅相成，缺一不可。在技术选型时，根据团队规模和业务复杂度选择合适的工具组合，从简单开始逐步完善，远比追求一步到位更加务实。</p>
 
     </div>
   </div>
@@ -145,33 +389,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

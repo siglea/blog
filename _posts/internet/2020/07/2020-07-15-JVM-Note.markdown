@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  " Jvm（四）Note"
+title:  "深入 JVM：Class 文件结构、字节码执行引擎与运行期优化"
 date:   2020-07-15 14:40:00 +0900
 comments: true
 tags:
@@ -8,33 +8,49 @@ tags:
 categories:
 - 技术
 ---
-#### Class文件
+
+JVM（Java Virtual Machine）是 Java 平台的基石，理解 JVM 的内部机制对于编写高性能 Java 程序、排查线上问题至关重要。本文将从 Class 文件结构出发，深入探讨字节码指令集、类加载机制、虚拟机字节码执行引擎、编译期与运行期优化，以及线程与内存模型等核心主题，构建一个完整的 JVM 知识框架。
+
+---
+
+### 一、Class 文件结构
+
+Java 源代码经过编译后生成 `.class` 文件，这是 JVM 能够识别和执行的二进制格式。理解 Class 文件结构是深入 JVM 的第一步。
+
 <img src="{{ site.baseurl }}/img/class.jpg" width="600px" />
 
-- Magic Number：4字节，0xCAFEBABE
-- minor_version/major_version：JDK版本号，向下兼容
-- constant_pool_count/constant_pool：常量池（javap -verbose可以输出.class内容)
-- access_flags：表示class是类或者接口、是否public、是否abstract、是否final
-- this_class/super_class/interfaces_count/interfaces：
-- fields/fields_count，methods/methods_count
-- attributes/attributes_count：属性可以出现在class文件的很多地方，而不只是出现在attributes列表里。如果是attributes表里的属性，那么它就是对整个class文件所对应的类或者接口的描述；如果出现在fileds的某一项里，那么它就是对该字段额外信息的描述；如果出现在methods的某一项里，那么它就是对该方法额外信息的描述。
-    1. Code：使用在方法表里，Java代码编译成的字节码指令。
-        - 可以查看虚拟机字节码指令表 <https://www.cnblogs.com/magexi/p/11822910.html>
-        - 虚拟机规范一个方法不允许超过 65535条字节码指令
-        - 如果把一个Java程序中的信息分为代码(Code，方法体里面的Java代码)和元数据(Metadata，包括类、字段、方法定义及其他信息)，
-            那么在整个Class文件中，Code属性用于描述代码，所有的其他属性用于描述元数据。
-    2. Exception
-    3. LineNumberTable：Java源码的行号与字节码指令的对应关系
-    4. LocalVariableTable属性：用于描述栈帧中局部变量表中的变量与Java源代码中定义的变量之间的关系。
-    5. SourceFile：源代码名字
-    6. ConstantValue属性：通知虚拟机自动为静态变量赋值
-    7. InnerClasses属性
-    8. Synthetic属性：代表此字段或方法并不是由Java源代码直接产生的，而是由编译器自行添加的（如:init)
-    9. StackMapTable属性：会在虚拟机类加载的字节码验证阶段被新类型检查验证器使用。
-    10. Signature：泛型
-    11. BootstrapMethods属性：用于保存invokeDynamic指令引用的引导方法限定符。
-    12. RuntimeVisibleAnnotations：为动态注解提供支持
-- 案例看下
+Class 文件由以下几个核心部分组成：
+
+- **Magic Number**：4 字节，固定为 `0xCAFEBABE`，用于标识这是一个 Class 文件
+- **minor_version / major_version**：JDK 版本号，向下兼容
+- **constant_pool_count / constant_pool**：常量池（可通过 `javap -verbose` 输出 `.class` 内容查看）
+- **access_flags**：表示 class 是类或接口、是否 public、是否 abstract、是否 final
+- **this_class / super_class / interfaces_count / interfaces**：当前类、父类和接口信息
+- **fields / fields_count，methods / methods_count**：字段和方法信息
+- **attributes / attributes_count**：属性表，可以出现在 Class 文件的很多地方（不只是 attributes 列表里）。如果出现在 fields 的某一项里，则是对该字段额外信息的描述；如果出现在 methods 的某一项里，则是对该方法额外信息的描述。
+
+#### 1.1 关键属性详解
+
+1. **Code**：方法表中最重要的属性，包含 Java 代码编译成的字节码指令
+   - 可以查看虚拟机字节码指令表 <https://www.cnblogs.com/magexi/p/11822910.html>
+   - 虚拟机规范限制一个方法不允许超过 65535 条字节码指令
+   - 如果把 Java 程序中的信息分为**代码（Code）**和**元数据（Metadata）**，那么 Code 属性用于描述代码，所有其他属性用于描述元数据
+2. **Exception**：方法抛出的异常信息
+3. **LineNumberTable**：Java 源码行号与字节码指令的对应关系
+4. **LocalVariableTable**：栈帧中局部变量表的变量与 Java 源代码中定义的变量之间的关系
+5. **SourceFile**：源代码文件名
+6. **ConstantValue**：通知虚拟机自动为静态变量赋值
+7. **InnerClasses**：内部类信息
+8. **Synthetic**：代表此字段或方法是编译器自行添加的（如 `<init>`）
+9. **StackMapTable**：在虚拟机类加载的字节码验证阶段被类型检查验证器使用
+10. **Signature**：泛型信息
+11. **BootstrapMethods**：用于保存 `invokedynamic` 指令引用的引导方法限定符
+12. **RuntimeVisibleAnnotations**：为动态注解提供支持
+
+#### 1.2 实例分析
+
+以一个简单的类为例：
+
 ```java
 public class TestClass{
     private int m ;
@@ -43,88 +59,128 @@ public class TestClass{
     }
 }
 ```
+
+通过 `javap -verbose` 可以看到其编译后的 Class 文件结构：
+
 <img src="{{ site.baseurl }}/img/class_code.jpg" width="600px" />
 <img src="{{ site.baseurl }}/img/class_javap.jpg" width="600px" />
 
-#### 字节码指令集（200多个，不超过256）
-- 加载和存储指令：iload、istore、bipush等
-- 运算指令：iadd、isub、imul、idiv、ior、iand等
-- 类型转换指令：i2b、i2c、i2s等
-- 对象创建与访问指令：new、newarray、putfield、getfield、arraylength等
-- 操作栈管理指令：pop、dup、 swap等
-- 控制转移指令：ifeq、iflt、ifle等
-- 方法调用和返回指令：
-    - invokevirtual：抽象/虚拟方法
-    - invokeinterface：接口方法
-    - invokespecial：init、私有、父类方法
-    - invokestatic：静态方法
-    - invokedynamic指令用于在运行时动态解析出调用点限定符所引用的方法，并执行该方法，
-        前4条调用指令的分派逻辑都固化在Java虚拟机内部，而invokedynamic指令的分派逻辑由用户所设定的引导方法决定的。
-- 异常处理指令：throw（catch用异常表来实现）
-- 同步指令：monitorenter 、monitorexit
+---
 
-#### 类加载机制
-- 加载
-    - 加载时机：new、invocke static；反射调用；子类依赖的父类；main类；jdk1.7后的动态语言支持REF_getStatic
-    - 除了上述5种场景，其他的方式都是被动引用（如：访问类常量、创建对象数组等），不会触发初始化。
-    - 加载渠道：zip包类(Jar/Ear/War)；网络类(Applet)；动态代理生成；JSP等
-- 验证
-    - 文件格式验证：版本号、类型、常量类型等
-    - 元数据验证：类继承实现是否正确完整等Java语言规范
-    - 字节码验证：字节码语义验证、安全验证、类型推断验证（StackMapTable优化了类型推断）
-    - 符号引用验证：为确保解析动作能正常运行，类名、访问权限等核实
-- 准备
-    - 为类变量分配内存，并设置初始化"零值"（final直接赋值）
-- 解析
-    - 把符号引用替换为直接引用
-    - 正式解析类、字段、方法，解析失败会出现IllegalAccessError、NoSuchFieldError、NoSuchMethodError
-- 初始化
-    - clinit()方法执行、虚拟机保证该方法现成安全
+### 二、字节码指令集
 
-#### 破坏双亲委派
-- JDK1.2通过覆盖loadClass实现自定义加载器，之后应是把自己的加载逻辑放到findClass中
-- SPI机制通过 ThreadContextClassLoader的方式，父加载器可以实现委派下级进行加载。比如BootstrapClassLoader
-    需要使用到了classpath下的class，但是自己只能加载固定目录下，就需要委派AppClassLoader来替它加载
-- OSGI动态热部署等
+JVM 的字节码指令集共有 200 多个（不超过 256，因为操作码占一个字节），按功能可分为以下几类：
 
-#### 虚拟机字节码执行引擎
-- 在不同的虚拟机实现里会有解释执行（解释器执行）和编译执行（通过即时编译器产生本地代码执行）两种方式。
-- 运行时栈帧结构
-    - 每个线程包含多个栈帧
-    - 局部变量表
-        - 局部变量表的容量以变量槽(Variable Slot)为最小单位(32位/64位)
-        - 第0位，表示this
-        - Slot可以被复用一变节省空间，比如把不用的对象=null，就可以把该对象占用的空间让出来，但是=null有可能被编译器优化擦出掉或者jvm会优化这种操作
-        - 局部变量需要明确初始化，不会给初始化"零值"
-    - 操作栈
-    - 动态连接
-        - Class文件中的符号引用在运行期间转换为直接引用，就是指动态连接
-    - 返回地址
-        - 方法退出的过程实际上就等同于把当前栈帧出栈，因此退出时可能执行的操作有：
-            恢复上层方法的局部变量表和操作数栈，把返回值压入调用者栈帧的操作数栈中，
-            调整PC计时器的值以指向方法调用指令后面的一条指令等。
-- 方法调用
-    - 方法调用阶段唯一的任务就是确定被调用的方法的版本，暂时还不涉及方法内部的具体运行过程。
-      在程序运行时，进行方法调用是最普遍、最频繁的操作，但前面已经讲过，Class文件的编译过程中
-      不包含传统编译中的连接步骤，一起方法调用在Class文件里面存储的都只是符号引用，而不是方法
-      在实际运行时内存布局中的入口地址（直接引用）。这个特性给Java带来了更强大的动态扩展能力，
-      但也使得Java方法调用过程变得相对复杂起来，需要再类加载期间，甚至到运行期间才能确定目标方法的直接引用。
-    - 编译器可知，运行期不可变
-    - 2大类方法
-        1. 非虚方法：通过invokestatic/invokespecial调用的诸如静态、私有、构造、父类方法这4类，在解析阶段就确定了
-        1. 虚方法：抽象，多态。
-            - 静态分派：方法重载
-            - 动态分派：方法重写
-                - 动态单分派
-                - 通过方法表来优化查找性能
-- 动态性 
-    - 何为动态语言？变量无类型而变量值才有类型。
-    - Java动态性实现从JDK1.7开始 <https://blog.csdn.net/zero__007/article/details/107304054>
-        - java.lang.invoke包MethodHandler
-        - invokedynamic字节码指令
-        - Reflection与MethodHandle机制都是在模拟方法调用，Reflection是在Java代码层次，而MethodHandl是在模拟字节码层次
-        - Reflection是重量级的能映射整个方法相关的信息，MethoudHandle仅仅是方法调用
-        - Reflection是为Java语言服务的，MethodHandle是为所有Java虚拟机之上的语言服务
+- **加载和存储指令**：`iload`、`istore`、`bipush` 等
+- **运算指令**：`iadd`、`isub`、`imul`、`idiv`、`ior`、`iand` 等
+- **类型转换指令**：`i2b`、`i2c`、`i2s` 等
+- **对象创建与访问指令**：`new`、`newarray`、`putfield`、`getfield`、`arraylength` 等
+- **操作栈管理指令**：`pop`、`dup`、`swap` 等
+- **控制转移指令**：`ifeq`、`iflt`、`ifle` 等
+- **方法调用和返回指令**：
+  - `invokevirtual`：调用虚方法（抽象/多态方法）
+  - `invokeinterface`：调用接口方法
+  - `invokespecial`：调用 `<init>`、私有、父类方法
+  - `invokestatic`：调用静态方法
+  - `invokedynamic`：运行时动态解析调用点限定符所引用的方法——前 4 条的分派逻辑固化在 JVM 内部，而 `invokedynamic` 的分派逻辑由用户设定的引导方法决定
+- **异常处理指令**：`athrow`（catch 用异常表来实现）
+- **同步指令**：`monitorenter`、`monitorexit`
+
+---
+
+### 三、类加载机制
+
+#### 3.1 加载时机
+
+类加载会在以下场景被触发（主动引用）：
+- `new`、`invokestatic` 指令
+- 反射调用
+- 子类依赖的父类
+- main 类
+- JDK 1.7 后的动态语言支持（`REF_getStatic`）
+
+除上述 5 种场景外，其他方式都是**被动引用**（如访问类常量、创建对象数组等），不会触发初始化。
+
+**加载渠道**：ZIP 包类（Jar/Ear/War）、网络类（Applet）、动态代理生成、JSP 等。
+
+#### 3.2 验证
+
+- **文件格式验证**：版本号、类型、常量类型等
+- **元数据验证**：类继承实现是否正确完整等 Java 语言规范
+- **字节码验证**：字节码语义验证、安全验证、类型推断验证（`StackMapTable` 优化了类型推断）
+- **符号引用验证**：确保解析动作能正常运行，核实类名、访问权限等
+
+#### 3.3 准备
+
+为类变量分配内存并设置初始化"零值"（`final` 修饰的常量直接赋值）。
+
+#### 3.4 解析
+
+把符号引用替换为直接引用。正式解析类、字段、方法，解析失败会出现 `IllegalAccessError`、`NoSuchFieldError`、`NoSuchMethodError`。
+
+#### 3.5 初始化
+
+执行 `<clinit>()` 方法，虚拟机保证该方法的线程安全性。
+
+---
+
+### 四、破坏双亲委派
+
+双亲委派模型并非强制约束，在实践中有多种场景需要"破坏"它：
+
+- **JDK 1.2 之前**：通过覆盖 `loadClass` 实现自定义加载器；之后应把自定义逻辑放到 `findClass` 中
+- **SPI 机制**：通过 `ThreadContextClassLoader` 的方式，父加载器委派下级加载。例如 `BootstrapClassLoader` 需要使用 classpath 下的 class，但自己只能加载固定目录，就需要委派 `AppClassLoader` 替它加载
+- **OSGi 动态热部署**等场景
+
+---
+
+### 五、虚拟机字节码执行引擎
+
+在不同的虚拟机实现中，有**解释执行**（解释器执行）和**编译执行**（即时编译器产生本地代码执行）两种方式。
+
+#### 5.1 运行时栈帧结构
+
+每个线程包含多个栈帧，每个栈帧由以下部分组成：
+
+**局部变量表**
+- 容量以变量槽（Variable Slot）为最小单位（32 位/64 位）
+- 第 0 位表示 `this`
+- Slot 可以复用以节省空间（如将不用的对象置为 null 释放占用空间，但这可能被编译器优化掉）
+- 局部变量需要明确初始化，不会自动给"零值"
+
+**操作数栈**
+- 方法执行过程中，各种字节码指令通过操作数栈进行数据的入栈和出栈操作
+
+**动态连接**
+- Class 文件中的符号引用在运行期间转换为直接引用
+
+**返回地址**
+- 方法退出相当于把当前栈帧出栈：恢复上层方法的局部变量表和操作数栈，把返回值压入调用者栈帧的操作数栈，调整 PC 计数器指向方法调用指令后面的一条指令
+
+#### 5.2 方法调用
+
+方法调用阶段的唯一任务是**确定被调用方法的版本**，不涉及方法内部的具体运行。Class 文件中方法调用存储的都只是**符号引用**，需要在类加载期间甚至运行期间才能确定目标方法的直接引用。
+
+**两大类方法：**
+
+1. **非虚方法**：通过 `invokestatic`/`invokespecial` 调用的静态、私有、构造、父类方法，在解析阶段就确定了
+2. **虚方法**：抽象、多态方法
+   - **静态分派**：方法重载（编译期确定）
+   - **动态分派**：方法重写（运行期确定）
+     - 动态单分派
+     - 通过方法表来优化查找性能
+
+#### 5.3 Java 的动态性
+
+何为动态语言？变量无类型而变量值才有类型。Java 从 JDK 1.7 开始增强动态性支持：
+
+- `java.lang.invoke` 包的 `MethodHandle`
+- `invokedynamic` 字节码指令
+- `Reflection` 在 Java 代码层次模拟方法调用，`MethodHandle` 在字节码层次模拟
+- `Reflection` 是重量级的（能映射整个方法相关信息），`MethodHandle` 仅仅是方法调用
+- `Reflection` 为 Java 语言服务，`MethodHandle` 为所有 JVM 上的语言服务
+
+**参考：** <https://blog.csdn.net/zero__007/article/details/107304054>
 
 ```java
 public class Test{
@@ -155,156 +211,229 @@ public class Test{
     } 
 }
 ```
-        
 
-- 执行引擎
-    - 编译执行/解释执行
-    - JIT编译(just-in-time compilation)狭义来说是当某段代码即将第一次被执行时进行编译,因而叫“即时编译”
-    - 基于栈的指令集 与 基于寄存器的指令集 （Android Dalvik VM)
-    <img src="{{ site.baseurl }}/img/exec.jpg" width="600px" />
-    
-#### 类加载及执行子系统案例
-- tomcat
-    - 放置在 /common 目录中：类库可被 Tomcat 和所有的 Web 应用程序共同使用。CommonClassLoader
-    - 放置在 /server 目录中：类库可被 Tomcat 使用，对所有的 Web 应用程序都不可见。CatalinaClassLoader
-    - 放置在 /shared 目录中：类库可被所有的 Web 应用程序共同使用，但对 Tomcat 自己不可见。SharedClassLoader
-    - 放置在 /WebApp/WEB-INF 目录中：类库仅仅可以被此 Web 应用程序使用，对 Tomcat 和其他 Web 应用程序都不可见 WebAppClassLoader
-- OSGi：灵活的类加载器架构
-    - OSGi（Open Service Gateway Initiative） 是 OSGi 联盟（OSGi Alliance）制定的一个基于 Java 语言的动态模块化规范
-- 字节码生成技术与动态代理的实现
-    - javac、Javassit、CGlib、ASM
-    - JDK Proxy，也是生成字节码，用完删除了而已
-        - Proxy.newProxyInstance() 
-        - sun.misc.ProxyGenerator.generateProxyClass()
-        - System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
-- Retrotranslator 的作用是将 JDK 1.5 编译出来的 Class 文件转变为可以在 JDK 1.4 或 1.3 上部署的版本
+#### 5.4 执行引擎
 
-<https://blog.csdn.net/u013678930/article/details/51995251>
+- **编译执行 / 解释执行**
+- **JIT 编译**（Just-In-Time Compilation）：狭义来说是当某段代码即将第一次被执行时进行编译
+- **基于栈的指令集**（JVM）与**基于寄存器的指令集**（如 Android Dalvik VM）
 
-#### 早期（编译期）优化
-- 编译器类型
-    - 前端编译器：把java变为class，如Sun的Javac、Eclipse JDT中的增量式编译器(ECJ)
-    - JIT编译器：运行时把 class字节码转变成机器码，如HotSpot VM的 C1、C2编译器
-    - AOT编译器：直接把java编译成本地机器码，如GNU Compiler for the Java (GCJ)、Excelsior JET
-- 编译过程
-    - 解析与填充符号表过程
-    - 插入式注解处理器的注解处理过程
-    - 分析与字节码生成过程
-- 泛型与类型擦除(Signature、LocalVariableTypeTable从JDK1.6之后用于解决此特性带来的问题)
-- 自动装箱、拆箱与遍历循环
-- Annotation Processor是javac的一个工具，它用来在编译时扫描和处理注解，通过Annotation Processor可以获取到注解和被注解类的相关信息，
-    然后根据注解自动生成Java代码，省去了手动编写，提高了编码效率。(javac -processor)
-    - Hibernate Validator Annotation Processor
-    - Project Lombok
+<img src="{{ site.baseurl }}/img/exec.jpg" width="600px" />
 
-#### 晚期运行期优化    
-- 主流的虚拟机采用解释器与编译器并存的架构 (java -version  mixed mode)，为了再启动响应速度和运行效率之间达到最佳平衡，
-    hotSpot虚拟机还会逐渐启用分层编译（Tiered Compilation）的策略。
-    - 解释器，一遍运行一遍把字节码解释为本地机器码 [0层]
-    - 编译器，把字节码编译成为本地机器码并缓存起来 
-        - C1（Client Compiler），更高的编译速度   [1层]
-        - C2 (Server Compiler)，更好的编译质量   [2层]
-- 热点代码：在运行过程中会被即时编译器编译的代码 也就是HotSpot的名称来源
-    - 被多次调用的方法：由方法调用触发编译，也是标准的JIT编译方式
-        - Invocation Counter，超过阈值触发JIT编译 
-        - C1默认：1500次 C2：10000次
-        - -XX：CompileThreshold
-        - 可以设置衰减周期：CounterHalfLifeTime
-    - 被对此执行的循环体：由循环体，关联出所在的方法，发生在方法执行过程中，因此被称为栈上替换OSR (On Stack Replacement)
-        - Back Edge Counter，字节码遇到控制流向后跳转的指令后统计次数，为了触发OSR
-        - CompileThreshold * OnStackReplacePercentage / 100
-        - C1: 13995,C2：10700
-- 热点探测的判断方法
-    - 基于采样（Sample Based Hot Spot Detection)，周期性检查各个线程的栈顶。缺点是受线程阻塞等因素影响会不准
-    - 基于计数器（Counter Based Hot Spot Detection)，统计方法的执行次数。缺点是无法知道调用关系。
-- 编译过程
-    - C1
-        - 字节码 ->方法内联、常量传播 -> HIR High level Intermediate Representation (SSA Static Single Assignment形式)
-        - HIR -> 空置检查消除、范围检查消除 -> LLR Low-Level Intermediate Representation
-        - LIR -> 寄存器分配、窥孔优化 -> 本地机器码
-    - C2,相对于C1更加缓慢，提高代码质量，进一步减少本地代码的执行时间
-        - 无用代码消除 Dead Code Elimination
-        - 循环展开 Loop Unrolling
-        - 循环表达式外提 Loop Expression Hoisting
-        - 消除公共子表达式 Common Subexpression Elimination
-        - 常量传播 Constant Propagation
-        - 基本块重排序 Basic Block Reordering
-        - 范围检查消除 Range Check Elimiation
-        - 数组边界检查消除 Array Bounds Checking Elimination：JAVA数组的方位不是通过裸指针，所以每次都需要检查是否越界
-            可以通过数据流分析推断出取值范围，就可以把检查消除
-        - 逃逸分析 Escape Analysis
-            - 当一个对象在方法中被定义后，它可能被外部方法所引用
-                - JVM判断新创建的对象是否逃逸的依据有：一、对象被赋值给堆中对象的字段和类的静态变量。
-                    二、对象被传进了不确定的代码中去运行。如果满足了以上情况的任意一种，那这个对象JVM就会判定为逃逸。
-                    对于第一种情况，因为对象被放进堆中，则其它线程就可以对其进行访问，所以对象的使用情况，编译器就无法再进行追踪。
-                    第二种情况相当于JVM在解析普通的字节码的时候，如果没有发生JIT即时编译，编译器是不能事先完整知道这段代码会对对象做什么操作。
-                    保守一点，这个时候也只能把对象是当作是逃逸来处理。
-                - <https://zhuanlan.zhihu.com/p/59215831>
-            - 逃逸分析带来的好处：栈上分配，同步消除、标量替换
-                1. 同步消除。如果一个对象被发现只能从一个线程被访问到，那么对于这个对象的操作可以不考虑同步。
-                1. 将堆分配转化为栈分配。如果一个对象在子程序中被分配，要使指向该对象的指针永远不会逃逸，对象可能是栈分配的候选，而不是堆分配。
-                1. 分离对象或标量替换。有的对象可能不需要作为一个连续的内存结构存在也可以被访问到，那么对象的部分（或全部）可以不存储在内存，而是存储在CPU寄存器中。
-            - 缺点：不确定逃逸对象的比例，反而会浪费性能
-            - -XX:+DoEscapeAnalysis 开启逃逸分析，JDK1.7默认开启
-            - <https://blog.csdn.net/w372426096/article/details/80333657>
-            - <https://blog.csdn.net/hollis_chuang/article/details/80922794>
-- Java 与 C++ 编译器对比
-    - Java编译器占用用户时间
-    - Java语言是动态的类型安全语言，意味值需要频繁检测空指针、数字越界、类型转换，总体耗时
-    - 运行时多态选择频率远远大于C/C++
-    - Java对象内存分配在只能再堆上，造成局部对象不能随之栈消失被回收
+---
 
-#### 线程与内存模型
-- 缓存一致性 Cache Coherence，解决CPU高速缓存与主内存数据一致性。如MSI、FireFly等协议
-- 指令重排 Instruction Reorder，与处理器乱序执行OutOfOrder Execution类似，使得处理器内部的运算单元尽可能被充分利用
-- Java内存模型：所有变量储存在主内存Main Memory、每条线程还有自己的工作内存Working Memory
-    - read/load : 从主内存读取到工作内存
-    - store/write ：从工作内存写入主内存
-    - use：从工作内存传递给执行引擎
-    - assign：工作引擎赋值给工作内存
-    - lock/unlock：在主内存锁定或解锁变量
-- volatile：
-    - 保证可见性：本质上volatile变量也可以存在不一致的情况，但由于每次使用前都要先刷新，执行引擎看不到不一致的情况
-    - 禁止指令重排：通过插入内存屏障指令来实现，因此写操作会比普通变量慢
-    - 非原子性的i++之类的操作仍然会出现问题
-- long/double这种64位的数据，几乎所有虚拟机厂商都实现读写原子性，所以可以不需要声明为volatile
-- 先行发生原则 happen before，只要遵循以下几个原则就是有顺序保障的，否则可能被重排。也就是说我们考虑并发问题
-    不要看先后发生的时间顺序，而一切以先行发生原则为准
-    - 程序次序规则 Program Order Rule
-    - 管程锁定规则 Monitor Lock Rule
-    - volatile变量规则 Volatile Variable Rule
-    - 线程启动、终止、中断规则
-    - 对象终结规则 init 先于 finalize
-    - 传递性 Transitivity
-- Java线程实现
-    - JDK1.2之前，是用用户线程
-    - JDK1.2及之后，是用操作系统的线程来实现
-- Java线程调度
-    - 协同式线程调度 Cooperative Thread-Scheduling，线程执行时间由自己控制，会造成各种阻塞不让出资源
-    - 抢占式线程调度 Preemptive Threads Scheduling，由操作系统分配执行时间，Java使用该方式，可以指定线程优先级但是不一定起作用
-- 线程状态
-    - 新建 New：尚未启动的状态
-    - 运行 Runable，对应操作系统中的Running和Ready，可以是正在执行也可以是等待CPU分配时间
-    - 等待 Waiting
-        - 无限期等待：Object.wait/Thread.join/LockSupport.park
-        - 限期等待：Thread.sleep/Object.wait timeout/Thread.join timeout/LockSupport.parkNanos timeout/LockSupport.parkUntil timeout
-    - 阻塞 Blocked
-        - 阻塞与等待的区别：阻塞是在等待这获取到一个排他锁，等待状态是在等待时间或者被唤醒
-        - 在程序等待进入同步区域的时候会进入该状态
-    - 结束 Terminated
-- 线程安全的实现方法
-    - 互斥同步
-    - 非阻塞同步/乐观锁，乐观锁的实现依赖于"硬件指令集的发展"
-            - 测试并设置 Test-and-Set
-            - 获取并增加 Fetch-and-Increment
-            - 交换 Swap
-            - 比较并交换 CAS
-            - 加载链接/条件存储
-    - 无同步
-- 自旋锁，单纯自旋等待前面的锁定释放
-- 偏向锁、轻量级锁、重量级锁
+### 六、类加载及执行子系统案例
+
+#### 6.1 Tomcat 的类加载器架构
+
+Tomcat 使用多级类加载器实现 Web 应用之间的类隔离：
+
+- **CommonClassLoader**：`/common` 目录，Tomcat 和所有 Web 应用共同使用
+- **CatalinaClassLoader**：`/server` 目录，仅 Tomcat 使用，对 Web 应用不可见
+- **SharedClassLoader**：`/shared` 目录，所有 Web 应用共用，对 Tomcat 不可见
+- **WebAppClassLoader**：`/WebApp/WEB-INF` 目录，仅当前 Web 应用使用
+
+#### 6.2 OSGi：灵活的类加载器架构
+
+OSGi（Open Service Gateway Initiative）是一个基于 Java 的动态模块化规范，提供了比双亲委派更灵活的类加载器架构。
+
+#### 6.3 字节码生成技术与动态代理
+
+字节码生成技术在 Java 生态中应用广泛：
+- **javac**、**Javassist**、**CGlib**、**ASM**
+- **JDK Proxy**：也是生成字节码，用完删除
+  - `Proxy.newProxyInstance()`
+  - `sun.misc.ProxyGenerator.generateProxyClass()`
+  - 可通过 `System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true")` 保存生成的代理类
+
+#### 6.4 Retrotranslator
+
+Retrotranslator 的作用是将 JDK 1.5 编译出来的 Class 文件转变为可以在 JDK 1.4 或 1.3 上部署的版本。
+
+**参考：** <https://blog.csdn.net/u013678930/article/details/51995251>
+
+---
+
+### 七、早期（编译期）优化
+
+#### 7.1 编译器类型
+
+- **前端编译器**：把 Java 变为 Class，如 Sun 的 Javac、Eclipse JDT 中的增量式编译器（ECJ）
+- **JIT 编译器**：运行时把 Class 字节码转变成机器码，如 HotSpot VM 的 C1、C2 编译器
+- **AOT 编译器**：直接把 Java 编译成本地机器码，如 GNU Compiler for the Java（GCJ）、Excelsior JET
+
+#### 7.2 编译过程
+
+1. 解析与填充符号表过程
+2. 插入式注解处理器的注解处理过程
+3. 分析与字节码生成过程
+
+#### 7.3 关键特性
+
+- **泛型与类型擦除**：Signature、LocalVariableTypeTable 从 JDK 1.6 之后用于解决类型擦除带来的问题
+- **自动装箱、拆箱与遍历循环**
+- **Annotation Processor**：javac 的工具，在编译时扫描和处理注解，可以自动生成 Java 代码（`javac -processor`）
+  - Hibernate Validator Annotation Processor
+  - Project Lombok
+
+---
+
+### 八、晚期（运行期）优化
+
+#### 8.1 解释器与编译器并存
+
+主流虚拟机采用解释器与编译器并存的架构（`java -version` 显示 `mixed mode`），为了在启动响应速度和运行效率之间达到最佳平衡，HotSpot 还会逐渐启用**分层编译**（Tiered Compilation）策略：
+
+- **解释器**：一边运行一边把字节码解释为本地机器码 [第 0 层]
+- **C1（Client Compiler）**：更高的编译速度 [第 1 层]
+- **C2（Server Compiler）**：更好的编译质量 [第 2 层]
+
+#### 8.2 热点代码
+
+"热点代码"是在运行过程中被即时编译器编译的代码，这也是 **HotSpot** 名称的来源。
+
+**被多次调用的方法（标准 JIT 编译）：**
+- 使用 **Invocation Counter** 统计调用次数，超过阈值触发 JIT 编译
+- C1 默认阈值：1500 次；C2 默认：10000 次
+- 可通过 `-XX:CompileThreshold` 配置
+- 可设置衰减周期：`CounterHalfLifeTime`
+
+**被多次执行的循环体（栈上替换 OSR）：**
+- 使用 **Back Edge Counter** 统计循环回边次数
+- 发生在方法执行过程中，因此被称为栈上替换（On Stack Replacement）
+- 阈值：`CompileThreshold * OnStackReplacePercentage / 100`
+- C1: 13995，C2: 10700
+
+#### 8.3 热点探测方法
+
+- **基于采样（Sample Based）**：周期性检查各线程栈顶。缺点是受线程阻塞等因素影响会不准确
+- **基于计数器（Counter Based）**：统计方法执行次数。缺点是无法知道调用关系
+
+#### 8.4 编译过程
+
+**C1 编译流程：**
+1. 字节码 → 方法内联、常量传播 → HIR（High-Level Intermediate Representation，SSA 形式）
+2. HIR → 空值检查消除、范围检查消除 → LIR（Low-Level Intermediate Representation）
+3. LIR → 寄存器分配、窥孔优化 → 本地机器码
+
+**C2 编译优化**（相对 C1 更慢但产出代码质量更高）：
+- 无用代码消除（Dead Code Elimination）
+- 循环展开（Loop Unrolling）
+- 循环表达式外提（Loop Expression Hoisting）
+- 消除公共子表达式（Common Subexpression Elimination）
+- 常量传播（Constant Propagation）
+- 基本块重排序（Basic Block Reordering）
+- 范围检查消除（Range Check Elimination）
+- 数组边界检查消除（Array Bounds Checking Elimination）：Java 数组访问不通过裸指针，每次都需要检查越界。通过数据流分析推断出取值范围后可以消除检查
+- **逃逸分析（Escape Analysis）**：当一个对象在方法中被定义后，判断它是否可能被外部引用
+
+#### 8.5 逃逸分析详解
+
+JVM 判断新创建的对象是否逃逸的依据：
+1. 对象被赋值给堆中对象的字段或类的静态变量
+2. 对象被传进了不确定的代码中去运行
+
+满足以上任意一种，JVM 就判定为逃逸。
+
+**逃逸分析带来的好处：**
+1. **同步消除**：如果对象只能被一个线程访问到，对它的操作可以不考虑同步
+2. **栈上分配**：如果对象不逃逸，可以在栈上分配而非堆上，随栈帧销毁而自动回收
+3. **标量替换**：对象的部分或全部可以不存储在内存，而存储在 CPU 寄存器中
+
+**缺点：** 如果不确定逃逸对象的比例，分析本身反而会浪费性能。
+
+- `-XX:+DoEscapeAnalysis` 开启逃逸分析（JDK 1.7 默认开启）
+
+**参考资料：**
+- <https://zhuanlan.zhihu.com/p/59215831>
+- <https://blog.csdn.net/w372426096/article/details/80333657>
+- <https://blog.csdn.net/hollis_chuang/article/details/80922794>
+
+#### 8.6 Java 与 C++ 编译器对比
+
+- Java 编译器占用用户运行时间
+- Java 是动态类型安全语言，需要频繁检测空指针、数字越界、类型转换
+- 运行时多态选择频率远高于 C/C++
+- Java 对象内存分配只能在堆上，局部对象不能随栈消失被回收（除非逃逸分析优化）
+
+---
+
+### 九、线程与内存模型
+
+#### 9.1 缓存一致性与指令重排
+
+- **缓存一致性（Cache Coherence）**：解决 CPU 高速缓存与主内存数据一致性问题，如 MSI、FireFly 等协议
+- **指令重排（Instruction Reorder）**：与处理器乱序执行（Out-Of-Order Execution）类似，使处理器内部运算单元尽可能被充分利用
+
+#### 9.2 Java 内存模型
+
+所有变量储存在**主内存（Main Memory）**，每条线程还有自己的**工作内存（Working Memory）**：
+
+- `read/load`：从主内存读取到工作内存
+- `store/write`：从工作内存写入主内存
+- `use`：从工作内存传递给执行引擎
+- `assign`：执行引擎赋值给工作内存
+- `lock/unlock`：在主内存锁定或解锁变量
+
+#### 9.3 volatile 的语义
+
+- **保证可见性**：volatile 变量也可能存在不一致，但由于每次使用前都要先刷新，执行引擎看不到不一致的情况
+- **禁止指令重排**：通过插入内存屏障指令实现，因此写操作比普通变量慢
+- **非原子性**：`i++` 之类的操作仍然会出现问题
+
+对于 long/double 这种 64 位数据，几乎所有虚拟机厂商都实现了读写原子性，所以通常不需要声明为 volatile。
+
+#### 9.4 先行发生原则（Happens-Before）
+
+只要遵循以下原则就有顺序保障，否则可能被重排。判断并发安全不要看时间先后，**一切以先行发生原则为准**：
+
+- **程序次序规则**（Program Order Rule）
+- **管程锁定规则**（Monitor Lock Rule）
+- **volatile 变量规则**（Volatile Variable Rule）
+- **线程启动、终止、中断规则**
+- **对象终结规则**：`<init>` 先于 `finalize`
+- **传递性**（Transitivity）
+
+#### 9.5 Java 线程实现与调度
+
+- JDK 1.2 之前使用用户线程，之后使用操作系统原生线程
+- **协同式线程调度**：线程执行时间由自己控制，容易导致阻塞不让出资源
+- **抢占式线程调度**：由操作系统分配执行时间（Java 使用此方式），可指定优先级但不保证效果
+
+#### 9.6 线程状态
+
+- **新建（New）**：尚未启动
+- **运行（Runnable）**：对应 OS 中的 Running 和 Ready
+- **等待（Waiting）**：
+  - 无限期等待：`Object.wait()`、`Thread.join()`、`LockSupport.park()`
+  - 限期等待：`Thread.sleep()`、带超时的 `wait/join/park`
+- **阻塞（Blocked）**：等待获取排他锁（阻塞与等待的区别：阻塞是在等待获取排他锁，等待是在等待时间或被唤醒）
+- **结束（Terminated）**
+
+#### 9.7 线程安全的实现方法
+
+- **互斥同步**：`synchronized`、`ReentrantLock`
+- **非阻塞同步/乐观锁**：依赖于硬件指令集的发展
+  - 测试并设置（Test-and-Set）
+  - 获取并增加（Fetch-and-Increment）
+  - 交换（Swap）
+  - 比较并交换（CAS）
+  - 加载链接/条件存储
+- **无同步**：ThreadLocal、不可变对象等
+
+#### 9.8 锁优化
+
+- **自旋锁**：单纯自旋等待前面的锁释放
+- **偏向锁 → 轻量级锁 → 重量级锁**：随着竞争升级
 
 <img src="{{ site.baseurl }}/img/lock_optimize.jpg" width="600px" />
-    
-#### 总览 
-- <https://www.cnblogs.com/linghu-java/category/855958.html>
+
+---
+
+### 十、总结
+
+JVM 是 Java 平台最核心的技术组件。从 Class 文件结构到字节码执行引擎，从类加载机制到运行期优化，每一个环节都体现了设计者在性能、安全性和灵活性之间的精妙权衡。
+
+理解这些底层机制，不仅有助于编写更高效的 Java 代码，更能在面对性能瓶颈、线上故障时快速定位问题根因。特别是逃逸分析、JIT 编译、锁升级等运行期优化技术，是 Java 能够在服务端领域保持竞争力的关键所在。
+
+**延伸阅读：** <https://www.cnblogs.com/linghu-java/category/855958.html>

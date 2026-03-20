@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Netty"
+title:  "Netty网络编程实战：从Reactor模型到高性能服务端开发"
 date:   2020-05-18 23:25:00 +0900
 comments: true
 tags:
@@ -10,22 +10,43 @@ categories:
 - 技术
 ---
 
-#### Netty 要点
-- NioEventLoopGroup、EventLoop都是集成或者实现 ScheduledExecutorService、ExecutorService，因此本质都是线程池
-<https://www.jianshu.com/p/da4398743b5a>
-- NioEventLoopGroup还提供了setIoRatio()和rebuildSelectors()两个方法，一个用来设置I/O任务和非I/O任务的执行时间比，一个用来重建线程中的selector来规避JDK的epoll 100% CPU Bug。其实现也是依次设置各线程的状态，故不再列出。
-- Java NIO支持HeapByteBuffer与DirectByteBuffer，Netty使用DirectByteBuffer实现零拷贝
+Netty 是当前 Java 生态中最流行的异步事件驱动网络框架，广泛应用于 RPC 框架（Dubbo）、消息中间件（RocketMQ）、即时通讯系统、游戏服务器等高性能网络场景。它对 JDK 原生 NIO 进行了封装和增强，提供了更简洁的 API、更完善的异常处理和更优秀的性能。本文将从 Netty 的核心概念出发，深入剖析 Reactor 模型、零拷贝机制、编解码器设计等关键技术，并通过完整的代码示例展示如何使用 Netty 构建高性能服务端。
+
+---
+
+## Netty 核心要点
+
+### 线程模型
+
+NioEventLoopGroup 和 EventLoop 都继承或实现了 ScheduledExecutorService、ExecutorService，因此本质上都是线程池。参考：<https://www.jianshu.com/p/da4398743b5a>
+
+NioEventLoopGroup 还提供了两个重要方法：
+- `setIoRatio()`：设置 I/O 任务和非 I/O 任务的执行时间比
+- `rebuildSelectors()`：重建线程中的 Selector，用于规避 JDK 的 epoll 100% CPU Bug
+
+### ByteBuffer 选择
+
+Java NIO 支持 HeapByteBuffer 与 DirectByteBuffer，Netty 使用 DirectByteBuffer 实现零拷贝：
+
 ```shell
 ByteBuffer buffer = ByteBuffer.allocate(int capacity);
 ByteBuffer buffer = ByteBuffer.allocateDirect(int capacity);
 ```
-- OioServerSocketChannel 是同步阻塞 IO 的服务端实现，它接受新的客户端连接，并为它们创建 OioSocketChannel。
-- BIO  Stream单向 与 NIO Channel双向
-ChannelInboundHandler SimpleChannelInboundHandler
 
-#### Netty Reactor多种模式, Reactor模式又有别名“Dispatcher”或者“Notifier”
-- Reactor 是反应堆的意思，Reactor 模型是指通过一个或多个输入同时传递给服务处理器的服务请求的事件驱动处理模式。
-服务端程序处理传入多路请求，并将它们同步分派给请求对应的处理线程，Reactor 模式也叫 Dispatcher 模式，即 I/O 多了复用统一监听事件，收到事件后分发(Dispatch 给某进程)，是编写高性能网络服务器的必备技术之一。
+### Channel 类型
+
+- **OioServerSocketChannel**：同步阻塞 IO 的服务端实现，接受新的客户端连接，并为其创建 OioSocketChannel
+- **NioServerSocketChannel**：异步非阻塞 IO 的服务端实现（最常用）
+- BIO 的 Stream 是单向的，NIO 的 Channel 是双向的
+- 入站处理器：ChannelInboundHandler、SimpleChannelInboundHandler
+
+---
+
+## Reactor 多种模式
+
+Reactor 模式又有别名 "Dispatcher" 或 "Notifier"。Reactor 是反应堆的意思，它是一种通过一个或多个输入同时传递给服务处理器的事件驱动处理模式。服务端程序处理传入的多路请求，并将它们同步分派给对应的处理线程。
+
+Reactor 模式是编写高性能网络服务器的必备技术之一。Netty 支持灵活配置不同的 Reactor 模式：
 
 ```java
 package com.crossoverjie.cim.server.server;
@@ -102,12 +123,20 @@ public class CIMServer {
 }
 ```
 
+三种 Reactor 配置的适用场景不同：单线程适合低并发测试环境，单 Boss 多 Worker 适合大多数生产场景，多 Boss 多 Worker 适合极高并发的场景。
+
+参考：
 - <https://mp.weixin.qq.com/s/66TxgxynqlQ1978_qMFSwQ>
 - <https://github.com/code4craft/netty-learning/blob/master/posts/ch4-reactor.md>
 - <https://mp.weixin.qq.com/s/csslzxEGTRX1WnK5Qp8jWQ>
 - <http://www.52im.net/forum.php?mod=viewthread&tid=2043&highlight=netty>
 
-#### 操作系统Zero-Copy
+---
+
+## 操作系统层面的 Zero-Copy
+
+零拷贝是高性能网络编程的核心技术之一。传统 I/O 操作需要四次数据拷贝和四次上下文切换：
+
 <pre>
 1. ReadBuffer copyTo AppBuffer
 2. AppBuffer  copyTo SocketBuffer
@@ -120,85 +149,115 @@ public class CIMServer {
 根据socket buffer中的位置和偏移量直接将kernel buffer的数据copy到网卡设备（protocol engine）中，演变为 (Linux 2.4)
 1. 根据位置和偏移量，   NIC Buffer，直接从ReadBuffer读取
 </pre>
-- <https://www.jianshu.com/p/017f193663a0>
 
-#### NIO本身支持DMA方式的Zero-Copy
-- DMA(Direct Memory Access，直接存储器访问)
-- <https://mp.weixin.qq.com/s/A8vc7exPDko1k1WaXuO0Og>
+参考：<https://www.jianshu.com/p/017f193663a0>
 
-#### Netty零拷贝终于讲清楚了 
-- 其实是靠CompositeByteBuf，把多个数组引用成同一个逻辑数组 <https://cloud.tencent.com/developer/article/1488088>
-- 深入探秘Netty、Kafka中的零拷贝技术！ <https://www.debug8.com/java/t_43617.html>
+### NIO 本身支持 DMA 方式的 Zero-Copy
 
-#### Protocol Buffer 的序列化 & 反序列化简单 & 速度快的原因是:
-1. 编码 / 解码 方式简单(只需要简单的数学运算 = 位移等等)
-2. 采用 Protocol Buffer 自身的框架代码 和 编译器 共同完成
+DMA（Direct Memory Access，直接存储器访问）允许外设直接访问内存而不需要 CPU 参与，进一步减少了数据拷贝的 CPU 开销。
 
-#### Protocol Buffer 的数据压缩效果好(即序列化后的数据量体积小)的原因是:
-1. a. 采用了独特的编码方式，如 Varint、Zigzag 编码方式等等
-2. b. 采用 T - L - V 的数据存储方式:减少了分隔符的使用 & 数据存储得紧凑
+参考：<https://mp.weixin.qq.com/s/A8vc7exPDko1k1WaXuO0Og>
 
-#### TCP 粘包/分包的原因:
-- 应用程序写入的字节大小大于套接字发送缓冲区的大小，会发生拆包现象，而应用程序写入 数据小于套接字缓冲区大小，网卡将应用多次写入的数据发送到网络上，这将会发生粘包现 象;
-- 进行 MSS 大小的 TCP 分段，当 TCP 报文长度-TCP 头部长度>MSS 的时候将发生拆包 以太网帧的 payload(净荷)大于 MTU(1500 字节)进行 ip 分片。
-- 解决方案
-    - FixedLengthFrameDecoder 客户端在发送数据包的时候，每个包都固定长度，比如1024个字节大小，如果客户端发送的数据长度不足1024个字节，则通过补充空格的方式补全到指定长度；
-    - LineBasedFrameDecoder/DelimiterBasedFrameDecoder 客户端在每个包的末尾使用固定的分隔符，例如\r\n，如果一个包被拆分了，则等待下一个包发送过来之后找到其中的\r\n，然后对其拆分后的头部部分与前一个包的剩余部分进行合并，这样就得到了一个完整的包；
-    - LengthFieldBasedFrameDecoder 将消息分为头部和消息体，在头部中保存有当前整个消息的长度，只有在读取到足够长度的消息之后才算是读到了一个完整的消息；
+### Netty 零拷贝的三层含义
+
+Netty 的零拷贝主要体现在三个方面：
+
+1. **DirectByteBuffer**：发送和接收消息使用堆外内存（DirectMemory），直接通过 DMA 发送到网卡接口，避免了传统堆内存先拷贝到直接内存再写入 Socket 的额外拷贝
+2. **CompositeByteBuf**：需要组合两个 ByteBuffer 时，传统方式需要创建新数组并拷贝数据。CompositeByteBuf 并没有真正合并 Buffer，而是保存了它们的引用，避免了数据拷贝
+3. **FileChannel.transferTo**：依赖操作系统实现零拷贝，直接将文件缓冲区的数据发送到目标 Channel
+
+参考：
+- <https://cloud.tencent.com/developer/article/1488088>
+- 深入探秘Netty、Kafka中的零拷贝技术 <https://www.debug8.com/java/t_43617.html>
+
+---
+
+## Protocol Buffer 序列化
+
+### 速度快的原因
+
+1. 编码/解码方式简单（只需要简单的位移等数学运算）
+2. 采用 Protocol Buffer 自身的框架代码和编译器共同完成
+
+### 数据压缩效果好的原因
+
+1. 采用独特的编码方式，如 Varint、Zigzag 编码
+2. 采用 T-L-V（Tag-Length-Value）的数据存储方式，减少了分隔符的使用，数据存储更紧凑
+
+---
+
+## TCP 粘包/拆包问题
+
+### 产生原因
+
+- 应用程序写入的字节大小**大于**套接字发送缓冲区大小，会发生拆包
+- 应用程序写入的数据**小于**缓冲区大小，网卡将多次写入的数据一起发送，会发生粘包
+- 进行 MSS 大小的 TCP 分段，当 TCP 报文长度减去头部长度大于 MSS 时发生拆包
+- 以太网帧的 payload 大于 MTU（1500 字节）时进行 IP 分片
+
+### Netty 提供的解决方案
+
+Netty 提供了四种开箱即用的解码器来处理粘包/拆包问题：
+
+- **FixedLengthFrameDecoder**：固定长度，每个包固定长度，不足时补空格
+- **LineBasedFrameDecoder / DelimiterBasedFrameDecoder**：分隔符方式，在每个包末尾使用固定分隔符（如 `\r\n`）
+- **LengthFieldBasedFrameDecoder**：长度字段方式，消息分为头部和消息体，头部保存整个消息的长度
+
 ```shell 
 ch.pipeline().addLast(new FixeLengthFrameDecoder(31))
 ```
-    
-#### 从零开发一个IM服务端  
-- 通俗易懂 <http://www.52im.net/forum.php?mod=viewthread&tid=2768&highlight=netty>
-- 基于Netty实现海量接入的推送服务技术要点 <http://www.52im.net/forum.php?mod=viewthread&tid=166&highlight=netty>
 
-#### BIO,NIO,AIO 有什么区别?
-- BIO：Block IO 同步阻塞式 IO，就是我们平常使用的传统 IO，它的特点是模式简单使用方便，并发处理能力低。
-- NIO：Non IO 同步非阻塞 IO，是传统 IO 的升级，客户端和服务器端通过 Channel（通道）通讯，实现了多路复用。
-- AIO：Asynchronous IO 是 NIO 的升级，也叫 NIO2，实现了异步非堵塞 IO ，异步 IO 的操作基于事件和回调机制。
+---
 
-- BIO (Blocking I/O): 同步阻塞I/O模式，数据的读取写入必须阻塞在一个线程内等待其完成。在活动连接数不是特别高（小于单机1000）的情况下，这种模型是比较不错的，可以让每一个连接专注于自己的 I/O 并且编程模型简单，也不用过多考虑系统的过载、限流等问题。线程池本身就是一个天然的漏斗，可以缓冲一些系统处理不了的连接或请求。但是，当面对十万甚至百万级连接的时候，传统的 BIO 模型是无能为力的。因此，我们需要一种更高效的 I/O 处理模型来应对更高的并发量。
-- NIO (New I/O): NIO是一种同步非阻塞的I/O模型，在Java 1.4 中引入了NIO框架，对应 java.nio 包，提供了 Channel , Selector，Buffer等抽象。NIO中的N可以理解为Non-blocking，不单纯是New。它支持面向缓冲的，基于通道的I/O操作方法。 NIO提供了与传统BIO模型中的 Socket 和 ServerSocket 相对应的 SocketChannel 和 ServerSocketChannel 两种不同的套接字通道实现,两种通道都支持阻塞和非阻塞两种模式。阻塞模式使用就像传统中的支持一样，比较简单，但是性能和可靠性都不好；非阻塞模式正好与之相反。对于低负载、低并发的应用程序，可以使用同步阻塞I/O来提升开发速率和更好的维护性；对于高负载、高并发的（网络）应用，应使用 NIO 的非阻塞模式来开发
-- AIO (Asynchronous I/O): AIO 也就是 NIO 2。在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的IO模型。异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。AIO 是异步IO的缩写，虽然 NIO 在网络操作中，提供了非阻塞的方法，但是 NIO 的 IO 行为还是同步的。对于 NIO 来说，我们的业务线程是在 IO 操作准备好时，得到通知，接着就由这个线程自行进行 IO 操作，IO操作本身是同步的。查阅网上相关资料，我发现就目前来说 AIO 的应用还不是很广泛，Netty 之前也尝试使用过 AIO，不过又放弃了。
+## BIO、NIO、AIO 的区别
 
-- NIO，实际上还是需要循环来select，而AIO实际上通过线程池真正的异步化了（其实类似Netty），<https://www.cnblogs.com/itxiaok/p/10357822.html>
-- AIO，在windows中，提供了一个叫做 I/O Completion Ports 的方案，通常简称为 IOCP，操作系统负责管理线程池，其性能非常优异。
-    在 Linux 中其实也是有异步 IO 系统实现的，但是限制比较多，性能也一般，所以 JDK 采用了自建线程池的方式。
+理解三种 I/O 模型对于选择合适的网络编程方案至关重要：
 
-#### 必读有关“为何选择Netty”的11个疑问及解答
+- **BIO（Blocking I/O）**：同步阻塞 I/O，数据读写必须阻塞在一个线程内等待完成。适合活动连接数不高（小于 1000）的场景，编程模型简单。线程池可作为天然漏斗缓冲请求。但面对十万级连接时无能为力。
+
+- **NIO（Non-blocking I/O）**：同步非阻塞 I/O，Java 1.4 引入。提供了 Channel、Selector、Buffer 等抽象，支持面向缓冲的、基于通道的 I/O 操作。适合高负载、高并发的网络应用。
+
+- **AIO（Asynchronous I/O）**：异步非阻塞 I/O，Java 7 引入（NIO 2）。基于事件和回调机制，操作完成后由操作系统通知相应线程。Windows 下有 IOCP 支持性能优异，Linux 下 JDK 采用自建线程池方式。Netty 曾尝试使用 AIO 但后来放弃。
+
+关键区别：NIO 需要循环 select，当 IO 准备好时由业务线程自行执行 IO 操作（IO 操作本身是同步的）；AIO 通过线程池真正异步化了。
+
+参考：<https://www.cnblogs.com/itxiaok/p/10357822.html>
+
+---
+
+## 为什么选择 Netty 而不是 JDK 原生 NIO？
+
+JDK 原生 NIO 存在以下问题：
+
+1. **API 繁杂**：需要熟练掌握 Selector、ServerSocketChannel、SocketChannel、ByteBuffer 等
+2. **额外技能要求高**：必须精通 Java 多线程和 Reactor 模式
+3. **可靠性补齐工作量大**：断连重连、网络闪断、半包读写、失败缓存、网络拥塞和异常码流等问题都需要自行处理
+4. **JDK NIO 的 Epoll Bug**：`Selector` 空轮询导致 CPU 100%，至 JDK 1.7 仍未根本解决
+
+参考：
 - <http://www.52im.net/forum.php?mod=viewthread&tid=163&highlight=netty>
+- Epoll Bug：<http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/>
 
-#### TCP网关
-HAProxy nginx LVS
-- 生产环境大部分还是采用通过rest方式获取IpList，然后有客户端直接发起长连接的方式
-- 京东京麦的生产级TCP网关技术实践总结 <http://www.52im.net/forum.php?mod=viewthread&tid=1243&highlight=netty>
-- 一套海量在线用户的移动端IM架构设计实践 <http://www.52im.net/thread-812-1-1.html>
+---
 
-#### Why Netty?JDK 原生 NIO 程序的问题
-- JDK 原生也有一套网络应用程序 API，但是存在一系列问题，主要如下：
-    1. NIO 的类库和 API 繁杂，使用麻烦：你需要熟练掌握 Selector、ServerSocketChannel、SocketChannel、ByteBuffer 等。
-    1. 需要具备其他的额外技能做铺垫：例如熟悉 Java 多线程编程，因为 NIO 编程涉及到 Reactor 模式，你必须对多线程和网路编程非常熟悉，才能编写出高质量的 NIO 程序。
-    1. 可靠性能力补齐，开发工作量和难度都非常大：例如客户端面临断连重连、网络闪断、半包读写、失败缓存、网络拥塞和异常码流的处理等等。NIO 编程的特点是功能开发相对容易，但是可靠性能力补齐工作量和难度都非常大。
-    1. JDK NIO 的 Bug：例如臭名昭著的 Epoll Bug，它会导致 Selector 空轮询，最终导致 CPU 100%。官方声称在 JDK 1.6 版本的 update 18 修复了该问题，但是直到 JDK 1.7 版本该问题仍旧存在，只不过该 Bug 发生概率降低了一些而已，它并没有被根本解决。
-    
-#### Java NIO epoll bug 以及 Netty 的解决之道
-- epoll 空轮询导致 CPU 利用率 100% <http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/>
- 
-#### netty中的epoll实现
-- 在java中，IO多路复用的功能通过nio中的Selector提供，在不同的操作系统下jdk会通过spi的方式加载不同的实现，
-比如在macos下是KQueueSelectorProvider，KQueueSelectorProvider底层使用了kqueue来进行IO多路复用；
-在linux 2.6以后的版本则是EPollSelectorProvider，EPollSelectorProvider底层使用的是epoll。
-虽然jdk自身提供了selector的epoll实现，netty仍实现了自己的epoll版本，根据netty开发者在StackOverflow的回答，主要原因有两个：
-    - 支持更多socket option，比如TCP_CORK和SO_REUSEPORT
-    - 使用了边缘触发（ET）模式
+## Netty 中的 Epoll 实现
+
+虽然 JDK 自身在 Linux 下提供了基于 epoll 的 Selector 实现，Netty 仍然实现了自己的 epoll 版本，主要原因有两个：
+
+1. **支持更多 Socket Option**：如 TCP_CORK 和 SO_REUSEPORT
+2. **使用边缘触发（ET）模式**：ET 只在状态发生变化时触发，比水平触发（LT）理论效率更高，但对使用者要求也更高
+
+参考：
 - <https://juejin.im/post/5d46ce64f265da03e05af722>
-- ET和LT的区别在于触发事件的条件不同，LT比较符合编程思维（有满足条件的就触发），ET触发的条件更苛刻一些（仅在发生变化时才触发），对使用者的要求也更高，理论效率更高
-- 边缘触发和水平触发<https://juejin.im/post/5cdaa67f518825691b4a5cc0>
+- 边缘触发和水平触发 <https://juejin.im/post/5cdaa67f518825691b4a5cc0>
 
-#### Netty Coding
+---
 
-- EchoServer
+## Netty 编码实战
+
+### EchoServer
+
+下面是一个完整的 Netty 服务端示例，展示了如何配置 Boss/Worker 线程组、绑定端口、设置 Channel 初始化器：
 
 ```java
 package com.siglea.bobo.imserver.service;
@@ -275,7 +334,9 @@ public class EchoServer
 }
 ```
 
-- EchoServerHandler
+### EchoServerHandler
+
+服务端的消息处理器，负责接收和回复客户端消息：
 
 ```java
 package com.siglea.bobo.imserver.service;
@@ -334,66 +395,9 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter
 }
 ```
 
-- EchoClient
+### EchoClientHandler
 
-```java
-package com.siglea.bobo.imserver.service;
-
-
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.CharsetUtil;
-import io.netty.util.ReferenceCountUtil;
-import org.springframework.stereotype.Service;
-
-@Service("echoServerHandler")
-public class EchoServerHandler extends ChannelInboundHandlerAdapter
-{
-
-    /**
-     * 建立连接时，发送一条消息
-     */
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception
-    {
-        System.out.println("连接的客户端地址:" + ctx.channel().remoteAddress());
-        super.channelActive(ctx);
-    }
-
-    public void channelRead(ChannelHandlerContext ctx, Object msg)
-    {
-        try
-        {
-            System.out.println("server received data :" + msg);
-//            ctx.write(msg);//写回数据，
-            ctx.write(Unpooled.copiedBuffer("I am Server", CharsetUtil.UTF_8));
-        } catch (Exception e){
-            e.printStackTrace();
-        } finally {
-            ReferenceCountUtil.release(msg);
-        }
-    }
-
-    public void channelReadComplete(ChannelHandlerContext ctx)
-    {
-        //flush掉所有写回的数据
-        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER)
-                .addListener(ChannelFutureListener.CLOSE); //当flush完成后关闭channel
-    }
-
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-    {
-        //捕捉异常信息
-        cause.printStackTrace();
-        //出现异常时关闭channel
-        ctx.close();
-    }
-}
-```
-
-- EchoClientHandler
+客户端的消息处理器，连接建立后发送消息并处理服务端的响应：
 
 ```java
 package com.siglea.bobo.imclient.service;
@@ -460,7 +464,11 @@ public class EchoClientHandler extends ChannelInboundHandlerAdapter
 }
 ```
 
-#### Netty & Protobuf
+---
+
+## Netty 与 Protobuf 集成
+
+Protobuf 是 Google 开发的高效序列化框架，与 Netty 结合使用只需在 Pipeline 中添加对应的编解码器：
 
 ```java
 bootstrap.handler(
@@ -477,36 +485,60 @@ bootstrap.handler(
 );
 ```
 
-#### Netty & WebSocket
-<https://baijiahao.baidu.com/s?id=1654057194889667404&wfr=spider&for=pc>
+---
 
-#### Netty 分布式部署
-- 接入层同时拥有 Connect 及 Transfer作用
-- Transfer可以通过Mq方式订阅所有消息
-- 也可以通过Tranfer之间通过rpc调用或者直接发起另一组长连接
+## Netty 与 WebSocket
 
-#### 再说Netty 的零拷⻉
-##### 传统意义的拷⻉
-是在发送数据的时候，传统的实现方式是:
-1. `File.read(bytes)`
-2. `Socket.send(bytes)` 这种方式需要四次数据拷⻉和四次上下文切换: 1. 数据从磁盘读取到内核的read buffer
-2. 数据从内核缓冲区拷⻉到用戶缓冲区
-3. 数据从用戶缓冲区拷⻉到内核的socket buffer
-4. 数据从内核的socket buffer拷⻉到网卡接口(硬件)的缓冲区
-##### 零拷⻉的概念
-明显上面的第二步和第三步是没有必要的，通过java的FileChannel.transferTo方法，可以避免上面两次多余的拷⻉(当然这需要底层操作 系统支持)
-1. 调用transferTo,数据从文件由DMA引擎拷⻉到内核read buffer 2. 接着DMA从内核read buffer将数据拷⻉到网卡接口buffer 上面的两次操作都不需要CPU参与，所以就达到了零拷⻉。 3、Netty中的零拷⻉
-主要体现在三个方面:
-1、bytebuffer
-Netty发送和接收消息主要使用bytebuffer，bytebuffer使用对外内存(DirectMemory)直接进行Socket读写。
-原因:如果使用传统的堆内存进行Socket读写，JVM会将堆内存buffer拷⻉一份到直接内存中然后再写入socket，多了一次缓冲区的内存拷 ⻉。DirectMemory中可以直接通过DMA发送到网卡接口
-##### Composite Buffers
-传统的ByteBuffer，如果需要将两个ByteBuffer中的数据组合到一起，我们需要首先创建一个size=size1+size2大小的新的数组，然后将两 个数组中的数据拷⻉到新的数组中。但是使用Netty提供的组合ByteBuf，就可以避免这样的操作，因为CompositeByteBuf并没有真正将多 个Buffer组合起来，而是保存了它们的引用，从而避免了数据的拷⻉，实现了零拷⻉。
-##### 对于FileChannel.transferTo的使用 
-Netty中使用了FileChannel的transferTo方法，该方法依赖于操作系统实现零拷⻉。
+Netty 对 WebSocket 协议提供了原生支持，可以方便地构建实时通信应用。
 
-#### Netty 报文加密
-- AESencoder/AESdecoder
+参考：<https://baijiahao.baidu.com/s?id=1654057194889667404&wfr=spider&for=pc>
+
+---
+
+## Netty 分布式部署
+
+在分布式场景下，Netty 的部署架构需要解决跨节点消息路由的问题：
+
+- 接入层同时拥有 Connect（连接管理）及 Transfer（消息转发）能力
+- Transfer 可以通过 MQ 方式订阅所有消息
+- 也可以通过 Transfer 之间的 RPC 调用或直接建立另一组长连接来转发
+
+---
+
+## 零拷贝深入解析
+
+### 传统拷贝方式
+
+发送数据时，传统实现需要 `File.read(bytes)` + `Socket.send(bytes)`，涉及四次数据拷贝和四次上下文切换：
+1. 数据从磁盘读取到内核的 Read Buffer
+2. 数据从内核缓冲区拷贝到用户缓冲区
+3. 数据从用户缓冲区拷贝到内核的 Socket Buffer
+4. 数据从内核的 Socket Buffer 拷贝到网卡接口缓冲区
+
+### 零拷贝实现
+
+通过 Java 的 `FileChannel.transferTo` 方法，可以避免第 2、3 步多余的拷贝（需底层操作系统支持）：
+1. 调用 transferTo，数据从文件由 DMA 引擎拷贝到内核 Read Buffer
+2. DMA 从内核 Read Buffer 将数据拷贝到网卡接口 Buffer
+
+以上两次操作都不需要 CPU 参与，达到了零拷贝。
+
+### Netty 中的零拷贝
+
+**ByteBuffer**：使用堆外内存（DirectMemory）进行 Socket 读写。传统堆内存需要先拷贝到直接内存再写入 Socket，DirectMemory 可以直接通过 DMA 发送到网卡。
+
+**Composite Buffers**：CompositeByteBuf 没有真正将多个 Buffer 组合起来，而是保存了它们的引用，避免了数据拷贝。
+
+**FileChannel.transferTo**：依赖操作系统实现零拷贝。
+
+---
+
+## 报文加密
+
+在安全要求高的场景中，可以通过自定义编解码器实现报文加密。
+
+### AES 对称加密
+
 ```java
 public class MyProtobufEncoder extends MessageToMessageEncoder<ByteBuf> {
  
@@ -534,7 +566,11 @@ public class MyProtobufDecoder extends MessageToMessageDecoder<ByteBuf> {
     }
 }
 ```
--  RSAencoder/RSAdecoder
+
+### RSA 非对称加密
+
+RSA 加密使用公钥加密、私钥解密，适用于安全性要求更高的场景：
+
 ```java
 public class MyProtobufClientEncoder extends MessageToMessageEncoder<ByteBuf> {
  
@@ -562,15 +598,30 @@ public class MyProtobufServerDecoder extends MessageToMessageDecoder<ByteBuf> {
     }
 }
 ```
-- <https://www.cnblogs.com/silyvin/articles/11827030.html>
 
+参考：<https://www.cnblogs.com/silyvin/articles/11827030.html>
 
-#### 看一看
+---
+
+## TCP 网关
+
+在实际生产环境中，TCP 网关通常使用 HAProxy、Nginx 或 LVS 进行负载均衡。但大部分场景还是采用通过 REST 方式获取 IP List，然后由客户端直接发起长连接的方式。
+
+参考：
+- 京东京麦的生产级TCP网关技术实践总结 <http://www.52im.net/forum.php?mod=viewthread&tid=1243&highlight=netty>
+- 一套海量在线用户的移动端IM架构设计实践 <http://www.52im.net/thread-812-1-1.html>
+
+---
+
+## 总结
+
+Netty 之所以成为 Java 网络编程的事实标准，在于它在 JDK NIO 基础上做了大量的工程化优化：完善的线程模型、优雅的零拷贝实现、灵活的编解码器架构、健壮的异常处理机制。在实际项目中，合理选择 Reactor 模式、正确处理粘包/拆包、充分利用零拷贝特性，是构建高性能网络服务的关键。
+
+#### 推荐阅读
 - 适合新手：从零开发一个IM服务端 <http://www.52im.net/forum.php?mod=viewthread&tid=2768&highlight=netty>
 - 跟我一起徒手开发一套分布式IM系统 <http://www.52im.net/thread-2775-1-1.html>
 - Netty精粹之JAVA NIO开发需要知道的 <https://my.oschina.net/andylucc/blog/614295>
-- 通俗易懂 <http://www.52im.net/forum.php?mod=viewthread&tid=2768&highlight=netty>
 - 基于Netty实现海量接入的推送服务技术要点 <http://www.52im.net/forum.php?mod=viewthread&tid=166&highlight=netty>
 - 游戏服务 <https://www.jianshu.com/p/82212eb7d76c>
 - Netty整合SpringBoot并使用Protobuf进行数据传输 <https://juejin.im/post/5bb596196fb9a05d0f16f006>
-- Netty随笔<https://www.cnblogs.com/silyvin/category/1294168.html>
+- Netty随笔 <https://www.cnblogs.com/silyvin/category/1294168.html>

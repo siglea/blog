@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DotDot - Code & Coffee</title>
+  <title>Java核心知识点精讲：并发编程、集合框架与JVM底层机制 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>DotDot | Code &amp; Coffee</title>
+<title>Java核心知识点精讲：并发编程、集合框架与JVM底层机制 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="DotDot" />
+<meta property="og:title" content="Java核心知识点精讲：并发编程、集合框架与JVM底层机制" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="ArrayList的扩容方式和扩容时机 初始化 ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断 如果参数等于0，则将数组初始化为一个空数组， 如果不等于0，将数组初始化为一个容量为10的数组。 扩容时机 当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。 Vector会扩容2倍。 扩容方式 扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。 蚂蚁金服 https://www.cnblogs.com/silyvin/p/10223910.html volatile（保证可见性、禁止重排、无法实现原子性） 指令重排只会保证串行语义的执行一致性(单线程) 并不会关心多线程间的语义一致性 CAS &amp; Unsafe CAS的全称为Compare-And-Swap，它是一条CPU并发原语。它的功能是判断内存某个位置的值是否为预期值，如果是则更改为新的值，这个过程是原子的。 CAS并发原语体现在JAVA语言中就是sum.misc.Unsafe类中的各个方法。调用Unsafe类中的CAS方法，JVM会帮我们实现出CAS汇编指令。这是一种完全依赖于硬件的功能，通过它实现了原子操作。再次强调，由于CAS是一种系统原语，原语属于操作系统用语范畴，是由若干条指令组成的，用于完成某个功能的一个过程，并且原语的执行必须是连续的，在执行过程中不允许被中断，也就是说CAS是一条CPU的原子指令，不会造成所有的数据不一致问题。 CAS只能保证一个共享变量的原子性 CAS自旋 # 我们可以看到getAndAddInt方法执行时，有个do while # unsafe.getAndAddInt public final int getAndAddInt(Object var1, long var2, int var4){ int var5; do { var5 = this.getIntVolatile(var1, var2); } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4)); return var5; } # 如果CAS失败，会一直进行尝试。如果CAS长时间一直不成功，可能会能CPU带来很大的开锁。 CAS造成的ABA问题用版本号解决 # （旧值，新值） atomicReference.compareAndSet(101, 100); # AtomicStampedReference 以时间戳做为版本号解决ABA的问题 public boolean compareAndSet(V expectedReference, V newReference, int expectedStamp, int newStamp) { Exchanger 允许在并发任务之间交换数据。具体来说，Exchanger类允许在两个线程之间定义同步点。当两个线程都到达同步点时，他们交换数据结构，因此第一个线程的数据结构进入到第二个线程中，第二个线程的数据结构进入到第一个线程中 例子模拟一个队列中数据的交换使用的场景： 线程A往队列中存入数据 线程B从队列中消耗数据 当线程A存满的时候 才交换给线程B 当线程B消耗完成之后才交换给线程A。 线程A、B的生产和消耗的速率有可能不同 对方线程调用exchange之前，另一个线程执行到exchange会阻塞 JVM 对 Java 的原生锁做了哪些优化？ 一种优化是使用自旋锁，即在把线程进行阻塞操作之前先让线程自旋等待一段时间，可能在等待期间其他线程已经解锁，这时就无需再让线程执行阻塞操作，避免了用户态到内核态的切换。 现代 JDK 中还提供了三种不同的 Monitor 实现，也就是三种不同的锁： 偏向锁（Biased Locking） 轻量级锁 重量级锁,这三种锁使得 JDK 得以优化 Synchronized 的运行，当 JVM 检测到不同的竞争状况时，会自动切换到适合的锁实现，这就是锁的升级、降级。 当没有竞争出现时，默认会使用偏向锁。 JVM 会利用 CAS 操作，在对象头上的 Mark Word 部分设置线程 ID，以表示这个对象偏向于当前线程，所以并不涉及真正的互斥锁，因为在很多应用场景中，大部分对象生命周期中最多会被一个线程锁定，使用偏斜锁可以降低无竞争开销。 如果有另一线程试图锁定某个被偏斜过的对象，JVM 就撤销偏斜锁，切换到轻量级锁实现。 轻量级锁依赖 CAS 操作 Mark Word 来试图获取锁，如果重试成功，就使用普通的轻量级锁；否则，进一步升级为重量级锁。 ReadWriteLock final boolean tryWriteLock() { Thread current = Thread.currentThread(); int c = getState(); if (c != 0) { int w = exclusiveCount(c); if (w == 0 || current != getExclusiveOwnerThread()) return false; if (w == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); } if (!compareAndSetState(c, c + 1)) return false; setExclusiveOwnerThread(current); return true; } /** * Performs tryLock for read, enabling barging in both modes. * This is identical in effect to tryAcquireShared except for * lack of calls to readerShouldBlock. */ final boolean tryReadLock() { Thread current = Thread.currentThread(); for (;;) { int c = getState(); if (exclusiveCount(c) != 0 &amp;&amp; getExclusiveOwnerThread() != current) return false; int r = sharedCount(c); if (r == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); if (compareAndSetState(c, c + SHARED_UNIT)) { if (r == 0) { firstReader = current; firstReaderHoldCount = 1; } else if (firstReader == current) { firstReaderHoldCount++; } else { HoldCounter rh = cachedHoldCounter; if (rh == null || rh.tid != getThreadId(current)) cachedHoldCounter = rh = readHolds.get(); else if (rh.count == 0) readHolds.set(rh); rh.count++; } return true; } } } 面向对象的五大基本原则(solid) S单一职责SRP:Single-Responsibility Principle 一个类,最好只做一件事,只有一个引起它的变化。单一职责原则可以看做是低耦合,高内聚在面向对象原则的引申,将职责定义为引起变化的原因,以提高内聚性减少引起变化的原因。 O开放封闭原则OCP:Open-Closed Principle 软件实体应该是可扩展的,而不是可修改的。对扩展开放,对修改封闭 L里氏替换原则LSP:Liskov-Substitution Principle 子类必须能够替换其基类。这一思想表现为对继承机制的约束规范,只有子类能够替换其基类时,才能够保证系统在运行期内识别子类,这是保证继承复用的基础。 I接口隔离原则ISP:Interface-Segregation Principle 使用多个小的接口,而不是一个大的总接口 D依赖倒置原则DIP:Dependency-Inversion Principle 依赖于抽象。具体而言就是高层模块不依赖于底层模块,二者共同依赖于抽象。抽象不依赖于具体,具体依赖于抽象。 类什么时候才被初始化 创建类的实例，也就是new一个对象 访问某个类或接口的静态变量，或者对该静态变量赋值 调用类的静态方法 反射（Class.forName(“com.lyj.load”)） 初始化一个类的子类（会首先初始化子类的父类） JVM启动时标明的启动类，即文件名和类名相同的那个类 ArrayList ArrayList创建时的大小为0；当加入第一个元素时，进行第一次扩容时，默认容量大小为10。 ArrayList每次扩容都以当前数组大小的1.5倍去扩容。 Vector创建时的默认大小为10。 Vector每次扩容都以当前数组大小的2倍去扩容。当指定了capacityIncrement之后，每次扩容仅在原先基础上增加capacityIncrement个单位空间。 ArrayList和Vector的add、get、size方法的复杂度都为O(1)，remove方法的复杂度为O(n)。 ArrayList是非线程安全的，Vector是线程安全的。 hashmap为什么初始容量是2的指数幂 hashmap在确定元素落在数组的位置的时候，计算方法是hash%n，类似数据库分表，但是“取模”运算的消耗还是比较大的，可以用(n - 1) &amp; hash的位运算来使计算更加高效。 如果初始容量是奇数，那么（n-1)就为偶数，偶数2进制的结尾都是0，经过hash值&amp;运算后末尾都是0，那么0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这样就会造成空间的浪费而且会增加hash冲突。 只有是2的指数次幂的数字经过n-1之后，二进制尾数才是1，这样hash最后一位无论是什么，完全是由产生的hash值类决定，而不受n-1 影响。这样会提高效率。比如要扩容了，2的幂次方*2，在二进制中比如4和8，代表2的2次方和3次方，他们的2进制结构相 似, 比如 4：00000100 和 8：0000 1000，只是高位向前移了一位，这样扩容的时候，只需要判断高位hash,移动到之前位置的倍数就可以了，免去了重新计算位置的运算。 SpringBoot Start 引入该Start相关依赖 查找resources/META-INF/spring.factories下对应的XXXAutoConfigure 根据Condition自己加装相关的Bean @ConditionalOnBean:当容器中有指定的Bean的条件下 @ConditionalOnClass：当类路径下有指定的类的条件下 @ConditionalOnExpression:基于SpEL表达式作为判断条件 @ConditionalOnJava:基于JVM版本作为判断条件 @ConditionalOnJndi:在JNDI存在的条件下查找指定的位置 @ConditionalOnMissingBean:当容器中没有指定Bean的情况下 @ConditionalOnMissingClass:当类路径下没有指定的类的条件下 @ConditionalOnNotWebApplication:当前项目不是Web项目的条件下 @ConditionalOnProperty:指定的属性是否有指定的值 @ConditionalOnResource:类路径下是否有指定的资源 @ConditionalOnSingleCandidate:当指定的Bean在容器中只有一个，或者在有多个Bean的情况下，用来指定首选的Bean @ConditionalOnWebApplication:当前项目是Web项目的条件下 https://www.cnblogs.com/yuansc/p/9088212.html Spring中解决循环依赖为什么要用三级缓存 Bean创建有3步 初始化init,分配内存空间，此时在singletonFactories完成 注入各种属性，此时在earlySingletonObjects中 完美的bean最终会在singletonObjects中 举例 A与B循环依赖，A初始化经过第1、2步，在第2步发现依赖B 此时，触发B的初始化进入第1步，如果再进入第2步，会发现依赖A了，所以此时B只能在第1步 把B的第1步，不完美的B注入给A，先完成A的注入，让A进入第3步 然后，再完成B的完美初始化 关于NIO的 Channel与ByteBuffer Buffer的使用，主要是减少copy实现零拷贝，流的读写方式还是基于用户态和内核态的拷贝 从使用NIO读写文件说起——拆解堆外内存分配过程 https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw 从操作系统看NIO https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA 关于NIO的 空轮训的bug while (true) { selector.select(); // select 可能在无就绪事件时异常返回！主要发生在linux系统 Set&lt;SelectionKey&gt; readyKeys = selector.selectedKeys(); Iterator&lt;SelectionKey&gt; it = readyKeys.iterator(); while (it.hasNext()) { SelectionKey key = it.next(); ... // 处理事件 it.remove(); } } selector.select() 应该 一直阻塞，直到有就绪事件到达，但很遗憾，由于 Java NIO 实现上存在 bug，select() 可能在 没有 任何就绪事件的情况下返回，从而导致 while(true) 被不断执行，最后导致某个 CPU 核心的利用率飙升到 100%，这就是臭名昭著的 Java NIO 的 epoll bug。 解决方法 selectCnt = 0; // epoll 空轮询场景下 select 调用次数 long currentTimeNanos = System.nanoTime(); // 每个 for 循环开始时的绝对时间 for (;;) { timeoutMillis = ... // 初始化超时参数 int selectedKeys = selector.select(timeoutMillis); selectCnt++; long time = System.nanoTime(); // 记录执行到此处的绝对时间： // 检测逻辑 if (time - currentTimeNanos &gt; timeoutMillis) { selectCnt = 1; // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1 } else if (selectCnt &gt;= 重试次数阈值（默认 512）) { selector = selectRebuildSelector(selectCnt); // 解决 epoll bug 的实际逻辑 selectCnt = 1; // 解决本次 epoll bug，重置 selectCnt break; } currentTimeNanos = time; // 重置下次 for 循环开始时间 } http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/ Netty零拷贝总结的比较清楚了 零拷贝 在传统的I/O操作中，每次都需要把内核空间的数据拷贝到用户空间中，这样挺浪费空间的，所以零拷贝的出现就是为了解决这个问题。 主要有两种方法：mmap+write 和 Sendfile mmap+write 使用mmap+write方式替换原来的read+write方式，mmap是一种内存映射文件的方法，即将一个文件或者其他对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对应关系。 这样就可以省略掉原来内核Read缓冲区Copy数据到用户缓冲区，但是还是需要内核Read缓冲区将数据Copy到内核Socket缓冲区。 Sendfile Sendfile是为了简化通过网络在两个通道内进行的数据传输过程。 它不仅减少了数据复制，还减少了上下文次数的切换。数据传送只发生在内核空间里，所以减少了一次上下文切换，但是还是存在一次Copy。 后来进行了改进，将Kernel Buffer中对应的数据描述信息（内存地址，偏移量）记录到相应的Socket缓冲区中，这样连内核空间中的一次CPU Copy也省掉了。 Netty的零拷贝具体体现 Netty零拷贝主要体现在三个方面。 Netty的接收和发送ByteBuffer采用DirtectByteBuffer，使用堆外直接内存进行Socket读写，不需要进行字节缓冲区的二次拷贝。 Netty在操作多个Channel时，使用CompositeChannelBuffer，它并不会开辟新的内存并复制所有ChannelBuffer内容，而是直接保存了所有ChannelBuffer的引用，并在子ChannelBuffer里进行读写，实现了零拷贝。 Netty的文件传输采用了transferTo方法，它可以直接将文件缓冲区的数据发送到目标Channel。 https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg Netty https://www.cnblogs.com/xiaoyangjia/p/11526197.html Utf-8 是一种变长的编码方式 对于单字节的符号，字节的第一位设为0，后面7位为这个符号的unicode码。因此对于英语字母，UTF-8编码和ASCII码是相同的。 对于n字节的符号（n&gt;1），第一个字节的前n位都设为1，第n+1位设为0，后面字节的前两位一律设为10。剩下的没有提及的二进制位，全部为这个符号的unicode码。 1110xxxx 10xxxxxx 10xxxxxx （3个字节，xxx放入Unicode） Little endian和Big endian Unicode规范中定义，每一个文件的最前面分别加入一个表示编码顺序的字符，这个字符的名字叫做”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE），用FEFF表示。这正好是两个字节，而且FF比FE大1。 如果一个文本文件的头两个字节是FE FF，就表示该文件采用大头方式；如果头两个字节是FF FE，就表示该文件采用小头方式。 Redis与Memcached区别 如果简单地比较Redis与Memcached的区别，大多数都会得到以下观点： Redis不仅仅支持简单的k/v类型的数据，同时还提供list，set，hash等数据结构的存储。 Redis支持数据的备份，即master-slave模式的数据备份。 Redis支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用。 在Redis中，并不是所有的数据都一直存储在内存中的。这是和Memcached相比一个最大的区别 memcache可以存储大文件 DNS 在UDP协议栈上方 全面了解移动端DNS域名劫持等杂症：原理、根源、HttpDNS解决方案等 http://www.52im.net/thread-2121-1-1.html HTTPDNS 替代 LocalDNS 解决域名检验和多个子域名多个证书SNI（Server Name Indication 允许客户端向服务器提供它所请求的域名） 的问题 android 美图APP http://www.52im.net/thread-2172-1-1.html ios https://kangzubin.com/httpdns-https/ 百度 http://www.52im.net/thread-2472-1-1.html LVS之DR,NAT,TUN模式祥解 NAT：修改请求报文的目标IP，多目标IP的DNAT DR：操纵封装新的MAC地址 TUN：在原请求IP报文之外新加一个IP首部 FullNAT：修改请求报文的源和目标IP Nat 与 打洞 Nat技术 Net Address Transfer 全锥型NAT：一旦内部主机端口对(iAddr:iPort)被NAT网关映射到(eAddr:ePort)，所有后续的(iAddr:iPort)报文都会被转换为(eAddr:ePort)；任何一个外部主机发送到(eAddr:ePort)的报文将会被转换后发到(iAddr:iPort)。 限制锥型NAT：在全锥基础上限制机器 端口限制锥型NAT：在限制锥型NAT基础上限制端口 对称型NAT：限制在固定的主机+端口，可以理解为是”Session级” p2p打洞原理是通过中间服务器S”伪装”连接，获取到P1与P2的公网IP+端口组合，然后P1与P2分别伪装S与彼此建立连接 http://www.52im.net/thread-542-1-1.html http://www.52im.net/thread-50-1-1.html https://blog.csdn.net/weiyuefei/article/details/52247497 内存泄漏 内部类持有外部类 静态集合类 各种连接的打开与关闭 变量作用域不合理，比如类似逃逸 改变了Hash算法，导致之前的hash key 对应的 value不能被释放 ThreadLocal内存泄漏，是因为内部的Map的key是通过虚引用关联的threadLocal，发生GC的时候key就消失了，造成Value泄漏。使用的时候记得显示remove https://www.jianshu.com/p/1a5d288bdaee 监听器的回调绑定与取消 Direct Memory 回收 DirectByteBuffer是通过虚引用(Phantom Reference)来实现堆外内存的释放的 Cleaner是PhantomReference的子类，并通过自身的next和prev字段维护的一个双向链表。PhantomReference的作用在于跟踪垃圾回收过程， 并不会对对象的垃圾回收过程造成任何的影响。 所以cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); 用于对当前构造的DirectByteBuffer对象的垃圾回收过程进行跟踪。 当DirectByteBuffer对象从pending状态 ——&gt; enqueue状态时，会触发Cleaner的clean()， 而Cleaner的clean()的方法会实现通过unsafe对堆外内存的释放。 try { base = unsafe.allocateMemory(size); } catch (OutOfMemoryError x) { Bits.unreserveMemory(size, cap); throw x; } unsafe.setMemory(base, size, (byte) 0); if (pa &amp;&amp; (base % ps != 0)) { // Round up to page boundary address = base + ps - (base &amp; (ps - 1)); } else { address = base; } // DirectByteBuffer 内 构建Cleaner对象用于跟踪DirectByteBuffer对象的垃圾回收，以实现当DirectByteBuffer被垃圾回收时，堆外内存也会被释放 cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); // Cleaner 内 clean cleaner.clean() // Deallocator 继承 Runnable public void run() { if (address == 0) { // Paranoia return; } unsafe.freeMemory(address); address = 0; Bits.unreserveMemory(size, capacity); } java之HeapByteBuffer&amp;DirectByteBuffer以及回收DirectByteBuffer https://blog.csdn.net/xieyuooo/article/details/7547435 java nio 和 jvm 虚拟机参数的 XX:+DisableExplicitGC 的潜规则 https://blog.csdn.net/phj88/article/details/8011830 Java网络编程和NIO详解8：浅析mmap和Direct Buffer https://www.cnblogs.com/itxiaok/p/10357832.html KAFKA推送消息用到了sendfile，落盘技术用到了mmap，DMA贯穿其中 https://www.jianshu.com/p/7863667d5fa7 Java魔法类：Unsafe应用解析 https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html JDK 各个版本特性 Java5 ，2004-09-30发行 泛型 枚举 自动装箱拆箱 可变参数 注解 foreach循环（增强for、for/in） 静态导入 格式化（System.out.println 支持%s %d等格式化输出） 线程框架/数据结构 JUC Arrays工具类/StringBuilder/instrument Java6 开发代号为Mustang(野马),于2006-12-11发行。评价：鸡肋的版本，有JDBC4.0更新、Complier API、WebSevice支持的加强等更新。 Java7 2011年7月7日 switch中添加对String类型的支持 数字字面量的改进 / 数值可加下划 异常处理（捕获多个异常） try-with-resources 增强泛型推断 JSR203 NIO2.0（AIO）新IO的支持 JSR292与InvokeDynamic指令，可以调用其他语言生成的字节码 Path接口、DirectoryStream、Files、WatchService（重要接口更新） fork/join framework 并行计算 Java8 2014年 Lambda Java9 2017年9月1日 平台级modularity（原名：Jigsaw） 模块化系统 Java 的 REPL 工具： jShell 命令 Java10 2018年3月20日 局部变量的类型推断 var关键字 GC改进和内存管理 并行全垃圾回收器 G1 Java11 2018年9月26日 参考 https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA Service Mesh Sidecar https://mp.weixin.qq.com/s/qH7j3eR6mPZrOaLnzSM_6A Kubernetes 和 Istio ?" />
-<meta property="og:description" content="ArrayList的扩容方式和扩容时机 初始化 ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断 如果参数等于0，则将数组初始化为一个空数组， 如果不等于0，将数组初始化为一个容量为10的数组。 扩容时机 当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。 Vector会扩容2倍。 扩容方式 扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。 蚂蚁金服 https://www.cnblogs.com/silyvin/p/10223910.html volatile（保证可见性、禁止重排、无法实现原子性） 指令重排只会保证串行语义的执行一致性(单线程) 并不会关心多线程间的语义一致性 CAS &amp; Unsafe CAS的全称为Compare-And-Swap，它是一条CPU并发原语。它的功能是判断内存某个位置的值是否为预期值，如果是则更改为新的值，这个过程是原子的。 CAS并发原语体现在JAVA语言中就是sum.misc.Unsafe类中的各个方法。调用Unsafe类中的CAS方法，JVM会帮我们实现出CAS汇编指令。这是一种完全依赖于硬件的功能，通过它实现了原子操作。再次强调，由于CAS是一种系统原语，原语属于操作系统用语范畴，是由若干条指令组成的，用于完成某个功能的一个过程，并且原语的执行必须是连续的，在执行过程中不允许被中断，也就是说CAS是一条CPU的原子指令，不会造成所有的数据不一致问题。 CAS只能保证一个共享变量的原子性 CAS自旋 # 我们可以看到getAndAddInt方法执行时，有个do while # unsafe.getAndAddInt public final int getAndAddInt(Object var1, long var2, int var4){ int var5; do { var5 = this.getIntVolatile(var1, var2); } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4)); return var5; } # 如果CAS失败，会一直进行尝试。如果CAS长时间一直不成功，可能会能CPU带来很大的开锁。 CAS造成的ABA问题用版本号解决 # （旧值，新值） atomicReference.compareAndSet(101, 100); # AtomicStampedReference 以时间戳做为版本号解决ABA的问题 public boolean compareAndSet(V expectedReference, V newReference, int expectedStamp, int newStamp) { Exchanger 允许在并发任务之间交换数据。具体来说，Exchanger类允许在两个线程之间定义同步点。当两个线程都到达同步点时，他们交换数据结构，因此第一个线程的数据结构进入到第二个线程中，第二个线程的数据结构进入到第一个线程中 例子模拟一个队列中数据的交换使用的场景： 线程A往队列中存入数据 线程B从队列中消耗数据 当线程A存满的时候 才交换给线程B 当线程B消耗完成之后才交换给线程A。 线程A、B的生产和消耗的速率有可能不同 对方线程调用exchange之前，另一个线程执行到exchange会阻塞 JVM 对 Java 的原生锁做了哪些优化？ 一种优化是使用自旋锁，即在把线程进行阻塞操作之前先让线程自旋等待一段时间，可能在等待期间其他线程已经解锁，这时就无需再让线程执行阻塞操作，避免了用户态到内核态的切换。 现代 JDK 中还提供了三种不同的 Monitor 实现，也就是三种不同的锁： 偏向锁（Biased Locking） 轻量级锁 重量级锁,这三种锁使得 JDK 得以优化 Synchronized 的运行，当 JVM 检测到不同的竞争状况时，会自动切换到适合的锁实现，这就是锁的升级、降级。 当没有竞争出现时，默认会使用偏向锁。 JVM 会利用 CAS 操作，在对象头上的 Mark Word 部分设置线程 ID，以表示这个对象偏向于当前线程，所以并不涉及真正的互斥锁，因为在很多应用场景中，大部分对象生命周期中最多会被一个线程锁定，使用偏斜锁可以降低无竞争开销。 如果有另一线程试图锁定某个被偏斜过的对象，JVM 就撤销偏斜锁，切换到轻量级锁实现。 轻量级锁依赖 CAS 操作 Mark Word 来试图获取锁，如果重试成功，就使用普通的轻量级锁；否则，进一步升级为重量级锁。 ReadWriteLock final boolean tryWriteLock() { Thread current = Thread.currentThread(); int c = getState(); if (c != 0) { int w = exclusiveCount(c); if (w == 0 || current != getExclusiveOwnerThread()) return false; if (w == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); } if (!compareAndSetState(c, c + 1)) return false; setExclusiveOwnerThread(current); return true; } /** * Performs tryLock for read, enabling barging in both modes. * This is identical in effect to tryAcquireShared except for * lack of calls to readerShouldBlock. */ final boolean tryReadLock() { Thread current = Thread.currentThread(); for (;;) { int c = getState(); if (exclusiveCount(c) != 0 &amp;&amp; getExclusiveOwnerThread() != current) return false; int r = sharedCount(c); if (r == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); if (compareAndSetState(c, c + SHARED_UNIT)) { if (r == 0) { firstReader = current; firstReaderHoldCount = 1; } else if (firstReader == current) { firstReaderHoldCount++; } else { HoldCounter rh = cachedHoldCounter; if (rh == null || rh.tid != getThreadId(current)) cachedHoldCounter = rh = readHolds.get(); else if (rh.count == 0) readHolds.set(rh); rh.count++; } return true; } } } 面向对象的五大基本原则(solid) S单一职责SRP:Single-Responsibility Principle 一个类,最好只做一件事,只有一个引起它的变化。单一职责原则可以看做是低耦合,高内聚在面向对象原则的引申,将职责定义为引起变化的原因,以提高内聚性减少引起变化的原因。 O开放封闭原则OCP:Open-Closed Principle 软件实体应该是可扩展的,而不是可修改的。对扩展开放,对修改封闭 L里氏替换原则LSP:Liskov-Substitution Principle 子类必须能够替换其基类。这一思想表现为对继承机制的约束规范,只有子类能够替换其基类时,才能够保证系统在运行期内识别子类,这是保证继承复用的基础。 I接口隔离原则ISP:Interface-Segregation Principle 使用多个小的接口,而不是一个大的总接口 D依赖倒置原则DIP:Dependency-Inversion Principle 依赖于抽象。具体而言就是高层模块不依赖于底层模块,二者共同依赖于抽象。抽象不依赖于具体,具体依赖于抽象。 类什么时候才被初始化 创建类的实例，也就是new一个对象 访问某个类或接口的静态变量，或者对该静态变量赋值 调用类的静态方法 反射（Class.forName(“com.lyj.load”)） 初始化一个类的子类（会首先初始化子类的父类） JVM启动时标明的启动类，即文件名和类名相同的那个类 ArrayList ArrayList创建时的大小为0；当加入第一个元素时，进行第一次扩容时，默认容量大小为10。 ArrayList每次扩容都以当前数组大小的1.5倍去扩容。 Vector创建时的默认大小为10。 Vector每次扩容都以当前数组大小的2倍去扩容。当指定了capacityIncrement之后，每次扩容仅在原先基础上增加capacityIncrement个单位空间。 ArrayList和Vector的add、get、size方法的复杂度都为O(1)，remove方法的复杂度为O(n)。 ArrayList是非线程安全的，Vector是线程安全的。 hashmap为什么初始容量是2的指数幂 hashmap在确定元素落在数组的位置的时候，计算方法是hash%n，类似数据库分表，但是“取模”运算的消耗还是比较大的，可以用(n - 1) &amp; hash的位运算来使计算更加高效。 如果初始容量是奇数，那么（n-1)就为偶数，偶数2进制的结尾都是0，经过hash值&amp;运算后末尾都是0，那么0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这样就会造成空间的浪费而且会增加hash冲突。 只有是2的指数次幂的数字经过n-1之后，二进制尾数才是1，这样hash最后一位无论是什么，完全是由产生的hash值类决定，而不受n-1 影响。这样会提高效率。比如要扩容了，2的幂次方*2，在二进制中比如4和8，代表2的2次方和3次方，他们的2进制结构相 似, 比如 4：00000100 和 8：0000 1000，只是高位向前移了一位，这样扩容的时候，只需要判断高位hash,移动到之前位置的倍数就可以了，免去了重新计算位置的运算。 SpringBoot Start 引入该Start相关依赖 查找resources/META-INF/spring.factories下对应的XXXAutoConfigure 根据Condition自己加装相关的Bean @ConditionalOnBean:当容器中有指定的Bean的条件下 @ConditionalOnClass：当类路径下有指定的类的条件下 @ConditionalOnExpression:基于SpEL表达式作为判断条件 @ConditionalOnJava:基于JVM版本作为判断条件 @ConditionalOnJndi:在JNDI存在的条件下查找指定的位置 @ConditionalOnMissingBean:当容器中没有指定Bean的情况下 @ConditionalOnMissingClass:当类路径下没有指定的类的条件下 @ConditionalOnNotWebApplication:当前项目不是Web项目的条件下 @ConditionalOnProperty:指定的属性是否有指定的值 @ConditionalOnResource:类路径下是否有指定的资源 @ConditionalOnSingleCandidate:当指定的Bean在容器中只有一个，或者在有多个Bean的情况下，用来指定首选的Bean @ConditionalOnWebApplication:当前项目是Web项目的条件下 https://www.cnblogs.com/yuansc/p/9088212.html Spring中解决循环依赖为什么要用三级缓存 Bean创建有3步 初始化init,分配内存空间，此时在singletonFactories完成 注入各种属性，此时在earlySingletonObjects中 完美的bean最终会在singletonObjects中 举例 A与B循环依赖，A初始化经过第1、2步，在第2步发现依赖B 此时，触发B的初始化进入第1步，如果再进入第2步，会发现依赖A了，所以此时B只能在第1步 把B的第1步，不完美的B注入给A，先完成A的注入，让A进入第3步 然后，再完成B的完美初始化 关于NIO的 Channel与ByteBuffer Buffer的使用，主要是减少copy实现零拷贝，流的读写方式还是基于用户态和内核态的拷贝 从使用NIO读写文件说起——拆解堆外内存分配过程 https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw 从操作系统看NIO https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA 关于NIO的 空轮训的bug while (true) { selector.select(); // select 可能在无就绪事件时异常返回！主要发生在linux系统 Set&lt;SelectionKey&gt; readyKeys = selector.selectedKeys(); Iterator&lt;SelectionKey&gt; it = readyKeys.iterator(); while (it.hasNext()) { SelectionKey key = it.next(); ... // 处理事件 it.remove(); } } selector.select() 应该 一直阻塞，直到有就绪事件到达，但很遗憾，由于 Java NIO 实现上存在 bug，select() 可能在 没有 任何就绪事件的情况下返回，从而导致 while(true) 被不断执行，最后导致某个 CPU 核心的利用率飙升到 100%，这就是臭名昭著的 Java NIO 的 epoll bug。 解决方法 selectCnt = 0; // epoll 空轮询场景下 select 调用次数 long currentTimeNanos = System.nanoTime(); // 每个 for 循环开始时的绝对时间 for (;;) { timeoutMillis = ... // 初始化超时参数 int selectedKeys = selector.select(timeoutMillis); selectCnt++; long time = System.nanoTime(); // 记录执行到此处的绝对时间： // 检测逻辑 if (time - currentTimeNanos &gt; timeoutMillis) { selectCnt = 1; // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1 } else if (selectCnt &gt;= 重试次数阈值（默认 512）) { selector = selectRebuildSelector(selectCnt); // 解决 epoll bug 的实际逻辑 selectCnt = 1; // 解决本次 epoll bug，重置 selectCnt break; } currentTimeNanos = time; // 重置下次 for 循环开始时间 } http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/ Netty零拷贝总结的比较清楚了 零拷贝 在传统的I/O操作中，每次都需要把内核空间的数据拷贝到用户空间中，这样挺浪费空间的，所以零拷贝的出现就是为了解决这个问题。 主要有两种方法：mmap+write 和 Sendfile mmap+write 使用mmap+write方式替换原来的read+write方式，mmap是一种内存映射文件的方法，即将一个文件或者其他对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对应关系。 这样就可以省略掉原来内核Read缓冲区Copy数据到用户缓冲区，但是还是需要内核Read缓冲区将数据Copy到内核Socket缓冲区。 Sendfile Sendfile是为了简化通过网络在两个通道内进行的数据传输过程。 它不仅减少了数据复制，还减少了上下文次数的切换。数据传送只发生在内核空间里，所以减少了一次上下文切换，但是还是存在一次Copy。 后来进行了改进，将Kernel Buffer中对应的数据描述信息（内存地址，偏移量）记录到相应的Socket缓冲区中，这样连内核空间中的一次CPU Copy也省掉了。 Netty的零拷贝具体体现 Netty零拷贝主要体现在三个方面。 Netty的接收和发送ByteBuffer采用DirtectByteBuffer，使用堆外直接内存进行Socket读写，不需要进行字节缓冲区的二次拷贝。 Netty在操作多个Channel时，使用CompositeChannelBuffer，它并不会开辟新的内存并复制所有ChannelBuffer内容，而是直接保存了所有ChannelBuffer的引用，并在子ChannelBuffer里进行读写，实现了零拷贝。 Netty的文件传输采用了transferTo方法，它可以直接将文件缓冲区的数据发送到目标Channel。 https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg Netty https://www.cnblogs.com/xiaoyangjia/p/11526197.html Utf-8 是一种变长的编码方式 对于单字节的符号，字节的第一位设为0，后面7位为这个符号的unicode码。因此对于英语字母，UTF-8编码和ASCII码是相同的。 对于n字节的符号（n&gt;1），第一个字节的前n位都设为1，第n+1位设为0，后面字节的前两位一律设为10。剩下的没有提及的二进制位，全部为这个符号的unicode码。 1110xxxx 10xxxxxx 10xxxxxx （3个字节，xxx放入Unicode） Little endian和Big endian Unicode规范中定义，每一个文件的最前面分别加入一个表示编码顺序的字符，这个字符的名字叫做”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE），用FEFF表示。这正好是两个字节，而且FF比FE大1。 如果一个文本文件的头两个字节是FE FF，就表示该文件采用大头方式；如果头两个字节是FF FE，就表示该文件采用小头方式。 Redis与Memcached区别 如果简单地比较Redis与Memcached的区别，大多数都会得到以下观点： Redis不仅仅支持简单的k/v类型的数据，同时还提供list，set，hash等数据结构的存储。 Redis支持数据的备份，即master-slave模式的数据备份。 Redis支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用。 在Redis中，并不是所有的数据都一直存储在内存中的。这是和Memcached相比一个最大的区别 memcache可以存储大文件 DNS 在UDP协议栈上方 全面了解移动端DNS域名劫持等杂症：原理、根源、HttpDNS解决方案等 http://www.52im.net/thread-2121-1-1.html HTTPDNS 替代 LocalDNS 解决域名检验和多个子域名多个证书SNI（Server Name Indication 允许客户端向服务器提供它所请求的域名） 的问题 android 美图APP http://www.52im.net/thread-2172-1-1.html ios https://kangzubin.com/httpdns-https/ 百度 http://www.52im.net/thread-2472-1-1.html LVS之DR,NAT,TUN模式祥解 NAT：修改请求报文的目标IP，多目标IP的DNAT DR：操纵封装新的MAC地址 TUN：在原请求IP报文之外新加一个IP首部 FullNAT：修改请求报文的源和目标IP Nat 与 打洞 Nat技术 Net Address Transfer 全锥型NAT：一旦内部主机端口对(iAddr:iPort)被NAT网关映射到(eAddr:ePort)，所有后续的(iAddr:iPort)报文都会被转换为(eAddr:ePort)；任何一个外部主机发送到(eAddr:ePort)的报文将会被转换后发到(iAddr:iPort)。 限制锥型NAT：在全锥基础上限制机器 端口限制锥型NAT：在限制锥型NAT基础上限制端口 对称型NAT：限制在固定的主机+端口，可以理解为是”Session级” p2p打洞原理是通过中间服务器S”伪装”连接，获取到P1与P2的公网IP+端口组合，然后P1与P2分别伪装S与彼此建立连接 http://www.52im.net/thread-542-1-1.html http://www.52im.net/thread-50-1-1.html https://blog.csdn.net/weiyuefei/article/details/52247497 内存泄漏 内部类持有外部类 静态集合类 各种连接的打开与关闭 变量作用域不合理，比如类似逃逸 改变了Hash算法，导致之前的hash key 对应的 value不能被释放 ThreadLocal内存泄漏，是因为内部的Map的key是通过虚引用关联的threadLocal，发生GC的时候key就消失了，造成Value泄漏。使用的时候记得显示remove https://www.jianshu.com/p/1a5d288bdaee 监听器的回调绑定与取消 Direct Memory 回收 DirectByteBuffer是通过虚引用(Phantom Reference)来实现堆外内存的释放的 Cleaner是PhantomReference的子类，并通过自身的next和prev字段维护的一个双向链表。PhantomReference的作用在于跟踪垃圾回收过程， 并不会对对象的垃圾回收过程造成任何的影响。 所以cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); 用于对当前构造的DirectByteBuffer对象的垃圾回收过程进行跟踪。 当DirectByteBuffer对象从pending状态 ——&gt; enqueue状态时，会触发Cleaner的clean()， 而Cleaner的clean()的方法会实现通过unsafe对堆外内存的释放。 try { base = unsafe.allocateMemory(size); } catch (OutOfMemoryError x) { Bits.unreserveMemory(size, cap); throw x; } unsafe.setMemory(base, size, (byte) 0); if (pa &amp;&amp; (base % ps != 0)) { // Round up to page boundary address = base + ps - (base &amp; (ps - 1)); } else { address = base; } // DirectByteBuffer 内 构建Cleaner对象用于跟踪DirectByteBuffer对象的垃圾回收，以实现当DirectByteBuffer被垃圾回收时，堆外内存也会被释放 cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); // Cleaner 内 clean cleaner.clean() // Deallocator 继承 Runnable public void run() { if (address == 0) { // Paranoia return; } unsafe.freeMemory(address); address = 0; Bits.unreserveMemory(size, capacity); } java之HeapByteBuffer&amp;DirectByteBuffer以及回收DirectByteBuffer https://blog.csdn.net/xieyuooo/article/details/7547435 java nio 和 jvm 虚拟机参数的 XX:+DisableExplicitGC 的潜规则 https://blog.csdn.net/phj88/article/details/8011830 Java网络编程和NIO详解8：浅析mmap和Direct Buffer https://www.cnblogs.com/itxiaok/p/10357832.html KAFKA推送消息用到了sendfile，落盘技术用到了mmap，DMA贯穿其中 https://www.jianshu.com/p/7863667d5fa7 Java魔法类：Unsafe应用解析 https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html JDK 各个版本特性 Java5 ，2004-09-30发行 泛型 枚举 自动装箱拆箱 可变参数 注解 foreach循环（增强for、for/in） 静态导入 格式化（System.out.println 支持%s %d等格式化输出） 线程框架/数据结构 JUC Arrays工具类/StringBuilder/instrument Java6 开发代号为Mustang(野马),于2006-12-11发行。评价：鸡肋的版本，有JDBC4.0更新、Complier API、WebSevice支持的加强等更新。 Java7 2011年7月7日 switch中添加对String类型的支持 数字字面量的改进 / 数值可加下划 异常处理（捕获多个异常） try-with-resources 增强泛型推断 JSR203 NIO2.0（AIO）新IO的支持 JSR292与InvokeDynamic指令，可以调用其他语言生成的字节码 Path接口、DirectoryStream、Files、WatchService（重要接口更新） fork/join framework 并行计算 Java8 2014年 Lambda Java9 2017年9月1日 平台级modularity（原名：Jigsaw） 模块化系统 Java 的 REPL 工具： jShell 命令 Java10 2018年3月20日 局部变量的类型推断 var关键字 GC改进和内存管理 并行全垃圾回收器 G1 Java11 2018年9月26日 参考 https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA Service Mesh Sidecar https://mp.weixin.qq.com/s/qH7j3eR6mPZrOaLnzSM_6A Kubernetes 和 Istio ?" />
+<meta name="description" content="Java 作为企业级开发的主力语言，其核心知识体系覆盖了并发编程、集合框架、JVM 内存管理、Spring 生态等多个领域。本文将这些高频且重要的知识点进行系统梳理和深入解析，包括 ArrayList 的扩容机制、volatile 与 CAS 的并发原语、JVM 锁优化策略、HashMap 底层设计、NIO 编程要点等，适合有一定 Java 基础的开发者巩固和提升核心能力。 集合框架 ArrayList 的扩容机制 ArrayList 底层是一个动态数组，其扩容行为是面试中的高频话题。 初始化阶段：ArrayList 首先判断传入的初始容量参数 initialCapacity——如果等于 0，则初始化为空数组；如果不等于 0，则初始化为指定容量的数组（默认首次添加元素时容量为 10）。 扩容时机：当数组大小超过当前容量时（比如初始容量为 10，添加第 11 个元素时），触发扩容。新容量为旧容量的 1.5 倍（Vector 则是 2 倍）。 扩容方式：以新容量创建原数组的拷贝，修改原数组指向新数组，旧数组被 GC 回收。 ArrayList 与 Vector 的详细对比 ArrayList 创建时默认大小为 0，首次添加元素时扩容到 10；Vector 创建时默认大小为 10 ArrayList 每次扩容 1.5 倍；Vector 每次扩容 2 倍（指定 capacityIncrement 后，每次增加 capacityIncrement 个单位） add、get、size 方法复杂度都为 O(1)，remove 方法复杂度为 O(n) ArrayList 是非线程安全的，Vector 是线程安全的 参考：蚂蚁金服面试 https://www.cnblogs.com/silyvin/p/10223910.html HashMap 为什么初始容量是 2 的幂次方？ 这是一个精妙的设计决策，涉及三个层面： 位运算优化：HashMap 确定元素落在数组哪个位置时，计算方式是 hash % n（类似数据库分表）。但取模运算消耗较大，可以用 (n - 1) &amp; hash 的位运算替代，前提是 n 必须是 2 的幂。 减少哈希冲突：如果初始容量是奇数，(n-1) 就为偶数，偶数的二进制末尾都是 0，经过 &amp; 运算后末尾固定为 0，导致大量位置永远无法存放元素，空间浪费且增加哈希冲突。 扩容效率：2 的幂次方乘以 2 在二进制中只是高位前移一位（如 4=00000100 和 8=00001000），扩容时只需判断高位 hash，移动到之前位置的倍数即可，免去重新计算位置的运算。 并发编程 volatile 关键字 volatile 提供三个保证：保证可见性、禁止指令重排、但无法实现原子性。 指令重排只保证串行语义的执行一致性（单线程），并不关心多线程间的语义一致性。volatile 通过内存屏障（Memory Barrier）禁止了特定类型的指令重排，确保多线程环境下的可见性。 CAS 与 Unsafe CAS（Compare-And-Swap） 是一条 CPU 并发原语，判断内存某个位置的值是否为预期值，如果是则更改为新值，整个过程是原子的。 CAS 在 Java 中体现为 sun.misc.Unsafe 类中的各个方法，JVM 会将其编译为 CAS 汇编指令。这是一种完全依赖于硬件的功能，原语的执行必须是连续的，在执行过程中不允许被中断。 CAS 的自旋机制： # 我们可以看到getAndAddInt方法执行时，有个do while # unsafe.getAndAddInt public final int getAndAddInt(Object var1, long var2, int var4){ int var5; do { var5 = this.getIntVolatile(var1, var2); } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4)); return var5; } # 如果CAS失败，会一直进行尝试。如果CAS长时间一直不成功，可能会能CPU带来很大的开锁。 CAS 的局限性：只能保证一个共享变量的原子性。 ABA 问题与解决方案 CAS 存在 ABA 问题：一个值从 A 变为 B 再变回 A，CAS 检测不到中间的变化。解决方案是使用版本号： # （旧值，新值） atomicReference.compareAndSet(101, 100); # AtomicStampedReference 以时间戳做为版本号解决ABA的问题 public boolean compareAndSet(V expectedReference, V newReference, int expectedStamp, int newStamp) { Exchanger：线程间数据交换 Exchanger 允许在并发任务之间交换数据。当两个线程都到达同步点时，它们交换数据结构——第一个线程的数据进入第二个线程，反之亦然。 典型使用场景： 线程 A 往队列中存入数据，线程 B 从队列中消费数据 线程 A 存满时才交换给线程 B，线程 B 消费完成后才交换给线程 A 双方生产和消费速率可能不同 对方线程调用 exchange 之前，当前线程执行到 exchange 会阻塞 JVM 锁优化 JVM 对原生锁做了哪些优化？ 自旋锁：在将线程阻塞前先让其自旋等待一段时间，如果在等待期间其他线程已解锁，就无需阻塞操作，避免了用户态到内核态的切换。 三种 Monitor 实现（锁的升级路径）： 偏向锁（Biased Locking）：默认情况。JVM 利用 CAS 操作在对象头 Mark Word 部分设置线程 ID，表示该对象偏向当前线程。不涉及真正的互斥锁，因为大部分对象生命周期中最多被一个线程锁定。 轻量级锁：如果有另一线程试图锁定被偏向过的对象，JVM 撤销偏向锁，升级为轻量级锁。依赖 CAS 操作 Mark Word 试图获取锁。 重量级锁：如果轻量级锁 CAS 重试失败，进一步升级为重量级锁。 JVM 检测到不同的竞争状况时会自动切换到适合的锁实现，这就是锁的升级、降级。 ReadWriteLock 源码分析 读写锁的核心思想是读读共享、读写互斥、写写互斥，通过将 state 变量的高 16 位记录读锁、低 16 位记录写锁来实现： final boolean tryWriteLock() { Thread current = Thread.currentThread(); int c = getState(); if (c != 0) { int w = exclusiveCount(c); if (w == 0 || current != getExclusiveOwnerThread()) return false; if (w == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); } if (!compareAndSetState(c, c + 1)) return false; setExclusiveOwnerThread(current); return true; } /** * Performs tryLock for read, enabling barging in both modes. * This is identical in effect to tryAcquireShared except for * lack of calls to readerShouldBlock. */ final boolean tryReadLock() { Thread current = Thread.currentThread(); for (;;) { int c = getState(); if (exclusiveCount(c) != 0 &amp;&amp; getExclusiveOwnerThread() != current) return false; int r = sharedCount(c); if (r == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); if (compareAndSetState(c, c + SHARED_UNIT)) { if (r == 0) { firstReader = current; firstReaderHoldCount = 1; } else if (firstReader == current) { firstReaderHoldCount++; } else { HoldCounter rh = cachedHoldCounter; if (rh == null || rh.tid != getThreadId(current)) cachedHoldCounter = rh = readHolds.get(); else if (rh.count == 0) readHolds.set(rh); rh.count++; } return true; } } } 面向对象设计原则（SOLID） 这五大原则是面向对象设计的基石，遵循这些原则可以写出更加灵活、可维护的代码： S — 单一职责原则（SRP）：一个类最好只做一件事，只有一个引起它变化的原因。可以看作低耦合、高内聚在面向对象中的引申。 O — 开放封闭原则（OCP）：软件实体应该是可扩展的，而不是可修改的。对扩展开放，对修改封闭。 L — 里氏替换原则（LSP）：子类必须能够替换其基类。这是保证继承复用的基础。 I — 接口隔离原则（ISP）：使用多个小的接口，而不是一个大的总接口。 D — 依赖倒置原则（DIP）：依赖于抽象。高层模块不依赖于底层模块，二者共同依赖于抽象。 JVM 与类加载 类的初始化时机 以下六种情况会触发类的初始化： 创建类的实例（new 一个对象） 访问某个类或接口的静态变量，或对该静态变量赋值 调用类的静态方法 反射（Class.forName(&quot;com.lyj.load&quot;)） 初始化一个类的子类（会首先初始化父类） JVM 启动时标明的启动类（文件名和类名相同的那个类） NIO 编程 Channel 与 ByteBuffer Buffer 的使用主要是减少拷贝实现零拷贝，传统流的读写方式还是基于用户态和内核态的拷贝。 参考： 从使用NIO读写文件说起——拆解堆外内存分配过程 https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw 从操作系统看NIO https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA NIO 的空轮询 Bug 这是 Java NIO 中一个著名的 Bug：selector.select() 应该一直阻塞直到有就绪事件到达，但由于实现上的缺陷，select() 可能在没有任何就绪事件的情况下返回，导致 while(true) 被不断执行，最终某个 CPU 核心利用率飙升到 100%。 问题代码： while (true) { selector.select(); // select 可能在无就绪事件时异常返回！主要发生在linux系统 Set&lt;SelectionKey&gt; readyKeys = selector.selectedKeys(); Iterator&lt;SelectionKey&gt; it = readyKeys.iterator(); while (it.hasNext()) { SelectionKey key = it.next(); ... // 处理事件 it.remove(); } } Netty 的解决方案——通过计数检测空轮询并重建 Selector： selectCnt = 0; // epoll 空轮询场景下 select 调用次数 long currentTimeNanos = System.nanoTime(); // 每个 for 循环开始时的绝对时间 for (;;) { timeoutMillis = ... // 初始化超时参数 int selectedKeys = selector.select(timeoutMillis); selectCnt++; long time = System.nanoTime(); // 记录执行到此处的绝对时间： // 检测逻辑 if (time - currentTimeNanos &gt; timeoutMillis) { selectCnt = 1; // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1 } else if (selectCnt &gt;= 重试次数阈值（默认 512）) { selector = selectRebuildSelector(selectCnt); // 解决 epoll bug 的实际逻辑 selectCnt = 1; // 解决本次 epoll bug，重置 selectCnt break; } currentTimeNanos = time; // 重置下次 for 循环开始时间 } 参考：http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/ 零拷贝（Zero Copy） 传统 I/O 的拷贝问题 在传统 I/O 操作中，每次都需要把内核空间的数据拷贝到用户空间，效率低下。零拷贝就是为了解决这个问题。 两种实现方式 mmap + write：将文件映射到进程的地址空间，省去了内核 Read 缓冲区到用户缓冲区的拷贝，但仍需要内核 Read 缓冲区到内核 Socket 缓冲区的拷贝。 sendfile：不仅减少了数据拷贝，还减少了上下文切换次数。数据传送只发生在内核空间里。Linux 2.4 后进一步优化，将 Kernel Buffer 中的位置和偏移量信息记录到 Socket Buffer，NIC Buffer 直接从 Read Buffer 读取，彻底消除了内核空间的 CPU Copy。 Netty 的零拷贝体现 DirectByteBuffer：使用堆外直接内存进行 Socket 读写，不需要字节缓冲区的二次拷贝 CompositeChannelBuffer：操作多个 Channel 时不开辟新内存，直接保存所有 ChannelBuffer 的引用，在子 ChannelBuffer 里进行读写 transferTo 方法：直接将文件缓冲区的数据发送到目标 Channel 参考：https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg 内存管理 内存泄漏的常见原因 内部类持有外部类引用 静态集合类 各种连接的打开与关闭（数据库、IO、网络连接） 变量作用域不合理（类似逃逸） 修改了 Hash 算法导致之前的 hash key 对应的 value 不能被释放 ThreadLocal 内存泄漏：内部 Map 的 key 是通过虚引用关联的 ThreadLocal，GC 时 key 消失导致 Value 泄漏。使用时记得显式调用 remove()。参考：https://www.jianshu.com/p/1a5d288bdaee 监听器的回调绑定与取消 Direct Memory 回收机制 DirectByteBuffer 通过虚引用（Phantom Reference）实现堆外内存的释放。Cleaner 是 PhantomReference 的子类，通过双向链表维护。当 DirectByteBuffer 对象从 pending 状态到 enqueue 状态时，触发 Cleaner 的 clean() 方法，通过 Unsafe 释放堆外内存。 try { base = unsafe.allocateMemory(size); } catch (OutOfMemoryError x) { Bits.unreserveMemory(size, cap); throw x; } unsafe.setMemory(base, size, (byte) 0); if (pa &amp;&amp; (base % ps != 0)) { // Round up to page boundary address = base + ps - (base &amp; (ps - 1)); } else { address = base; } // DirectByteBuffer 内 构建Cleaner对象用于跟踪DirectByteBuffer对象的垃圾回收，以实现当DirectByteBuffer被垃圾回收时，堆外内存也会被释放 cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); // Cleaner 内 clean cleaner.clean() // Deallocator 继承 Runnable public void run() { if (address == 0) { // Paranoia return; } unsafe.freeMemory(address); address = 0; Bits.unreserveMemory(size, capacity); } 参考： java之HeapByteBuffer&amp;DirectByteBuffer以及回收DirectByteBuffer https://blog.csdn.net/xieyuooo/article/details/7547435 java nio 和 jvm 虚拟机参数的 XX:+DisableExplicitGC 的潜规则 https://blog.csdn.net/phj88/article/details/8011830 Java网络编程和NIO详解8：浅析mmap和Direct Buffer https://www.cnblogs.com/itxiaok/p/10357832.html KAFKA推送消息用到了sendfile，落盘技术用到了mmap，DMA贯穿其中 https://www.jianshu.com/p/7863667d5fa7 Java魔法类：Unsafe应用解析 https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html Spring 生态 SpringBoot Starter 自动装配原理 SpringBoot 的自动装配机制分三步： 引入该 Starter 的相关依赖 查找 resources/META-INF/spring.factories 下对应的 XXXAutoConfiguration 根据 Condition 注解自动装配相关 Bean 常用的条件注解： @ConditionalOnBean：容器中有指定 Bean 时 @ConditionalOnClass：类路径下有指定类时 @ConditionalOnExpression：基于 SpEL 表达式判断 @ConditionalOnJava：基于 JVM 版本判断 @ConditionalOnMissingBean：容器中没有指定 Bean 时 @ConditionalOnMissingClass：类路径下没有指定类时 @ConditionalOnProperty：指定属性是否有指定值 @ConditionalOnResource：类路径下是否有指定资源 @ConditionalOnWebApplication：当前项目是 Web 项目时 @ConditionalOnNotWebApplication：当前项目不是 Web 项目时 参考：https://www.cnblogs.com/yuansc/p/9088212.html Spring 循环依赖与三级缓存 Spring 使用三级缓存解决循环依赖问题。Bean 创建分三步： 初始化 init：分配内存空间，此时在 singletonFactories（三级缓存）完成 注入属性：此时在 earlySingletonObjects（二级缓存）中 完成创建：最终会在 singletonObjects（一级缓存）中 循环依赖解决过程（以 A 和 B 互相依赖为例）： A 初始化经过第 1、2 步，在第 2 步发现依赖 B 触发 B 的初始化进入第 1 步，B 在第 2 步发现依赖 A，此时 B 只能在第 1 步 把 B 第 1 步的不完美引用注入给 A，让 A 先完成注入进入第 3 步 最后完成 B 的完美初始化 编码与字符集 UTF-8 变长编码规则 单字节符号：第一位设为 0，后面 7 位为 Unicode 码。英语字母的 UTF-8 与 ASCII 码相同。 n 字节符号（n&gt;1）：第一个字节的前 n 位都设为 1，第 n+1 位设为 0，后面字节的前两位一律设为 10。例如：1110xxxx 10xxxxxx 10xxxxxx（3 字节，xxx 放入 Unicode） 字节序 Unicode 规范中每个文件最前面加入 BOM（Byte Order Mark），即”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE，FEFF）：头两个字节为 FE FF 表示大端，FF FE 表示小端。 Redis 与 Memcached 的区别 Redis 不仅支持 k/v，还支持 list、set、hash 等数据结构 Redis 支持 master-slave 模式的数据备份 Redis 支持数据持久化（RDB/AOF），可将内存数据保持到磁盘 Redis 并非所有数据都一直存储在内存中（这是与 Memcached 最大的区别） Memcached 可以存储大文件 网络相关 DNS DNS 基于 UDP 协议栈。在移动端 DNS 域名劫持是常见问题，HTTPDNS 可以替代 LocalDNS 解决此问题。 参考： 全面了解移动端DNS域名劫持 http://www.52im.net/thread-2121-1-1.html HTTPDNS 替代 LocalDNS 解决域名劫持和多子域名多证书 SNI 问题 LVS 的四种模式 NAT：修改请求报文的目标 IP（多目标 IP 的 DNAT） DR：操纵封装新的 MAC 地址 TUN：在原请求 IP 报文之外新加一个 IP 首部 FullNAT：修改请求报文的源和目标 IP NAT 与 P2P 打洞 NAT 分为四种类型：全锥型、限制锥型、端口限制锥型、对称型。P2P 打洞原理是通过中间服务器”伪装”连接，获取双方的公网 IP+端口组合后直接建立连接。 参考： http://www.52im.net/thread-542-1-1.html http://www.52im.net/thread-50-1-1.html JDK 各版本特性 Java 5（2004）：泛型、枚举、自动装箱拆箱、可变参数、注解、foreach、静态导入、JUC Java 6（2006）：JDBC 4.0、Compiler API、WebService 增强 Java 7（2011）：switch 支持 String、try-with-resources、NIO2（AIO）、fork/join、InvokeDynamic Java 8（2014）：Lambda 表达式、Stream API、Optional Java 9（2017）：模块化系统（Jigsaw）、jShell Java 10（2018.3）：局部变量类型推断 var、G1 并行全垃圾回收 Java 11（2018.9）：HTTP Client API、ZGC 参考：https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA Service Mesh 与 Sidecar Service Mesh 是下一代微服务架构，通过 Sidecar 代理实现服务间通信的透明化管理。Kubernetes + Istio 是目前最主流的 Service Mesh 方案。 参考：https://mp.weixin.qq.com/s/qH7j3eR6mPZrOaLnzSM_6A 总结 Java 核心知识体系博大精深，从底层的并发原语（volatile、CAS）到上层的 Spring 生态，从 JVM 内存管理到 NIO 网络编程，每个领域都值得深入研究。在实际开发中，理解这些底层机制不仅有助于写出高质量的代码，更能在面对复杂问题时快速定位根因。建议根据自身的技术栈选择重点方向深入学习，同时保持对整体知识体系的了解。" />
+<meta property="og:description" content="Java 作为企业级开发的主力语言，其核心知识体系覆盖了并发编程、集合框架、JVM 内存管理、Spring 生态等多个领域。本文将这些高频且重要的知识点进行系统梳理和深入解析，包括 ArrayList 的扩容机制、volatile 与 CAS 的并发原语、JVM 锁优化策略、HashMap 底层设计、NIO 编程要点等，适合有一定 Java 基础的开发者巩固和提升核心能力。 集合框架 ArrayList 的扩容机制 ArrayList 底层是一个动态数组，其扩容行为是面试中的高频话题。 初始化阶段：ArrayList 首先判断传入的初始容量参数 initialCapacity——如果等于 0，则初始化为空数组；如果不等于 0，则初始化为指定容量的数组（默认首次添加元素时容量为 10）。 扩容时机：当数组大小超过当前容量时（比如初始容量为 10，添加第 11 个元素时），触发扩容。新容量为旧容量的 1.5 倍（Vector 则是 2 倍）。 扩容方式：以新容量创建原数组的拷贝，修改原数组指向新数组，旧数组被 GC 回收。 ArrayList 与 Vector 的详细对比 ArrayList 创建时默认大小为 0，首次添加元素时扩容到 10；Vector 创建时默认大小为 10 ArrayList 每次扩容 1.5 倍；Vector 每次扩容 2 倍（指定 capacityIncrement 后，每次增加 capacityIncrement 个单位） add、get、size 方法复杂度都为 O(1)，remove 方法复杂度为 O(n) ArrayList 是非线程安全的，Vector 是线程安全的 参考：蚂蚁金服面试 https://www.cnblogs.com/silyvin/p/10223910.html HashMap 为什么初始容量是 2 的幂次方？ 这是一个精妙的设计决策，涉及三个层面： 位运算优化：HashMap 确定元素落在数组哪个位置时，计算方式是 hash % n（类似数据库分表）。但取模运算消耗较大，可以用 (n - 1) &amp; hash 的位运算替代，前提是 n 必须是 2 的幂。 减少哈希冲突：如果初始容量是奇数，(n-1) 就为偶数，偶数的二进制末尾都是 0，经过 &amp; 运算后末尾固定为 0，导致大量位置永远无法存放元素，空间浪费且增加哈希冲突。 扩容效率：2 的幂次方乘以 2 在二进制中只是高位前移一位（如 4=00000100 和 8=00001000），扩容时只需判断高位 hash，移动到之前位置的倍数即可，免去重新计算位置的运算。 并发编程 volatile 关键字 volatile 提供三个保证：保证可见性、禁止指令重排、但无法实现原子性。 指令重排只保证串行语义的执行一致性（单线程），并不关心多线程间的语义一致性。volatile 通过内存屏障（Memory Barrier）禁止了特定类型的指令重排，确保多线程环境下的可见性。 CAS 与 Unsafe CAS（Compare-And-Swap） 是一条 CPU 并发原语，判断内存某个位置的值是否为预期值，如果是则更改为新值，整个过程是原子的。 CAS 在 Java 中体现为 sun.misc.Unsafe 类中的各个方法，JVM 会将其编译为 CAS 汇编指令。这是一种完全依赖于硬件的功能，原语的执行必须是连续的，在执行过程中不允许被中断。 CAS 的自旋机制： # 我们可以看到getAndAddInt方法执行时，有个do while # unsafe.getAndAddInt public final int getAndAddInt(Object var1, long var2, int var4){ int var5; do { var5 = this.getIntVolatile(var1, var2); } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4)); return var5; } # 如果CAS失败，会一直进行尝试。如果CAS长时间一直不成功，可能会能CPU带来很大的开锁。 CAS 的局限性：只能保证一个共享变量的原子性。 ABA 问题与解决方案 CAS 存在 ABA 问题：一个值从 A 变为 B 再变回 A，CAS 检测不到中间的变化。解决方案是使用版本号： # （旧值，新值） atomicReference.compareAndSet(101, 100); # AtomicStampedReference 以时间戳做为版本号解决ABA的问题 public boolean compareAndSet(V expectedReference, V newReference, int expectedStamp, int newStamp) { Exchanger：线程间数据交换 Exchanger 允许在并发任务之间交换数据。当两个线程都到达同步点时，它们交换数据结构——第一个线程的数据进入第二个线程，反之亦然。 典型使用场景： 线程 A 往队列中存入数据，线程 B 从队列中消费数据 线程 A 存满时才交换给线程 B，线程 B 消费完成后才交换给线程 A 双方生产和消费速率可能不同 对方线程调用 exchange 之前，当前线程执行到 exchange 会阻塞 JVM 锁优化 JVM 对原生锁做了哪些优化？ 自旋锁：在将线程阻塞前先让其自旋等待一段时间，如果在等待期间其他线程已解锁，就无需阻塞操作，避免了用户态到内核态的切换。 三种 Monitor 实现（锁的升级路径）： 偏向锁（Biased Locking）：默认情况。JVM 利用 CAS 操作在对象头 Mark Word 部分设置线程 ID，表示该对象偏向当前线程。不涉及真正的互斥锁，因为大部分对象生命周期中最多被一个线程锁定。 轻量级锁：如果有另一线程试图锁定被偏向过的对象，JVM 撤销偏向锁，升级为轻量级锁。依赖 CAS 操作 Mark Word 试图获取锁。 重量级锁：如果轻量级锁 CAS 重试失败，进一步升级为重量级锁。 JVM 检测到不同的竞争状况时会自动切换到适合的锁实现，这就是锁的升级、降级。 ReadWriteLock 源码分析 读写锁的核心思想是读读共享、读写互斥、写写互斥，通过将 state 变量的高 16 位记录读锁、低 16 位记录写锁来实现： final boolean tryWriteLock() { Thread current = Thread.currentThread(); int c = getState(); if (c != 0) { int w = exclusiveCount(c); if (w == 0 || current != getExclusiveOwnerThread()) return false; if (w == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); } if (!compareAndSetState(c, c + 1)) return false; setExclusiveOwnerThread(current); return true; } /** * Performs tryLock for read, enabling barging in both modes. * This is identical in effect to tryAcquireShared except for * lack of calls to readerShouldBlock. */ final boolean tryReadLock() { Thread current = Thread.currentThread(); for (;;) { int c = getState(); if (exclusiveCount(c) != 0 &amp;&amp; getExclusiveOwnerThread() != current) return false; int r = sharedCount(c); if (r == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); if (compareAndSetState(c, c + SHARED_UNIT)) { if (r == 0) { firstReader = current; firstReaderHoldCount = 1; } else if (firstReader == current) { firstReaderHoldCount++; } else { HoldCounter rh = cachedHoldCounter; if (rh == null || rh.tid != getThreadId(current)) cachedHoldCounter = rh = readHolds.get(); else if (rh.count == 0) readHolds.set(rh); rh.count++; } return true; } } } 面向对象设计原则（SOLID） 这五大原则是面向对象设计的基石，遵循这些原则可以写出更加灵活、可维护的代码： S — 单一职责原则（SRP）：一个类最好只做一件事，只有一个引起它变化的原因。可以看作低耦合、高内聚在面向对象中的引申。 O — 开放封闭原则（OCP）：软件实体应该是可扩展的，而不是可修改的。对扩展开放，对修改封闭。 L — 里氏替换原则（LSP）：子类必须能够替换其基类。这是保证继承复用的基础。 I — 接口隔离原则（ISP）：使用多个小的接口，而不是一个大的总接口。 D — 依赖倒置原则（DIP）：依赖于抽象。高层模块不依赖于底层模块，二者共同依赖于抽象。 JVM 与类加载 类的初始化时机 以下六种情况会触发类的初始化： 创建类的实例（new 一个对象） 访问某个类或接口的静态变量，或对该静态变量赋值 调用类的静态方法 反射（Class.forName(&quot;com.lyj.load&quot;)） 初始化一个类的子类（会首先初始化父类） JVM 启动时标明的启动类（文件名和类名相同的那个类） NIO 编程 Channel 与 ByteBuffer Buffer 的使用主要是减少拷贝实现零拷贝，传统流的读写方式还是基于用户态和内核态的拷贝。 参考： 从使用NIO读写文件说起——拆解堆外内存分配过程 https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw 从操作系统看NIO https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA NIO 的空轮询 Bug 这是 Java NIO 中一个著名的 Bug：selector.select() 应该一直阻塞直到有就绪事件到达，但由于实现上的缺陷，select() 可能在没有任何就绪事件的情况下返回，导致 while(true) 被不断执行，最终某个 CPU 核心利用率飙升到 100%。 问题代码： while (true) { selector.select(); // select 可能在无就绪事件时异常返回！主要发生在linux系统 Set&lt;SelectionKey&gt; readyKeys = selector.selectedKeys(); Iterator&lt;SelectionKey&gt; it = readyKeys.iterator(); while (it.hasNext()) { SelectionKey key = it.next(); ... // 处理事件 it.remove(); } } Netty 的解决方案——通过计数检测空轮询并重建 Selector： selectCnt = 0; // epoll 空轮询场景下 select 调用次数 long currentTimeNanos = System.nanoTime(); // 每个 for 循环开始时的绝对时间 for (;;) { timeoutMillis = ... // 初始化超时参数 int selectedKeys = selector.select(timeoutMillis); selectCnt++; long time = System.nanoTime(); // 记录执行到此处的绝对时间： // 检测逻辑 if (time - currentTimeNanos &gt; timeoutMillis) { selectCnt = 1; // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1 } else if (selectCnt &gt;= 重试次数阈值（默认 512）) { selector = selectRebuildSelector(selectCnt); // 解决 epoll bug 的实际逻辑 selectCnt = 1; // 解决本次 epoll bug，重置 selectCnt break; } currentTimeNanos = time; // 重置下次 for 循环开始时间 } 参考：http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/ 零拷贝（Zero Copy） 传统 I/O 的拷贝问题 在传统 I/O 操作中，每次都需要把内核空间的数据拷贝到用户空间，效率低下。零拷贝就是为了解决这个问题。 两种实现方式 mmap + write：将文件映射到进程的地址空间，省去了内核 Read 缓冲区到用户缓冲区的拷贝，但仍需要内核 Read 缓冲区到内核 Socket 缓冲区的拷贝。 sendfile：不仅减少了数据拷贝，还减少了上下文切换次数。数据传送只发生在内核空间里。Linux 2.4 后进一步优化，将 Kernel Buffer 中的位置和偏移量信息记录到 Socket Buffer，NIC Buffer 直接从 Read Buffer 读取，彻底消除了内核空间的 CPU Copy。 Netty 的零拷贝体现 DirectByteBuffer：使用堆外直接内存进行 Socket 读写，不需要字节缓冲区的二次拷贝 CompositeChannelBuffer：操作多个 Channel 时不开辟新内存，直接保存所有 ChannelBuffer 的引用，在子 ChannelBuffer 里进行读写 transferTo 方法：直接将文件缓冲区的数据发送到目标 Channel 参考：https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg 内存管理 内存泄漏的常见原因 内部类持有外部类引用 静态集合类 各种连接的打开与关闭（数据库、IO、网络连接） 变量作用域不合理（类似逃逸） 修改了 Hash 算法导致之前的 hash key 对应的 value 不能被释放 ThreadLocal 内存泄漏：内部 Map 的 key 是通过虚引用关联的 ThreadLocal，GC 时 key 消失导致 Value 泄漏。使用时记得显式调用 remove()。参考：https://www.jianshu.com/p/1a5d288bdaee 监听器的回调绑定与取消 Direct Memory 回收机制 DirectByteBuffer 通过虚引用（Phantom Reference）实现堆外内存的释放。Cleaner 是 PhantomReference 的子类，通过双向链表维护。当 DirectByteBuffer 对象从 pending 状态到 enqueue 状态时，触发 Cleaner 的 clean() 方法，通过 Unsafe 释放堆外内存。 try { base = unsafe.allocateMemory(size); } catch (OutOfMemoryError x) { Bits.unreserveMemory(size, cap); throw x; } unsafe.setMemory(base, size, (byte) 0); if (pa &amp;&amp; (base % ps != 0)) { // Round up to page boundary address = base + ps - (base &amp; (ps - 1)); } else { address = base; } // DirectByteBuffer 内 构建Cleaner对象用于跟踪DirectByteBuffer对象的垃圾回收，以实现当DirectByteBuffer被垃圾回收时，堆外内存也会被释放 cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); // Cleaner 内 clean cleaner.clean() // Deallocator 继承 Runnable public void run() { if (address == 0) { // Paranoia return; } unsafe.freeMemory(address); address = 0; Bits.unreserveMemory(size, capacity); } 参考： java之HeapByteBuffer&amp;DirectByteBuffer以及回收DirectByteBuffer https://blog.csdn.net/xieyuooo/article/details/7547435 java nio 和 jvm 虚拟机参数的 XX:+DisableExplicitGC 的潜规则 https://blog.csdn.net/phj88/article/details/8011830 Java网络编程和NIO详解8：浅析mmap和Direct Buffer https://www.cnblogs.com/itxiaok/p/10357832.html KAFKA推送消息用到了sendfile，落盘技术用到了mmap，DMA贯穿其中 https://www.jianshu.com/p/7863667d5fa7 Java魔法类：Unsafe应用解析 https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html Spring 生态 SpringBoot Starter 自动装配原理 SpringBoot 的自动装配机制分三步： 引入该 Starter 的相关依赖 查找 resources/META-INF/spring.factories 下对应的 XXXAutoConfiguration 根据 Condition 注解自动装配相关 Bean 常用的条件注解： @ConditionalOnBean：容器中有指定 Bean 时 @ConditionalOnClass：类路径下有指定类时 @ConditionalOnExpression：基于 SpEL 表达式判断 @ConditionalOnJava：基于 JVM 版本判断 @ConditionalOnMissingBean：容器中没有指定 Bean 时 @ConditionalOnMissingClass：类路径下没有指定类时 @ConditionalOnProperty：指定属性是否有指定值 @ConditionalOnResource：类路径下是否有指定资源 @ConditionalOnWebApplication：当前项目是 Web 项目时 @ConditionalOnNotWebApplication：当前项目不是 Web 项目时 参考：https://www.cnblogs.com/yuansc/p/9088212.html Spring 循环依赖与三级缓存 Spring 使用三级缓存解决循环依赖问题。Bean 创建分三步： 初始化 init：分配内存空间，此时在 singletonFactories（三级缓存）完成 注入属性：此时在 earlySingletonObjects（二级缓存）中 完成创建：最终会在 singletonObjects（一级缓存）中 循环依赖解决过程（以 A 和 B 互相依赖为例）： A 初始化经过第 1、2 步，在第 2 步发现依赖 B 触发 B 的初始化进入第 1 步，B 在第 2 步发现依赖 A，此时 B 只能在第 1 步 把 B 第 1 步的不完美引用注入给 A，让 A 先完成注入进入第 3 步 最后完成 B 的完美初始化 编码与字符集 UTF-8 变长编码规则 单字节符号：第一位设为 0，后面 7 位为 Unicode 码。英语字母的 UTF-8 与 ASCII 码相同。 n 字节符号（n&gt;1）：第一个字节的前 n 位都设为 1，第 n+1 位设为 0，后面字节的前两位一律设为 10。例如：1110xxxx 10xxxxxx 10xxxxxx（3 字节，xxx 放入 Unicode） 字节序 Unicode 规范中每个文件最前面加入 BOM（Byte Order Mark），即”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE，FEFF）：头两个字节为 FE FF 表示大端，FF FE 表示小端。 Redis 与 Memcached 的区别 Redis 不仅支持 k/v，还支持 list、set、hash 等数据结构 Redis 支持 master-slave 模式的数据备份 Redis 支持数据持久化（RDB/AOF），可将内存数据保持到磁盘 Redis 并非所有数据都一直存储在内存中（这是与 Memcached 最大的区别） Memcached 可以存储大文件 网络相关 DNS DNS 基于 UDP 协议栈。在移动端 DNS 域名劫持是常见问题，HTTPDNS 可以替代 LocalDNS 解决此问题。 参考： 全面了解移动端DNS域名劫持 http://www.52im.net/thread-2121-1-1.html HTTPDNS 替代 LocalDNS 解决域名劫持和多子域名多证书 SNI 问题 LVS 的四种模式 NAT：修改请求报文的目标 IP（多目标 IP 的 DNAT） DR：操纵封装新的 MAC 地址 TUN：在原请求 IP 报文之外新加一个 IP 首部 FullNAT：修改请求报文的源和目标 IP NAT 与 P2P 打洞 NAT 分为四种类型：全锥型、限制锥型、端口限制锥型、对称型。P2P 打洞原理是通过中间服务器”伪装”连接，获取双方的公网 IP+端口组合后直接建立连接。 参考： http://www.52im.net/thread-542-1-1.html http://www.52im.net/thread-50-1-1.html JDK 各版本特性 Java 5（2004）：泛型、枚举、自动装箱拆箱、可变参数、注解、foreach、静态导入、JUC Java 6（2006）：JDBC 4.0、Compiler API、WebService 增强 Java 7（2011）：switch 支持 String、try-with-resources、NIO2（AIO）、fork/join、InvokeDynamic Java 8（2014）：Lambda 表达式、Stream API、Optional Java 9（2017）：模块化系统（Jigsaw）、jShell Java 10（2018.3）：局部变量类型推断 var、G1 并行全垃圾回收 Java 11（2018.9）：HTTP Client API、ZGC 参考：https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA Service Mesh 与 Sidecar Service Mesh 是下一代微服务架构，通过 Sidecar 代理实现服务间通信的透明化管理。Kubernetes + Istio 是目前最主流的 Service Mesh 方案。 参考：https://mp.weixin.qq.com/s/qH7j3eR6mPZrOaLnzSM_6A 总结 Java 核心知识体系博大精深，从底层的并发原语（volatile、CAS）到上层的 Spring 生态，从 JVM 内存管理到 NIO 网络编程，每个领域都值得深入研究。在实际开发中，理解这些底层机制不仅有助于写出高质量的代码，更能在面对复杂问题时快速定位根因。建议根据自身的技术栈选择重点方向深入学习，同时保持对整体知识体系的了解。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-07-08T14:18:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="DotDot" />
+<meta property="twitter:title" content="Java核心知识点精讲：并发编程、集合框架与JVM底层机制" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-07-08T14:18:00+08:00","datePublished":"2020-07-08T14:18:00+08:00","description":"ArrayList的扩容方式和扩容时机 初始化 ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断 如果参数等于0，则将数组初始化为一个空数组， 如果不等于0，将数组初始化为一个容量为10的数组。 扩容时机 当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。 Vector会扩容2倍。 扩容方式 扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。 蚂蚁金服 https://www.cnblogs.com/silyvin/p/10223910.html volatile（保证可见性、禁止重排、无法实现原子性） 指令重排只会保证串行语义的执行一致性(单线程) 并不会关心多线程间的语义一致性 CAS &amp; Unsafe CAS的全称为Compare-And-Swap，它是一条CPU并发原语。它的功能是判断内存某个位置的值是否为预期值，如果是则更改为新的值，这个过程是原子的。 CAS并发原语体现在JAVA语言中就是sum.misc.Unsafe类中的各个方法。调用Unsafe类中的CAS方法，JVM会帮我们实现出CAS汇编指令。这是一种完全依赖于硬件的功能，通过它实现了原子操作。再次强调，由于CAS是一种系统原语，原语属于操作系统用语范畴，是由若干条指令组成的，用于完成某个功能的一个过程，并且原语的执行必须是连续的，在执行过程中不允许被中断，也就是说CAS是一条CPU的原子指令，不会造成所有的数据不一致问题。 CAS只能保证一个共享变量的原子性 CAS自旋 # 我们可以看到getAndAddInt方法执行时，有个do while # unsafe.getAndAddInt public final int getAndAddInt(Object var1, long var2, int var4){ int var5; do { var5 = this.getIntVolatile(var1, var2); } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4)); return var5; } # 如果CAS失败，会一直进行尝试。如果CAS长时间一直不成功，可能会能CPU带来很大的开锁。 CAS造成的ABA问题用版本号解决 # （旧值，新值） atomicReference.compareAndSet(101, 100); # AtomicStampedReference 以时间戳做为版本号解决ABA的问题 public boolean compareAndSet(V expectedReference, V newReference, int expectedStamp, int newStamp) { Exchanger 允许在并发任务之间交换数据。具体来说，Exchanger类允许在两个线程之间定义同步点。当两个线程都到达同步点时，他们交换数据结构，因此第一个线程的数据结构进入到第二个线程中，第二个线程的数据结构进入到第一个线程中 例子模拟一个队列中数据的交换使用的场景： 线程A往队列中存入数据 线程B从队列中消耗数据 当线程A存满的时候 才交换给线程B 当线程B消耗完成之后才交换给线程A。 线程A、B的生产和消耗的速率有可能不同 对方线程调用exchange之前，另一个线程执行到exchange会阻塞 JVM 对 Java 的原生锁做了哪些优化？ 一种优化是使用自旋锁，即在把线程进行阻塞操作之前先让线程自旋等待一段时间，可能在等待期间其他线程已经解锁，这时就无需再让线程执行阻塞操作，避免了用户态到内核态的切换。 现代 JDK 中还提供了三种不同的 Monitor 实现，也就是三种不同的锁： 偏向锁（Biased Locking） 轻量级锁 重量级锁,这三种锁使得 JDK 得以优化 Synchronized 的运行，当 JVM 检测到不同的竞争状况时，会自动切换到适合的锁实现，这就是锁的升级、降级。 当没有竞争出现时，默认会使用偏向锁。 JVM 会利用 CAS 操作，在对象头上的 Mark Word 部分设置线程 ID，以表示这个对象偏向于当前线程，所以并不涉及真正的互斥锁，因为在很多应用场景中，大部分对象生命周期中最多会被一个线程锁定，使用偏斜锁可以降低无竞争开销。 如果有另一线程试图锁定某个被偏斜过的对象，JVM 就撤销偏斜锁，切换到轻量级锁实现。 轻量级锁依赖 CAS 操作 Mark Word 来试图获取锁，如果重试成功，就使用普通的轻量级锁；否则，进一步升级为重量级锁。 ReadWriteLock final boolean tryWriteLock() { Thread current = Thread.currentThread(); int c = getState(); if (c != 0) { int w = exclusiveCount(c); if (w == 0 || current != getExclusiveOwnerThread()) return false; if (w == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); } if (!compareAndSetState(c, c + 1)) return false; setExclusiveOwnerThread(current); return true; } /** * Performs tryLock for read, enabling barging in both modes. * This is identical in effect to tryAcquireShared except for * lack of calls to readerShouldBlock. */ final boolean tryReadLock() { Thread current = Thread.currentThread(); for (;;) { int c = getState(); if (exclusiveCount(c) != 0 &amp;&amp; getExclusiveOwnerThread() != current) return false; int r = sharedCount(c); if (r == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); if (compareAndSetState(c, c + SHARED_UNIT)) { if (r == 0) { firstReader = current; firstReaderHoldCount = 1; } else if (firstReader == current) { firstReaderHoldCount++; } else { HoldCounter rh = cachedHoldCounter; if (rh == null || rh.tid != getThreadId(current)) cachedHoldCounter = rh = readHolds.get(); else if (rh.count == 0) readHolds.set(rh); rh.count++; } return true; } } } 面向对象的五大基本原则(solid) S单一职责SRP:Single-Responsibility Principle 一个类,最好只做一件事,只有一个引起它的变化。单一职责原则可以看做是低耦合,高内聚在面向对象原则的引申,将职责定义为引起变化的原因,以提高内聚性减少引起变化的原因。 O开放封闭原则OCP:Open-Closed Principle 软件实体应该是可扩展的,而不是可修改的。对扩展开放,对修改封闭 L里氏替换原则LSP:Liskov-Substitution Principle 子类必须能够替换其基类。这一思想表现为对继承机制的约束规范,只有子类能够替换其基类时,才能够保证系统在运行期内识别子类,这是保证继承复用的基础。 I接口隔离原则ISP:Interface-Segregation Principle 使用多个小的接口,而不是一个大的总接口 D依赖倒置原则DIP:Dependency-Inversion Principle 依赖于抽象。具体而言就是高层模块不依赖于底层模块,二者共同依赖于抽象。抽象不依赖于具体,具体依赖于抽象。 类什么时候才被初始化 创建类的实例，也就是new一个对象 访问某个类或接口的静态变量，或者对该静态变量赋值 调用类的静态方法 反射（Class.forName(“com.lyj.load”)） 初始化一个类的子类（会首先初始化子类的父类） JVM启动时标明的启动类，即文件名和类名相同的那个类 ArrayList ArrayList创建时的大小为0；当加入第一个元素时，进行第一次扩容时，默认容量大小为10。 ArrayList每次扩容都以当前数组大小的1.5倍去扩容。 Vector创建时的默认大小为10。 Vector每次扩容都以当前数组大小的2倍去扩容。当指定了capacityIncrement之后，每次扩容仅在原先基础上增加capacityIncrement个单位空间。 ArrayList和Vector的add、get、size方法的复杂度都为O(1)，remove方法的复杂度为O(n)。 ArrayList是非线程安全的，Vector是线程安全的。 hashmap为什么初始容量是2的指数幂 hashmap在确定元素落在数组的位置的时候，计算方法是hash%n，类似数据库分表，但是“取模”运算的消耗还是比较大的，可以用(n - 1) &amp; hash的位运算来使计算更加高效。 如果初始容量是奇数，那么（n-1)就为偶数，偶数2进制的结尾都是0，经过hash值&amp;运算后末尾都是0，那么0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这样就会造成空间的浪费而且会增加hash冲突。 只有是2的指数次幂的数字经过n-1之后，二进制尾数才是1，这样hash最后一位无论是什么，完全是由产生的hash值类决定，而不受n-1 影响。这样会提高效率。比如要扩容了，2的幂次方*2，在二进制中比如4和8，代表2的2次方和3次方，他们的2进制结构相 似, 比如 4：00000100 和 8：0000 1000，只是高位向前移了一位，这样扩容的时候，只需要判断高位hash,移动到之前位置的倍数就可以了，免去了重新计算位置的运算。 SpringBoot Start 引入该Start相关依赖 查找resources/META-INF/spring.factories下对应的XXXAutoConfigure 根据Condition自己加装相关的Bean @ConditionalOnBean:当容器中有指定的Bean的条件下 @ConditionalOnClass：当类路径下有指定的类的条件下 @ConditionalOnExpression:基于SpEL表达式作为判断条件 @ConditionalOnJava:基于JVM版本作为判断条件 @ConditionalOnJndi:在JNDI存在的条件下查找指定的位置 @ConditionalOnMissingBean:当容器中没有指定Bean的情况下 @ConditionalOnMissingClass:当类路径下没有指定的类的条件下 @ConditionalOnNotWebApplication:当前项目不是Web项目的条件下 @ConditionalOnProperty:指定的属性是否有指定的值 @ConditionalOnResource:类路径下是否有指定的资源 @ConditionalOnSingleCandidate:当指定的Bean在容器中只有一个，或者在有多个Bean的情况下，用来指定首选的Bean @ConditionalOnWebApplication:当前项目是Web项目的条件下 https://www.cnblogs.com/yuansc/p/9088212.html Spring中解决循环依赖为什么要用三级缓存 Bean创建有3步 初始化init,分配内存空间，此时在singletonFactories完成 注入各种属性，此时在earlySingletonObjects中 完美的bean最终会在singletonObjects中 举例 A与B循环依赖，A初始化经过第1、2步，在第2步发现依赖B 此时，触发B的初始化进入第1步，如果再进入第2步，会发现依赖A了，所以此时B只能在第1步 把B的第1步，不完美的B注入给A，先完成A的注入，让A进入第3步 然后，再完成B的完美初始化 关于NIO的 Channel与ByteBuffer Buffer的使用，主要是减少copy实现零拷贝，流的读写方式还是基于用户态和内核态的拷贝 从使用NIO读写文件说起——拆解堆外内存分配过程 https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw 从操作系统看NIO https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA 关于NIO的 空轮训的bug while (true) { selector.select(); // select 可能在无就绪事件时异常返回！主要发生在linux系统 Set&lt;SelectionKey&gt; readyKeys = selector.selectedKeys(); Iterator&lt;SelectionKey&gt; it = readyKeys.iterator(); while (it.hasNext()) { SelectionKey key = it.next(); ... // 处理事件 it.remove(); } } selector.select() 应该 一直阻塞，直到有就绪事件到达，但很遗憾，由于 Java NIO 实现上存在 bug，select() 可能在 没有 任何就绪事件的情况下返回，从而导致 while(true) 被不断执行，最后导致某个 CPU 核心的利用率飙升到 100%，这就是臭名昭著的 Java NIO 的 epoll bug。 解决方法 selectCnt = 0; // epoll 空轮询场景下 select 调用次数 long currentTimeNanos = System.nanoTime(); // 每个 for 循环开始时的绝对时间 for (;;) { timeoutMillis = ... // 初始化超时参数 int selectedKeys = selector.select(timeoutMillis); selectCnt++; long time = System.nanoTime(); // 记录执行到此处的绝对时间： // 检测逻辑 if (time - currentTimeNanos &gt; timeoutMillis) { selectCnt = 1; // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1 } else if (selectCnt &gt;= 重试次数阈值（默认 512）) { selector = selectRebuildSelector(selectCnt); // 解决 epoll bug 的实际逻辑 selectCnt = 1; // 解决本次 epoll bug，重置 selectCnt break; } currentTimeNanos = time; // 重置下次 for 循环开始时间 } http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/ Netty零拷贝总结的比较清楚了 零拷贝 在传统的I/O操作中，每次都需要把内核空间的数据拷贝到用户空间中，这样挺浪费空间的，所以零拷贝的出现就是为了解决这个问题。 主要有两种方法：mmap+write 和 Sendfile mmap+write 使用mmap+write方式替换原来的read+write方式，mmap是一种内存映射文件的方法，即将一个文件或者其他对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对应关系。 这样就可以省略掉原来内核Read缓冲区Copy数据到用户缓冲区，但是还是需要内核Read缓冲区将数据Copy到内核Socket缓冲区。 Sendfile Sendfile是为了简化通过网络在两个通道内进行的数据传输过程。 它不仅减少了数据复制，还减少了上下文次数的切换。数据传送只发生在内核空间里，所以减少了一次上下文切换，但是还是存在一次Copy。 后来进行了改进，将Kernel Buffer中对应的数据描述信息（内存地址，偏移量）记录到相应的Socket缓冲区中，这样连内核空间中的一次CPU Copy也省掉了。 Netty的零拷贝具体体现 Netty零拷贝主要体现在三个方面。 Netty的接收和发送ByteBuffer采用DirtectByteBuffer，使用堆外直接内存进行Socket读写，不需要进行字节缓冲区的二次拷贝。 Netty在操作多个Channel时，使用CompositeChannelBuffer，它并不会开辟新的内存并复制所有ChannelBuffer内容，而是直接保存了所有ChannelBuffer的引用，并在子ChannelBuffer里进行读写，实现了零拷贝。 Netty的文件传输采用了transferTo方法，它可以直接将文件缓冲区的数据发送到目标Channel。 https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg Netty https://www.cnblogs.com/xiaoyangjia/p/11526197.html Utf-8 是一种变长的编码方式 对于单字节的符号，字节的第一位设为0，后面7位为这个符号的unicode码。因此对于英语字母，UTF-8编码和ASCII码是相同的。 对于n字节的符号（n&gt;1），第一个字节的前n位都设为1，第n+1位设为0，后面字节的前两位一律设为10。剩下的没有提及的二进制位，全部为这个符号的unicode码。 1110xxxx 10xxxxxx 10xxxxxx （3个字节，xxx放入Unicode） Little endian和Big endian Unicode规范中定义，每一个文件的最前面分别加入一个表示编码顺序的字符，这个字符的名字叫做”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE），用FEFF表示。这正好是两个字节，而且FF比FE大1。 如果一个文本文件的头两个字节是FE FF，就表示该文件采用大头方式；如果头两个字节是FF FE，就表示该文件采用小头方式。 Redis与Memcached区别 如果简单地比较Redis与Memcached的区别，大多数都会得到以下观点： Redis不仅仅支持简单的k/v类型的数据，同时还提供list，set，hash等数据结构的存储。 Redis支持数据的备份，即master-slave模式的数据备份。 Redis支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用。 在Redis中，并不是所有的数据都一直存储在内存中的。这是和Memcached相比一个最大的区别 memcache可以存储大文件 DNS 在UDP协议栈上方 全面了解移动端DNS域名劫持等杂症：原理、根源、HttpDNS解决方案等 http://www.52im.net/thread-2121-1-1.html HTTPDNS 替代 LocalDNS 解决域名检验和多个子域名多个证书SNI（Server Name Indication 允许客户端向服务器提供它所请求的域名） 的问题 android 美图APP http://www.52im.net/thread-2172-1-1.html ios https://kangzubin.com/httpdns-https/ 百度 http://www.52im.net/thread-2472-1-1.html LVS之DR,NAT,TUN模式祥解 NAT：修改请求报文的目标IP，多目标IP的DNAT DR：操纵封装新的MAC地址 TUN：在原请求IP报文之外新加一个IP首部 FullNAT：修改请求报文的源和目标IP Nat 与 打洞 Nat技术 Net Address Transfer 全锥型NAT：一旦内部主机端口对(iAddr:iPort)被NAT网关映射到(eAddr:ePort)，所有后续的(iAddr:iPort)报文都会被转换为(eAddr:ePort)；任何一个外部主机发送到(eAddr:ePort)的报文将会被转换后发到(iAddr:iPort)。 限制锥型NAT：在全锥基础上限制机器 端口限制锥型NAT：在限制锥型NAT基础上限制端口 对称型NAT：限制在固定的主机+端口，可以理解为是”Session级” p2p打洞原理是通过中间服务器S”伪装”连接，获取到P1与P2的公网IP+端口组合，然后P1与P2分别伪装S与彼此建立连接 http://www.52im.net/thread-542-1-1.html http://www.52im.net/thread-50-1-1.html https://blog.csdn.net/weiyuefei/article/details/52247497 内存泄漏 内部类持有外部类 静态集合类 各种连接的打开与关闭 变量作用域不合理，比如类似逃逸 改变了Hash算法，导致之前的hash key 对应的 value不能被释放 ThreadLocal内存泄漏，是因为内部的Map的key是通过虚引用关联的threadLocal，发生GC的时候key就消失了，造成Value泄漏。使用的时候记得显示remove https://www.jianshu.com/p/1a5d288bdaee 监听器的回调绑定与取消 Direct Memory 回收 DirectByteBuffer是通过虚引用(Phantom Reference)来实现堆外内存的释放的 Cleaner是PhantomReference的子类，并通过自身的next和prev字段维护的一个双向链表。PhantomReference的作用在于跟踪垃圾回收过程， 并不会对对象的垃圾回收过程造成任何的影响。 所以cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); 用于对当前构造的DirectByteBuffer对象的垃圾回收过程进行跟踪。 当DirectByteBuffer对象从pending状态 ——&gt; enqueue状态时，会触发Cleaner的clean()， 而Cleaner的clean()的方法会实现通过unsafe对堆外内存的释放。 try { base = unsafe.allocateMemory(size); } catch (OutOfMemoryError x) { Bits.unreserveMemory(size, cap); throw x; } unsafe.setMemory(base, size, (byte) 0); if (pa &amp;&amp; (base % ps != 0)) { // Round up to page boundary address = base + ps - (base &amp; (ps - 1)); } else { address = base; } // DirectByteBuffer 内 构建Cleaner对象用于跟踪DirectByteBuffer对象的垃圾回收，以实现当DirectByteBuffer被垃圾回收时，堆外内存也会被释放 cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); // Cleaner 内 clean cleaner.clean() // Deallocator 继承 Runnable public void run() { if (address == 0) { // Paranoia return; } unsafe.freeMemory(address); address = 0; Bits.unreserveMemory(size, capacity); } java之HeapByteBuffer&amp;DirectByteBuffer以及回收DirectByteBuffer https://blog.csdn.net/xieyuooo/article/details/7547435 java nio 和 jvm 虚拟机参数的 XX:+DisableExplicitGC 的潜规则 https://blog.csdn.net/phj88/article/details/8011830 Java网络编程和NIO详解8：浅析mmap和Direct Buffer https://www.cnblogs.com/itxiaok/p/10357832.html KAFKA推送消息用到了sendfile，落盘技术用到了mmap，DMA贯穿其中 https://www.jianshu.com/p/7863667d5fa7 Java魔法类：Unsafe应用解析 https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html JDK 各个版本特性 Java5 ，2004-09-30发行 泛型 枚举 自动装箱拆箱 可变参数 注解 foreach循环（增强for、for/in） 静态导入 格式化（System.out.println 支持%s %d等格式化输出） 线程框架/数据结构 JUC Arrays工具类/StringBuilder/instrument Java6 开发代号为Mustang(野马),于2006-12-11发行。评价：鸡肋的版本，有JDBC4.0更新、Complier API、WebSevice支持的加强等更新。 Java7 2011年7月7日 switch中添加对String类型的支持 数字字面量的改进 / 数值可加下划 异常处理（捕获多个异常） try-with-resources 增强泛型推断 JSR203 NIO2.0（AIO）新IO的支持 JSR292与InvokeDynamic指令，可以调用其他语言生成的字节码 Path接口、DirectoryStream、Files、WatchService（重要接口更新） fork/join framework 并行计算 Java8 2014年 Lambda Java9 2017年9月1日 平台级modularity（原名：Jigsaw） 模块化系统 Java 的 REPL 工具： jShell 命令 Java10 2018年3月20日 局部变量的类型推断 var关键字 GC改进和内存管理 并行全垃圾回收器 G1 Java11 2018年9月26日 参考 https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA Service Mesh Sidecar https://mp.weixin.qq.com/s/qH7j3eR6mPZrOaLnzSM_6A Kubernetes 和 Istio ?","headline":"DotDot","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-07-08T14:18:00+08:00","datePublished":"2020-07-08T14:18:00+08:00","description":"Java 作为企业级开发的主力语言，其核心知识体系覆盖了并发编程、集合框架、JVM 内存管理、Spring 生态等多个领域。本文将这些高频且重要的知识点进行系统梳理和深入解析，包括 ArrayList 的扩容机制、volatile 与 CAS 的并发原语、JVM 锁优化策略、HashMap 底层设计、NIO 编程要点等，适合有一定 Java 基础的开发者巩固和提升核心能力。 集合框架 ArrayList 的扩容机制 ArrayList 底层是一个动态数组，其扩容行为是面试中的高频话题。 初始化阶段：ArrayList 首先判断传入的初始容量参数 initialCapacity——如果等于 0，则初始化为空数组；如果不等于 0，则初始化为指定容量的数组（默认首次添加元素时容量为 10）。 扩容时机：当数组大小超过当前容量时（比如初始容量为 10，添加第 11 个元素时），触发扩容。新容量为旧容量的 1.5 倍（Vector 则是 2 倍）。 扩容方式：以新容量创建原数组的拷贝，修改原数组指向新数组，旧数组被 GC 回收。 ArrayList 与 Vector 的详细对比 ArrayList 创建时默认大小为 0，首次添加元素时扩容到 10；Vector 创建时默认大小为 10 ArrayList 每次扩容 1.5 倍；Vector 每次扩容 2 倍（指定 capacityIncrement 后，每次增加 capacityIncrement 个单位） add、get、size 方法复杂度都为 O(1)，remove 方法复杂度为 O(n) ArrayList 是非线程安全的，Vector 是线程安全的 参考：蚂蚁金服面试 https://www.cnblogs.com/silyvin/p/10223910.html HashMap 为什么初始容量是 2 的幂次方？ 这是一个精妙的设计决策，涉及三个层面： 位运算优化：HashMap 确定元素落在数组哪个位置时，计算方式是 hash % n（类似数据库分表）。但取模运算消耗较大，可以用 (n - 1) &amp; hash 的位运算替代，前提是 n 必须是 2 的幂。 减少哈希冲突：如果初始容量是奇数，(n-1) 就为偶数，偶数的二进制末尾都是 0，经过 &amp; 运算后末尾固定为 0，导致大量位置永远无法存放元素，空间浪费且增加哈希冲突。 扩容效率：2 的幂次方乘以 2 在二进制中只是高位前移一位（如 4=00000100 和 8=00001000），扩容时只需判断高位 hash，移动到之前位置的倍数即可，免去重新计算位置的运算。 并发编程 volatile 关键字 volatile 提供三个保证：保证可见性、禁止指令重排、但无法实现原子性。 指令重排只保证串行语义的执行一致性（单线程），并不关心多线程间的语义一致性。volatile 通过内存屏障（Memory Barrier）禁止了特定类型的指令重排，确保多线程环境下的可见性。 CAS 与 Unsafe CAS（Compare-And-Swap） 是一条 CPU 并发原语，判断内存某个位置的值是否为预期值，如果是则更改为新值，整个过程是原子的。 CAS 在 Java 中体现为 sun.misc.Unsafe 类中的各个方法，JVM 会将其编译为 CAS 汇编指令。这是一种完全依赖于硬件的功能，原语的执行必须是连续的，在执行过程中不允许被中断。 CAS 的自旋机制： # 我们可以看到getAndAddInt方法执行时，有个do while # unsafe.getAndAddInt public final int getAndAddInt(Object var1, long var2, int var4){ int var5; do { var5 = this.getIntVolatile(var1, var2); } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4)); return var5; } # 如果CAS失败，会一直进行尝试。如果CAS长时间一直不成功，可能会能CPU带来很大的开锁。 CAS 的局限性：只能保证一个共享变量的原子性。 ABA 问题与解决方案 CAS 存在 ABA 问题：一个值从 A 变为 B 再变回 A，CAS 检测不到中间的变化。解决方案是使用版本号： # （旧值，新值） atomicReference.compareAndSet(101, 100); # AtomicStampedReference 以时间戳做为版本号解决ABA的问题 public boolean compareAndSet(V expectedReference, V newReference, int expectedStamp, int newStamp) { Exchanger：线程间数据交换 Exchanger 允许在并发任务之间交换数据。当两个线程都到达同步点时，它们交换数据结构——第一个线程的数据进入第二个线程，反之亦然。 典型使用场景： 线程 A 往队列中存入数据，线程 B 从队列中消费数据 线程 A 存满时才交换给线程 B，线程 B 消费完成后才交换给线程 A 双方生产和消费速率可能不同 对方线程调用 exchange 之前，当前线程执行到 exchange 会阻塞 JVM 锁优化 JVM 对原生锁做了哪些优化？ 自旋锁：在将线程阻塞前先让其自旋等待一段时间，如果在等待期间其他线程已解锁，就无需阻塞操作，避免了用户态到内核态的切换。 三种 Monitor 实现（锁的升级路径）： 偏向锁（Biased Locking）：默认情况。JVM 利用 CAS 操作在对象头 Mark Word 部分设置线程 ID，表示该对象偏向当前线程。不涉及真正的互斥锁，因为大部分对象生命周期中最多被一个线程锁定。 轻量级锁：如果有另一线程试图锁定被偏向过的对象，JVM 撤销偏向锁，升级为轻量级锁。依赖 CAS 操作 Mark Word 试图获取锁。 重量级锁：如果轻量级锁 CAS 重试失败，进一步升级为重量级锁。 JVM 检测到不同的竞争状况时会自动切换到适合的锁实现，这就是锁的升级、降级。 ReadWriteLock 源码分析 读写锁的核心思想是读读共享、读写互斥、写写互斥，通过将 state 变量的高 16 位记录读锁、低 16 位记录写锁来实现： final boolean tryWriteLock() { Thread current = Thread.currentThread(); int c = getState(); if (c != 0) { int w = exclusiveCount(c); if (w == 0 || current != getExclusiveOwnerThread()) return false; if (w == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); } if (!compareAndSetState(c, c + 1)) return false; setExclusiveOwnerThread(current); return true; } /** * Performs tryLock for read, enabling barging in both modes. * This is identical in effect to tryAcquireShared except for * lack of calls to readerShouldBlock. */ final boolean tryReadLock() { Thread current = Thread.currentThread(); for (;;) { int c = getState(); if (exclusiveCount(c) != 0 &amp;&amp; getExclusiveOwnerThread() != current) return false; int r = sharedCount(c); if (r == MAX_COUNT) throw new Error(&quot;Maximum lock count exceeded&quot;); if (compareAndSetState(c, c + SHARED_UNIT)) { if (r == 0) { firstReader = current; firstReaderHoldCount = 1; } else if (firstReader == current) { firstReaderHoldCount++; } else { HoldCounter rh = cachedHoldCounter; if (rh == null || rh.tid != getThreadId(current)) cachedHoldCounter = rh = readHolds.get(); else if (rh.count == 0) readHolds.set(rh); rh.count++; } return true; } } } 面向对象设计原则（SOLID） 这五大原则是面向对象设计的基石，遵循这些原则可以写出更加灵活、可维护的代码： S — 单一职责原则（SRP）：一个类最好只做一件事，只有一个引起它变化的原因。可以看作低耦合、高内聚在面向对象中的引申。 O — 开放封闭原则（OCP）：软件实体应该是可扩展的，而不是可修改的。对扩展开放，对修改封闭。 L — 里氏替换原则（LSP）：子类必须能够替换其基类。这是保证继承复用的基础。 I — 接口隔离原则（ISP）：使用多个小的接口，而不是一个大的总接口。 D — 依赖倒置原则（DIP）：依赖于抽象。高层模块不依赖于底层模块，二者共同依赖于抽象。 JVM 与类加载 类的初始化时机 以下六种情况会触发类的初始化： 创建类的实例（new 一个对象） 访问某个类或接口的静态变量，或对该静态变量赋值 调用类的静态方法 反射（Class.forName(&quot;com.lyj.load&quot;)） 初始化一个类的子类（会首先初始化父类） JVM 启动时标明的启动类（文件名和类名相同的那个类） NIO 编程 Channel 与 ByteBuffer Buffer 的使用主要是减少拷贝实现零拷贝，传统流的读写方式还是基于用户态和内核态的拷贝。 参考： 从使用NIO读写文件说起——拆解堆外内存分配过程 https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw 从操作系统看NIO https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA NIO 的空轮询 Bug 这是 Java NIO 中一个著名的 Bug：selector.select() 应该一直阻塞直到有就绪事件到达，但由于实现上的缺陷，select() 可能在没有任何就绪事件的情况下返回，导致 while(true) 被不断执行，最终某个 CPU 核心利用率飙升到 100%。 问题代码： while (true) { selector.select(); // select 可能在无就绪事件时异常返回！主要发生在linux系统 Set&lt;SelectionKey&gt; readyKeys = selector.selectedKeys(); Iterator&lt;SelectionKey&gt; it = readyKeys.iterator(); while (it.hasNext()) { SelectionKey key = it.next(); ... // 处理事件 it.remove(); } } Netty 的解决方案——通过计数检测空轮询并重建 Selector： selectCnt = 0; // epoll 空轮询场景下 select 调用次数 long currentTimeNanos = System.nanoTime(); // 每个 for 循环开始时的绝对时间 for (;;) { timeoutMillis = ... // 初始化超时参数 int selectedKeys = selector.select(timeoutMillis); selectCnt++; long time = System.nanoTime(); // 记录执行到此处的绝对时间： // 检测逻辑 if (time - currentTimeNanos &gt; timeoutMillis) { selectCnt = 1; // 未发生 epoll 空轮询，所以把 selectCnt 重置为 1 } else if (selectCnt &gt;= 重试次数阈值（默认 512）) { selector = selectRebuildSelector(selectCnt); // 解决 epoll bug 的实际逻辑 selectCnt = 1; // 解决本次 epoll bug，重置 selectCnt break; } currentTimeNanos = time; // 重置下次 for 循环开始时间 } 参考：http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/ 零拷贝（Zero Copy） 传统 I/O 的拷贝问题 在传统 I/O 操作中，每次都需要把内核空间的数据拷贝到用户空间，效率低下。零拷贝就是为了解决这个问题。 两种实现方式 mmap + write：将文件映射到进程的地址空间，省去了内核 Read 缓冲区到用户缓冲区的拷贝，但仍需要内核 Read 缓冲区到内核 Socket 缓冲区的拷贝。 sendfile：不仅减少了数据拷贝，还减少了上下文切换次数。数据传送只发生在内核空间里。Linux 2.4 后进一步优化，将 Kernel Buffer 中的位置和偏移量信息记录到 Socket Buffer，NIC Buffer 直接从 Read Buffer 读取，彻底消除了内核空间的 CPU Copy。 Netty 的零拷贝体现 DirectByteBuffer：使用堆外直接内存进行 Socket 读写，不需要字节缓冲区的二次拷贝 CompositeChannelBuffer：操作多个 Channel 时不开辟新内存，直接保存所有 ChannelBuffer 的引用，在子 ChannelBuffer 里进行读写 transferTo 方法：直接将文件缓冲区的数据发送到目标 Channel 参考：https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg 内存管理 内存泄漏的常见原因 内部类持有外部类引用 静态集合类 各种连接的打开与关闭（数据库、IO、网络连接） 变量作用域不合理（类似逃逸） 修改了 Hash 算法导致之前的 hash key 对应的 value 不能被释放 ThreadLocal 内存泄漏：内部 Map 的 key 是通过虚引用关联的 ThreadLocal，GC 时 key 消失导致 Value 泄漏。使用时记得显式调用 remove()。参考：https://www.jianshu.com/p/1a5d288bdaee 监听器的回调绑定与取消 Direct Memory 回收机制 DirectByteBuffer 通过虚引用（Phantom Reference）实现堆外内存的释放。Cleaner 是 PhantomReference 的子类，通过双向链表维护。当 DirectByteBuffer 对象从 pending 状态到 enqueue 状态时，触发 Cleaner 的 clean() 方法，通过 Unsafe 释放堆外内存。 try { base = unsafe.allocateMemory(size); } catch (OutOfMemoryError x) { Bits.unreserveMemory(size, cap); throw x; } unsafe.setMemory(base, size, (byte) 0); if (pa &amp;&amp; (base % ps != 0)) { // Round up to page boundary address = base + ps - (base &amp; (ps - 1)); } else { address = base; } // DirectByteBuffer 内 构建Cleaner对象用于跟踪DirectByteBuffer对象的垃圾回收，以实现当DirectByteBuffer被垃圾回收时，堆外内存也会被释放 cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); // Cleaner 内 clean cleaner.clean() // Deallocator 继承 Runnable public void run() { if (address == 0) { // Paranoia return; } unsafe.freeMemory(address); address = 0; Bits.unreserveMemory(size, capacity); } 参考： java之HeapByteBuffer&amp;DirectByteBuffer以及回收DirectByteBuffer https://blog.csdn.net/xieyuooo/article/details/7547435 java nio 和 jvm 虚拟机参数的 XX:+DisableExplicitGC 的潜规则 https://blog.csdn.net/phj88/article/details/8011830 Java网络编程和NIO详解8：浅析mmap和Direct Buffer https://www.cnblogs.com/itxiaok/p/10357832.html KAFKA推送消息用到了sendfile，落盘技术用到了mmap，DMA贯穿其中 https://www.jianshu.com/p/7863667d5fa7 Java魔法类：Unsafe应用解析 https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html Spring 生态 SpringBoot Starter 自动装配原理 SpringBoot 的自动装配机制分三步： 引入该 Starter 的相关依赖 查找 resources/META-INF/spring.factories 下对应的 XXXAutoConfiguration 根据 Condition 注解自动装配相关 Bean 常用的条件注解： @ConditionalOnBean：容器中有指定 Bean 时 @ConditionalOnClass：类路径下有指定类时 @ConditionalOnExpression：基于 SpEL 表达式判断 @ConditionalOnJava：基于 JVM 版本判断 @ConditionalOnMissingBean：容器中没有指定 Bean 时 @ConditionalOnMissingClass：类路径下没有指定类时 @ConditionalOnProperty：指定属性是否有指定值 @ConditionalOnResource：类路径下是否有指定资源 @ConditionalOnWebApplication：当前项目是 Web 项目时 @ConditionalOnNotWebApplication：当前项目不是 Web 项目时 参考：https://www.cnblogs.com/yuansc/p/9088212.html Spring 循环依赖与三级缓存 Spring 使用三级缓存解决循环依赖问题。Bean 创建分三步： 初始化 init：分配内存空间，此时在 singletonFactories（三级缓存）完成 注入属性：此时在 earlySingletonObjects（二级缓存）中 完成创建：最终会在 singletonObjects（一级缓存）中 循环依赖解决过程（以 A 和 B 互相依赖为例）： A 初始化经过第 1、2 步，在第 2 步发现依赖 B 触发 B 的初始化进入第 1 步，B 在第 2 步发现依赖 A，此时 B 只能在第 1 步 把 B 第 1 步的不完美引用注入给 A，让 A 先完成注入进入第 3 步 最后完成 B 的完美初始化 编码与字符集 UTF-8 变长编码规则 单字节符号：第一位设为 0，后面 7 位为 Unicode 码。英语字母的 UTF-8 与 ASCII 码相同。 n 字节符号（n&gt;1）：第一个字节的前 n 位都设为 1，第 n+1 位设为 0，后面字节的前两位一律设为 10。例如：1110xxxx 10xxxxxx 10xxxxxx（3 字节，xxx 放入 Unicode） 字节序 Unicode 规范中每个文件最前面加入 BOM（Byte Order Mark），即”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE，FEFF）：头两个字节为 FE FF 表示大端，FF FE 表示小端。 Redis 与 Memcached 的区别 Redis 不仅支持 k/v，还支持 list、set、hash 等数据结构 Redis 支持 master-slave 模式的数据备份 Redis 支持数据持久化（RDB/AOF），可将内存数据保持到磁盘 Redis 并非所有数据都一直存储在内存中（这是与 Memcached 最大的区别） Memcached 可以存储大文件 网络相关 DNS DNS 基于 UDP 协议栈。在移动端 DNS 域名劫持是常见问题，HTTPDNS 可以替代 LocalDNS 解决此问题。 参考： 全面了解移动端DNS域名劫持 http://www.52im.net/thread-2121-1-1.html HTTPDNS 替代 LocalDNS 解决域名劫持和多子域名多证书 SNI 问题 LVS 的四种模式 NAT：修改请求报文的目标 IP（多目标 IP 的 DNAT） DR：操纵封装新的 MAC 地址 TUN：在原请求 IP 报文之外新加一个 IP 首部 FullNAT：修改请求报文的源和目标 IP NAT 与 P2P 打洞 NAT 分为四种类型：全锥型、限制锥型、端口限制锥型、对称型。P2P 打洞原理是通过中间服务器”伪装”连接，获取双方的公网 IP+端口组合后直接建立连接。 参考： http://www.52im.net/thread-542-1-1.html http://www.52im.net/thread-50-1-1.html JDK 各版本特性 Java 5（2004）：泛型、枚举、自动装箱拆箱、可变参数、注解、foreach、静态导入、JUC Java 6（2006）：JDBC 4.0、Compiler API、WebService 增强 Java 7（2011）：switch 支持 String、try-with-resources、NIO2（AIO）、fork/join、InvokeDynamic Java 8（2014）：Lambda 表达式、Stream API、Optional Java 9（2017）：模块化系统（Jigsaw）、jShell Java 10（2018.3）：局部变量类型推断 var、G1 并行全垃圾回收 Java 11（2018.9）：HTTP Client API、ZGC 参考：https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA Service Mesh 与 Sidecar Service Mesh 是下一代微服务架构，通过 Sidecar 代理实现服务间通信的透明化管理。Kubernetes + Istio 是目前最主流的 Service Mesh 方案。 参考：https://mp.weixin.qq.com/s/qH7j3eR6mPZrOaLnzSM_6A 总结 Java 核心知识体系博大精深，从底层的并发原语（volatile、CAS）到上层的 Spring 生态，从 JVM 内存管理到 NIO 网络编程，每个领域都值得深入研究。在实际开发中，理解这些底层机制不仅有助于写出高质量的代码，更能在面对复杂问题时快速定位根因。建议根据自身的技术栈选择重点方向深入学习，同时保持对整体知识体系的了解。","headline":"Java核心知识点精讲：并发编程、集合框架与JVM底层机制","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html">&laquo; 用户画像之标签数据开发</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/07/UserProfile3.html">&laquo; 用户画像标签体系建设：从离线到实时...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html">Netty In Action &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html">Netty 实战：从核心组件到高性... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">DotDot</h1>
+    <h1 class="asset-name entry-title">Java核心知识点精讲：并发编程、集合框架与JVM底层机制</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,32 +97,60 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="arraylist的扩容方式和扩容时机">ArrayList的扩容方式和扩容时机</h4>
+      <p>Java 作为企业级开发的主力语言，其核心知识体系覆盖了并发编程、集合框架、JVM 内存管理、Spring 生态等多个领域。本文将这些高频且重要的知识点进行系统梳理和深入解析，包括 ArrayList 的扩容机制、volatile 与 CAS 的并发原语、JVM 锁优化策略、HashMap 底层设计、NIO 编程要点等，适合有一定 Java 基础的开发者巩固和提升核心能力。</p>
+
+<hr />
+
+<h2 id="集合框架">集合框架</h2>
+
+<h3 id="arraylist-的扩容机制">ArrayList 的扩容机制</h3>
+
+<p>ArrayList 底层是一个动态数组，其扩容行为是面试中的高频话题。</p>
+
+<p><strong>初始化阶段</strong>：ArrayList 首先判断传入的初始容量参数 initialCapacity——如果等于 0，则初始化为空数组；如果不等于 0，则初始化为指定容量的数组（默认首次添加元素时容量为 10）。</p>
+
+<p><strong>扩容时机</strong>：当数组大小超过当前容量时（比如初始容量为 10，添加第 11 个元素时），触发扩容。新容量为旧容量的 <strong>1.5 倍</strong>（Vector 则是 2 倍）。</p>
+
+<p><strong>扩容方式</strong>：以新容量创建原数组的拷贝，修改原数组指向新数组，旧数组被 GC 回收。</p>
+
+<h3 id="arraylist-与-vector-的详细对比">ArrayList 与 Vector 的详细对比</h3>
+
 <ul>
-  <li>初始化
-  ArrayList的底层是一个动态数组，ArrayList首先会对传进来的初始化参数initalCapacity进行判断
-  如果参数等于0，则将数组初始化为一个空数组，
-  如果不等于0，将数组初始化为一个容量为10的数组。</li>
-  <li>扩容时机
-  当数组的大小大于初始容量的时候(比如初始为10，当添加第11个元素的时候)，就会进行扩容，新的容量为旧的容量的1.5倍。
-  Vector会扩容2倍。</li>
-  <li>扩容方式
- 扩容的时候，会以新的容量建一个原数组的拷贝，修改原数组，指向这个新数组，原数组被抛弃，会被GC回收。</li>
-  <li>蚂蚁金服 <a href="https://www.cnblogs.com/silyvin/p/10223910.html">https://www.cnblogs.com/silyvin/p/10223910.html</a></li>
+  <li>ArrayList 创建时默认大小为 0，首次添加元素时扩容到 10；Vector 创建时默认大小为 10</li>
+  <li>ArrayList 每次扩容 1.5 倍；Vector 每次扩容 2 倍（指定 capacityIncrement 后，每次增加 capacityIncrement 个单位）</li>
+  <li>add、get、size 方法复杂度都为 O(1)，remove 方法复杂度为 O(n)</li>
+  <li>ArrayList 是非线程安全的，Vector 是线程安全的</li>
 </ul>
 
-<h4 id="volatile保证可见性禁止重排无法实现原子性">volatile（保证可见性、禁止重排、无法实现原子性）</h4>
-<ul>
-  <li>指令重排只会保证串行语义的执行一致性(单线程) 并不会关心多线程间的语义一致性</li>
-</ul>
+<p>参考：蚂蚁金服面试 <a href="https://www.cnblogs.com/silyvin/p/10223910.html">https://www.cnblogs.com/silyvin/p/10223910.html</a></p>
 
-<h3 id="cas--unsafe">CAS &amp; Unsafe</h3>
-<ul>
-  <li>CAS的全称为Compare-And-Swap，它是一条CPU并发原语。它的功能是判断内存某个位置的值是否为预期值，如果是则更改为新的值，这个过程是原子的。</li>
-  <li>CAS并发原语体现在JAVA语言中就是sum.misc.Unsafe类中的各个方法。调用Unsafe类中的CAS方法，JVM会帮我们实现出CAS汇编指令。这是一种完全依赖于硬件的功能，通过它实现了原子操作。再次强调，由于CAS是一种系统原语，原语属于操作系统用语范畴，是由若干条指令组成的，用于完成某个功能的一个过程，并且原语的执行必须是连续的，在执行过程中不允许被中断，也就是说CAS是一条CPU的原子指令，不会造成所有的数据不一致问题。</li>
-  <li>CAS只能保证一个共享变量的原子性</li>
-  <li>CAS自旋</li>
-</ul>
+<h3 id="hashmap-为什么初始容量是-2-的幂次方">HashMap 为什么初始容量是 2 的幂次方？</h3>
+
+<p>这是一个精妙的设计决策，涉及三个层面：</p>
+
+<ol>
+  <li><strong>位运算优化</strong>：HashMap 确定元素落在数组哪个位置时，计算方式是 <code class="language-plaintext highlighter-rouge">hash % n</code>（类似数据库分表）。但取模运算消耗较大，可以用 <code class="language-plaintext highlighter-rouge">(n - 1) &amp; hash</code> 的位运算替代，前提是 n 必须是 2 的幂。</li>
+  <li><strong>减少哈希冲突</strong>：如果初始容量是奇数，(n-1) 就为偶数，偶数的二进制末尾都是 0，经过 &amp; 运算后末尾固定为 0，导致大量位置永远无法存放元素，空间浪费且增加哈希冲突。</li>
+  <li><strong>扩容效率</strong>：2 的幂次方乘以 2 在二进制中只是高位前移一位（如 4=00000100 和 8=00001000），扩容时只需判断高位 hash，移动到之前位置的倍数即可，免去重新计算位置的运算。</li>
+</ol>
+
+<hr />
+
+<h2 id="并发编程">并发编程</h2>
+
+<h3 id="volatile-关键字">volatile 关键字</h3>
+
+<p>volatile 提供三个保证：<strong>保证可见性、禁止指令重排、但无法实现原子性</strong>。</p>
+
+<p>指令重排只保证串行语义的执行一致性（单线程），并不关心多线程间的语义一致性。volatile 通过内存屏障（Memory Barrier）禁止了特定类型的指令重排，确保多线程环境下的可见性。</p>
+
+<h3 id="cas-与-unsafe">CAS 与 Unsafe</h3>
+
+<p><strong>CAS（Compare-And-Swap）</strong> 是一条 CPU 并发原语，判断内存某个位置的值是否为预期值，如果是则更改为新值，整个过程是原子的。</p>
+
+<p>CAS 在 Java 中体现为 <code class="language-plaintext highlighter-rouge">sun.misc.Unsafe</code> 类中的各个方法，JVM 会将其编译为 CAS 汇编指令。这是一种完全依赖于硬件的功能，原语的执行必须是连续的，在执行过程中不允许被中断。</p>
+
+<p><strong>CAS 的自旋机制</strong>：</p>
 
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 我们可以看到getAndAddInt方法执行时，有个do while</span>
 <span class="c"># unsafe.getAndAddInt</span>
@@ -137,9 +165,11 @@ public final int getAndAddInt<span class="o">(</span>Object var1, long var2, int
 <span class="c"># 如果CAS失败，会一直进行尝试。如果CAS长时间一直不成功，可能会能CPU带来很大的开锁。</span>
 </code></pre></div></div>
 
-<ul>
-  <li>CAS造成的ABA问题用版本号解决</li>
-</ul>
+<p><strong>CAS 的局限性</strong>：只能保证一个共享变量的原子性。</p>
+
+<h3 id="aba-问题与解决方案">ABA 问题与解决方案</h3>
+
+<p>CAS 存在 ABA 问题：一个值从 A 变为 B 再变回 A，CAS 检测不到中间的变化。解决方案是使用版本号：</p>
 
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># （旧值，新值）</span>
 atomicReference.compareAndSet<span class="o">(</span>101, 100<span class="o">)</span><span class="p">;</span>
@@ -151,44 +181,40 @@ public boolean compareAndSet<span class="o">(</span>V   expectedReference,
                                  int newStamp<span class="o">)</span> <span class="o">{</span>
 </code></pre></div></div>
 
-<h4 id="exchanger">Exchanger</h4>
+<h3 id="exchanger线程间数据交换">Exchanger：线程间数据交换</h3>
+
+<p>Exchanger 允许在并发任务之间交换数据。当两个线程都到达同步点时，它们交换数据结构——第一个线程的数据进入第二个线程，反之亦然。</p>
+
+<p>典型使用场景：</p>
 <ul>
-  <li>允许在并发任务之间交换数据。具体来说，Exchanger类允许在两个线程之间定义同步点。当两个线程都到达同步点时，他们交换数据结构，因此第一个线程的数据结构进入到第二个线程中，第二个线程的数据结构进入到第一个线程中</li>
-  <li>例子模拟一个队列中数据的交换使用的场景：
-    <ul>
-      <li>线程A往队列中存入数据</li>
-      <li>线程B从队列中消耗数据</li>
-      <li>当线程A存满的时候</li>
-      <li>才交换给线程B</li>
-      <li>当线程B消耗完成之后才交换给线程A。</li>
-      <li>线程A、B的生产和消耗的速率有可能不同</li>
-      <li>对方线程调用exchange之前，另一个线程执行到exchange会阻塞</li>
-    </ul>
-  </li>
+  <li>线程 A 往队列中存入数据，线程 B 从队列中消费数据</li>
+  <li>线程 A 存满时才交换给线程 B，线程 B 消费完成后才交换给线程 A</li>
+  <li>双方生产和消费速率可能不同</li>
+  <li>对方线程调用 exchange 之前，当前线程执行到 exchange 会阻塞</li>
 </ul>
 
-<h4 id="jvm-对-java-的原生锁做了哪些优化">JVM 对 Java 的原生锁做了哪些优化？</h4>
+<hr />
+
+<h2 id="jvm-锁优化">JVM 锁优化</h2>
+
+<h3 id="jvm-对原生锁做了哪些优化">JVM 对原生锁做了哪些优化？</h3>
+
+<p><strong>自旋锁</strong>：在将线程阻塞前先让其自旋等待一段时间，如果在等待期间其他线程已解锁，就无需阻塞操作，避免了用户态到内核态的切换。</p>
+
+<p><strong>三种 Monitor 实现</strong>（锁的升级路径）：</p>
+
 <ul>
-  <li>
-    <p>一种优化是使用自旋锁，即在把线程进行阻塞操作之前先让线程自旋等待一段时间，可能在等待期间其他线程已经解锁，这时就无需再让线程执行阻塞操作，避免了用户态到内核态的切换。</p>
-  </li>
-  <li>现代 JDK 中还提供了三种不同的 Monitor 实现，也就是三种不同的锁：
-    <ul>
-      <li>偏向锁（Biased Locking）</li>
-      <li>轻量级锁</li>
-      <li>重量级锁,这三种锁使得 JDK 得以优化 Synchronized 的运行，当 JVM 检测到不同的竞争状况时，会自动切换到适合的锁实现，这就是锁的升级、降级。</li>
-    </ul>
-  </li>
-  <li>当没有竞争出现时，默认会使用偏向锁。
-    <ul>
-      <li>JVM 会利用 CAS 操作，在对象头上的 Mark Word 部分设置线程 ID，以表示这个对象偏向于当前线程，所以并不涉及真正的互斥锁，因为在很多应用场景中，大部分对象生命周期中最多会被一个线程锁定，使用偏斜锁可以降低无竞争开销。</li>
-    </ul>
-  </li>
-  <li>如果有另一线程试图锁定某个被偏斜过的对象，JVM 就撤销偏斜锁，切换到轻量级锁实现。</li>
-  <li>轻量级锁依赖 CAS 操作 Mark Word 来试图获取锁，如果重试成功，就使用普通的轻量级锁；否则，进一步升级为重量级锁。</li>
+  <li><strong>偏向锁（Biased Locking）</strong>：默认情况。JVM 利用 CAS 操作在对象头 Mark Word 部分设置线程 ID，表示该对象偏向当前线程。不涉及真正的互斥锁，因为大部分对象生命周期中最多被一个线程锁定。</li>
+  <li><strong>轻量级锁</strong>：如果有另一线程试图锁定被偏向过的对象，JVM 撤销偏向锁，升级为轻量级锁。依赖 CAS 操作 Mark Word 试图获取锁。</li>
+  <li><strong>重量级锁</strong>：如果轻量级锁 CAS 重试失败，进一步升级为重量级锁。</li>
 </ul>
 
-<h4 id="readwritelock">ReadWriteLock</h4>
+<p>JVM 检测到不同的竞争状况时会自动切换到适合的锁实现，这就是锁的升级、降级。</p>
+
+<h3 id="readwritelock-源码分析">ReadWriteLock 源码分析</h3>
+
+<p>读写锁的核心思想是读读共享、读写互斥、写写互斥，通过将 state 变量的高 16 位记录读锁、低 16 位记录写锁来实现：</p>
+
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>final boolean tryWriteLock<span class="o">()</span> <span class="o">{</span>
             Thread current <span class="o">=</span> Thread.currentThread<span class="o">()</span><span class="p">;</span>
             int c <span class="o">=</span> getState<span class="o">()</span><span class="p">;</span>
@@ -239,97 +265,58 @@ public boolean compareAndSet<span class="o">(</span>V   expectedReference,
             <span class="o">}</span>
         <span class="o">}</span>
 </code></pre></div></div>
-<h4 id="面向对象的五大基本原则solid">面向对象的五大基本原则(solid)</h4>
+
+<hr />
+
+<h2 id="面向对象设计原则solid">面向对象设计原则（SOLID）</h2>
+
+<p>这五大原则是面向对象设计的基石，遵循这些原则可以写出更加灵活、可维护的代码：</p>
+
 <ul>
-  <li>S单一职责SRP:Single-Responsibility Principle
-   一个类,最好只做一件事,只有一个引起它的变化。单一职责原则可以看做是低耦合,高内聚在面向对象原则的引申,将职责定义为引起变化的原因,以提高内聚性减少引起变化的原因。</li>
-  <li>O开放封闭原则OCP:Open-Closed Principle
-   软件实体应该是可扩展的,而不是可修改的。对扩展开放,对修改封闭</li>
-  <li>L里氏替换原则LSP:Liskov-Substitution Principle
-   子类必须能够替换其基类。这一思想表现为对继承机制的约束规范,只有子类能够替换其基类时,才能够保证系统在运行期内识别子类,这是保证继承复用的基础。</li>
-  <li>I接口隔离原则ISP:Interface-Segregation Principle
-   使用多个小的接口,而不是一个大的总接口</li>
-  <li>D依赖倒置原则DIP:Dependency-Inversion Principle
-   依赖于抽象。具体而言就是高层模块不依赖于底层模块,二者共同依赖于抽象。抽象不依赖于具体,具体依赖于抽象。</li>
+  <li><strong>S — 单一职责原则（SRP）</strong>：一个类最好只做一件事，只有一个引起它变化的原因。可以看作低耦合、高内聚在面向对象中的引申。</li>
+  <li><strong>O — 开放封闭原则（OCP）</strong>：软件实体应该是可扩展的，而不是可修改的。对扩展开放，对修改封闭。</li>
+  <li><strong>L — 里氏替换原则（LSP）</strong>：子类必须能够替换其基类。这是保证继承复用的基础。</li>
+  <li><strong>I — 接口隔离原则（ISP）</strong>：使用多个小的接口，而不是一个大的总接口。</li>
+  <li><strong>D — 依赖倒置原则（DIP）</strong>：依赖于抽象。高层模块不依赖于底层模块，二者共同依赖于抽象。</li>
 </ul>
 
-<h4 id="类什么时候才被初始化">类什么时候才被初始化</h4>
-<ul>
-  <li>创建类的实例，也就是new一个对象</li>
-  <li>访问某个类或接口的静态变量，或者对该静态变量赋值</li>
+<hr />
+
+<h2 id="jvm-与类加载">JVM 与类加载</h2>
+
+<h3 id="类的初始化时机">类的初始化时机</h3>
+
+<p>以下六种情况会触发类的初始化：</p>
+
+<ol>
+  <li>创建类的实例（new 一个对象）</li>
+  <li>访问某个类或接口的静态变量，或对该静态变量赋值</li>
   <li>调用类的静态方法</li>
-  <li>反射（Class.forName(“com.lyj.load”)）</li>
-  <li>初始化一个类的子类（会首先初始化子类的父类）</li>
-  <li>JVM启动时标明的启动类，即文件名和类名相同的那个类</li>
-</ul>
-
-<h4 id="arraylist">ArrayList</h4>
-<p>ArrayList创建时的大小为0；当加入第一个元素时，进行第一次扩容时，默认容量大小为10。
-ArrayList每次扩容都以当前数组大小的1.5倍去扩容。
-Vector创建时的默认大小为10。
-Vector每次扩容都以当前数组大小的2倍去扩容。当指定了capacityIncrement之后，每次扩容仅在原先基础上增加capacityIncrement个单位空间。
-ArrayList和Vector的add、get、size方法的复杂度都为O(1)，remove方法的复杂度为O(n)。
-ArrayList是非线程安全的，Vector是线程安全的。</p>
-
-<h4 id="hashmap为什么初始容量是2的指数幂">hashmap为什么初始容量是2的指数幂</h4>
-<ol>
-  <li>hashmap在确定元素落在数组的位置的时候，计算方法是hash%n，类似数据库分表，但是“取模”运算的消耗还是比较大的，可以用(n - 1) &amp; hash的位运算来使计算更加高效。</li>
-  <li>如果初始容量是奇数，那么（n-1)就为偶数，偶数2进制的结尾都是0，经过hash值&amp;运算后末尾都是0，那么0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这样就会造成空间的浪费而且会增加hash冲突。</li>
-  <li>只有是2的指数次幂的数字经过n-1之后，二进制尾数才是1，这样hash最后一位无论是什么，完全是由产生的hash值类决定，而不受n-1 影响。这样会提高效率。比如要扩容了，2的幂次方*2，在二进制中比如4和8，代表2的2次方和3次方，他们的2进制结构相 似,
-比如 4：00000100 和 8：0000 1000，只是高位向前移了一位，这样扩容的时候，只需要判断高位hash,移动到之前位置的倍数就可以了，免去了重新计算位置的运算。</li>
+  <li>反射（<code class="language-plaintext highlighter-rouge">Class.forName("com.lyj.load")</code>）</li>
+  <li>初始化一个类的子类（会首先初始化父类）</li>
+  <li>JVM 启动时标明的启动类（文件名和类名相同的那个类）</li>
 </ol>
 
-<h4 id="springboot-start">SpringBoot Start</h4>
-<ol>
-  <li>引入该Start相关依赖</li>
-  <li>查找resources/META-INF/spring.factories下对应的XXXAutoConfigure</li>
-  <li>根据Condition自己加装相关的Bean
-    <ul>
-      <li>@ConditionalOnBean:当容器中有指定的Bean的条件下</li>
-      <li>@ConditionalOnClass：当类路径下有指定的类的条件下</li>
-      <li>@ConditionalOnExpression:基于SpEL表达式作为判断条件</li>
-      <li>@ConditionalOnJava:基于JVM版本作为判断条件</li>
-      <li>@ConditionalOnJndi:在JNDI存在的条件下查找指定的位置</li>
-      <li>@ConditionalOnMissingBean:当容器中没有指定Bean的情况下</li>
-      <li>@ConditionalOnMissingClass:当类路径下没有指定的类的条件下</li>
-      <li>@ConditionalOnNotWebApplication:当前项目不是Web项目的条件下</li>
-      <li>@ConditionalOnProperty:指定的属性是否有指定的值</li>
-      <li>@ConditionalOnResource:类路径下是否有指定的资源</li>
-      <li>@ConditionalOnSingleCandidate:当指定的Bean在容器中只有一个，或者在有多个Bean的情况下，用来指定首选的Bean</li>
-      <li>@ConditionalOnWebApplication:当前项目是Web项目的条件下</li>
-    </ul>
-  </li>
-</ol>
+<hr />
 
-<p><a href="https://www.cnblogs.com/yuansc/p/9088212.html">https://www.cnblogs.com/yuansc/p/9088212.html</a></p>
+<h2 id="nio-编程">NIO 编程</h2>
 
-<h4 id="spring中解决循环依赖为什么要用三级缓存">Spring中解决循环依赖为什么要用三级缓存</h4>
+<h3 id="channel-与-bytebuffer">Channel 与 ByteBuffer</h3>
+
+<p>Buffer 的使用主要是减少拷贝实现零拷贝，传统流的读写方式还是基于用户态和内核态的拷贝。</p>
+
+<p>参考：</p>
 <ul>
-  <li>Bean创建有3步
-    <ol>
-      <li>初始化init,分配内存空间，此时在singletonFactories完成</li>
-      <li>注入各种属性，此时在earlySingletonObjects中</li>
-      <li>完美的bean最终会在singletonObjects中</li>
-    </ol>
-  </li>
-  <li>举例
-    <ul>
-      <li>A与B循环依赖，A初始化经过第1、2步，在第2步发现依赖B</li>
-      <li>此时，触发B的初始化进入第1步，如果再进入第2步，会发现依赖A了，所以此时B只能在第1步</li>
-      <li>把B的第1步，不完美的B注入给A，先完成A的注入，让A进入第3步</li>
-      <li>然后，再完成B的完美初始化</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="关于nio的-channel与bytebuffer">关于NIO的 Channel与ByteBuffer</h4>
-<ul>
-  <li>Buffer的使用，主要是减少copy实现零拷贝，流的读写方式还是基于用户态和内核态的拷贝</li>
-  <li>从使用NIO读写文件说起——拆解堆外内存分配过程  <a href="https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw">https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw</a></li>
+  <li>从使用NIO读写文件说起——拆解堆外内存分配过程 <a href="https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw">https://mp.weixin.qq.com/s/Wea1ubBTH9jXSZtU9NwVhw</a></li>
   <li>从操作系统看NIO <a href="https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA">https://mp.weixin.qq.com/s/Titt2vOEtSWIzEbtWKQOzA</a></li>
 </ul>
 
-<h4 id="关于nio的-空轮训的bug">关于NIO的 空轮训的bug</h4>
+<h3 id="nio-的空轮询-bug">NIO 的空轮询 Bug</h3>
+
+<p>这是 Java NIO 中一个著名的 Bug：<code class="language-plaintext highlighter-rouge">selector.select()</code> 应该一直阻塞直到有就绪事件到达，但由于实现上的缺陷，select() 可能在没有任何就绪事件的情况下返回，导致 <code class="language-plaintext highlighter-rouge">while(true)</code> 被不断执行，最终某个 CPU 核心利用率飙升到 100%。</p>
+
+<p><strong>问题代码</strong>：</p>
+
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="o">(</span><span class="nb">true</span><span class="o">)</span> <span class="o">{</span>
     selector.select<span class="o">()</span><span class="p">;</span>  // <span class="k">select </span>可能在无就绪事件时异常返回！主要发生在linux系统
 
@@ -343,10 +330,8 @@ ArrayList是非线程安全的，Vector是线程安全的。</p>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
-<ul>
-  <li>selector.select() 应该 一直阻塞，直到有就绪事件到达，但很遗憾，由于 Java NIO 实现上存在 bug，select() 可能在 没有 任何就绪事件的情况下返回，从而导致 while(true) 被不断执行，最后导致某个 CPU 核心的利用率飙升到 100%，这就是臭名昭著的 Java NIO 的 epoll bug。</li>
-  <li>解决方法</li>
-</ul>
+
+<p><strong>Netty 的解决方案</strong>——通过计数检测空轮询并重建 Selector：</p>
 
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>selectCnt <span class="o">=</span> 0<span class="p">;</span>  // epoll 空轮询场景下 <span class="k">select </span>调用次数
 long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()</span><span class="p">;</span>  // 每个 <span class="k">for </span>循环开始时的绝对时间
@@ -371,130 +356,52 @@ long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()
     currentTimeNanos <span class="o">=</span> <span class="nb">time</span><span class="p">;</span>  // 重置下次 <span class="k">for </span>循环开始时间
 <span class="o">}</span>
 </code></pre></div></div>
-<ul>
-  <li><a href="http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/">http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/</a></li>
-</ul>
 
-<h4 id="netty零拷贝总结的比较清楚了">Netty零拷贝总结的比较清楚了</h4>
-<ul>
-  <li>零拷贝
-    <ul>
-      <li>在传统的I/O操作中，每次都需要把内核空间的数据拷贝到用户空间中，这样挺浪费空间的，所以零拷贝的出现就是为了解决这个问题。</li>
-      <li>主要有两种方法：mmap+write 和 Sendfile</li>
-      <li>mmap+write</li>
-      <li>使用mmap+write方式替换原来的read+write方式，mmap是一种内存映射文件的方法，即将一个文件或者其他对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对应关系。
-  这样就可以省略掉原来内核Read缓冲区Copy数据到用户缓冲区，但是还是需要内核Read缓冲区将数据Copy到内核Socket缓冲区。</li>
-      <li>Sendfile</li>
-      <li>Sendfile是为了简化通过网络在两个通道内进行的数据传输过程。</li>
-      <li>它不仅减少了数据复制，还减少了上下文次数的切换。数据传送只发生在内核空间里，所以减少了一次上下文切换，但是还是存在一次Copy。
-  后来进行了改进，将Kernel Buffer中对应的数据描述信息（内存地址，偏移量）记录到相应的Socket缓冲区中，这样连内核空间中的一次CPU Copy也省掉了。</li>
-    </ul>
-  </li>
-  <li>Netty的零拷贝具体体现
-    <ul>
-      <li>Netty零拷贝主要体现在三个方面。</li>
-      <li>Netty的接收和发送ByteBuffer采用DirtectByteBuffer，使用堆外直接内存进行Socket读写，不需要进行字节缓冲区的二次拷贝。</li>
-      <li>Netty在操作多个Channel时，使用CompositeChannelBuffer，它并不会开辟新的内存并复制所有ChannelBuffer内容，而是直接保存了所有ChannelBuffer的引用，并在子ChannelBuffer里进行读写，实现了零拷贝。</li>
-      <li>Netty的文件传输采用了transferTo方法，它可以直接将文件缓冲区的数据发送到目标Channel。</li>
-    </ul>
-  </li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg">https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg</a></p>
+<p>参考：<a href="http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/">http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/</a></p>
 
-<h4 id="netty">Netty</h4>
-<ul>
-  <li><a href="https://www.cnblogs.com/xiaoyangjia/p/11526197.html">https://www.cnblogs.com/xiaoyangjia/p/11526197.html</a></li>
-</ul>
+<hr />
 
-<h4 id="utf-8-是一种变长的编码方式">Utf-8 是一种变长的编码方式</h4>
-<ul>
-  <li>对于单字节的符号，字节的第一位设为0，后面7位为这个符号的unicode码。因此对于英语字母，UTF-8编码和ASCII码是相同的。</li>
-  <li>对于n字节的符号（n&gt;1），第一个字节的前n位都设为1，第n+1位设为0，后面字节的前两位一律设为10。剩下的没有提及的二进制位，全部为这个符号的unicode码。
-    <ul>
-      <li>1110xxxx 10xxxxxx 10xxxxxx （3个字节，xxx放入Unicode）</li>
-    </ul>
-  </li>
-  <li>Little endian和Big endian
-    <ul>
-      <li>Unicode规范中定义，每一个文件的最前面分别加入一个表示编码顺序的字符，这个字符的名字叫做”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE），用FEFF表示。这正好是两个字节，而且FF比FE大1。</li>
-      <li>如果一个文本文件的头两个字节是FE FF，就表示该文件采用大头方式；如果头两个字节是FF FE，就表示该文件采用小头方式。</li>
-    </ul>
-  </li>
-</ul>
+<h2 id="零拷贝zero-copy">零拷贝（Zero Copy）</h2>
 
-<h4 id="redis与memcached区别">Redis与Memcached区别</h4>
-<p>如果简单地比较Redis与Memcached的区别，大多数都会得到以下观点：</p>
+<h3 id="传统-io-的拷贝问题">传统 I/O 的拷贝问题</h3>
+
+<p>在传统 I/O 操作中，每次都需要把内核空间的数据拷贝到用户空间，效率低下。零拷贝就是为了解决这个问题。</p>
+
+<h3 id="两种实现方式">两种实现方式</h3>
+
+<p><strong>mmap + write</strong>：将文件映射到进程的地址空间，省去了内核 Read 缓冲区到用户缓冲区的拷贝，但仍需要内核 Read 缓冲区到内核 Socket 缓冲区的拷贝。</p>
+
+<p><strong>sendfile</strong>：不仅减少了数据拷贝，还减少了上下文切换次数。数据传送只发生在内核空间里。Linux 2.4 后进一步优化，将 Kernel Buffer 中的位置和偏移量信息记录到 Socket Buffer，NIC Buffer 直接从 Read Buffer 读取，彻底消除了内核空间的 CPU Copy。</p>
+
+<h3 id="netty-的零拷贝体现">Netty 的零拷贝体现</h3>
+
 <ol>
-  <li>Redis不仅仅支持简单的k/v类型的数据，同时还提供list，set，hash等数据结构的存储。</li>
-  <li>Redis支持数据的备份，即master-slave模式的数据备份。</li>
-  <li>Redis支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用。</li>
-  <li>在Redis中，并不是所有的数据都一直存储在内存中的。这是和Memcached相比一个最大的区别</li>
-  <li>memcache可以存储大文件</li>
+  <li><strong>DirectByteBuffer</strong>：使用堆外直接内存进行 Socket 读写，不需要字节缓冲区的二次拷贝</li>
+  <li><strong>CompositeChannelBuffer</strong>：操作多个 Channel 时不开辟新内存，直接保存所有 ChannelBuffer 的引用，在子 ChannelBuffer 里进行读写</li>
+  <li><strong>transferTo 方法</strong>：直接将文件缓冲区的数据发送到目标 Channel</li>
 </ol>
 
-<h4 id="dns">DNS</h4>
-<ul>
-  <li>在UDP协议栈上方</li>
-  <li>全面了解移动端DNS域名劫持等杂症：原理、根源、HttpDNS解决方案等 <a href="http://www.52im.net/thread-2121-1-1.html">http://www.52im.net/thread-2121-1-1.html</a></li>
-  <li>HTTPDNS 替代 LocalDNS
-    <ol>
-      <li>解决域名检验和多个子域名多个证书SNI（Server Name Indication 允许客户端向服务器提供它所请求的域名） 的问题
-        <ul>
-          <li>android 美图APP <a href="http://www.52im.net/thread-2172-1-1.html">http://www.52im.net/thread-2172-1-1.html</a></li>
-          <li>ios <a href="https://kangzubin.com/httpdns-https/">https://kangzubin.com/httpdns-https/</a></li>
-          <li>百度 <a href="http://www.52im.net/thread-2472-1-1.html">http://www.52im.net/thread-2472-1-1.html</a></li>
-        </ul>
-      </li>
-    </ol>
-  </li>
-</ul>
+<p>参考：<a href="https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg">https://mp.weixin.qq.com/s/mFhSemUjxxsp6RBpvT6Cmg</a></p>
 
-<h4 id="lvs之drnattun模式祥解">LVS之DR,NAT,TUN模式祥解</h4>
-<ul>
-  <li>NAT：修改请求报文的目标IP，多目标IP的DNAT</li>
-  <li>DR：操纵封装新的MAC地址</li>
-  <li>TUN：在原请求IP报文之外新加一个IP首部</li>
-  <li>FullNAT：修改请求报文的源和目标IP</li>
-</ul>
+<hr />
 
-<h4 id="nat-与-打洞">Nat 与 打洞</h4>
-<ul>
-  <li>Nat技术 Net Address Transfer
-    <ul>
-      <li>全锥型NAT：一旦内部主机端口对(iAddr:iPort)被NAT网关映射到(eAddr:ePort)，所有后续的(iAddr:iPort)报文都会被转换为(eAddr:ePort)；任何一个外部主机发送到(eAddr:ePort)的报文将会被转换后发到(iAddr:iPort)。</li>
-      <li>限制锥型NAT：在全锥基础上限制机器</li>
-      <li>端口限制锥型NAT：在限制锥型NAT基础上限制端口</li>
-      <li>对称型NAT：限制在固定的主机+端口，可以理解为是”Session级”</li>
-    </ul>
-  </li>
-  <li>
-    <p>p2p打洞原理是通过中间服务器S”伪装”连接，获取到P1与P2的公网IP+端口组合，然后P1与P2分别伪装S与彼此建立连接</p>
-  </li>
-  <li><a href="http://www.52im.net/thread-542-1-1.html">http://www.52im.net/thread-542-1-1.html</a></li>
-  <li><a href="http://www.52im.net/thread-50-1-1.html">http://www.52im.net/thread-50-1-1.html</a></li>
-  <li><a href="https://blog.csdn.net/weiyuefei/article/details/52247497">https://blog.csdn.net/weiyuefei/article/details/52247497</a></li>
-</ul>
+<h2 id="内存管理">内存管理</h2>
 
-<h4 id="内存泄漏">内存泄漏</h4>
+<h3 id="内存泄漏的常见原因">内存泄漏的常见原因</h3>
+
 <ol>
-  <li>内部类持有外部类</li>
+  <li>内部类持有外部类引用</li>
   <li>静态集合类</li>
-  <li>各种连接的打开与关闭</li>
-  <li>变量作用域不合理，比如类似逃逸</li>
-  <li>改变了Hash算法，导致之前的hash key 对应的 value不能被释放</li>
-  <li>ThreadLocal内存泄漏，是因为内部的Map的key是通过虚引用关联的threadLocal，发生GC的时候key就消失了，造成Value泄漏。使用的时候记得显示remove
- <a href="https://www.jianshu.com/p/1a5d288bdaee">https://www.jianshu.com/p/1a5d288bdaee</a></li>
+  <li>各种连接的打开与关闭（数据库、IO、网络连接）</li>
+  <li>变量作用域不合理（类似逃逸）</li>
+  <li>修改了 Hash 算法导致之前的 hash key 对应的 value 不能被释放</li>
+  <li><strong>ThreadLocal 内存泄漏</strong>：内部 Map 的 key 是通过虚引用关联的 ThreadLocal，GC 时 key 消失导致 Value 泄漏。使用时记得显式调用 <code class="language-plaintext highlighter-rouge">remove()</code>。参考：<a href="https://www.jianshu.com/p/1a5d288bdaee">https://www.jianshu.com/p/1a5d288bdaee</a></li>
   <li>监听器的回调绑定与取消</li>
 </ol>
 
-<h4 id="direct-memory-回收">Direct Memory 回收</h4>
-<ul>
-  <li>DirectByteBuffer是通过虚引用(Phantom Reference)来实现堆外内存的释放的</li>
-  <li>Cleaner是PhantomReference的子类，并通过自身的next和prev字段维护的一个双向链表。PhantomReference的作用在于跟踪垃圾回收过程，
-  并不会对对象的垃圾回收过程造成任何的影响。 所以cleaner = Cleaner.create(this, new Deallocator(base, size, cap)); 
-  用于对当前构造的DirectByteBuffer对象的垃圾回收过程进行跟踪。 当DirectByteBuffer对象从pending状态 ——&gt; enqueue状态时，会触发Cleaner的clean()，
-  而Cleaner的clean()的方法会实现通过unsafe对堆外内存的释放。</li>
-</ul>
+<h3 id="direct-memory-回收机制">Direct Memory 回收机制</h3>
+
+<p>DirectByteBuffer 通过<strong>虚引用（Phantom Reference）</strong>实现堆外内存的释放。Cleaner 是 PhantomReference 的子类，通过双向链表维护。当 DirectByteBuffer 对象从 pending 状态到 enqueue 状态时，触发 Cleaner 的 clean() 方法，通过 Unsafe 释放堆外内存。</p>
 
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        try <span class="o">{</span>
             base <span class="o">=</span> unsafe.allocateMemory<span class="o">(</span>size<span class="o">)</span><span class="p">;</span>
@@ -524,6 +431,8 @@ long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()
             Bits.unreserveMemory<span class="o">(</span>size, capacity<span class="o">)</span><span class="p">;</span>
         <span class="o">}</span>
 </code></pre></div></div>
+
+<p>参考：</p>
 <ul>
   <li>java之HeapByteBuffer&amp;DirectByteBuffer以及回收DirectByteBuffer <a href="https://blog.csdn.net/xieyuooo/article/details/7547435">https://blog.csdn.net/xieyuooo/article/details/7547435</a></li>
   <li>java nio 和 jvm 虚拟机参数的 XX:+DisableExplicitGC 的潜规则 <a href="https://blog.csdn.net/phj88/article/details/8011830">https://blog.csdn.net/phj88/article/details/8011830</a></li>
@@ -532,69 +441,143 @@ long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()
   <li>Java魔法类：Unsafe应用解析 <a href="https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html">https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html</a></li>
 </ul>
 
-<h4 id="jdk-各个版本特性">JDK 各个版本特性</h4>
+<hr />
+
+<h2 id="spring-生态">Spring 生态</h2>
+
+<h3 id="springboot-starter-自动装配原理">SpringBoot Starter 自动装配原理</h3>
+
+<p>SpringBoot 的自动装配机制分三步：</p>
+
+<ol>
+  <li>引入该 Starter 的相关依赖</li>
+  <li>查找 <code class="language-plaintext highlighter-rouge">resources/META-INF/spring.factories</code> 下对应的 XXXAutoConfiguration</li>
+  <li>根据 Condition 注解自动装配相关 Bean</li>
+</ol>
+
+<p>常用的条件注解：</p>
 <ul>
-  <li>Java5 ，2004-09-30发行
-    <ul>
-      <li>泛型</li>
-      <li>枚举</li>
-      <li>自动装箱拆箱</li>
-      <li>可变参数</li>
-      <li>注解</li>
-      <li>foreach循环（增强for、for/in）</li>
-      <li>静态导入</li>
-      <li>格式化（System.out.println 支持%s %d等格式化输出）</li>
-      <li>线程框架/数据结构 JUC</li>
-      <li>Arrays工具类/StringBuilder/instrument</li>
-    </ul>
-  </li>
-  <li>Java6
-    <ul>
-      <li>开发代号为Mustang(野马),于2006-12-11发行。评价：鸡肋的版本，有JDBC4.0更新、Complier API、WebSevice支持的加强等更新。</li>
-    </ul>
-  </li>
-  <li>Java7  2011年7月7日
-    <ul>
-      <li>switch中添加对String类型的支持</li>
-      <li>数字字面量的改进 / 数值可加下划</li>
-      <li>异常处理（捕获多个异常） try-with-resources</li>
-      <li>增强泛型推断</li>
-      <li>JSR203 NIO2.0（AIO）新IO的支持</li>
-      <li>JSR292与InvokeDynamic指令，可以调用其他语言生成的字节码</li>
-      <li>Path接口、DirectoryStream、Files、WatchService（重要接口更新）</li>
-      <li>fork/join framework 并行计算</li>
-    </ul>
-  </li>
-  <li>
-    <ul>
-      <li>Java8 2014年
-        <ul>
-          <li>Lambda</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>Java9 2017年9月1日
-    <ul>
-      <li>平台级modularity（原名：Jigsaw） 模块化系统</li>
-      <li>Java 的 REPL 工具： jShell 命令</li>
-    </ul>
-  </li>
-  <li>Java10 2018年3月20日
-    <ul>
-      <li>局部变量的类型推断 var关键字</li>
-      <li>GC改进和内存管理 并行全垃圾回收器 G1</li>
-    </ul>
-  </li>
-  <li>Java11 2018年9月26日</li>
-  <li>参考 <a href="https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA">https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA</a></li>
+  <li><code class="language-plaintext highlighter-rouge">@ConditionalOnBean</code>：容器中有指定 Bean 时</li>
+  <li><code class="language-plaintext highlighter-rouge">@ConditionalOnClass</code>：类路径下有指定类时</li>
+  <li><code class="language-plaintext highlighter-rouge">@ConditionalOnExpression</code>：基于 SpEL 表达式判断</li>
+  <li><code class="language-plaintext highlighter-rouge">@ConditionalOnJava</code>：基于 JVM 版本判断</li>
+  <li><code class="language-plaintext highlighter-rouge">@ConditionalOnMissingBean</code>：容器中没有指定 Bean 时</li>
+  <li><code class="language-plaintext highlighter-rouge">@ConditionalOnMissingClass</code>：类路径下没有指定类时</li>
+  <li><code class="language-plaintext highlighter-rouge">@ConditionalOnProperty</code>：指定属性是否有指定值</li>
+  <li><code class="language-plaintext highlighter-rouge">@ConditionalOnResource</code>：类路径下是否有指定资源</li>
+  <li><code class="language-plaintext highlighter-rouge">@ConditionalOnWebApplication</code>：当前项目是 Web 项目时</li>
+  <li><code class="language-plaintext highlighter-rouge">@ConditionalOnNotWebApplication</code>：当前项目不是 Web 项目时</li>
 </ul>
 
-<h4 id="service-mesh-sidecar">Service Mesh Sidecar</h4>
+<p>参考：<a href="https://www.cnblogs.com/yuansc/p/9088212.html">https://www.cnblogs.com/yuansc/p/9088212.html</a></p>
+
+<h3 id="spring-循环依赖与三级缓存">Spring 循环依赖与三级缓存</h3>
+
+<p>Spring 使用三级缓存解决循环依赖问题。Bean 创建分三步：</p>
+
+<ol>
+  <li><strong>初始化 init</strong>：分配内存空间，此时在 <code class="language-plaintext highlighter-rouge">singletonFactories</code>（三级缓存）完成</li>
+  <li><strong>注入属性</strong>：此时在 <code class="language-plaintext highlighter-rouge">earlySingletonObjects</code>（二级缓存）中</li>
+  <li><strong>完成创建</strong>：最终会在 <code class="language-plaintext highlighter-rouge">singletonObjects</code>（一级缓存）中</li>
+</ol>
+
+<p><strong>循环依赖解决过程</strong>（以 A 和 B 互相依赖为例）：</p>
+<ol>
+  <li>A 初始化经过第 1、2 步，在第 2 步发现依赖 B</li>
+  <li>触发 B 的初始化进入第 1 步，B 在第 2 步发现依赖 A，此时 B 只能在第 1 步</li>
+  <li>把 B 第 1 步的不完美引用注入给 A，让 A 先完成注入进入第 3 步</li>
+  <li>最后完成 B 的完美初始化</li>
+</ol>
+
+<hr />
+
+<h2 id="编码与字符集">编码与字符集</h2>
+
+<h3 id="utf-8-变长编码规则">UTF-8 变长编码规则</h3>
+
 <ul>
-  <li><a href="https://mp.weixin.qq.com/s/qH7j3eR6mPZrOaLnzSM_6A">https://mp.weixin.qq.com/s/qH7j3eR6mPZrOaLnzSM_6A</a></li>
-  <li>Kubernetes 和 Istio ?</li>
+  <li><strong>单字节符号</strong>：第一位设为 0，后面 7 位为 Unicode 码。英语字母的 UTF-8 与 ASCII 码相同。</li>
+  <li><strong>n 字节符号（n&gt;1）</strong>：第一个字节的前 n 位都设为 1，第 n+1 位设为 0，后面字节的前两位一律设为 10。例如：<code class="language-plaintext highlighter-rouge">1110xxxx 10xxxxxx 10xxxxxx</code>（3 字节，xxx 放入 Unicode）</li>
 </ul>
+
+<h3 id="字节序">字节序</h3>
+
+<p>Unicode 规范中每个文件最前面加入 BOM（Byte Order Mark），即”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE，FEFF）：头两个字节为 FE FF 表示大端，FF FE 表示小端。</p>
+
+<hr />
+
+<h2 id="redis-与-memcached-的区别">Redis 与 Memcached 的区别</h2>
+
+<ol>
+  <li>Redis 不仅支持 k/v，还支持 list、set、hash 等数据结构</li>
+  <li>Redis 支持 master-slave 模式的数据备份</li>
+  <li>Redis 支持数据持久化（RDB/AOF），可将内存数据保持到磁盘</li>
+  <li>Redis 并非所有数据都一直存储在内存中（这是与 Memcached 最大的区别）</li>
+  <li>Memcached 可以存储大文件</li>
+</ol>
+
+<hr />
+
+<h2 id="网络相关">网络相关</h2>
+
+<h3 id="dns">DNS</h3>
+
+<p>DNS 基于 UDP 协议栈。在移动端 DNS 域名劫持是常见问题，HTTPDNS 可以替代 LocalDNS 解决此问题。</p>
+
+<p>参考：</p>
+<ul>
+  <li>全面了解移动端DNS域名劫持 <a href="http://www.52im.net/thread-2121-1-1.html">http://www.52im.net/thread-2121-1-1.html</a></li>
+  <li>HTTPDNS 替代 LocalDNS 解决域名劫持和多子域名多证书 SNI 问题</li>
+</ul>
+
+<h3 id="lvs-的四种模式">LVS 的四种模式</h3>
+
+<ul>
+  <li><strong>NAT</strong>：修改请求报文的目标 IP（多目标 IP 的 DNAT）</li>
+  <li><strong>DR</strong>：操纵封装新的 MAC 地址</li>
+  <li><strong>TUN</strong>：在原请求 IP 报文之外新加一个 IP 首部</li>
+  <li><strong>FullNAT</strong>：修改请求报文的源和目标 IP</li>
+</ul>
+
+<h3 id="nat-与-p2p-打洞">NAT 与 P2P 打洞</h3>
+
+<p>NAT 分为四种类型：全锥型、限制锥型、端口限制锥型、对称型。P2P 打洞原理是通过中间服务器”伪装”连接，获取双方的公网 IP+端口组合后直接建立连接。</p>
+
+<p>参考：</p>
+<ul>
+  <li><a href="http://www.52im.net/thread-542-1-1.html">http://www.52im.net/thread-542-1-1.html</a></li>
+  <li><a href="http://www.52im.net/thread-50-1-1.html">http://www.52im.net/thread-50-1-1.html</a></li>
+</ul>
+
+<hr />
+
+<h2 id="jdk-各版本特性">JDK 各版本特性</h2>
+
+<ul>
+  <li><strong>Java 5（2004）</strong>：泛型、枚举、自动装箱拆箱、可变参数、注解、foreach、静态导入、JUC</li>
+  <li><strong>Java 6（2006）</strong>：JDBC 4.0、Compiler API、WebService 增强</li>
+  <li><strong>Java 7（2011）</strong>：switch 支持 String、try-with-resources、NIO2（AIO）、fork/join、InvokeDynamic</li>
+  <li><strong>Java 8（2014）</strong>：Lambda 表达式、Stream API、Optional</li>
+  <li><strong>Java 9（2017）</strong>：模块化系统（Jigsaw）、jShell</li>
+  <li><strong>Java 10（2018.3）</strong>：局部变量类型推断 var、G1 并行全垃圾回收</li>
+  <li><strong>Java 11（2018.9）</strong>：HTTP Client API、ZGC</li>
+</ul>
+
+<p>参考：<a href="https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA">https://mp.weixin.qq.com/s/6PgdGCulBm3Q5o75MJQVAA</a></p>
+
+<hr />
+
+<h2 id="service-mesh-与-sidecar">Service Mesh 与 Sidecar</h2>
+
+<p>Service Mesh 是下一代微服务架构，通过 Sidecar 代理实现服务间通信的透明化管理。Kubernetes + Istio 是目前最主流的 Service Mesh 方案。</p>
+
+<p>参考：<a href="https://mp.weixin.qq.com/s/qH7j3eR6mPZrOaLnzSM_6A">https://mp.weixin.qq.com/s/qH7j3eR6mPZrOaLnzSM_6A</a></p>
+
+<hr />
+
+<h2 id="总结">总结</h2>
+
+<p>Java 核心知识体系博大精深，从底层的并发原语（volatile、CAS）到上层的 Spring 生态，从 JVM 内存管理到 NIO 网络编程，每个领域都值得深入研究。在实际开发中，理解这些底层机制不仅有助于写出高质量的代码，更能在面对复杂问题时快速定位根因。建议根据自身的技术栈选择重点方向深入学习，同时保持对整体知识体系的了解。</p>
 
     </div>
   </div>
@@ -624,33 +607,33 @@ long currentTimeNanos <span class="o">=</span> System.nanoTime<span class="o">()
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

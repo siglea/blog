@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>数据脱敏 - Code & Coffee</title>
+  <title>数据脱敏全面指南：从原理到落地的安全实践 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>数据脱敏 | Code &amp; Coffee</title>
+<title>数据脱敏全面指南：从原理到落地的安全实践 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="数据脱敏" />
+<meta property="og:title" content="数据脱敏全面指南：从原理到落地的安全实践" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="参考 大数据之数据脱敏技术 https://mp.weixin.qq.com/s/kDafRfVcZkAKXOXd7iOk0w 大数据与数据脱敏 https://mp.weixin.qq.com/s/8kmrkakLFhLFDGK-Go9SjA Apache ShardingSphere数据脱敏全解决方案详解 https://blog.csdn.net/chuzhan7675/article/details/100776263 动态数据脱敏技术分析 https://mp.weixin.qq.com/s/hj66U_zo7c4tXNlbPHpJhQ 数据脱敏系统（AINSG-DM） https://mp.weixin.qq.com/s/2A_Yz5RT5iq7PobYTcto-Q" />
-<meta property="og:description" content="参考 大数据之数据脱敏技术 https://mp.weixin.qq.com/s/kDafRfVcZkAKXOXd7iOk0w 大数据与数据脱敏 https://mp.weixin.qq.com/s/8kmrkakLFhLFDGK-Go9SjA Apache ShardingSphere数据脱敏全解决方案详解 https://blog.csdn.net/chuzhan7675/article/details/100776263 动态数据脱敏技术分析 https://mp.weixin.qq.com/s/hj66U_zo7c4tXNlbPHpJhQ 数据脱敏系统（AINSG-DM） https://mp.weixin.qq.com/s/2A_Yz5RT5iq7PobYTcto-Q" />
+<meta name="description" content="在数据驱动的时代，企业积累了海量的用户数据。然而，这些数据在开发测试、数据分析、跨部门共享等场景中使用时，如果不加处理就直接暴露，将面临严重的隐私泄露和合规风险。数据脱敏（Data Masking）正是解决这一问题的关键技术手段。 什么是数据脱敏 数据脱敏是指对敏感数据进行变形处理，使其在保留一定格式和业务可用性的前提下，无法识别或还原出原始数据。 简单来说，就是把 张三 变成 张*，把 13812345678 变成 138****5678，把 310101199001011234 变成 310***********1234。 为什么需要数据脱敏 法律法规要求 《个人信息保护法》（PIPL）：明确规定个人信息处理者应当采取加密、去标识化等安全技术措施 《数据安全法》：要求数据处理活动应当加强风险监测和安全保护 GDPR（欧盟通用数据保护条例）：对个人数据的处理和传输有严格限制 PCI DSS：支付卡行业数据安全标准，要求对持卡人数据进行保护 业务场景需求 场景 说明 开发测试 开发人员需要使用真实数据结构，但不应接触真实的个人信息 数据分析 分析师需要数据的统计特征，但不需要知道具体是谁 日志记录 系统日志可能包含敏感字段，需要脱敏后再记录 数据共享 与第三方合作时，共享数据需要去除敏感标识 数据展示 用户界面上展示部分遮蔽的个人信息 脱敏方式分类 静态脱敏（Static Data Masking） 将生产数据库的敏感数据脱敏后，导入到测试/开发环境。脱敏过程是一次性的批量操作。 生产数据库 → ETL 抽取 → 脱敏处理 → 导入测试数据库 适用场景：开发测试环境数据准备、数据仓库构建 动态脱敏（Dynamic Data Masking） 在数据被查询/访问时实时进行脱敏，不修改原始数据。 应用请求 → 数据库/中间件 → 实时脱敏 → 返回脱敏后的数据 适用场景：生产环境中根据用户角色展示不同的数据视图 常用脱敏算法 1. 遮蔽（Masking） 用特定字符替换部分内容，最直观的脱敏方式。 public class MaskUtils { // 手机号脱敏：保留前3后4 public static String maskPhone(String phone) { if (phone == null || phone.length() != 11) return phone; return phone.substring(0, 3) + &quot;****&quot; + phone.substring(7); } // 138****5678 // 身份证脱敏：保留前3后4 public static String maskIdCard(String idCard) { if (idCard == null || idCard.length() &lt; 8) return idCard; int len = idCard.length(); return idCard.substring(0, 3) + &quot;*&quot;.repeat(len - 7) + idCard.substring(len - 4); } // 310***********1234 // 姓名脱敏：保留姓 public static String maskName(String name) { if (name == null || name.isEmpty()) return name; return name.charAt(0) + &quot;*&quot;.repeat(name.length() - 1); } // 张*、李** // 邮箱脱敏：用户名保留首尾 public static String maskEmail(String email) { if (email == null || !email.contains(&quot;@&quot;)) return email; String[] parts = email.split(&quot;@&quot;); String user = parts[0]; if (user.length() &lt;= 2) return &quot;**@&quot; + parts[1]; return user.charAt(0) + &quot;***&quot; + user.charAt(user.length() - 1) + &quot;@&quot; + parts[1]; } // z***n@gmail.com } 2. 替换（Substitution） 用虚假但格式一致的数据替换原始数据。 原始：张三 → 替换：王五 原始：北京市朝阳区 → 替换：上海市浦东新区 适合需要保持数据真实感的测试场景。 3. 混洗（Shuffling） 在同一列数据内打乱记录间的对应关系。 原始数据： 混洗后： 用户A - 138xxxx1234 用户A - 139xxxx5678 用户B - 139xxxx5678 用户B - 137xxxx9012 用户C - 137xxxx9012 用户C - 138xxxx1234 数据的分布特征不变，但无法对应到具体的人。 4. 加密（Encryption） 使用加密算法对数据进行处理，需要密钥才能还原。 // 使用 AES 加密 String encrypted = AESUtil.encrypt(&quot;13812345678&quot;, secretKey); // 输出：a1b2c3d4e5f6...（密文） // 格式保留加密（FPE）：加密后保持相同格式 // 13812345678 → 15698723456（仍然是 11 位手机号格式） 格式保留加密（Format-Preserving Encryption, FPE） 是一种特殊的加密方式，加密后的数据保持与原始数据相同的格式和长度，适合数据库字段有格式校验的场景。 5. 泛化（Generalization） 降低数据精度，保留统计价值。 年龄 25 → 20-30 岁 收入 15000 → 10000-20000 地址 北京市朝阳区xxx路xxx号 → 北京市朝阳区 日期 2024-01-15 14:30:00 → 2024-01 6. 哈希（Hashing） 使用单向哈希函数处理，无法逆向还原。 SHA256(&quot;13812345678&quot;) → &quot;e10adc3949ba59abbe56e057f20f883e...&quot; 适合只需要做数据关联但不需要查看原始值的场景。 技术实现方案 方案一：应用层脱敏 在业务代码中通过注解或工具类实现脱敏。 // 使用自定义注解 + Jackson 序列化 public class UserDTO { private String name; @SensitiveField(type = SensitiveType.PHONE) private String phone; @SensitiveField(type = SensitiveType.ID_CARD) private String idCard; @SensitiveField(type = SensitiveType.EMAIL) private String email; } 优点：灵活可控，可根据业务逻辑决定是否脱敏。 缺点：需要改动业务代码，容易遗漏。 方案二：数据库中间件脱敏 通过数据库代理层实现透明脱敏，业务代码无感知。 Apache ShardingSphere 提供了数据脱敏（数据加密）的完整解决方案： # ShardingSphere 脱敏配置示例 rules: - !ENCRYPT tables: t_user: columns: phone: cipherColumn: phone_cipher encryptorName: aes_encryptor id_card: cipherColumn: id_card_cipher encryptorName: aes_encryptor encryptors: aes_encryptor: type: AES props: aes-key-value: 123456abc ShardingSphere 会自动将写入的明文加密存储，查询时根据配置决定返回明文还是密文。 方案三：日志脱敏 对日志输出中的敏感信息进行脱敏处理。 &lt;!-- Logback 配置自定义脱敏转换器 --&gt; &lt;conversionRule conversionWord=&quot;msg&quot; converterClass=&quot;com.example.SensitiveDataConverter&quot; /&gt; &lt;appender name=&quot;CONSOLE&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt; &lt;encoder&gt; &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n&lt;/pattern&gt; &lt;/encoder&gt; &lt;/appender&gt; 通过正则匹配日志中的手机号、身份证号等模式，在输出前自动替换。 脱敏策略设计原则 分级分类：根据数据敏感等级制定不同的脱敏策略 最小必要：只暴露业务必需的信息，能脱敏的尽量脱敏 不可逆性：测试环境的脱敏数据应保证无法还原出原始数据 一致性：同一条数据在不同场景下的脱敏结果应保持一致（使用确定性算法） 可审计：脱敏操作应有日志记录，支持事后审计 常见的敏感数据分类 敏感等级 数据类型 脱敏建议 极高 密码、密钥、Token 不存储明文，加密或哈希处理 高 身份证号、银行卡号 遮蔽或格式保留加密 中 手机号、邮箱、姓名 部分遮蔽 低 地址、公司名 泛化处理 总结 数据脱敏不是一个单纯的技术问题，而是涉及安全合规、业务需求和系统架构的综合课题。选择哪种脱敏方式取决于具体的使用场景：开发测试用静态脱敏，生产展示用动态脱敏，日志输出用实时脱敏。最重要的是在系统设计之初就将数据脱敏纳入考量，建立完善的敏感数据识别和保护机制，而不是事后补救。" />
+<meta property="og:description" content="在数据驱动的时代，企业积累了海量的用户数据。然而，这些数据在开发测试、数据分析、跨部门共享等场景中使用时，如果不加处理就直接暴露，将面临严重的隐私泄露和合规风险。数据脱敏（Data Masking）正是解决这一问题的关键技术手段。 什么是数据脱敏 数据脱敏是指对敏感数据进行变形处理，使其在保留一定格式和业务可用性的前提下，无法识别或还原出原始数据。 简单来说，就是把 张三 变成 张*，把 13812345678 变成 138****5678，把 310101199001011234 变成 310***********1234。 为什么需要数据脱敏 法律法规要求 《个人信息保护法》（PIPL）：明确规定个人信息处理者应当采取加密、去标识化等安全技术措施 《数据安全法》：要求数据处理活动应当加强风险监测和安全保护 GDPR（欧盟通用数据保护条例）：对个人数据的处理和传输有严格限制 PCI DSS：支付卡行业数据安全标准，要求对持卡人数据进行保护 业务场景需求 场景 说明 开发测试 开发人员需要使用真实数据结构，但不应接触真实的个人信息 数据分析 分析师需要数据的统计特征，但不需要知道具体是谁 日志记录 系统日志可能包含敏感字段，需要脱敏后再记录 数据共享 与第三方合作时，共享数据需要去除敏感标识 数据展示 用户界面上展示部分遮蔽的个人信息 脱敏方式分类 静态脱敏（Static Data Masking） 将生产数据库的敏感数据脱敏后，导入到测试/开发环境。脱敏过程是一次性的批量操作。 生产数据库 → ETL 抽取 → 脱敏处理 → 导入测试数据库 适用场景：开发测试环境数据准备、数据仓库构建 动态脱敏（Dynamic Data Masking） 在数据被查询/访问时实时进行脱敏，不修改原始数据。 应用请求 → 数据库/中间件 → 实时脱敏 → 返回脱敏后的数据 适用场景：生产环境中根据用户角色展示不同的数据视图 常用脱敏算法 1. 遮蔽（Masking） 用特定字符替换部分内容，最直观的脱敏方式。 public class MaskUtils { // 手机号脱敏：保留前3后4 public static String maskPhone(String phone) { if (phone == null || phone.length() != 11) return phone; return phone.substring(0, 3) + &quot;****&quot; + phone.substring(7); } // 138****5678 // 身份证脱敏：保留前3后4 public static String maskIdCard(String idCard) { if (idCard == null || idCard.length() &lt; 8) return idCard; int len = idCard.length(); return idCard.substring(0, 3) + &quot;*&quot;.repeat(len - 7) + idCard.substring(len - 4); } // 310***********1234 // 姓名脱敏：保留姓 public static String maskName(String name) { if (name == null || name.isEmpty()) return name; return name.charAt(0) + &quot;*&quot;.repeat(name.length() - 1); } // 张*、李** // 邮箱脱敏：用户名保留首尾 public static String maskEmail(String email) { if (email == null || !email.contains(&quot;@&quot;)) return email; String[] parts = email.split(&quot;@&quot;); String user = parts[0]; if (user.length() &lt;= 2) return &quot;**@&quot; + parts[1]; return user.charAt(0) + &quot;***&quot; + user.charAt(user.length() - 1) + &quot;@&quot; + parts[1]; } // z***n@gmail.com } 2. 替换（Substitution） 用虚假但格式一致的数据替换原始数据。 原始：张三 → 替换：王五 原始：北京市朝阳区 → 替换：上海市浦东新区 适合需要保持数据真实感的测试场景。 3. 混洗（Shuffling） 在同一列数据内打乱记录间的对应关系。 原始数据： 混洗后： 用户A - 138xxxx1234 用户A - 139xxxx5678 用户B - 139xxxx5678 用户B - 137xxxx9012 用户C - 137xxxx9012 用户C - 138xxxx1234 数据的分布特征不变，但无法对应到具体的人。 4. 加密（Encryption） 使用加密算法对数据进行处理，需要密钥才能还原。 // 使用 AES 加密 String encrypted = AESUtil.encrypt(&quot;13812345678&quot;, secretKey); // 输出：a1b2c3d4e5f6...（密文） // 格式保留加密（FPE）：加密后保持相同格式 // 13812345678 → 15698723456（仍然是 11 位手机号格式） 格式保留加密（Format-Preserving Encryption, FPE） 是一种特殊的加密方式，加密后的数据保持与原始数据相同的格式和长度，适合数据库字段有格式校验的场景。 5. 泛化（Generalization） 降低数据精度，保留统计价值。 年龄 25 → 20-30 岁 收入 15000 → 10000-20000 地址 北京市朝阳区xxx路xxx号 → 北京市朝阳区 日期 2024-01-15 14:30:00 → 2024-01 6. 哈希（Hashing） 使用单向哈希函数处理，无法逆向还原。 SHA256(&quot;13812345678&quot;) → &quot;e10adc3949ba59abbe56e057f20f883e...&quot; 适合只需要做数据关联但不需要查看原始值的场景。 技术实现方案 方案一：应用层脱敏 在业务代码中通过注解或工具类实现脱敏。 // 使用自定义注解 + Jackson 序列化 public class UserDTO { private String name; @SensitiveField(type = SensitiveType.PHONE) private String phone; @SensitiveField(type = SensitiveType.ID_CARD) private String idCard; @SensitiveField(type = SensitiveType.EMAIL) private String email; } 优点：灵活可控，可根据业务逻辑决定是否脱敏。 缺点：需要改动业务代码，容易遗漏。 方案二：数据库中间件脱敏 通过数据库代理层实现透明脱敏，业务代码无感知。 Apache ShardingSphere 提供了数据脱敏（数据加密）的完整解决方案： # ShardingSphere 脱敏配置示例 rules: - !ENCRYPT tables: t_user: columns: phone: cipherColumn: phone_cipher encryptorName: aes_encryptor id_card: cipherColumn: id_card_cipher encryptorName: aes_encryptor encryptors: aes_encryptor: type: AES props: aes-key-value: 123456abc ShardingSphere 会自动将写入的明文加密存储，查询时根据配置决定返回明文还是密文。 方案三：日志脱敏 对日志输出中的敏感信息进行脱敏处理。 &lt;!-- Logback 配置自定义脱敏转换器 --&gt; &lt;conversionRule conversionWord=&quot;msg&quot; converterClass=&quot;com.example.SensitiveDataConverter&quot; /&gt; &lt;appender name=&quot;CONSOLE&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt; &lt;encoder&gt; &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n&lt;/pattern&gt; &lt;/encoder&gt; &lt;/appender&gt; 通过正则匹配日志中的手机号、身份证号等模式，在输出前自动替换。 脱敏策略设计原则 分级分类：根据数据敏感等级制定不同的脱敏策略 最小必要：只暴露业务必需的信息，能脱敏的尽量脱敏 不可逆性：测试环境的脱敏数据应保证无法还原出原始数据 一致性：同一条数据在不同场景下的脱敏结果应保持一致（使用确定性算法） 可审计：脱敏操作应有日志记录，支持事后审计 常见的敏感数据分类 敏感等级 数据类型 脱敏建议 极高 密码、密钥、Token 不存储明文，加密或哈希处理 高 身份证号、银行卡号 遮蔽或格式保留加密 中 手机号、邮箱、姓名 部分遮蔽 低 地址、公司名 泛化处理 总结 数据脱敏不是一个单纯的技术问题，而是涉及安全合规、业务需求和系统架构的综合课题。选择哪种脱敏方式取决于具体的使用场景：开发测试用静态脱敏，生产展示用动态脱敏，日志输出用实时脱敏。最重要的是在系统设计之初就将数据脱敏纳入考量，建立完善的敏感数据识别和保护机制，而不是事后补救。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DataMasking.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DataMasking.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-11-12T10:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="数据脱敏" />
+<meta property="twitter:title" content="数据脱敏全面指南：从原理到落地的安全实践" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"参考 大数据之数据脱敏技术 https://mp.weixin.qq.com/s/kDafRfVcZkAKXOXd7iOk0w 大数据与数据脱敏 https://mp.weixin.qq.com/s/8kmrkakLFhLFDGK-Go9SjA Apache ShardingSphere数据脱敏全解决方案详解 https://blog.csdn.net/chuzhan7675/article/details/100776263 动态数据脱敏技术分析 https://mp.weixin.qq.com/s/hj66U_zo7c4tXNlbPHpJhQ 数据脱敏系统（AINSG-DM） https://mp.weixin.qq.com/s/2A_Yz5RT5iq7PobYTcto-Q","headline":"数据脱敏","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DataMasking.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DataMasking.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"在数据驱动的时代，企业积累了海量的用户数据。然而，这些数据在开发测试、数据分析、跨部门共享等场景中使用时，如果不加处理就直接暴露，将面临严重的隐私泄露和合规风险。数据脱敏（Data Masking）正是解决这一问题的关键技术手段。 什么是数据脱敏 数据脱敏是指对敏感数据进行变形处理，使其在保留一定格式和业务可用性的前提下，无法识别或还原出原始数据。 简单来说，就是把 张三 变成 张*，把 13812345678 变成 138****5678，把 310101199001011234 变成 310***********1234。 为什么需要数据脱敏 法律法规要求 《个人信息保护法》（PIPL）：明确规定个人信息处理者应当采取加密、去标识化等安全技术措施 《数据安全法》：要求数据处理活动应当加强风险监测和安全保护 GDPR（欧盟通用数据保护条例）：对个人数据的处理和传输有严格限制 PCI DSS：支付卡行业数据安全标准，要求对持卡人数据进行保护 业务场景需求 场景 说明 开发测试 开发人员需要使用真实数据结构，但不应接触真实的个人信息 数据分析 分析师需要数据的统计特征，但不需要知道具体是谁 日志记录 系统日志可能包含敏感字段，需要脱敏后再记录 数据共享 与第三方合作时，共享数据需要去除敏感标识 数据展示 用户界面上展示部分遮蔽的个人信息 脱敏方式分类 静态脱敏（Static Data Masking） 将生产数据库的敏感数据脱敏后，导入到测试/开发环境。脱敏过程是一次性的批量操作。 生产数据库 → ETL 抽取 → 脱敏处理 → 导入测试数据库 适用场景：开发测试环境数据准备、数据仓库构建 动态脱敏（Dynamic Data Masking） 在数据被查询/访问时实时进行脱敏，不修改原始数据。 应用请求 → 数据库/中间件 → 实时脱敏 → 返回脱敏后的数据 适用场景：生产环境中根据用户角色展示不同的数据视图 常用脱敏算法 1. 遮蔽（Masking） 用特定字符替换部分内容，最直观的脱敏方式。 public class MaskUtils { // 手机号脱敏：保留前3后4 public static String maskPhone(String phone) { if (phone == null || phone.length() != 11) return phone; return phone.substring(0, 3) + &quot;****&quot; + phone.substring(7); } // 138****5678 // 身份证脱敏：保留前3后4 public static String maskIdCard(String idCard) { if (idCard == null || idCard.length() &lt; 8) return idCard; int len = idCard.length(); return idCard.substring(0, 3) + &quot;*&quot;.repeat(len - 7) + idCard.substring(len - 4); } // 310***********1234 // 姓名脱敏：保留姓 public static String maskName(String name) { if (name == null || name.isEmpty()) return name; return name.charAt(0) + &quot;*&quot;.repeat(name.length() - 1); } // 张*、李** // 邮箱脱敏：用户名保留首尾 public static String maskEmail(String email) { if (email == null || !email.contains(&quot;@&quot;)) return email; String[] parts = email.split(&quot;@&quot;); String user = parts[0]; if (user.length() &lt;= 2) return &quot;**@&quot; + parts[1]; return user.charAt(0) + &quot;***&quot; + user.charAt(user.length() - 1) + &quot;@&quot; + parts[1]; } // z***n@gmail.com } 2. 替换（Substitution） 用虚假但格式一致的数据替换原始数据。 原始：张三 → 替换：王五 原始：北京市朝阳区 → 替换：上海市浦东新区 适合需要保持数据真实感的测试场景。 3. 混洗（Shuffling） 在同一列数据内打乱记录间的对应关系。 原始数据： 混洗后： 用户A - 138xxxx1234 用户A - 139xxxx5678 用户B - 139xxxx5678 用户B - 137xxxx9012 用户C - 137xxxx9012 用户C - 138xxxx1234 数据的分布特征不变，但无法对应到具体的人。 4. 加密（Encryption） 使用加密算法对数据进行处理，需要密钥才能还原。 // 使用 AES 加密 String encrypted = AESUtil.encrypt(&quot;13812345678&quot;, secretKey); // 输出：a1b2c3d4e5f6...（密文） // 格式保留加密（FPE）：加密后保持相同格式 // 13812345678 → 15698723456（仍然是 11 位手机号格式） 格式保留加密（Format-Preserving Encryption, FPE） 是一种特殊的加密方式，加密后的数据保持与原始数据相同的格式和长度，适合数据库字段有格式校验的场景。 5. 泛化（Generalization） 降低数据精度，保留统计价值。 年龄 25 → 20-30 岁 收入 15000 → 10000-20000 地址 北京市朝阳区xxx路xxx号 → 北京市朝阳区 日期 2024-01-15 14:30:00 → 2024-01 6. 哈希（Hashing） 使用单向哈希函数处理，无法逆向还原。 SHA256(&quot;13812345678&quot;) → &quot;e10adc3949ba59abbe56e057f20f883e...&quot; 适合只需要做数据关联但不需要查看原始值的场景。 技术实现方案 方案一：应用层脱敏 在业务代码中通过注解或工具类实现脱敏。 // 使用自定义注解 + Jackson 序列化 public class UserDTO { private String name; @SensitiveField(type = SensitiveType.PHONE) private String phone; @SensitiveField(type = SensitiveType.ID_CARD) private String idCard; @SensitiveField(type = SensitiveType.EMAIL) private String email; } 优点：灵活可控，可根据业务逻辑决定是否脱敏。 缺点：需要改动业务代码，容易遗漏。 方案二：数据库中间件脱敏 通过数据库代理层实现透明脱敏，业务代码无感知。 Apache ShardingSphere 提供了数据脱敏（数据加密）的完整解决方案： # ShardingSphere 脱敏配置示例 rules: - !ENCRYPT tables: t_user: columns: phone: cipherColumn: phone_cipher encryptorName: aes_encryptor id_card: cipherColumn: id_card_cipher encryptorName: aes_encryptor encryptors: aes_encryptor: type: AES props: aes-key-value: 123456abc ShardingSphere 会自动将写入的明文加密存储，查询时根据配置决定返回明文还是密文。 方案三：日志脱敏 对日志输出中的敏感信息进行脱敏处理。 &lt;!-- Logback 配置自定义脱敏转换器 --&gt; &lt;conversionRule conversionWord=&quot;msg&quot; converterClass=&quot;com.example.SensitiveDataConverter&quot; /&gt; &lt;appender name=&quot;CONSOLE&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt; &lt;encoder&gt; &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n&lt;/pattern&gt; &lt;/encoder&gt; &lt;/appender&gt; 通过正则匹配日志中的手机号、身份证号等模式，在输出前自动替换。 脱敏策略设计原则 分级分类：根据数据敏感等级制定不同的脱敏策略 最小必要：只暴露业务必需的信息，能脱敏的尽量脱敏 不可逆性：测试环境的脱敏数据应保证无法还原出原始数据 一致性：同一条数据在不同场景下的脱敏结果应保持一致（使用确定性算法） 可审计：脱敏操作应有日志记录，支持事后审计 常见的敏感数据分类 敏感等级 数据类型 脱敏建议 极高 密码、密钥、Token 不存储明文，加密或哈希处理 高 身份证号、银行卡号 遮蔽或格式保留加密 中 手机号、邮箱、姓名 部分遮蔽 低 地址、公司名 泛化处理 总结 数据脱敏不是一个单纯的技术问题，而是涉及安全合规、业务需求和系统架构的综合课题。选择哪种脱敏方式取决于具体的使用场景：开发测试用静态脱敏，生产展示用动态脱敏，日志输出用实时脱敏。最重要的是在系统设计之初就将数据脱敏纳入考量，建立完善的敏感数据识别和保护机制，而不是事后补救。","headline":"数据脱敏全面指南：从原理到落地的安全实践","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DataMasking.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/DataMasking.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html">&laquo; 风控与规则引擎</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html">&laquo; 风控系统与规则引擎：架构设计与技术...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html">Java Concurrent &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/Java-Concurrent.html">Java 并发编程核心：从锁机制到... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">数据脱敏</h1>
+    <h1 class="asset-name entry-title">数据脱敏全面指南：从原理到落地的安全实践</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,32 +97,293 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="参考">参考</h4>
+      <p>在数据驱动的时代，企业积累了海量的用户数据。然而，这些数据在开发测试、数据分析、跨部门共享等场景中使用时，如果不加处理就直接暴露，将面临严重的隐私泄露和合规风险。数据脱敏（Data Masking）正是解决这一问题的关键技术手段。</p>
+
+<h3 id="什么是数据脱敏">什么是数据脱敏</h3>
+
+<p>数据脱敏是指对敏感数据进行变形处理，使其在保留一定格式和业务可用性的前提下，无法识别或还原出原始数据。</p>
+
+<p>简单来说，就是把 <code class="language-plaintext highlighter-rouge">张三</code> 变成 <code class="language-plaintext highlighter-rouge">张*</code>，把 <code class="language-plaintext highlighter-rouge">13812345678</code> 变成 <code class="language-plaintext highlighter-rouge">138****5678</code>，把 <code class="language-plaintext highlighter-rouge">310101199001011234</code> 变成 <code class="language-plaintext highlighter-rouge">310***********1234</code>。</p>
+
+<h3 id="为什么需要数据脱敏">为什么需要数据脱敏</h3>
+
+<h4 id="法律法规要求">法律法规要求</h4>
 
 <ul>
-  <li>大数据之数据脱敏技术</li>
+  <li><strong>《个人信息保护法》（PIPL）</strong>：明确规定个人信息处理者应当采取加密、去标识化等安全技术措施</li>
+  <li><strong>《数据安全法》</strong>：要求数据处理活动应当加强风险监测和安全保护</li>
+  <li><strong>GDPR（欧盟通用数据保护条例）</strong>：对个人数据的处理和传输有严格限制</li>
+  <li><strong>PCI DSS</strong>：支付卡行业数据安全标准，要求对持卡人数据进行保护</li>
 </ul>
-<p><a href="https://mp.weixin.qq.com/s/kDafRfVcZkAKXOXd7iOk0w">https://mp.weixin.qq.com/s/kDafRfVcZkAKXOXd7iOk0w</a></p>
 
-<ul>
-  <li>大数据与数据脱敏</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/8kmrkakLFhLFDGK-Go9SjA">https://mp.weixin.qq.com/s/8kmrkakLFhLFDGK-Go9SjA</a></p>
+<h4 id="业务场景需求">业务场景需求</h4>
 
-<ul>
-  <li>Apache ShardingSphere数据脱敏全解决方案详解</li>
-</ul>
-<p><a href="https://blog.csdn.net/chuzhan7675/article/details/100776263">https://blog.csdn.net/chuzhan7675/article/details/100776263</a></p>
+<table>
+  <thead>
+    <tr>
+      <th>场景</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>开发测试</td>
+      <td>开发人员需要使用真实数据结构，但不应接触真实的个人信息</td>
+    </tr>
+    <tr>
+      <td>数据分析</td>
+      <td>分析师需要数据的统计特征，但不需要知道具体是谁</td>
+    </tr>
+    <tr>
+      <td>日志记录</td>
+      <td>系统日志可能包含敏感字段，需要脱敏后再记录</td>
+    </tr>
+    <tr>
+      <td>数据共享</td>
+      <td>与第三方合作时，共享数据需要去除敏感标识</td>
+    </tr>
+    <tr>
+      <td>数据展示</td>
+      <td>用户界面上展示部分遮蔽的个人信息</td>
+    </tr>
+  </tbody>
+</table>
 
-<ul>
-  <li>动态数据脱敏技术分析</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/hj66U_zo7c4tXNlbPHpJhQ">https://mp.weixin.qq.com/s/hj66U_zo7c4tXNlbPHpJhQ</a></p>
+<h3 id="脱敏方式分类">脱敏方式分类</h3>
 
-<ul>
-  <li>数据脱敏系统（AINSG-DM）</li>
-</ul>
-<p><a href="https://mp.weixin.qq.com/s/2A_Yz5RT5iq7PobYTcto-Q">https://mp.weixin.qq.com/s/2A_Yz5RT5iq7PobYTcto-Q</a></p>
+<h4 id="静态脱敏static-data-masking">静态脱敏（Static Data Masking）</h4>
+
+<p>将生产数据库的敏感数据脱敏后，导入到测试/开发环境。脱敏过程是一次性的批量操作。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>生产数据库 → ETL 抽取 → 脱敏处理 → 导入测试数据库
+</code></pre></div></div>
+
+<p><strong>适用场景</strong>：开发测试环境数据准备、数据仓库构建</p>
+
+<h4 id="动态脱敏dynamic-data-masking">动态脱敏（Dynamic Data Masking）</h4>
+
+<p>在数据被查询/访问时实时进行脱敏，不修改原始数据。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>应用请求 → 数据库/中间件 → 实时脱敏 → 返回脱敏后的数据
+</code></pre></div></div>
+
+<p><strong>适用场景</strong>：生产环境中根据用户角色展示不同的数据视图</p>
+
+<h3 id="常用脱敏算法">常用脱敏算法</h3>
+
+<h4 id="1-遮蔽masking">1. 遮蔽（Masking）</h4>
+
+<p>用特定字符替换部分内容，最直观的脱敏方式。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MaskUtils</span> <span class="o">{</span>
+    
+    <span class="c1">// 手机号脱敏：保留前3后4</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">maskPhone</span><span class="o">(</span><span class="nc">String</span> <span class="n">phone</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">phone</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">phone</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">!=</span> <span class="mi">11</span><span class="o">)</span> <span class="k">return</span> <span class="n">phone</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">phone</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span> <span class="o">+</span> <span class="s">"****"</span> <span class="o">+</span> <span class="n">phone</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">7</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// 138****5678</span>
+    
+    <span class="c1">// 身份证脱敏：保留前3后4</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">maskIdCard</span><span class="o">(</span><span class="nc">String</span> <span class="n">idCard</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">idCard</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">idCard</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="o">)</span> <span class="k">return</span> <span class="n">idCard</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">idCard</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+        <span class="k">return</span> <span class="n">idCard</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span> <span class="o">+</span> 
+               <span class="s">"*"</span><span class="o">.</span><span class="na">repeat</span><span class="o">(</span><span class="n">len</span> <span class="o">-</span> <span class="mi">7</span><span class="o">)</span> <span class="o">+</span> 
+               <span class="n">idCard</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">len</span> <span class="o">-</span> <span class="mi">4</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// 310***********1234</span>
+    
+    <span class="c1">// 姓名脱敏：保留姓</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">maskName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">name</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">+</span> <span class="s">"*"</span><span class="o">.</span><span class="na">repeat</span><span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// 张*、李**</span>
+    
+    <span class="c1">// 邮箱脱敏：用户名保留首尾</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">maskEmail</span><span class="o">(</span><span class="nc">String</span> <span class="n">email</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">email</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!</span><span class="n">email</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="s">"@"</span><span class="o">))</span> <span class="k">return</span> <span class="n">email</span><span class="o">;</span>
+        <span class="nc">String</span><span class="o">[]</span> <span class="n">parts</span> <span class="o">=</span> <span class="n">email</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"@"</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">user</span> <span class="o">=</span> <span class="n">parts</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="k">return</span> <span class="s">"**@"</span> <span class="o">+</span> <span class="n">parts</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+        <span class="k">return</span> <span class="n">user</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">+</span> <span class="s">"***"</span> <span class="o">+</span> <span class="n">user</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="s">"@"</span> <span class="o">+</span> <span class="n">parts</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+    <span class="o">}</span>
+    <span class="c1">// z***n@gmail.com</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="2-替换substitution">2. 替换（Substitution）</h4>
+
+<p>用虚假但格式一致的数据替换原始数据。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>原始：张三 → 替换：王五
+原始：北京市朝阳区 → 替换：上海市浦东新区
+</code></pre></div></div>
+
+<p>适合需要保持数据真实感的测试场景。</p>
+
+<h4 id="3-混洗shuffling">3. 混洗（Shuffling）</h4>
+
+<p>在同一列数据内打乱记录间的对应关系。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>原始数据：             混洗后：
+用户A - 138xxxx1234    用户A - 139xxxx5678
+用户B - 139xxxx5678    用户B - 137xxxx9012
+用户C - 137xxxx9012    用户C - 138xxxx1234
+</code></pre></div></div>
+
+<p>数据的分布特征不变，但无法对应到具体的人。</p>
+
+<h4 id="4-加密encryption">4. 加密（Encryption）</h4>
+
+<p>使用加密算法对数据进行处理，需要密钥才能还原。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 使用 AES 加密</span>
+<span class="nc">String</span> <span class="n">encrypted</span> <span class="o">=</span> <span class="nc">AESUtil</span><span class="o">.</span><span class="na">encrypt</span><span class="o">(</span><span class="s">"13812345678"</span><span class="o">,</span> <span class="n">secretKey</span><span class="o">);</span>
+<span class="c1">// 输出：a1b2c3d4e5f6...（密文）</span>
+
+<span class="c1">// 格式保留加密（FPE）：加密后保持相同格式</span>
+<span class="c1">// 13812345678 → 15698723456（仍然是 11 位手机号格式）</span>
+</code></pre></div></div>
+
+<p><strong>格式保留加密（Format-Preserving Encryption, FPE）</strong> 是一种特殊的加密方式，加密后的数据保持与原始数据相同的格式和长度，适合数据库字段有格式校验的场景。</p>
+
+<h4 id="5-泛化generalization">5. 泛化（Generalization）</h4>
+
+<p>降低数据精度，保留统计价值。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>年龄 25 → 20-30 岁
+收入 15000 → 10000-20000
+地址 北京市朝阳区xxx路xxx号 → 北京市朝阳区
+日期 2024-01-15 14:30:00 → 2024-01
+</code></pre></div></div>
+
+<h4 id="6-哈希hashing">6. 哈希（Hashing）</h4>
+
+<p>使用单向哈希函数处理，无法逆向还原。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SHA256("13812345678") → "e10adc3949ba59abbe56e057f20f883e..."
+</code></pre></div></div>
+
+<p>适合只需要做数据关联但不需要查看原始值的场景。</p>
+
+<h3 id="技术实现方案">技术实现方案</h3>
+
+<h4 id="方案一应用层脱敏">方案一：应用层脱敏</h4>
+
+<p>在业务代码中通过注解或工具类实现脱敏。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 使用自定义注解 + Jackson 序列化</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDTO</span> <span class="o">{</span>
+    
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+    
+    <span class="nd">@SensitiveField</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="nc">SensitiveType</span><span class="o">.</span><span class="na">PHONE</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">phone</span><span class="o">;</span>
+    
+    <span class="nd">@SensitiveField</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="nc">SensitiveType</span><span class="o">.</span><span class="na">ID_CARD</span><span class="o">)</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">idCard</span><span class="o">;</span>
+    
+    <span class="nd">@SensitiveField</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="nc">SensitiveType</span><span class="o">.</span><span class="na">EMAIL</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">email</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>优点：灵活可控，可根据业务逻辑决定是否脱敏。
+缺点：需要改动业务代码，容易遗漏。</p>
+
+<h4 id="方案二数据库中间件脱敏">方案二：数据库中间件脱敏</h4>
+
+<p>通过数据库代理层实现透明脱敏，业务代码无感知。</p>
+
+<p><strong>Apache ShardingSphere</strong> 提供了数据脱敏（数据加密）的完整解决方案：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ShardingSphere 脱敏配置示例</span>
+<span class="na">rules</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="kt">!ENCRYPT</span>
+    <span class="na">tables</span><span class="pi">:</span>
+      <span class="na">t_user</span><span class="pi">:</span>
+        <span class="na">columns</span><span class="pi">:</span>
+          <span class="na">phone</span><span class="pi">:</span>
+            <span class="na">cipherColumn</span><span class="pi">:</span> <span class="s">phone_cipher</span>
+            <span class="na">encryptorName</span><span class="pi">:</span> <span class="s">aes_encryptor</span>
+          <span class="na">id_card</span><span class="pi">:</span>
+            <span class="na">cipherColumn</span><span class="pi">:</span> <span class="s">id_card_cipher</span>
+            <span class="na">encryptorName</span><span class="pi">:</span> <span class="s">aes_encryptor</span>
+    <span class="na">encryptors</span><span class="pi">:</span>
+      <span class="na">aes_encryptor</span><span class="pi">:</span>
+        <span class="na">type</span><span class="pi">:</span> <span class="s">AES</span>
+        <span class="na">props</span><span class="pi">:</span>
+          <span class="na">aes-key-value</span><span class="pi">:</span> <span class="s">123456abc</span>
+</code></pre></div></div>
+
+<p>ShardingSphere 会自动将写入的明文加密存储，查询时根据配置决定返回明文还是密文。</p>
+
+<h4 id="方案三日志脱敏">方案三：日志脱敏</h4>
+
+<p>对日志输出中的敏感信息进行脱敏处理。</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Logback 配置自定义脱敏转换器 --&gt;</span>
+<span class="nt">&lt;conversionRule</span> <span class="na">conversionWord=</span><span class="s">"msg"</span> 
+  <span class="na">converterClass=</span><span class="s">"com.example.SensitiveDataConverter"</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">"CONSOLE"</span> <span class="na">class=</span><span class="s">"ch.qos.logback.core.ConsoleAppender"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;encoder&gt;</span>
+        <span class="nt">&lt;pattern&gt;</span>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n<span class="nt">&lt;/pattern&gt;</span>
+    <span class="nt">&lt;/encoder&gt;</span>
+<span class="nt">&lt;/appender&gt;</span>
+</code></pre></div></div>
+
+<p>通过正则匹配日志中的手机号、身份证号等模式，在输出前自动替换。</p>
+
+<h3 id="脱敏策略设计原则">脱敏策略设计原则</h3>
+
+<ol>
+  <li><strong>分级分类</strong>：根据数据敏感等级制定不同的脱敏策略</li>
+  <li><strong>最小必要</strong>：只暴露业务必需的信息，能脱敏的尽量脱敏</li>
+  <li><strong>不可逆性</strong>：测试环境的脱敏数据应保证无法还原出原始数据</li>
+  <li><strong>一致性</strong>：同一条数据在不同场景下的脱敏结果应保持一致（使用确定性算法）</li>
+  <li><strong>可审计</strong>：脱敏操作应有日志记录，支持事后审计</li>
+</ol>
+
+<h3 id="常见的敏感数据分类">常见的敏感数据分类</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>敏感等级</th>
+      <th>数据类型</th>
+      <th>脱敏建议</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>极高</td>
+      <td>密码、密钥、Token</td>
+      <td>不存储明文，加密或哈希处理</td>
+    </tr>
+    <tr>
+      <td>高</td>
+      <td>身份证号、银行卡号</td>
+      <td>遮蔽或格式保留加密</td>
+    </tr>
+    <tr>
+      <td>中</td>
+      <td>手机号、邮箱、姓名</td>
+      <td>部分遮蔽</td>
+    </tr>
+    <tr>
+      <td>低</td>
+      <td>地址、公司名</td>
+      <td>泛化处理</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="总结">总结</h3>
+
+<p>数据脱敏不是一个单纯的技术问题，而是涉及安全合规、业务需求和系统架构的综合课题。选择哪种脱敏方式取决于具体的使用场景：开发测试用静态脱敏，生产展示用动态脱敏，日志输出用实时脱敏。最重要的是在系统设计之初就将数据脱敏纳入考量，建立完善的敏感数据识别和保护机制，而不是事后补救。</p>
 
     </div>
   </div>
@@ -154,33 +415,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

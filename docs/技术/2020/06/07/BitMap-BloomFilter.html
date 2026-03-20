@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BitMap-BloomFilter - Code & Coffee</title>
+  <title>BitMap 与 BloomFilter：海量数据处理的两把利刃 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>BitMap-BloomFilter | Code &amp; Coffee</title>
+<title>BitMap 与 BloomFilter：海量数据处理的两把利刃 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="BitMap-BloomFilter" />
+<meta property="og:title" content="BitMap 与 BloomFilter：海量数据处理的两把利刃" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="BitMap 近似的理解为用一个大数组的索引来表示数字本身，用0或1表示该数字是否存在 一个32位的int，只用一个标志位来表示是否存在 但是数字如果重复只会保留一个，主要用于去重类似的场景 BloomFilter 判断短连接是否重复、垃圾邮件等场景 把url，3次不同hash，得到3个不同的hashcode，存入bitmap 多次hash是为了降低hash重复的概率 由于以上特性，bloomFilter算法计算出不存在的一定就是不存在，如果计算出来存在有一定几率重复（因为hash的特性） 参考链接 Bitmap算法 整合版 https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg 什么是布隆算法？https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ" />
-<meta property="og:description" content="BitMap 近似的理解为用一个大数组的索引来表示数字本身，用0或1表示该数字是否存在 一个32位的int，只用一个标志位来表示是否存在 但是数字如果重复只会保留一个，主要用于去重类似的场景 BloomFilter 判断短连接是否重复、垃圾邮件等场景 把url，3次不同hash，得到3个不同的hashcode，存入bitmap 多次hash是为了降低hash重复的概率 由于以上特性，bloomFilter算法计算出不存在的一定就是不存在，如果计算出来存在有一定几率重复（因为hash的特性） 参考链接 Bitmap算法 整合版 https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg 什么是布隆算法？https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ" />
+<meta name="description" content="在处理海量数据时，常规的数据结构往往面临内存爆炸的困境。比如要判断 40 亿个整数中是否存在某个数、或者检查一个 URL 是否已经被爬虫访问过——如果用 HashSet 直接存储，内存占用将达到数十 GB 甚至上百 GB。这时就需要请出两个内存效率极高的数据结构：BitMap 和 BloomFilter。 BitMap（位图） 核心思想 BitMap 的核心非常简洁：用一个 bit（位）来标记一个元素是否存在。 传统方式中，一个 int 类型需要 4 字节（32 位）来存储一个数字。而在 BitMap 中，一个 bit 就能表示一个数字的存在与否。这意味着存储空间缩小到原来的 1/32。 传统存储：[5, 3, 7, 2] → 每个数字 4 字节 → 共 16 字节 BitMap： 00101101 → 用 1 字节（8 bit）表示 0-7 的存在情况 位置: 76543210 值: 00101101 → 表示 0, 2, 3, 5 存在 基本操作 public class BitMap { private byte[] bits; public BitMap(int maxValue) { bits = new byte[(maxValue &gt;&gt; 3) + 1]; } // 将第 num 位设为 1（添加元素） public void add(int num) { int byteIndex = num &gt;&gt; 3; // num / 8，定位到第几个 byte int bitIndex = num &amp; 7; // num % 8，定位到 byte 内的第几位 bits[byteIndex] |= (1 &lt;&lt; bitIndex); } // 判断第 num 位是否为 1（查询元素） public boolean contains(int num) { int byteIndex = num &gt;&gt; 3; int bitIndex = num &amp; 7; return (bits[byteIndex] &amp; (1 &lt;&lt; bitIndex)) != 0; } // 将第 num 位设为 0（删除元素） public void remove(int num) { int byteIndex = num &gt;&gt; 3; int bitIndex = num &amp; 7; bits[byteIndex] &amp;= ~(1 &lt;&lt; bitIndex); } } 内存计算 存储 40 亿个整数的存在性： 传统方式（HashSet）：40 亿 × 16 字节 ≈ **60 GB** BitMap 方式：2^32 bit = 512 MB（覆盖整个 int 范围） 适用场景 场景 说明 大数据去重 判断某个数是否出现过 排序 遍历 BitMap 即可得到有序结果 用户标签 每个 bit 表示一个标签，快速进行交集/并集运算 活跃用户统计 每天一个 BitMap，某位为 1 表示该用户当天活跃 局限性 只能存储非负整数，不适合存储字符串等复杂类型 数据稀疏时浪费空间：如果只存 3 个数但最大值是 10 亿，仍需分配大量内存 不支持重复计数：一个位置只能是 0 或 1，无法记录出现次数 BloomFilter（布隆过滤器） BloomFilter 是 BitMap 的升级版，它解决了 BitMap 无法处理字符串等非整数类型的问题。 核心思想 BloomFilter 的核心是：将元素通过多个不同的 Hash 函数映射到 BitMap 的多个位置。 添加元素 &quot;hello&quot;： hash1(&quot;hello&quot;) = 3 hash2(&quot;hello&quot;) = 7 hash3(&quot;hello&quot;) = 11 → 将 BitMap 的第 3、7、11 位设为 1 查询元素 &quot;hello&quot;： 计算 hash1、hash2、hash3 → 得到 3、7、11 → 检查第 3、7、11 位是否都为 1 → 都为 1 → &quot;可能存在&quot; → 有任何一个为 0 → &quot;一定不存在&quot; 为什么需要多个 Hash 函数 单个 Hash 函数的冲突概率较高。假设 BitMap 大小为 m，已插入 n 个元素： 1 个 Hash 函数：误判率 ≈ n/m k 个 Hash 函数：误判率 ≈ (1 - e^(-kn/m))^k 通过多次 Hash，只有所有 Hash 位置都发生冲突时才会产生误判，从而大幅降低误判概率。 关键特性 判定不存在 → 一定不存在（零漏报） 判定存在 → 可能存在（有误报） 不支持删除：删除某个元素的 bit 位可能影响其他元素 误报率可以通过调整 BitMap 大小（m）和 Hash 函数个数（k）来控制。 Java 实现（使用 Guava） Google Guava 提供了生产级的 BloomFilter 实现： import com.google.common.hash.BloomFilter; import com.google.common.hash.Funnels; // 创建 BloomFilter：预计插入 100 万个元素，误报率 1% BloomFilter&lt;String&gt; bloomFilter = BloomFilter.create( Funnels.stringFunnel(Charset.defaultCharset()), 1_000_000, // 预期元素数量 0.01 // 可接受的误报率 ); // 添加元素 bloomFilter.put(&quot;https://example.com/page1&quot;); bloomFilter.put(&quot;https://example.com/page2&quot;); // 查询元素 boolean mightExist = bloomFilter.mightContain(&quot;https://example.com/page1&quot;); // true boolean notExist = bloomFilter.mightContain(&quot;https://example.com/page999&quot;); // 大概率 false Redis 中的 BloomFilter Redis 4.0+ 通过 RedisBloom 模块原生支持 BloomFilter，适用于分布式场景： # 创建 BloomFilter：误报率 0.01，预期容量 100 万 BF.RESERVE myfilter 0.01 1000000 # 添加元素 BF.ADD myfilter &quot;user:1001&quot; # 批量添加 BF.MADD myfilter &quot;user:1002&quot; &quot;user:1003&quot; &quot;user:1004&quot; # 查询是否存在 BF.EXISTS myfilter &quot;user:1001&quot; # 返回 1（可能存在） BF.EXISTS myfilter &quot;user:9999&quot; # 返回 0（一定不存在） 实际应用场景 场景 说明 短链接去重 生成短链接前检查是否已存在，避免重复 爬虫 URL 去重 判断 URL 是否已爬取过 垃圾邮件过滤 检查发件人/关键词是否在黑名单中 缓存穿透防护 在缓存和数据库之间加一层 BloomFilter，拦截不存在的 Key 推荐系统去重 避免重复推荐已看过的内容 缓存穿透防护示例 用户请求 → BloomFilter 判断 Key 是否存在 ↓ 不存在 → 直接返回空，不查数据库 ↓ 可能存在 → 查缓存 ↓ 缓存命中 → 返回 ↓ 缓存未命中 → 查数据库 → 写入缓存 → 返回 这种模式可以有效防止恶意请求用大量不存在的 Key 击穿缓存、压垮数据库。 BitMap vs BloomFilter 对比 特性 BitMap BloomFilter 支持类型 非负整数 任意类型（通过 Hash） 判断准确性 100% 准确 存在误报（可控） 支持删除 支持 不支持（Counting BF 除外） 空间效率 高（稀疏数据除外） 极高 时间复杂度 O(1) O(k)，k 为 Hash 函数个数 典型实现 Java BitSet、Redis SETBIT Guava BloomFilter、RedisBloom 进阶变体 Counting BloomFilter：每个位置用计数器替代单 bit，支持删除操作 Cuckoo Filter：支持删除，且在相同误报率下空间更优 Roaring BitMap：压缩位图，处理稀疏数据时比普通 BitMap 更省空间，广泛应用于 Elasticsearch、Apache Spark 等 总结 BitMap 和 BloomFilter 是海量数据场景下的两个经典武器。BitMap 适合处理整数范围内的精确判断，BloomFilter 则将适用范围扩展到任意数据类型，以极低的误报率换取了极高的空间效率。在实际工程中，理解它们的特性和局限，选择合适的工具，才能在性能和资源之间找到最佳平衡。" />
+<meta property="og:description" content="在处理海量数据时，常规的数据结构往往面临内存爆炸的困境。比如要判断 40 亿个整数中是否存在某个数、或者检查一个 URL 是否已经被爬虫访问过——如果用 HashSet 直接存储，内存占用将达到数十 GB 甚至上百 GB。这时就需要请出两个内存效率极高的数据结构：BitMap 和 BloomFilter。 BitMap（位图） 核心思想 BitMap 的核心非常简洁：用一个 bit（位）来标记一个元素是否存在。 传统方式中，一个 int 类型需要 4 字节（32 位）来存储一个数字。而在 BitMap 中，一个 bit 就能表示一个数字的存在与否。这意味着存储空间缩小到原来的 1/32。 传统存储：[5, 3, 7, 2] → 每个数字 4 字节 → 共 16 字节 BitMap： 00101101 → 用 1 字节（8 bit）表示 0-7 的存在情况 位置: 76543210 值: 00101101 → 表示 0, 2, 3, 5 存在 基本操作 public class BitMap { private byte[] bits; public BitMap(int maxValue) { bits = new byte[(maxValue &gt;&gt; 3) + 1]; } // 将第 num 位设为 1（添加元素） public void add(int num) { int byteIndex = num &gt;&gt; 3; // num / 8，定位到第几个 byte int bitIndex = num &amp; 7; // num % 8，定位到 byte 内的第几位 bits[byteIndex] |= (1 &lt;&lt; bitIndex); } // 判断第 num 位是否为 1（查询元素） public boolean contains(int num) { int byteIndex = num &gt;&gt; 3; int bitIndex = num &amp; 7; return (bits[byteIndex] &amp; (1 &lt;&lt; bitIndex)) != 0; } // 将第 num 位设为 0（删除元素） public void remove(int num) { int byteIndex = num &gt;&gt; 3; int bitIndex = num &amp; 7; bits[byteIndex] &amp;= ~(1 &lt;&lt; bitIndex); } } 内存计算 存储 40 亿个整数的存在性： 传统方式（HashSet）：40 亿 × 16 字节 ≈ **60 GB** BitMap 方式：2^32 bit = 512 MB（覆盖整个 int 范围） 适用场景 场景 说明 大数据去重 判断某个数是否出现过 排序 遍历 BitMap 即可得到有序结果 用户标签 每个 bit 表示一个标签，快速进行交集/并集运算 活跃用户统计 每天一个 BitMap，某位为 1 表示该用户当天活跃 局限性 只能存储非负整数，不适合存储字符串等复杂类型 数据稀疏时浪费空间：如果只存 3 个数但最大值是 10 亿，仍需分配大量内存 不支持重复计数：一个位置只能是 0 或 1，无法记录出现次数 BloomFilter（布隆过滤器） BloomFilter 是 BitMap 的升级版，它解决了 BitMap 无法处理字符串等非整数类型的问题。 核心思想 BloomFilter 的核心是：将元素通过多个不同的 Hash 函数映射到 BitMap 的多个位置。 添加元素 &quot;hello&quot;： hash1(&quot;hello&quot;) = 3 hash2(&quot;hello&quot;) = 7 hash3(&quot;hello&quot;) = 11 → 将 BitMap 的第 3、7、11 位设为 1 查询元素 &quot;hello&quot;： 计算 hash1、hash2、hash3 → 得到 3、7、11 → 检查第 3、7、11 位是否都为 1 → 都为 1 → &quot;可能存在&quot; → 有任何一个为 0 → &quot;一定不存在&quot; 为什么需要多个 Hash 函数 单个 Hash 函数的冲突概率较高。假设 BitMap 大小为 m，已插入 n 个元素： 1 个 Hash 函数：误判率 ≈ n/m k 个 Hash 函数：误判率 ≈ (1 - e^(-kn/m))^k 通过多次 Hash，只有所有 Hash 位置都发生冲突时才会产生误判，从而大幅降低误判概率。 关键特性 判定不存在 → 一定不存在（零漏报） 判定存在 → 可能存在（有误报） 不支持删除：删除某个元素的 bit 位可能影响其他元素 误报率可以通过调整 BitMap 大小（m）和 Hash 函数个数（k）来控制。 Java 实现（使用 Guava） Google Guava 提供了生产级的 BloomFilter 实现： import com.google.common.hash.BloomFilter; import com.google.common.hash.Funnels; // 创建 BloomFilter：预计插入 100 万个元素，误报率 1% BloomFilter&lt;String&gt; bloomFilter = BloomFilter.create( Funnels.stringFunnel(Charset.defaultCharset()), 1_000_000, // 预期元素数量 0.01 // 可接受的误报率 ); // 添加元素 bloomFilter.put(&quot;https://example.com/page1&quot;); bloomFilter.put(&quot;https://example.com/page2&quot;); // 查询元素 boolean mightExist = bloomFilter.mightContain(&quot;https://example.com/page1&quot;); // true boolean notExist = bloomFilter.mightContain(&quot;https://example.com/page999&quot;); // 大概率 false Redis 中的 BloomFilter Redis 4.0+ 通过 RedisBloom 模块原生支持 BloomFilter，适用于分布式场景： # 创建 BloomFilter：误报率 0.01，预期容量 100 万 BF.RESERVE myfilter 0.01 1000000 # 添加元素 BF.ADD myfilter &quot;user:1001&quot; # 批量添加 BF.MADD myfilter &quot;user:1002&quot; &quot;user:1003&quot; &quot;user:1004&quot; # 查询是否存在 BF.EXISTS myfilter &quot;user:1001&quot; # 返回 1（可能存在） BF.EXISTS myfilter &quot;user:9999&quot; # 返回 0（一定不存在） 实际应用场景 场景 说明 短链接去重 生成短链接前检查是否已存在，避免重复 爬虫 URL 去重 判断 URL 是否已爬取过 垃圾邮件过滤 检查发件人/关键词是否在黑名单中 缓存穿透防护 在缓存和数据库之间加一层 BloomFilter，拦截不存在的 Key 推荐系统去重 避免重复推荐已看过的内容 缓存穿透防护示例 用户请求 → BloomFilter 判断 Key 是否存在 ↓ 不存在 → 直接返回空，不查数据库 ↓ 可能存在 → 查缓存 ↓ 缓存命中 → 返回 ↓ 缓存未命中 → 查数据库 → 写入缓存 → 返回 这种模式可以有效防止恶意请求用大量不存在的 Key 击穿缓存、压垮数据库。 BitMap vs BloomFilter 对比 特性 BitMap BloomFilter 支持类型 非负整数 任意类型（通过 Hash） 判断准确性 100% 准确 存在误报（可控） 支持删除 支持 不支持（Counting BF 除外） 空间效率 高（稀疏数据除外） 极高 时间复杂度 O(1) O(k)，k 为 Hash 函数个数 典型实现 Java BitSet、Redis SETBIT Guava BloomFilter、RedisBloom 进阶变体 Counting BloomFilter：每个位置用计数器替代单 bit，支持删除操作 Cuckoo Filter：支持删除，且在相同误报率下空间更优 Roaring BitMap：压缩位图，处理稀疏数据时比普通 BitMap 更省空间，广泛应用于 Elasticsearch、Apache Spark 等 总结 BitMap 和 BloomFilter 是海量数据场景下的两个经典武器。BitMap 适合处理整数范围内的精确判断，BloomFilter 则将适用范围扩展到任意数据类型，以极低的误报率换取了极高的空间效率。在实际工程中，理解它们的特性和局限，选择合适的工具，才能在性能和资源之间找到最佳平衡。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-06-07T13:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="BitMap-BloomFilter" />
+<meta property="twitter:title" content="BitMap 与 BloomFilter：海量数据处理的两把利刃" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-06-07T13:25:00+08:00","datePublished":"2020-06-07T13:25:00+08:00","description":"BitMap 近似的理解为用一个大数组的索引来表示数字本身，用0或1表示该数字是否存在 一个32位的int，只用一个标志位来表示是否存在 但是数字如果重复只会保留一个，主要用于去重类似的场景 BloomFilter 判断短连接是否重复、垃圾邮件等场景 把url，3次不同hash，得到3个不同的hashcode，存入bitmap 多次hash是为了降低hash重复的概率 由于以上特性，bloomFilter算法计算出不存在的一定就是不存在，如果计算出来存在有一定几率重复（因为hash的特性） 参考链接 Bitmap算法 整合版 https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg 什么是布隆算法？https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ","headline":"BitMap-BloomFilter","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-06-07T13:25:00+08:00","datePublished":"2020-06-07T13:25:00+08:00","description":"在处理海量数据时，常规的数据结构往往面临内存爆炸的困境。比如要判断 40 亿个整数中是否存在某个数、或者检查一个 URL 是否已经被爬虫访问过——如果用 HashSet 直接存储，内存占用将达到数十 GB 甚至上百 GB。这时就需要请出两个内存效率极高的数据结构：BitMap 和 BloomFilter。 BitMap（位图） 核心思想 BitMap 的核心非常简洁：用一个 bit（位）来标记一个元素是否存在。 传统方式中，一个 int 类型需要 4 字节（32 位）来存储一个数字。而在 BitMap 中，一个 bit 就能表示一个数字的存在与否。这意味着存储空间缩小到原来的 1/32。 传统存储：[5, 3, 7, 2] → 每个数字 4 字节 → 共 16 字节 BitMap： 00101101 → 用 1 字节（8 bit）表示 0-7 的存在情况 位置: 76543210 值: 00101101 → 表示 0, 2, 3, 5 存在 基本操作 public class BitMap { private byte[] bits; public BitMap(int maxValue) { bits = new byte[(maxValue &gt;&gt; 3) + 1]; } // 将第 num 位设为 1（添加元素） public void add(int num) { int byteIndex = num &gt;&gt; 3; // num / 8，定位到第几个 byte int bitIndex = num &amp; 7; // num % 8，定位到 byte 内的第几位 bits[byteIndex] |= (1 &lt;&lt; bitIndex); } // 判断第 num 位是否为 1（查询元素） public boolean contains(int num) { int byteIndex = num &gt;&gt; 3; int bitIndex = num &amp; 7; return (bits[byteIndex] &amp; (1 &lt;&lt; bitIndex)) != 0; } // 将第 num 位设为 0（删除元素） public void remove(int num) { int byteIndex = num &gt;&gt; 3; int bitIndex = num &amp; 7; bits[byteIndex] &amp;= ~(1 &lt;&lt; bitIndex); } } 内存计算 存储 40 亿个整数的存在性： 传统方式（HashSet）：40 亿 × 16 字节 ≈ **60 GB** BitMap 方式：2^32 bit = 512 MB（覆盖整个 int 范围） 适用场景 场景 说明 大数据去重 判断某个数是否出现过 排序 遍历 BitMap 即可得到有序结果 用户标签 每个 bit 表示一个标签，快速进行交集/并集运算 活跃用户统计 每天一个 BitMap，某位为 1 表示该用户当天活跃 局限性 只能存储非负整数，不适合存储字符串等复杂类型 数据稀疏时浪费空间：如果只存 3 个数但最大值是 10 亿，仍需分配大量内存 不支持重复计数：一个位置只能是 0 或 1，无法记录出现次数 BloomFilter（布隆过滤器） BloomFilter 是 BitMap 的升级版，它解决了 BitMap 无法处理字符串等非整数类型的问题。 核心思想 BloomFilter 的核心是：将元素通过多个不同的 Hash 函数映射到 BitMap 的多个位置。 添加元素 &quot;hello&quot;： hash1(&quot;hello&quot;) = 3 hash2(&quot;hello&quot;) = 7 hash3(&quot;hello&quot;) = 11 → 将 BitMap 的第 3、7、11 位设为 1 查询元素 &quot;hello&quot;： 计算 hash1、hash2、hash3 → 得到 3、7、11 → 检查第 3、7、11 位是否都为 1 → 都为 1 → &quot;可能存在&quot; → 有任何一个为 0 → &quot;一定不存在&quot; 为什么需要多个 Hash 函数 单个 Hash 函数的冲突概率较高。假设 BitMap 大小为 m，已插入 n 个元素： 1 个 Hash 函数：误判率 ≈ n/m k 个 Hash 函数：误判率 ≈ (1 - e^(-kn/m))^k 通过多次 Hash，只有所有 Hash 位置都发生冲突时才会产生误判，从而大幅降低误判概率。 关键特性 判定不存在 → 一定不存在（零漏报） 判定存在 → 可能存在（有误报） 不支持删除：删除某个元素的 bit 位可能影响其他元素 误报率可以通过调整 BitMap 大小（m）和 Hash 函数个数（k）来控制。 Java 实现（使用 Guava） Google Guava 提供了生产级的 BloomFilter 实现： import com.google.common.hash.BloomFilter; import com.google.common.hash.Funnels; // 创建 BloomFilter：预计插入 100 万个元素，误报率 1% BloomFilter&lt;String&gt; bloomFilter = BloomFilter.create( Funnels.stringFunnel(Charset.defaultCharset()), 1_000_000, // 预期元素数量 0.01 // 可接受的误报率 ); // 添加元素 bloomFilter.put(&quot;https://example.com/page1&quot;); bloomFilter.put(&quot;https://example.com/page2&quot;); // 查询元素 boolean mightExist = bloomFilter.mightContain(&quot;https://example.com/page1&quot;); // true boolean notExist = bloomFilter.mightContain(&quot;https://example.com/page999&quot;); // 大概率 false Redis 中的 BloomFilter Redis 4.0+ 通过 RedisBloom 模块原生支持 BloomFilter，适用于分布式场景： # 创建 BloomFilter：误报率 0.01，预期容量 100 万 BF.RESERVE myfilter 0.01 1000000 # 添加元素 BF.ADD myfilter &quot;user:1001&quot; # 批量添加 BF.MADD myfilter &quot;user:1002&quot; &quot;user:1003&quot; &quot;user:1004&quot; # 查询是否存在 BF.EXISTS myfilter &quot;user:1001&quot; # 返回 1（可能存在） BF.EXISTS myfilter &quot;user:9999&quot; # 返回 0（一定不存在） 实际应用场景 场景 说明 短链接去重 生成短链接前检查是否已存在，避免重复 爬虫 URL 去重 判断 URL 是否已爬取过 垃圾邮件过滤 检查发件人/关键词是否在黑名单中 缓存穿透防护 在缓存和数据库之间加一层 BloomFilter，拦截不存在的 Key 推荐系统去重 避免重复推荐已看过的内容 缓存穿透防护示例 用户请求 → BloomFilter 判断 Key 是否存在 ↓ 不存在 → 直接返回空，不查数据库 ↓ 可能存在 → 查缓存 ↓ 缓存命中 → 返回 ↓ 缓存未命中 → 查数据库 → 写入缓存 → 返回 这种模式可以有效防止恶意请求用大量不存在的 Key 击穿缓存、压垮数据库。 BitMap vs BloomFilter 对比 特性 BitMap BloomFilter 支持类型 非负整数 任意类型（通过 Hash） 判断准确性 100% 准确 存在误报（可控） 支持删除 支持 不支持（Counting BF 除外） 空间效率 高（稀疏数据除外） 极高 时间复杂度 O(1) O(k)，k 为 Hash 函数个数 典型实现 Java BitSet、Redis SETBIT Guava BloomFilter、RedisBloom 进阶变体 Counting BloomFilter：每个位置用计数器替代单 bit，支持删除操作 Cuckoo Filter：支持删除，且在相同误报率下空间更优 Roaring BitMap：压缩位图，处理稀疏数据时比普通 BitMap 更省空间，广泛应用于 Elasticsearch、Apache Spark 等 总结 BitMap 和 BloomFilter 是海量数据场景下的两个经典武器。BitMap 适合处理整数范围内的精确判断，BloomFilter 则将适用范围扩展到任意数据类型，以极低的误报率换取了极高的空间效率。在实际工程中，理解它们的特性和局限，选择合适的工具，才能在性能和资源之间找到最佳平衡。","headline":"BitMap 与 BloomFilter：海量数据处理的两把利刃","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/BitMap-BloomFilter.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html">&laquo; 大数据常用算法概述</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html">&laquo; 大数据算法全景：从海量数据处理到机...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html">经典算法思想 &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html">经典算法思想详解：贪心、分治、动态... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">BitMap-BloomFilter</h1>
+    <h1 class="asset-name entry-title">BitMap 与 BloomFilter：海量数据处理的两把利刃</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,26 +97,280 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="bitmap">BitMap</h4>
+      <p>在处理海量数据时，常规的数据结构往往面临内存爆炸的困境。比如要判断 40 亿个整数中是否存在某个数、或者检查一个 URL 是否已经被爬虫访问过——如果用 HashSet 直接存储，内存占用将达到数十 GB 甚至上百 GB。这时就需要请出两个内存效率极高的数据结构：<strong>BitMap</strong> 和 <strong>BloomFilter</strong>。</p>
+
+<h3 id="bitmap位图">BitMap（位图）</h3>
+
+<h4 id="核心思想">核心思想</h4>
+
+<p>BitMap 的核心非常简洁：<strong>用一个 bit（位）来标记一个元素是否存在</strong>。</p>
+
+<p>传统方式中，一个 int 类型需要 4 字节（32 位）来存储一个数字。而在 BitMap 中，一个 bit 就能表示一个数字的存在与否。这意味着存储空间缩小到原来的 <strong>1/32</strong>。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>传统存储：[5, 3, 7, 2] → 每个数字 4 字节 → 共 16 字节
+BitMap：  00101101       → 用 1 字节（8 bit）表示 0-7 的存在情况
+          位置: 76543210
+          值:   00101101 → 表示 0, 2, 3, 5 存在
+</code></pre></div></div>
+
+<h4 id="基本操作">基本操作</h4>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BitMap</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">bits</span><span class="o">;</span>
+    
+    <span class="kd">public</span> <span class="nf">BitMap</span><span class="o">(</span><span class="kt">int</span> <span class="n">maxValue</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">bits</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[(</span><span class="n">maxValue</span> <span class="o">&gt;&gt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+    <span class="o">}</span>
+    
+    <span class="c1">// 将第 num 位设为 1（添加元素）</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="kt">int</span> <span class="n">num</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">byteIndex</span> <span class="o">=</span> <span class="n">num</span> <span class="o">&gt;&gt;</span> <span class="mi">3</span><span class="o">;</span>       <span class="c1">// num / 8，定位到第几个 byte</span>
+        <span class="kt">int</span> <span class="n">bitIndex</span> <span class="o">=</span> <span class="n">num</span> <span class="o">&amp;</span> <span class="mi">7</span><span class="o">;</span>          <span class="c1">// num % 8，定位到 byte 内的第几位</span>
+        <span class="n">bits</span><span class="o">[</span><span class="n">byteIndex</span><span class="o">]</span> <span class="o">|=</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bitIndex</span><span class="o">);</span>
+    <span class="o">}</span>
+    
+    <span class="c1">// 判断第 num 位是否为 1（查询元素）</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="kt">int</span> <span class="n">num</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">byteIndex</span> <span class="o">=</span> <span class="n">num</span> <span class="o">&gt;&gt;</span> <span class="mi">3</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">bitIndex</span> <span class="o">=</span> <span class="n">num</span> <span class="o">&amp;</span> <span class="mi">7</span><span class="o">;</span>
+        <span class="k">return</span> <span class="o">(</span><span class="n">bits</span><span class="o">[</span><span class="n">byteIndex</span><span class="o">]</span> <span class="o">&amp;</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bitIndex</span><span class="o">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="c1">// 将第 num 位设为 0（删除元素）</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">remove</span><span class="o">(</span><span class="kt">int</span> <span class="n">num</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">byteIndex</span> <span class="o">=</span> <span class="n">num</span> <span class="o">&gt;&gt;</span> <span class="mi">3</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">bitIndex</span> <span class="o">=</span> <span class="n">num</span> <span class="o">&amp;</span> <span class="mi">7</span><span class="o">;</span>
+        <span class="n">bits</span><span class="o">[</span><span class="n">byteIndex</span><span class="o">]</span> <span class="o">&amp;=</span> <span class="o">~(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bitIndex</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="内存计算">内存计算</h4>
+
+<p>存储 40 亿个整数的存在性：</p>
 <ul>
-  <li>近似的理解为用一个大数组的索引来表示数字本身，用0或1表示该数字是否存在</li>
-  <li>一个32位的int，只用一个标志位来表示是否存在</li>
-  <li>但是数字如果重复只会保留一个，主要用于去重类似的场景</li>
+  <li>传统方式（HashSet<Integer>）：40 亿 × 16 字节 ≈ **60 GB**</Integer></li>
+  <li>BitMap 方式：2^32 bit = 512 MB（覆盖整个 int 范围）</li>
 </ul>
 
-<h4 id="bloomfilter">BloomFilter</h4>
+<h4 id="适用场景">适用场景</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>场景</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>大数据去重</td>
+      <td>判断某个数是否出现过</td>
+    </tr>
+    <tr>
+      <td>排序</td>
+      <td>遍历 BitMap 即可得到有序结果</td>
+    </tr>
+    <tr>
+      <td>用户标签</td>
+      <td>每个 bit 表示一个标签，快速进行交集/并集运算</td>
+    </tr>
+    <tr>
+      <td>活跃用户统计</td>
+      <td>每天一个 BitMap，某位为 1 表示该用户当天活跃</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="局限性">局限性</h4>
+
+<ol>
+  <li><strong>只能存储非负整数</strong>，不适合存储字符串等复杂类型</li>
+  <li><strong>数据稀疏时浪费空间</strong>：如果只存 3 个数但最大值是 10 亿，仍需分配大量内存</li>
+  <li><strong>不支持重复计数</strong>：一个位置只能是 0 或 1，无法记录出现次数</li>
+</ol>
+
+<h3 id="bloomfilter布隆过滤器">BloomFilter（布隆过滤器）</h3>
+
+<p>BloomFilter 是 BitMap 的升级版，它解决了 BitMap 无法处理字符串等非整数类型的问题。</p>
+
+<h4 id="核心思想-1">核心思想</h4>
+
+<p>BloomFilter 的核心是：<strong>将元素通过多个不同的 Hash 函数映射到 BitMap 的多个位置</strong>。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>添加元素 "hello"：
+  hash1("hello") = 3
+  hash2("hello") = 7  
+  hash3("hello") = 11
+  → 将 BitMap 的第 3、7、11 位设为 1
+
+查询元素 "hello"：
+  计算 hash1、hash2、hash3 → 得到 3、7、11
+  → 检查第 3、7、11 位是否都为 1
+  → 都为 1 → "可能存在"
+  → 有任何一个为 0 → "一定不存在"
+</code></pre></div></div>
+
+<h4 id="为什么需要多个-hash-函数">为什么需要多个 Hash 函数</h4>
+
+<p>单个 Hash 函数的冲突概率较高。假设 BitMap 大小为 m，已插入 n 个元素：</p>
 <ul>
-  <li>判断短连接是否重复、垃圾邮件等场景</li>
-  <li>把url，3次不同hash，得到3个不同的hashcode，存入bitmap</li>
-  <li>多次hash是为了降低hash重复的概率</li>
-  <li>由于以上特性，bloomFilter算法计算出不存在的一定就是不存在，如果计算出来存在有一定几率重复（因为hash的特性）</li>
+  <li>1 个 Hash 函数：误判率 ≈ n/m</li>
+  <li>k 个 Hash 函数：误判率 ≈ (1 - e^(-kn/m))^k</li>
 </ul>
 
-<h4 id="参考链接">参考链接</h4>
+<p>通过多次 Hash，只有所有 Hash 位置都发生冲突时才会产生误判，从而大幅降低误判概率。</p>
+
+<h4 id="关键特性">关键特性</h4>
+
 <ul>
-  <li>Bitmap算法 整合版 <a href="https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg">https://mp.weixin.qq.com/s/xxauNrJY9HlVNvLrL5j2hg</a></li>
-  <li>什么是布隆算法？<a href="https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ">https://mp.weixin.qq.com/s/RmR5XmLeMvk35vgjwxANFQ</a></li>
+  <li><strong>判定不存在 → 一定不存在</strong>（零漏报）</li>
+  <li><strong>判定存在 → 可能存在</strong>（有误报）</li>
+  <li><strong>不支持删除</strong>：删除某个元素的 bit 位可能影响其他元素</li>
 </ul>
+
+<p>误报率可以通过调整 BitMap 大小（m）和 Hash 函数个数（k）来控制。</p>
+
+<h4 id="java-实现使用-guava">Java 实现（使用 Guava）</h4>
+
+<p>Google Guava 提供了生产级的 BloomFilter 实现：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">com.google.common.hash.BloomFilter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.google.common.hash.Funnels</span><span class="o">;</span>
+
+<span class="c1">// 创建 BloomFilter：预计插入 100 万个元素，误报率 1%</span>
+<span class="nc">BloomFilter</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">bloomFilter</span> <span class="o">=</span> <span class="nc">BloomFilter</span><span class="o">.</span><span class="na">create</span><span class="o">(</span>
+    <span class="nc">Funnels</span><span class="o">.</span><span class="na">stringFunnel</span><span class="o">(</span><span class="nc">Charset</span><span class="o">.</span><span class="na">defaultCharset</span><span class="o">()),</span>
+    <span class="mi">1_000_000</span><span class="o">,</span>   <span class="c1">// 预期元素数量</span>
+    <span class="mf">0.01</span>         <span class="c1">// 可接受的误报率</span>
+<span class="o">);</span>
+
+<span class="c1">// 添加元素</span>
+<span class="n">bloomFilter</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"https://example.com/page1"</span><span class="o">);</span>
+<span class="n">bloomFilter</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"https://example.com/page2"</span><span class="o">);</span>
+
+<span class="c1">// 查询元素</span>
+<span class="kt">boolean</span> <span class="n">mightExist</span> <span class="o">=</span> <span class="n">bloomFilter</span><span class="o">.</span><span class="na">mightContain</span><span class="o">(</span><span class="s">"https://example.com/page1"</span><span class="o">);</span> <span class="c1">// true</span>
+<span class="kt">boolean</span> <span class="n">notExist</span> <span class="o">=</span> <span class="n">bloomFilter</span><span class="o">.</span><span class="na">mightContain</span><span class="o">(</span><span class="s">"https://example.com/page999"</span><span class="o">);</span> <span class="c1">// 大概率 false</span>
+</code></pre></div></div>
+
+<h4 id="redis-中的-bloomfilter">Redis 中的 BloomFilter</h4>
+
+<p>Redis 4.0+ 通过 RedisBloom 模块原生支持 BloomFilter，适用于分布式场景：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建 BloomFilter：误报率 0.01，预期容量 100 万</span>
+BF.RESERVE myfilter 0.01 1000000
+
+<span class="c"># 添加元素</span>
+BF.ADD myfilter <span class="s2">"user:1001"</span>
+
+<span class="c"># 批量添加</span>
+BF.MADD myfilter <span class="s2">"user:1002"</span> <span class="s2">"user:1003"</span> <span class="s2">"user:1004"</span>
+
+<span class="c"># 查询是否存在</span>
+BF.EXISTS myfilter <span class="s2">"user:1001"</span>    <span class="c"># 返回 1（可能存在）</span>
+BF.EXISTS myfilter <span class="s2">"user:9999"</span>    <span class="c"># 返回 0（一定不存在）</span>
+</code></pre></div></div>
+
+<h4 id="实际应用场景">实际应用场景</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>场景</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>短链接去重</td>
+      <td>生成短链接前检查是否已存在，避免重复</td>
+    </tr>
+    <tr>
+      <td>爬虫 URL 去重</td>
+      <td>判断 URL 是否已爬取过</td>
+    </tr>
+    <tr>
+      <td>垃圾邮件过滤</td>
+      <td>检查发件人/关键词是否在黑名单中</td>
+    </tr>
+    <tr>
+      <td>缓存穿透防护</td>
+      <td>在缓存和数据库之间加一层 BloomFilter，拦截不存在的 Key</td>
+    </tr>
+    <tr>
+      <td>推荐系统去重</td>
+      <td>避免重复推荐已看过的内容</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="缓存穿透防护示例">缓存穿透防护示例</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>用户请求 → BloomFilter 判断 Key 是否存在
+              ↓ 不存在 → 直接返回空，不查数据库
+              ↓ 可能存在 → 查缓存
+                           ↓ 缓存命中 → 返回
+                           ↓ 缓存未命中 → 查数据库 → 写入缓存 → 返回
+</code></pre></div></div>
+
+<p>这种模式可以有效防止恶意请求用大量不存在的 Key 击穿缓存、压垮数据库。</p>
+
+<h3 id="bitmap-vs-bloomfilter-对比">BitMap vs BloomFilter 对比</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>特性</th>
+      <th>BitMap</th>
+      <th>BloomFilter</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>支持类型</td>
+      <td>非负整数</td>
+      <td>任意类型（通过 Hash）</td>
+    </tr>
+    <tr>
+      <td>判断准确性</td>
+      <td>100% 准确</td>
+      <td>存在误报（可控）</td>
+    </tr>
+    <tr>
+      <td>支持删除</td>
+      <td>支持</td>
+      <td>不支持（Counting BF 除外）</td>
+    </tr>
+    <tr>
+      <td>空间效率</td>
+      <td>高（稀疏数据除外）</td>
+      <td>极高</td>
+    </tr>
+    <tr>
+      <td>时间复杂度</td>
+      <td>O(1)</td>
+      <td>O(k)，k 为 Hash 函数个数</td>
+    </tr>
+    <tr>
+      <td>典型实现</td>
+      <td>Java BitSet、Redis SETBIT</td>
+      <td>Guava BloomFilter、RedisBloom</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="进阶变体">进阶变体</h3>
+
+<ul>
+  <li><strong>Counting BloomFilter</strong>：每个位置用计数器替代单 bit，支持删除操作</li>
+  <li><strong>Cuckoo Filter</strong>：支持删除，且在相同误报率下空间更优</li>
+  <li><strong>Roaring BitMap</strong>：压缩位图，处理稀疏数据时比普通 BitMap 更省空间，广泛应用于 Elasticsearch、Apache Spark 等</li>
+</ul>
+
+<h3 id="总结">总结</h3>
+
+<p>BitMap 和 BloomFilter 是海量数据场景下的两个经典武器。BitMap 适合处理整数范围内的精确判断，BloomFilter 则将适用范围扩展到任意数据类型，以极低的误报率换取了极高的空间效率。在实际工程中，理解它们的特性和局限，选择合适的工具，才能在性能和资源之间找到最佳平衡。</p>
 
     </div>
   </div>
@@ -146,33 +400,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "DB Shard"
+title:  "数据库分库分表实战：分片策略、中间件选型与常见问题解决方案"
 date:   2019-11-12 11:25:00 +0900
 comments: true
 tags:
@@ -8,76 +8,161 @@ tags:
 categories:
 - 技术
 ---
+
+### 引言
+
+当单表数据量达到千万甚至亿级别时，数据库的读写性能会显著下降，单纯的索引优化和读写分离已经无法满足业务需求。此时，**分库分表**（Database Sharding）成为必然的技术选择。然而，分库分表不是简单地拆分数据，它会引入主键生成、跨库 JOIN、分布式事务、分页查询等一系列新问题。本文将从分片策略、中间件选型和常见问题三个维度，系统性地梳理分库分表的实战要点。
+
+---
+
 ### 分片策略
-- MyCat的各种分片策略 <https://mp.weixin.qq.com/s/LHTpCPDdLK1TfDcPY7c5vQ>
-- MyCat的join
-    - 同库：全局表及ER表 <https://blog.csdn.net/Weixiaohuai/article/details/100900026>
 
-        ```xml
-         <!-- 1为开启全局表一致性检测、0为关闭 -->
-        <property name="useGlobleTableCheck">1</property> 
-        <table name="company" primaryKey="ID" type="global" dataNode="dn1,dn2,dn3" />
-        <!-- ER表 -->
-        <table name="customer" primaryKey="ID" dataNode="dn1,dn2" rule="sharding-by-intfile">
-            <childTable name="orders" primaryKey="ID" joinKey="customer_id" parentKey="id">
-                    <childTable name="order_items" joinKey="order_id" parentKey="id" />
-            </childTable>
-            <childTable name="customer_addr" primaryKey="ID" joinKey="customer_id" parentKey="id" />
-        </table>
-        ```
-    - 跨库：catlet跨库join <https://blog.csdn.net/Weixiaohuai/article/details/101557503>
+分片策略决定了数据如何分布到不同的数据库和表中，直接影响查询效率和系统可维护性。
 
-        ```sql
-        /*!mycat:catlet=io.mycat.catlets.ShareJoin*/select * from employee a, employee_detail b where a.id = b.id;
-        ```
-- MyCat 注解 <https://www.cnblogs.com/leeSmall/p/9539370.html>
-- MyCat 分页及不适合的场景 <https://blog.csdn.net/gaobudong1234/article/details/79581846>
+#### MyCat 分片策略
 
-#### 主键避重问题
-- ID生成器
-    - Twitter Snowflake
-    - 美团 LeftUid
-    - 百度 Uid-genarator
-- 散表规则
-    - 按照ID范围，要求ID自增
-    - 简单Hash(取模)
-    - Hash一致性算法
+MyCat 是目前使用广泛的数据库中间件，支持多种分片策略，如范围分片、Hash 取模、一致性 Hash、枚举分片等。
 
-#### 分页查询问题
-- 分表查，应用程序合并
+参考：<https://mp.weixin.qq.com/s/LHTpCPDdLK1TfDcPY7c5vQ>
 
-#### 关联查询问题
-- 避免join操作，改造为多次查询，由应用程序合并
-- 使用现成的中间件
-- 实际业务中可能会结合Redis/Es等解决方案
+#### MyCat 的 JOIN 支持
 
-#### 公共表问题
-- 公共表多库冗余，多库同步
+**同库 JOIN**：通过全局表和 ER 表实现。
 
-#### 事务一致性
-[分布式事务](http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383)
-[Spring的分布式事务实现(JTA+XA/2PC)](https://www.jdon.com/48829)
-##### JTA*XA
+全局表是在所有分片节点上冗余存储的表（如字典表），适合数据量小且变更频率低的公共数据：
 
-#### 比较常见的中间件cobar、TDDL、atlas、sharding-jdbc、mycat
-- cobar：阿里b2b团队开发和开源的，属于proxy层方案。早些年还可以用，但是最近几年都没更新了，基本没啥人用，差不多算是被抛弃的状态吧。而且不支持读写分离、存储过程、跨库join和分页等操作。
-- TDDL：淘宝团队开发的，属于client层方案。不支持join、多表查询等语法，就是基本的crud语法是ok，但是支持读写分离。目前使用的也不多，因为还依赖淘宝的diamond配置管理系统。
-- atlas：360开源的，属于proxy层方案，以前是有一些公司在用的，但是确实有一个很大的问题就是社区最新的维护都在5年前了。所以，现在用的公司基本也很少了。
-- sharding-jdbc：当当开源的，属于client层方案。确实之前用的还比较多一些，因为SQL语法支持也比较多，没有太多限制，而且目前推出到了2.0版本，支持分库分表、读写分离、分布式id生成、柔性事务（最大努力送达型事务、TCC事务）。而且确实之前使用的公司会比较多一些（这个在官网有登记使用的公司，可以看到从2017年一直到现在，是不少公司在用的），目前社区也还一直在开发和维护，还算是比较活跃，个人认为算是一个现在也可以选择的方案。
-- mycat：基于cobar改造的，属于proxy层方案，支持的功能非常完善，而且目前应该是非常火的而且不断流行的数据库中间件，社区很活跃，也有一些公司开始在用了。但是确实相比于sharding jdbc来说，年轻一些，经历的锤炼少一些。
+```xml
+ <!-- 1为开启全局表一致性检测、0为关闭 -->
+<property name="useGlobleTableCheck">1</property> 
+<table name="company" primaryKey="ID" type="global" dataNode="dn1,dn2,dn3" />
+<!-- ER表 -->
+<table name="customer" primaryKey="ID" dataNode="dn1,dn2" rule="sharding-by-intfile">
+    <childTable name="orders" primaryKey="ID" joinKey="customer_id" parentKey="id">
+            <childTable name="order_items" joinKey="order_id" parentKey="id" />
+    </childTable>
+    <childTable name="customer_addr" primaryKey="ID" joinKey="customer_id" parentKey="id" />
+</table>
+```
 
-    所以综上所述，现在其实建议考量的，就是sharding-jdbc和mycat，这两个都可以去考虑使用。
-    sharding-jdbc这种client层方案的优点在于不用部署，运维成本低，不需要代理层的二次转发请求，性能很高，但是如果遇到升级啥的需要各个系统都重新升级版本再发布，各个系统都需要耦合sharding-jdbc的依赖；
-    mycat这种proxy层方案的缺点在于需要部署，自己及运维一套中间件，运维成本高，但是好处在于对于各个项目是透明的，如果遇到升级之类的都是自己中间件那里搞就行了。
-    通常来说，这两个方案其实都可以选用，但是我个人建议中小型公司选用sharding-jdbc，client层方案轻便，而且维护成本低，不需要额外增派人手，而且中小型公司系统复杂度会低一些，项目也没那么多；
-    但是中大型公司最好还是选用mycat这类proxy层方案，因为可能大公司系统和项目非常多，团队很大，人员充足，那么最好是专门弄个人来研究和维护mycat，然后大量项目直接透明使用即可。
+ER 表通过外键关系将关联数据路由到同一个分片节点，保证 JOIN 操作可以在单节点内完成。
 
-#### 主从同步
-- 半同步复制，semi-sync复制，指的就是主库写入binlog日志之后，就会将强制此时立即将数据同步到从库，从库将日志写入自己本地的relay log之后，接着会返回一个ack给主库，主库接收到至少一个从库的ack之后才会认为写操作完成了。
-- 并行复制，指的是从库开启多个线程，并行读取relay log中不同库的日志，然后并行重放不同库的日志，这是库级别的并行。    
+参考：<https://blog.csdn.net/Weixiaohuai/article/details/100900026>
 
-#### 其他
-[58用户系统分库分表实战](https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&mid=2651960212&idx=1&sn=ab4c52ab0309f7380f7e0207fa357128&pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS)
+**跨库 JOIN**：通过 catlet 实现跨分片的 JOIN 查询：
 
+```sql
+/*!mycat:catlet=io.mycat.catlets.ShareJoin*/select * from employee a, employee_detail b where a.id = b.id;
+```
 
+参考：<https://blog.csdn.net/Weixiaohuai/article/details/101557503>
 
+#### 其他 MyCat 特性
+
+- MyCat 注解：<https://www.cnblogs.com/leeSmall/p/9539370.html>
+- MyCat 分页及不适合的场景：<https://blog.csdn.net/gaobudong1234/article/details/79581846>
+
+---
+
+### 主键避重问题
+
+分库分表后，传统的自增 ID 无法保证全局唯一性。常见的分布式 ID 生成方案包括：
+
+#### ID 生成器
+
+| 方案 | 特点 |
+|------|------|
+| **Twitter Snowflake** | 64 位 Long 型，由时间戳 + 机器 ID + 序列号组成，趋势递增，高性能 |
+| **美团 Leaf** | 支持号段模式和 Snowflake 模式，兼顾性能与可用性 |
+| **百度 UidGenerator** | 基于 Snowflake 优化，支持自定义各段位数 |
+
+#### 散表规则
+
+- **按 ID 范围分片**：要求 ID 自增，按区间路由（如 0~1000万到表1，1000万~2000万到表2），扩容方便但容易产生热点
+- **简单 Hash（取模）**：根据 ID 对表数量取模，数据分布均匀但扩容需要数据迁移
+- **一致性 Hash**：引入虚拟节点，扩容时只需迁移部分数据，减少数据迁移成本
+
+---
+
+### 分页查询问题
+
+分库分表后的分页查询是一个经典难题。例如查询"第 100 页，每页 20 条"时，无法直接在各分片上执行 `LIMIT 1980, 20`。
+
+常见解决方案：
+- **分表查询 + 应用程序合并**：在每个分片上查询前 N 条数据，由应用程序进行内存排序和合并。数据量较大时性能开销显著。
+- **禁止深度分页**：产品层面限制翻页范围，结合"下一页"游标分页模式
+- **搜索引擎辅助**：将需要分页检索的数据同步到 Elasticsearch，由 ES 完成分页排序
+
+---
+
+### 关联查询问题
+
+跨库 JOIN 是分库分表后最棘手的问题之一，实践中通常采用以下策略：
+
+- **避免 JOIN 操作**：将 JOIN 改造为多次查询，由应用程序在内存中合并（适合小数据量场景）
+- **使用中间件**：MyCat、ShardingSphere 等中间件提供了有限的跨库 JOIN 支持
+- **数据异构**：将需要关联查询的数据冗余到 Redis 或 Elasticsearch 中，通过宽表或索引方式满足查询需求
+
+---
+
+### 公共表问题
+
+字典表、配置表等公共数据需要在所有分片中都能访问，解决方案：
+
+- **多库冗余**：在每个分片中维护一份公共表的完整副本
+- **多库同步**：通过 MyCat 的全局表机制或 Canal 等 binlog 同步工具保持各副本一致
+
+---
+
+### 事务一致性
+
+分库分表后，原本在单库内通过本地事务保证的一致性，变成了分布式事务问题。
+
+**JTA + XA（两阶段提交）**是标准的强一致性方案，但性能开销大、可用性受限。在实际业务中，更多采用**柔性事务**方案（如 TCC、本地消息表、Saga 等），通过最终一致性来平衡性能和正确性。
+
+参考：
+- [分布式事务](http://www.tianshouzhi.com/api/tutorials/distributed_transaction/383)
+- [Spring的分布式事务实现(JTA+XA/2PC)](https://www.jdon.com/48829)
+
+---
+
+### 中间件选型：五大方案对比
+
+| 中间件 | 类型 | 团队 | 现状与特点 |
+|--------|------|------|-----------|
+| **Cobar** | Proxy 层 | 阿里 B2B | 已停止维护，不支持读写分离、存储过程、跨库 JOIN 和分页 |
+| **TDDL** | Client 层 | 淘宝 | 不支持 JOIN 和多表查询，依赖淘宝 Diamond 配置系统，使用较少 |
+| **Atlas** | Proxy 层 | 360 | 社区已停止维护 5 年以上 |
+| **ShardingSphere（原 Sharding-JDBC）** | Client 层 | 当当/Apache | SQL 语法支持广，支持分库分表、读写分离、分布式 ID、柔性事务，社区活跃 |
+| **MyCat** | Proxy 层 | 社区 | 基于 Cobar 改造，功能完善，社区活跃，对各项目透明 |
+
+#### 选型建议
+
+**中小型公司推荐 ShardingSphere**：Client 层方案轻量，运维成本低，不需要额外部署和维护中间件集群。缺点是各业务系统都需要引入 SDK 依赖，升级需要逐一发布。
+
+**中大型公司推荐 MyCat**：Proxy 层方案对业务系统透明，升级只需更新中间件本身。缺点是需要专人维护中间件集群，运维成本较高，且多一层网络转发会有轻微的性能损耗。
+
+---
+
+### 主从同步
+
+分库分表往往配合主从复制使用，常见的复制优化方案：
+
+#### 半同步复制（Semi-sync）
+
+主库写入 binlog 后，强制将数据同步到从库。从库将日志写入本地 relay log 后返回 ACK，主库收到至少一个从库的 ACK 后才认为写操作完成。在数据安全性和写入性能之间取得平衡。
+
+#### 并行复制
+
+从库开启多个线程，并行读取 relay log 中不同库的日志并重放。这是**库级别的并行**，可以显著降低从库的复制延迟。MySQL 5.7 之后还支持基于组提交的并行复制，进一步提升了并行度。
+
+---
+
+### 实战参考
+
+[58同城用户系统分库分表实战](https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&mid=2651960212&idx=1&sn=ab4c52ab0309f7380f7e0207fa357128&pass_ticket=G8v3RrpK9Is7NJZH0fOShUfY8lp5oz9un8K5L24LeGGVtiBTXkBMc9UKkTMdQeDS)
+
+---
+
+### 总结
+
+分库分表是应对海量数据的必经之路，但它带来的复杂性也不容忽视。在实施前需要充分评估业务场景，选择合适的分片策略和中间件；在实施中需要妥善解决主键生成、跨库查询、分布式事务等问题；在实施后需要持续关注数据倾斜、热点问题和扩容方案。最重要的一条原则是：**能不分就不分，非分不可时做好充分的技术选型和方案设计**。

@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>各种攻击 - Code & Coffee</title>
+  <title>常见Web安全攻击原理与防御策略详解 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>各种攻击 | Code &amp; Coffee</title>
+<title>常见Web安全攻击原理与防御策略详解 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="各种攻击" />
+<meta property="og:title" content="常见Web安全攻击原理与防御策略详解" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="DDos Distributed Denial of Service 分布式拒绝服务 利用大量合法的分布式服务器对目标发送请求，从而导致正常合法用户无法获得服务。通俗点讲就是利用网络节点资源如：IDC服务器、个人PC、手机、智能设备、打印机、摄像头等对目标发起大量攻击请求，从而导致服务器拥塞而无法对外提供正常服务 分类 资源消耗类攻击，Syn Flood、Ack Flood、UDP Flood(限流和唯一识别限制) 服务消耗性攻击，它主要是针对服务的特点进行精确定点打击，如web的CC，数据服务的检索，文件服务的下载等。这类攻击往往不是为了拥塞流量通道或协议处理通道，它们是让服务端始终处理高消耗型的业务的忙碌状态 反射类攻击，一般请求回应的流量远远大于请求本身流量的大小 CC(ChallengeCollapsar，挑战黑洞)，不准确的分类，CC攻击的原理是通过代理服务器或者大量肉鸡模拟多个用户访问目标网站的动态页面，制造大量的后台数据库查询动作，消耗目标CPU资源，造成拒绝服务。CC不像DDoS可以用硬件防火墙来过滤攻击，CC攻击本身的请求就是正常的请求。 防御手段 资源隔离 应用层用户规则 数据分析 资源对抗、流量清洗，比如，隐藏源站IP后将攻击流量引流到高防IP 参考 https://www.jianshu.com/p/e7a5fdc67b8f 流量清洗的原理和DDoS流量清洗的实践 https://dun.163.com/news/p/4e52c024c7c94220b3f7201498a388c6 XSS crossing site scripting,跨站脚本（数据被黑客窃取） 通过.src的方式，将本地数据提交到黑客后台，需要黑客通过其他手段把js代码注入到正常网站 防御手段：cookie上加HttpOnly，不允许js读取；服务端过滤script信息；前端展示安全过滤 参考 https://www.jianshu.com/p/38d61b0c0a17 CSRF cross site request forgery,跨站请求伪造 （伪造合法请求） A网站登录成功并保持了本地cookie，黑客的B网站读取A的cookie伪造向A的请求 原因： 同源策略阻止了js读取其他网站的cookie等内容，但没有防止js向其他网站发出请求 同源策略限制了ajax请求，但没有限制form表单提交，前文提过img标签不受同源策略限制 黑客网站利用用户向目标网站发起请求的时候，请求会带上目标网站下发的cookie 防御 referer(在http请求头中)验证解决方案,浏览器会告诉服务器，哪个页面发送了请求 不过由于 http 头在某些版本的浏览器上存在可被篡改的可能性，所以这个解决方案并不完善 目标网站通过cookie生成hash值，提交请求时带上hash值，服务端对hash进行过滤 表单提交加验证码，如图片上的随机字符串 用户登录时服务端生成token，之后用户请求必须带上token 参考 https://www.jianshu.com/p/2de97b609a44 SQL注入 https://www.cnblogs.com/myseries/p/10821372.html 其他 常见六大Web安全攻防解析 https://www.cnblogs.com/fundebug/p/details-about-6-web-security.html" />
-<meta property="og:description" content="DDos Distributed Denial of Service 分布式拒绝服务 利用大量合法的分布式服务器对目标发送请求，从而导致正常合法用户无法获得服务。通俗点讲就是利用网络节点资源如：IDC服务器、个人PC、手机、智能设备、打印机、摄像头等对目标发起大量攻击请求，从而导致服务器拥塞而无法对外提供正常服务 分类 资源消耗类攻击，Syn Flood、Ack Flood、UDP Flood(限流和唯一识别限制) 服务消耗性攻击，它主要是针对服务的特点进行精确定点打击，如web的CC，数据服务的检索，文件服务的下载等。这类攻击往往不是为了拥塞流量通道或协议处理通道，它们是让服务端始终处理高消耗型的业务的忙碌状态 反射类攻击，一般请求回应的流量远远大于请求本身流量的大小 CC(ChallengeCollapsar，挑战黑洞)，不准确的分类，CC攻击的原理是通过代理服务器或者大量肉鸡模拟多个用户访问目标网站的动态页面，制造大量的后台数据库查询动作，消耗目标CPU资源，造成拒绝服务。CC不像DDoS可以用硬件防火墙来过滤攻击，CC攻击本身的请求就是正常的请求。 防御手段 资源隔离 应用层用户规则 数据分析 资源对抗、流量清洗，比如，隐藏源站IP后将攻击流量引流到高防IP 参考 https://www.jianshu.com/p/e7a5fdc67b8f 流量清洗的原理和DDoS流量清洗的实践 https://dun.163.com/news/p/4e52c024c7c94220b3f7201498a388c6 XSS crossing site scripting,跨站脚本（数据被黑客窃取） 通过.src的方式，将本地数据提交到黑客后台，需要黑客通过其他手段把js代码注入到正常网站 防御手段：cookie上加HttpOnly，不允许js读取；服务端过滤script信息；前端展示安全过滤 参考 https://www.jianshu.com/p/38d61b0c0a17 CSRF cross site request forgery,跨站请求伪造 （伪造合法请求） A网站登录成功并保持了本地cookie，黑客的B网站读取A的cookie伪造向A的请求 原因： 同源策略阻止了js读取其他网站的cookie等内容，但没有防止js向其他网站发出请求 同源策略限制了ajax请求，但没有限制form表单提交，前文提过img标签不受同源策略限制 黑客网站利用用户向目标网站发起请求的时候，请求会带上目标网站下发的cookie 防御 referer(在http请求头中)验证解决方案,浏览器会告诉服务器，哪个页面发送了请求 不过由于 http 头在某些版本的浏览器上存在可被篡改的可能性，所以这个解决方案并不完善 目标网站通过cookie生成hash值，提交请求时带上hash值，服务端对hash进行过滤 表单提交加验证码，如图片上的随机字符串 用户登录时服务端生成token，之后用户请求必须带上token 参考 https://www.jianshu.com/p/2de97b609a44 SQL注入 https://www.cnblogs.com/myseries/p/10821372.html 其他 常见六大Web安全攻防解析 https://www.cnblogs.com/fundebug/p/details-about-6-web-security.html" />
+<meta name="description" content="Web 安全是每个后端工程师都必须重视的领域。随着互联网应用的普及，攻击手段也在不断演进，从暴力的流量攻击到精巧的逻辑漏洞利用，每一种攻击都可能给业务带来严重损失。本文将系统梳理几种最常见的 Web 安全攻击类型，剖析其原理并探讨对应的防御策略。 DDoS：分布式拒绝服务攻击 DDoS（Distributed Denial of Service，分布式拒绝服务） 是最具破坏力的网络攻击之一。其核心原理是利用大量合法的分布式服务器对目标发送请求，从而导致正常合法用户无法获得服务。通俗地讲，就是利用网络节点资源（如 IDC 服务器、个人 PC、手机、智能设备、打印机、摄像头等）对目标发起大量攻击请求，导致服务器拥塞而无法对外提供正常服务。 攻击分类 DDoS 并非单一的攻击方式，按照攻击目标和手法可以分为以下几类： 资源消耗类攻击：SYN Flood、ACK Flood、UDP Flood 等。这类攻击通过发送大量伪造的网络协议包，消耗服务器的连接资源和带宽。防御上通常采用限流和唯一标识限制。 服务消耗性攻击：针对服务的特点进行精确定点打击，如 Web 的 CC 攻击、数据服务的复杂检索、文件服务的大文件下载等。这类攻击不是为了拥塞流量通道或协议处理通道，而是让服务端始终处于高消耗型业务的忙碌状态。 反射类攻击：利用第三方服务的放大效应，一般响应流量远远大于请求本身流量。攻击者伪造源 IP 向第三方服务发送请求，放大后的响应被导向受害者。 CC 攻击（Challenge Collapsar，挑战黑洞）：通过代理服务器或者大量肉鸡模拟多个用户访问目标网站的动态页面，制造大量后台数据库查询动作，消耗目标 CPU 资源，造成拒绝服务。CC 攻击不像传统 DDoS 可以用硬件防火墙过滤，因为其请求本身是正常的 HTTP 请求，难以通过协议层面区分。 防御手段 资源隔离：将核心业务与非核心业务分离部署，避免攻击影响全局 应用层用户规则：基于请求频率、行为特征等维度进行识别和拦截 数据分析：通过流量基线分析异常模式，结合机器学习进行智能识别 资源对抗与流量清洗：隐藏源站 IP 后将攻击流量引流到高防 IP，由专业的流量清洗设备过滤恶意流量 参考：DDoS 攻击详解 流量清洗的原理和 DDoS 流量清洗的实践 XSS：跨站脚本攻击 XSS（Cross Site Scripting，跨站脚本） 是一种通过向网页注入恶意脚本来窃取用户数据的攻击方式。之所以缩写为 XSS 而非 CSS，是为了避免与层叠样式表混淆。 攻击原理 攻击者通过某种手段（如评论区、URL 参数、表单输入等）将恶意 JavaScript 代码注入到正常网站的页面中。当其他用户访问该页面时，恶意脚本在用户浏览器中执行，可以通过 document.cookie 等 API 读取用户的敏感信息，然后通过动态创建 &lt;img&gt; 或 &lt;script&gt; 标签，将数据以 .src 的方式发送到攻击者的服务器。 XSS 攻击通常分为三种类型： 存储型 XSS：恶意脚本被持久化到数据库，所有访问该页面的用户都会中招 反射型 XSS：恶意脚本在 URL 参数中，通过诱导用户点击特制链接触发 DOM 型 XSS：通过修改页面 DOM 结构触发，不经过服务端 防御手段 Cookie 加 HttpOnly 标志：禁止 JavaScript 读取 Cookie，即使存在 XSS 漏洞也无法窃取会话信息 服务端输入过滤：对用户输入进行严格过滤，移除或转义 &lt;script&gt; 等危险标签 前端输出编码：在页面渲染时对动态内容进行 HTML 实体编码，防止脚本执行 Content Security Policy（CSP）：通过 HTTP 响应头限制页面可以加载的资源来源 参考：XSS 攻击详解 CSRF：跨站请求伪造 CSRF（Cross Site Request Forgery，跨站请求伪造） 是一种利用用户已认证的会话发起非法操作的攻击。与 XSS 窃取数据不同，CSRF 的核心是伪造合法请求。 攻击原理 假设用户在 A 网站登录成功并保持了本地 Cookie，此时用户在浏览器中访问了攻击者的 B 网站。B 网站读取 A 站的 Cookie 并伪造一个指向 A 站的请求（如转账、修改密码等），由于浏览器会自动携带目标域的 Cookie，A 站服务器无法区分这个请求是用户主动发起还是被诱导发起的。 这种攻击之所以能生效，涉及浏览器安全策略的几个特点： 同源策略阻止了 JavaScript 读取其他网站的 Cookie 等内容，但没有防止 JavaScript 向其他网站发出请求 同源策略限制了 AJAX 跨域请求，但没有限制 &lt;form&gt; 表单提交和 &lt;img&gt; 标签加载 浏览器在向目标网站发起请求时会自动携带该网站下发的 Cookie 防御手段 Referer 验证：检查 HTTP 请求头中的 Referer 字段，判断请求来源页面是否合法。但由于某些浏览器版本中 Referer 头存在被篡改的可能性，这个方案并不完善。 CSRF Token：目标网站通过 Cookie 生成 Hash 值（Token），在表单提交时必须带上该 Token，服务端验证 Token 的合法性。由于攻击者无法读取目标站的 Cookie 内容，也就无法构造出正确的 Token。 验证码：表单提交时要求输入图片验证码等人机校验手段，增加伪造请求的难度。 双重 Cookie 验证：用户登录时服务端生成 Token 写入 Cookie，之后用户请求必须从 Cookie 中读出 Token 并放到请求参数中，服务端比对两者是否一致。 参考：CSRF 攻击详解 SQL 注入 SQL 注入是最经典的 Web 安全漏洞之一。攻击者通过在输入字段中构造恶意 SQL 语句，使其被拼接到后端的数据库查询中执行，从而实现非授权的数据读取、修改甚至删除。 典型场景 假设后端查询语句为： SELECT * FROM users WHERE username = &#39;输入值&#39; AND password = &#39;输入值&#39;; 如果攻击者在用户名字段输入 &#39; OR 1=1 --，最终执行的 SQL 变为： SELECT * FROM users WHERE username = &#39;&#39; OR 1=1 --&#39; AND password = &#39;&#39;; OR 1=1 使条件永远为真，-- 注释掉后面的条件，攻击者无需密码即可登录。 防御手段 参数化查询（PreparedStatement）：这是最根本的防御手段，将 SQL 语句和参数分离，数据库引擎会将参数作为值处理而非 SQL 片段 ORM 框架：使用 MyBatis、Hibernate 等 ORM 框架自带的参数绑定机制 输入校验：对用户输入进行白名单校验，限制特殊字符 最小权限原则：数据库连接账号只授予业务所需的最小权限 参考：SQL 注入详解 其他安全攻防 除了上述四种常见攻击外，Web 安全领域还有许多值得关注的攻击方式，包括但不限于： 点击劫持（Clickjacking）：通过透明 iframe 覆盖在正常页面上，诱导用户点击 文件上传漏洞：上传恶意脚本文件并执行 URL 跳转漏洞：利用开放重定向进行钓鱼 参考：常见六大 Web 安全攻防解析 总结 Web 安全是一个攻防不断博弈的领域。作为技术人员，我们需要： 深入理解攻击原理：只有知道攻击如何发生，才能设计出有效的防御方案 纵深防御：不依赖单一防御手段，而是在网络层、应用层、数据层构建多层防护 安全意识前置：在系统设计和编码阶段就考虑安全性，而不是事后补救 持续关注：安全领域日新月异，定期了解最新的漏洞和攻击手法，及时更新防御策略 安全无小事，每一个看似微不足道的漏洞都可能成为攻击者的突破口。" />
+<meta property="og:description" content="Web 安全是每个后端工程师都必须重视的领域。随着互联网应用的普及，攻击手段也在不断演进，从暴力的流量攻击到精巧的逻辑漏洞利用，每一种攻击都可能给业务带来严重损失。本文将系统梳理几种最常见的 Web 安全攻击类型，剖析其原理并探讨对应的防御策略。 DDoS：分布式拒绝服务攻击 DDoS（Distributed Denial of Service，分布式拒绝服务） 是最具破坏力的网络攻击之一。其核心原理是利用大量合法的分布式服务器对目标发送请求，从而导致正常合法用户无法获得服务。通俗地讲，就是利用网络节点资源（如 IDC 服务器、个人 PC、手机、智能设备、打印机、摄像头等）对目标发起大量攻击请求，导致服务器拥塞而无法对外提供正常服务。 攻击分类 DDoS 并非单一的攻击方式，按照攻击目标和手法可以分为以下几类： 资源消耗类攻击：SYN Flood、ACK Flood、UDP Flood 等。这类攻击通过发送大量伪造的网络协议包，消耗服务器的连接资源和带宽。防御上通常采用限流和唯一标识限制。 服务消耗性攻击：针对服务的特点进行精确定点打击，如 Web 的 CC 攻击、数据服务的复杂检索、文件服务的大文件下载等。这类攻击不是为了拥塞流量通道或协议处理通道，而是让服务端始终处于高消耗型业务的忙碌状态。 反射类攻击：利用第三方服务的放大效应，一般响应流量远远大于请求本身流量。攻击者伪造源 IP 向第三方服务发送请求，放大后的响应被导向受害者。 CC 攻击（Challenge Collapsar，挑战黑洞）：通过代理服务器或者大量肉鸡模拟多个用户访问目标网站的动态页面，制造大量后台数据库查询动作，消耗目标 CPU 资源，造成拒绝服务。CC 攻击不像传统 DDoS 可以用硬件防火墙过滤，因为其请求本身是正常的 HTTP 请求，难以通过协议层面区分。 防御手段 资源隔离：将核心业务与非核心业务分离部署，避免攻击影响全局 应用层用户规则：基于请求频率、行为特征等维度进行识别和拦截 数据分析：通过流量基线分析异常模式，结合机器学习进行智能识别 资源对抗与流量清洗：隐藏源站 IP 后将攻击流量引流到高防 IP，由专业的流量清洗设备过滤恶意流量 参考：DDoS 攻击详解 流量清洗的原理和 DDoS 流量清洗的实践 XSS：跨站脚本攻击 XSS（Cross Site Scripting，跨站脚本） 是一种通过向网页注入恶意脚本来窃取用户数据的攻击方式。之所以缩写为 XSS 而非 CSS，是为了避免与层叠样式表混淆。 攻击原理 攻击者通过某种手段（如评论区、URL 参数、表单输入等）将恶意 JavaScript 代码注入到正常网站的页面中。当其他用户访问该页面时，恶意脚本在用户浏览器中执行，可以通过 document.cookie 等 API 读取用户的敏感信息，然后通过动态创建 &lt;img&gt; 或 &lt;script&gt; 标签，将数据以 .src 的方式发送到攻击者的服务器。 XSS 攻击通常分为三种类型： 存储型 XSS：恶意脚本被持久化到数据库，所有访问该页面的用户都会中招 反射型 XSS：恶意脚本在 URL 参数中，通过诱导用户点击特制链接触发 DOM 型 XSS：通过修改页面 DOM 结构触发，不经过服务端 防御手段 Cookie 加 HttpOnly 标志：禁止 JavaScript 读取 Cookie，即使存在 XSS 漏洞也无法窃取会话信息 服务端输入过滤：对用户输入进行严格过滤，移除或转义 &lt;script&gt; 等危险标签 前端输出编码：在页面渲染时对动态内容进行 HTML 实体编码，防止脚本执行 Content Security Policy（CSP）：通过 HTTP 响应头限制页面可以加载的资源来源 参考：XSS 攻击详解 CSRF：跨站请求伪造 CSRF（Cross Site Request Forgery，跨站请求伪造） 是一种利用用户已认证的会话发起非法操作的攻击。与 XSS 窃取数据不同，CSRF 的核心是伪造合法请求。 攻击原理 假设用户在 A 网站登录成功并保持了本地 Cookie，此时用户在浏览器中访问了攻击者的 B 网站。B 网站读取 A 站的 Cookie 并伪造一个指向 A 站的请求（如转账、修改密码等），由于浏览器会自动携带目标域的 Cookie，A 站服务器无法区分这个请求是用户主动发起还是被诱导发起的。 这种攻击之所以能生效，涉及浏览器安全策略的几个特点： 同源策略阻止了 JavaScript 读取其他网站的 Cookie 等内容，但没有防止 JavaScript 向其他网站发出请求 同源策略限制了 AJAX 跨域请求，但没有限制 &lt;form&gt; 表单提交和 &lt;img&gt; 标签加载 浏览器在向目标网站发起请求时会自动携带该网站下发的 Cookie 防御手段 Referer 验证：检查 HTTP 请求头中的 Referer 字段，判断请求来源页面是否合法。但由于某些浏览器版本中 Referer 头存在被篡改的可能性，这个方案并不完善。 CSRF Token：目标网站通过 Cookie 生成 Hash 值（Token），在表单提交时必须带上该 Token，服务端验证 Token 的合法性。由于攻击者无法读取目标站的 Cookie 内容，也就无法构造出正确的 Token。 验证码：表单提交时要求输入图片验证码等人机校验手段，增加伪造请求的难度。 双重 Cookie 验证：用户登录时服务端生成 Token 写入 Cookie，之后用户请求必须从 Cookie 中读出 Token 并放到请求参数中，服务端比对两者是否一致。 参考：CSRF 攻击详解 SQL 注入 SQL 注入是最经典的 Web 安全漏洞之一。攻击者通过在输入字段中构造恶意 SQL 语句，使其被拼接到后端的数据库查询中执行，从而实现非授权的数据读取、修改甚至删除。 典型场景 假设后端查询语句为： SELECT * FROM users WHERE username = &#39;输入值&#39; AND password = &#39;输入值&#39;; 如果攻击者在用户名字段输入 &#39; OR 1=1 --，最终执行的 SQL 变为： SELECT * FROM users WHERE username = &#39;&#39; OR 1=1 --&#39; AND password = &#39;&#39;; OR 1=1 使条件永远为真，-- 注释掉后面的条件，攻击者无需密码即可登录。 防御手段 参数化查询（PreparedStatement）：这是最根本的防御手段，将 SQL 语句和参数分离，数据库引擎会将参数作为值处理而非 SQL 片段 ORM 框架：使用 MyBatis、Hibernate 等 ORM 框架自带的参数绑定机制 输入校验：对用户输入进行白名单校验，限制特殊字符 最小权限原则：数据库连接账号只授予业务所需的最小权限 参考：SQL 注入详解 其他安全攻防 除了上述四种常见攻击外，Web 安全领域还有许多值得关注的攻击方式，包括但不限于： 点击劫持（Clickjacking）：通过透明 iframe 覆盖在正常页面上，诱导用户点击 文件上传漏洞：上传恶意脚本文件并执行 URL 跳转漏洞：利用开放重定向进行钓鱼 参考：常见六大 Web 安全攻防解析 总结 Web 安全是一个攻防不断博弈的领域。作为技术人员，我们需要： 深入理解攻击原理：只有知道攻击如何发生，才能设计出有效的防御方案 纵深防御：不依赖单一防御手段，而是在网络层、应用层、数据层构建多层防护 安全意识前置：在系统设计和编码阶段就考虑安全性，而不是事后补救 持续关注：安全领域日新月异，定期了解最新的漏洞和攻击手法，及时更新防御策略 安全无小事，每一个看似微不足道的漏洞都可能成为攻击者的突破口。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/HackSummary.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/HackSummary.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-06-07T13:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="各种攻击" />
+<meta property="twitter:title" content="常见Web安全攻击原理与防御策略详解" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-06-07T13:25:00+08:00","datePublished":"2020-06-07T13:25:00+08:00","description":"DDos Distributed Denial of Service 分布式拒绝服务 利用大量合法的分布式服务器对目标发送请求，从而导致正常合法用户无法获得服务。通俗点讲就是利用网络节点资源如：IDC服务器、个人PC、手机、智能设备、打印机、摄像头等对目标发起大量攻击请求，从而导致服务器拥塞而无法对外提供正常服务 分类 资源消耗类攻击，Syn Flood、Ack Flood、UDP Flood(限流和唯一识别限制) 服务消耗性攻击，它主要是针对服务的特点进行精确定点打击，如web的CC，数据服务的检索，文件服务的下载等。这类攻击往往不是为了拥塞流量通道或协议处理通道，它们是让服务端始终处理高消耗型的业务的忙碌状态 反射类攻击，一般请求回应的流量远远大于请求本身流量的大小 CC(ChallengeCollapsar，挑战黑洞)，不准确的分类，CC攻击的原理是通过代理服务器或者大量肉鸡模拟多个用户访问目标网站的动态页面，制造大量的后台数据库查询动作，消耗目标CPU资源，造成拒绝服务。CC不像DDoS可以用硬件防火墙来过滤攻击，CC攻击本身的请求就是正常的请求。 防御手段 资源隔离 应用层用户规则 数据分析 资源对抗、流量清洗，比如，隐藏源站IP后将攻击流量引流到高防IP 参考 https://www.jianshu.com/p/e7a5fdc67b8f 流量清洗的原理和DDoS流量清洗的实践 https://dun.163.com/news/p/4e52c024c7c94220b3f7201498a388c6 XSS crossing site scripting,跨站脚本（数据被黑客窃取） 通过.src的方式，将本地数据提交到黑客后台，需要黑客通过其他手段把js代码注入到正常网站 防御手段：cookie上加HttpOnly，不允许js读取；服务端过滤script信息；前端展示安全过滤 参考 https://www.jianshu.com/p/38d61b0c0a17 CSRF cross site request forgery,跨站请求伪造 （伪造合法请求） A网站登录成功并保持了本地cookie，黑客的B网站读取A的cookie伪造向A的请求 原因： 同源策略阻止了js读取其他网站的cookie等内容，但没有防止js向其他网站发出请求 同源策略限制了ajax请求，但没有限制form表单提交，前文提过img标签不受同源策略限制 黑客网站利用用户向目标网站发起请求的时候，请求会带上目标网站下发的cookie 防御 referer(在http请求头中)验证解决方案,浏览器会告诉服务器，哪个页面发送了请求 不过由于 http 头在某些版本的浏览器上存在可被篡改的可能性，所以这个解决方案并不完善 目标网站通过cookie生成hash值，提交请求时带上hash值，服务端对hash进行过滤 表单提交加验证码，如图片上的随机字符串 用户登录时服务端生成token，之后用户请求必须带上token 参考 https://www.jianshu.com/p/2de97b609a44 SQL注入 https://www.cnblogs.com/myseries/p/10821372.html 其他 常见六大Web安全攻防解析 https://www.cnblogs.com/fundebug/p/details-about-6-web-security.html","headline":"各种攻击","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/HackSummary.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/HackSummary.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-06-07T13:25:00+08:00","datePublished":"2020-06-07T13:25:00+08:00","description":"Web 安全是每个后端工程师都必须重视的领域。随着互联网应用的普及，攻击手段也在不断演进，从暴力的流量攻击到精巧的逻辑漏洞利用，每一种攻击都可能给业务带来严重损失。本文将系统梳理几种最常见的 Web 安全攻击类型，剖析其原理并探讨对应的防御策略。 DDoS：分布式拒绝服务攻击 DDoS（Distributed Denial of Service，分布式拒绝服务） 是最具破坏力的网络攻击之一。其核心原理是利用大量合法的分布式服务器对目标发送请求，从而导致正常合法用户无法获得服务。通俗地讲，就是利用网络节点资源（如 IDC 服务器、个人 PC、手机、智能设备、打印机、摄像头等）对目标发起大量攻击请求，导致服务器拥塞而无法对外提供正常服务。 攻击分类 DDoS 并非单一的攻击方式，按照攻击目标和手法可以分为以下几类： 资源消耗类攻击：SYN Flood、ACK Flood、UDP Flood 等。这类攻击通过发送大量伪造的网络协议包，消耗服务器的连接资源和带宽。防御上通常采用限流和唯一标识限制。 服务消耗性攻击：针对服务的特点进行精确定点打击，如 Web 的 CC 攻击、数据服务的复杂检索、文件服务的大文件下载等。这类攻击不是为了拥塞流量通道或协议处理通道，而是让服务端始终处于高消耗型业务的忙碌状态。 反射类攻击：利用第三方服务的放大效应，一般响应流量远远大于请求本身流量。攻击者伪造源 IP 向第三方服务发送请求，放大后的响应被导向受害者。 CC 攻击（Challenge Collapsar，挑战黑洞）：通过代理服务器或者大量肉鸡模拟多个用户访问目标网站的动态页面，制造大量后台数据库查询动作，消耗目标 CPU 资源，造成拒绝服务。CC 攻击不像传统 DDoS 可以用硬件防火墙过滤，因为其请求本身是正常的 HTTP 请求，难以通过协议层面区分。 防御手段 资源隔离：将核心业务与非核心业务分离部署，避免攻击影响全局 应用层用户规则：基于请求频率、行为特征等维度进行识别和拦截 数据分析：通过流量基线分析异常模式，结合机器学习进行智能识别 资源对抗与流量清洗：隐藏源站 IP 后将攻击流量引流到高防 IP，由专业的流量清洗设备过滤恶意流量 参考：DDoS 攻击详解 流量清洗的原理和 DDoS 流量清洗的实践 XSS：跨站脚本攻击 XSS（Cross Site Scripting，跨站脚本） 是一种通过向网页注入恶意脚本来窃取用户数据的攻击方式。之所以缩写为 XSS 而非 CSS，是为了避免与层叠样式表混淆。 攻击原理 攻击者通过某种手段（如评论区、URL 参数、表单输入等）将恶意 JavaScript 代码注入到正常网站的页面中。当其他用户访问该页面时，恶意脚本在用户浏览器中执行，可以通过 document.cookie 等 API 读取用户的敏感信息，然后通过动态创建 &lt;img&gt; 或 &lt;script&gt; 标签，将数据以 .src 的方式发送到攻击者的服务器。 XSS 攻击通常分为三种类型： 存储型 XSS：恶意脚本被持久化到数据库，所有访问该页面的用户都会中招 反射型 XSS：恶意脚本在 URL 参数中，通过诱导用户点击特制链接触发 DOM 型 XSS：通过修改页面 DOM 结构触发，不经过服务端 防御手段 Cookie 加 HttpOnly 标志：禁止 JavaScript 读取 Cookie，即使存在 XSS 漏洞也无法窃取会话信息 服务端输入过滤：对用户输入进行严格过滤，移除或转义 &lt;script&gt; 等危险标签 前端输出编码：在页面渲染时对动态内容进行 HTML 实体编码，防止脚本执行 Content Security Policy（CSP）：通过 HTTP 响应头限制页面可以加载的资源来源 参考：XSS 攻击详解 CSRF：跨站请求伪造 CSRF（Cross Site Request Forgery，跨站请求伪造） 是一种利用用户已认证的会话发起非法操作的攻击。与 XSS 窃取数据不同，CSRF 的核心是伪造合法请求。 攻击原理 假设用户在 A 网站登录成功并保持了本地 Cookie，此时用户在浏览器中访问了攻击者的 B 网站。B 网站读取 A 站的 Cookie 并伪造一个指向 A 站的请求（如转账、修改密码等），由于浏览器会自动携带目标域的 Cookie，A 站服务器无法区分这个请求是用户主动发起还是被诱导发起的。 这种攻击之所以能生效，涉及浏览器安全策略的几个特点： 同源策略阻止了 JavaScript 读取其他网站的 Cookie 等内容，但没有防止 JavaScript 向其他网站发出请求 同源策略限制了 AJAX 跨域请求，但没有限制 &lt;form&gt; 表单提交和 &lt;img&gt; 标签加载 浏览器在向目标网站发起请求时会自动携带该网站下发的 Cookie 防御手段 Referer 验证：检查 HTTP 请求头中的 Referer 字段，判断请求来源页面是否合法。但由于某些浏览器版本中 Referer 头存在被篡改的可能性，这个方案并不完善。 CSRF Token：目标网站通过 Cookie 生成 Hash 值（Token），在表单提交时必须带上该 Token，服务端验证 Token 的合法性。由于攻击者无法读取目标站的 Cookie 内容，也就无法构造出正确的 Token。 验证码：表单提交时要求输入图片验证码等人机校验手段，增加伪造请求的难度。 双重 Cookie 验证：用户登录时服务端生成 Token 写入 Cookie，之后用户请求必须从 Cookie 中读出 Token 并放到请求参数中，服务端比对两者是否一致。 参考：CSRF 攻击详解 SQL 注入 SQL 注入是最经典的 Web 安全漏洞之一。攻击者通过在输入字段中构造恶意 SQL 语句，使其被拼接到后端的数据库查询中执行，从而实现非授权的数据读取、修改甚至删除。 典型场景 假设后端查询语句为： SELECT * FROM users WHERE username = &#39;输入值&#39; AND password = &#39;输入值&#39;; 如果攻击者在用户名字段输入 &#39; OR 1=1 --，最终执行的 SQL 变为： SELECT * FROM users WHERE username = &#39;&#39; OR 1=1 --&#39; AND password = &#39;&#39;; OR 1=1 使条件永远为真，-- 注释掉后面的条件，攻击者无需密码即可登录。 防御手段 参数化查询（PreparedStatement）：这是最根本的防御手段，将 SQL 语句和参数分离，数据库引擎会将参数作为值处理而非 SQL 片段 ORM 框架：使用 MyBatis、Hibernate 等 ORM 框架自带的参数绑定机制 输入校验：对用户输入进行白名单校验，限制特殊字符 最小权限原则：数据库连接账号只授予业务所需的最小权限 参考：SQL 注入详解 其他安全攻防 除了上述四种常见攻击外，Web 安全领域还有许多值得关注的攻击方式，包括但不限于： 点击劫持（Clickjacking）：通过透明 iframe 覆盖在正常页面上，诱导用户点击 文件上传漏洞：上传恶意脚本文件并执行 URL 跳转漏洞：利用开放重定向进行钓鱼 参考：常见六大 Web 安全攻防解析 总结 Web 安全是一个攻防不断博弈的领域。作为技术人员，我们需要： 深入理解攻击原理：只有知道攻击如何发生，才能设计出有效的防御方案 纵深防御：不依赖单一防御手段，而是在网络层、应用层、数据层构建多层防护 安全意识前置：在系统设计和编码阶段就考虑安全性，而不是事后补救 持续关注：安全领域日新月异，定期了解最新的漏洞和攻击手法，及时更新防御策略 安全无小事，每一个看似微不足道的漏洞都可能成为攻击者的突破口。","headline":"常见Web安全攻击原理与防御策略详解","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/HackSummary.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/07/HackSummary.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html">&laquo; 经典算法思想</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/07/ClassicalAlgorithm.html">&laquo; 经典算法思想详解：贪心、分治、动态...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html">Java基础 &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/17/JavaFoundation.html">Java核心基础精讲：并发机制、内... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">各种攻击</h1>
+    <h1 class="asset-name entry-title">常见Web安全攻击原理与防御策略详解</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,68 +97,179 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="ddos--distributed-denial-of-service-分布式拒绝服务">DDos  Distributed Denial of Service 分布式拒绝服务</h4>
+      <p>Web 安全是每个后端工程师都必须重视的领域。随着互联网应用的普及，攻击手段也在不断演进，从暴力的流量攻击到精巧的逻辑漏洞利用，每一种攻击都可能给业务带来严重损失。本文将系统梳理几种最常见的 Web 安全攻击类型，剖析其原理并探讨对应的防御策略。</p>
+
+<hr />
+
+<h2 id="ddos分布式拒绝服务攻击">DDoS：分布式拒绝服务攻击</h2>
+
+<p><strong>DDoS（Distributed Denial of Service，分布式拒绝服务）</strong> 是最具破坏力的网络攻击之一。其核心原理是利用大量合法的分布式服务器对目标发送请求，从而导致正常合法用户无法获得服务。通俗地讲，就是利用网络节点资源（如 IDC 服务器、个人 PC、手机、智能设备、打印机、摄像头等）对目标发起大量攻击请求，导致服务器拥塞而无法对外提供正常服务。</p>
+
+<h3 id="攻击分类">攻击分类</h3>
+
+<p>DDoS 并非单一的攻击方式，按照攻击目标和手法可以分为以下几类：</p>
+
 <ul>
-  <li>利用大量合法的分布式服务器对目标发送请求，从而导致正常合法用户无法获得服务。通俗点讲就是利用网络节点资源如：IDC服务器、个人PC、手机、智能设备、打印机、摄像头等对目标发起大量攻击请求，从而导致服务器拥塞而无法对外提供正常服务</li>
-  <li>分类
-    <ul>
-      <li>资源消耗类攻击，Syn Flood、Ack Flood、UDP Flood(限流和唯一识别限制)</li>
-      <li>服务消耗性攻击，它主要是针对服务的特点进行精确定点打击，如web的CC，数据服务的检索，文件服务的下载等。这类攻击往往不是为了拥塞流量通道或协议处理通道，它们是让服务端始终处理高消耗型的业务的忙碌状态</li>
-      <li>反射类攻击，一般请求回应的流量远远大于请求本身流量的大小</li>
-      <li>CC(ChallengeCollapsar，挑战黑洞)，不准确的分类，CC攻击的原理是通过代理服务器或者大量肉鸡模拟多个用户访问目标网站的动态页面，制造大量的后台数据库查询动作，消耗目标CPU资源，造成拒绝服务。CC不像DDoS可以用硬件防火墙来过滤攻击，CC攻击本身的请求就是正常的请求。</li>
-    </ul>
+  <li>
+    <p><strong>资源消耗类攻击</strong>：SYN Flood、ACK Flood、UDP Flood 等。这类攻击通过发送大量伪造的网络协议包，消耗服务器的连接资源和带宽。防御上通常采用限流和唯一标识限制。</p>
   </li>
-  <li>防御手段
-    <ul>
-      <li>资源隔离</li>
-      <li>应用层用户规则</li>
-      <li>数据分析</li>
-      <li>资源对抗、流量清洗，比如，隐藏源站IP后将攻击流量引流到高防IP</li>
-    </ul>
+  <li>
+    <p><strong>服务消耗性攻击</strong>：针对服务的特点进行精确定点打击，如 Web 的 CC 攻击、数据服务的复杂检索、文件服务的大文件下载等。这类攻击不是为了拥塞流量通道或协议处理通道，而是让服务端始终处于高消耗型业务的忙碌状态。</p>
   </li>
-  <li>参考 <a href="https://www.jianshu.com/p/e7a5fdc67b8f">https://www.jianshu.com/p/e7a5fdc67b8f</a></li>
-  <li>流量清洗的原理和DDoS流量清洗的实践 <a href="https://dun.163.com/news/p/4e52c024c7c94220b3f7201498a388c6">https://dun.163.com/news/p/4e52c024c7c94220b3f7201498a388c6</a></li>
-</ul>
-
-<h4 id="xss-crossing-site-scripting跨站脚本数据被黑客窃取">XSS crossing site scripting,跨站脚本（数据被黑客窃取）</h4>
-<ul>
-  <li>通过.src的方式，将本地数据提交到黑客后台，需要黑客通过其他手段把js代码注入到正常网站</li>
-  <li>防御手段：cookie上加HttpOnly，不允许js读取；服务端过滤script信息；前端展示安全过滤</li>
-  <li>参考 <a href="https://www.jianshu.com/p/38d61b0c0a17">https://www.jianshu.com/p/38d61b0c0a17</a></li>
-</ul>
-
-<h4 id="csrf-cross-site-request-forgery跨站请求伪造-伪造合法请求">CSRF cross site request forgery,跨站请求伪造 （伪造合法请求）</h4>
-<ul>
-  <li>A网站登录成功并保持了本地cookie，黑客的B网站读取A的cookie伪造向A的请求</li>
-  <li>原因：
-    <ul>
-      <li>同源策略阻止了js读取其他网站的cookie等内容，但没有防止js向其他网站发出请求</li>
-      <li>同源策略限制了ajax请求，但没有限制form表单提交，前文提过img标签不受同源策略限制</li>
-      <li>黑客网站利用用户向目标网站发起请求的时候，请求会带上目标网站下发的cookie</li>
-    </ul>
+  <li>
+    <p><strong>反射类攻击</strong>：利用第三方服务的放大效应，一般响应流量远远大于请求本身流量。攻击者伪造源 IP 向第三方服务发送请求，放大后的响应被导向受害者。</p>
   </li>
-  <li>防御
-    <ul>
-      <li>referer(在http请求头中)验证解决方案,浏览器会告诉服务器，哪个页面发送了请求
-不过由于 http 头在某些版本的浏览器上存在可被篡改的可能性，所以这个解决方案并不完善</li>
-      <li>目标网站通过cookie生成hash值，提交请求时带上hash值，服务端对hash进行过滤</li>
-      <li>表单提交加验证码，如图片上的随机字符串</li>
-      <li>用户登录时服务端生成token，之后用户请求必须带上token</li>
-    </ul>
+  <li>
+    <p><strong>CC 攻击（Challenge Collapsar，挑战黑洞）</strong>：通过代理服务器或者大量肉鸡模拟多个用户访问目标网站的动态页面，制造大量后台数据库查询动作，消耗目标 CPU 资源，造成拒绝服务。CC 攻击不像传统 DDoS 可以用硬件防火墙过滤，因为其请求本身是正常的 HTTP 请求，难以通过协议层面区分。</p>
   </li>
-  <li>参考 <a href="https://www.jianshu.com/p/2de97b609a44">https://www.jianshu.com/p/2de97b609a44</a></li>
 </ul>
 
-<h4 id="sql注入">SQL注入</h4>
+<h3 id="防御手段">防御手段</h3>
+
 <ul>
-  <li><a href="https://www.cnblogs.com/myseries/p/10821372.html">https://www.cnblogs.com/myseries/p/10821372.html</a></li>
+  <li><strong>资源隔离</strong>：将核心业务与非核心业务分离部署，避免攻击影响全局</li>
+  <li><strong>应用层用户规则</strong>：基于请求频率、行为特征等维度进行识别和拦截</li>
+  <li><strong>数据分析</strong>：通过流量基线分析异常模式，结合机器学习进行智能识别</li>
+  <li><strong>资源对抗与流量清洗</strong>：隐藏源站 IP 后将攻击流量引流到高防 IP，由专业的流量清洗设备过滤恶意流量</li>
 </ul>
 
-<h4 id="其他">其他</h4>
+<blockquote>
+  <p>参考：<a href="https://www.jianshu.com/p/e7a5fdc67b8f">DDoS 攻击详解</a><br />
+<a href="https://dun.163.com/news/p/4e52c024c7c94220b3f7201498a388c6">流量清洗的原理和 DDoS 流量清洗的实践</a></p>
+</blockquote>
+
+<hr />
+
+<h2 id="xss跨站脚本攻击">XSS：跨站脚本攻击</h2>
+
+<p><strong>XSS（Cross Site Scripting，跨站脚本）</strong> 是一种通过向网页注入恶意脚本来窃取用户数据的攻击方式。之所以缩写为 XSS 而非 CSS，是为了避免与层叠样式表混淆。</p>
+
+<h3 id="攻击原理">攻击原理</h3>
+
+<p>攻击者通过某种手段（如评论区、URL 参数、表单输入等）将恶意 JavaScript 代码注入到正常网站的页面中。当其他用户访问该页面时，恶意脚本在用户浏览器中执行，可以通过 <code class="language-plaintext highlighter-rouge">document.cookie</code> 等 API 读取用户的敏感信息，然后通过动态创建 <code class="language-plaintext highlighter-rouge">&lt;img&gt;</code> 或 <code class="language-plaintext highlighter-rouge">&lt;script&gt;</code> 标签，将数据以 <code class="language-plaintext highlighter-rouge">.src</code> 的方式发送到攻击者的服务器。</p>
+
+<p>XSS 攻击通常分为三种类型：</p>
 <ul>
-  <li>常见六大Web安全攻防解析 <a href="https://www.cnblogs.com/fundebug/p/details-about-6-web-security.html">https://www.cnblogs.com/fundebug/p/details-about-6-web-security.html</a></li>
+  <li><strong>存储型 XSS</strong>：恶意脚本被持久化到数据库，所有访问该页面的用户都会中招</li>
+  <li><strong>反射型 XSS</strong>：恶意脚本在 URL 参数中，通过诱导用户点击特制链接触发</li>
+  <li><strong>DOM 型 XSS</strong>：通过修改页面 DOM 结构触发，不经过服务端</li>
 </ul>
 
+<h3 id="防御手段-1">防御手段</h3>
+
+<ul>
+  <li><strong>Cookie 加 HttpOnly 标志</strong>：禁止 JavaScript 读取 Cookie，即使存在 XSS 漏洞也无法窃取会话信息</li>
+  <li><strong>服务端输入过滤</strong>：对用户输入进行严格过滤，移除或转义 <code class="language-plaintext highlighter-rouge">&lt;script&gt;</code> 等危险标签</li>
+  <li><strong>前端输出编码</strong>：在页面渲染时对动态内容进行 HTML 实体编码，防止脚本执行</li>
+  <li><strong>Content Security Policy（CSP）</strong>：通过 HTTP 响应头限制页面可以加载的资源来源</li>
+</ul>
+
+<blockquote>
+  <p>参考：<a href="https://www.jianshu.com/p/38d61b0c0a17">XSS 攻击详解</a></p>
+</blockquote>
+
+<hr />
+
+<h2 id="csrf跨站请求伪造">CSRF：跨站请求伪造</h2>
+
+<p><strong>CSRF（Cross Site Request Forgery，跨站请求伪造）</strong> 是一种利用用户已认证的会话发起非法操作的攻击。与 XSS 窃取数据不同，CSRF 的核心是伪造合法请求。</p>
+
+<h3 id="攻击原理-1">攻击原理</h3>
+
+<p>假设用户在 A 网站登录成功并保持了本地 Cookie，此时用户在浏览器中访问了攻击者的 B 网站。B 网站读取 A 站的 Cookie 并伪造一个指向 A 站的请求（如转账、修改密码等），由于浏览器会自动携带目标域的 Cookie，A 站服务器无法区分这个请求是用户主动发起还是被诱导发起的。</p>
+
+<p>这种攻击之所以能生效，涉及浏览器安全策略的几个特点：</p>
+
+<ul>
+  <li>同源策略阻止了 JavaScript 读取其他网站的 Cookie 等内容，但没有防止 JavaScript 向其他网站发出请求</li>
+  <li>同源策略限制了 AJAX 跨域请求，但没有限制 <code class="language-plaintext highlighter-rouge">&lt;form&gt;</code> 表单提交和 <code class="language-plaintext highlighter-rouge">&lt;img&gt;</code> 标签加载</li>
+  <li>浏览器在向目标网站发起请求时会自动携带该网站下发的 Cookie</li>
+</ul>
+
+<h3 id="防御手段-2">防御手段</h3>
+
+<ul>
+  <li>
+    <p><strong>Referer 验证</strong>：检查 HTTP 请求头中的 Referer 字段，判断请求来源页面是否合法。但由于某些浏览器版本中 Referer 头存在被篡改的可能性，这个方案并不完善。</p>
+  </li>
+  <li>
+    <p><strong>CSRF Token</strong>：目标网站通过 Cookie 生成 Hash 值（Token），在表单提交时必须带上该 Token，服务端验证 Token 的合法性。由于攻击者无法读取目标站的 Cookie 内容，也就无法构造出正确的 Token。</p>
+  </li>
+  <li>
+    <p><strong>验证码</strong>：表单提交时要求输入图片验证码等人机校验手段，增加伪造请求的难度。</p>
+  </li>
+  <li>
+    <p><strong>双重 Cookie 验证</strong>：用户登录时服务端生成 Token 写入 Cookie，之后用户请求必须从 Cookie 中读出 Token 并放到请求参数中，服务端比对两者是否一致。</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>参考：<a href="https://www.jianshu.com/p/2de97b609a44">CSRF 攻击详解</a></p>
+</blockquote>
+
+<hr />
+
+<h2 id="sql-注入">SQL 注入</h2>
+
+<p>SQL 注入是最经典的 Web 安全漏洞之一。攻击者通过在输入字段中构造恶意 SQL 语句，使其被拼接到后端的数据库查询中执行，从而实现非授权的数据读取、修改甚至删除。</p>
+
+<h3 id="典型场景">典型场景</h3>
+
+<p>假设后端查询语句为：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">username</span> <span class="o">=</span> <span class="s1">'输入值'</span> <span class="k">AND</span> <span class="n">password</span> <span class="o">=</span> <span class="s1">'输入值'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>如果攻击者在用户名字段输入 <code class="language-plaintext highlighter-rouge">' OR 1=1 --</code>，最终执行的 SQL 变为：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">users</span> <span class="k">WHERE</span> <span class="n">username</span> <span class="o">=</span> <span class="s1">''</span> <span class="k">OR</span> <span class="mi">1</span><span class="o">=</span><span class="mi">1</span> <span class="c1">--' AND password = '';</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">OR 1=1</code> 使条件永远为真，<code class="language-plaintext highlighter-rouge">--</code> 注释掉后面的条件，攻击者无需密码即可登录。</p>
+
+<h3 id="防御手段-3">防御手段</h3>
+
+<ul>
+  <li><strong>参数化查询（PreparedStatement）</strong>：这是最根本的防御手段，将 SQL 语句和参数分离，数据库引擎会将参数作为值处理而非 SQL 片段</li>
+  <li><strong>ORM 框架</strong>：使用 MyBatis、Hibernate 等 ORM 框架自带的参数绑定机制</li>
+  <li><strong>输入校验</strong>：对用户输入进行白名单校验，限制特殊字符</li>
+  <li><strong>最小权限原则</strong>：数据库连接账号只授予业务所需的最小权限</li>
+</ul>
+
+<blockquote>
+  <p>参考：<a href="https://www.cnblogs.com/myseries/p/10821372.html">SQL 注入详解</a></p>
+</blockquote>
+
+<hr />
+
+<h2 id="其他安全攻防">其他安全攻防</h2>
+
+<p>除了上述四种常见攻击外，Web 安全领域还有许多值得关注的攻击方式，包括但不限于：</p>
+
+<ul>
+  <li><strong>点击劫持（Clickjacking）</strong>：通过透明 iframe 覆盖在正常页面上，诱导用户点击</li>
+  <li><strong>文件上传漏洞</strong>：上传恶意脚本文件并执行</li>
+  <li><strong>URL 跳转漏洞</strong>：利用开放重定向进行钓鱼</li>
+</ul>
+
+<blockquote>
+  <p>参考：<a href="https://www.cnblogs.com/fundebug/p/details-about-6-web-security.html">常见六大 Web 安全攻防解析</a></p>
+</blockquote>
+
+<hr />
+
+<h2 id="总结">总结</h2>
+
+<p>Web 安全是一个攻防不断博弈的领域。作为技术人员，我们需要：</p>
+
+<ol>
+  <li><strong>深入理解攻击原理</strong>：只有知道攻击如何发生，才能设计出有效的防御方案</li>
+  <li><strong>纵深防御</strong>：不依赖单一防御手段，而是在网络层、应用层、数据层构建多层防护</li>
+  <li><strong>安全意识前置</strong>：在系统设计和编码阶段就考虑安全性，而不是事后补救</li>
+  <li><strong>持续关注</strong>：安全领域日新月异，定期了解最新的漏洞和攻击手法，及时更新防御策略</li>
+</ol>
+
+<p>安全无小事，每一个看似微不足道的漏洞都可能成为攻击者的突破口。</p>
 
     </div>
   </div>
@@ -190,33 +301,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

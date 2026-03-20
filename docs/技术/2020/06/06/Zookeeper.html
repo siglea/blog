@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZooKeeper - Code & Coffee</title>
+  <title>深入理解ZooKeeper：分布式协调服务的核心原理与实践 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>ZooKeeper | Code &amp; Coffee</title>
+<title>深入理解ZooKeeper：分布式协调服务的核心原理与实践 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="ZooKeeper" />
+<meta property="og:title" content="深入理解ZooKeeper：分布式协调服务的核心原理与实践" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="数据与存储 内存数据，Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。 　　1. DataTree，DataTree是内存数据存储的核心，是一个树结构，代表了内存中一份完整的数据。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。 　　2. DataNode，DataNode是数据存储的最小单元，其内部除了保存了结点的数据内容、ACL列表、节点状态之外，还记录了父节点的引用和子节点列表两个属性，其也提供了对子节点列表进行操作的接口。 　　3. ZKDatabase，Zookeeper的内存数据库，管理Zookeeper的所有会话、DataTree存储和事务日志。ZKDatabase会定时向磁盘dump快照数据，同时在Zookeeper启动时，会通过磁盘的事务日志和快照文件恢复成一个完整的内存数据库。 事务日志，FileTxnLog https://www.cnblogs.com/leesf456/p/6179118.html 散点 临时节点不允许有子节点，Ephemeral Node 每个节点大小不超过1MB 使用场景 注册中心 配置中心 HBase之MetaData存储 分布式锁 常用命令 ./zkServer.sh start | stop ./zkServer.sh status ./zkCli.sh ls / stat / ls2 / create /node1 /node1-content create -e /node1-temp /node1-content-temp https://blog.csdn.net/dandandeshangni/article/details/80558383 阿里为什么不用 ZooKeeper 做服务发现？ 基于CP而非AP 自身仅仅是主从的集群，而非分布式集群 The King Of Coordination for Big Data ZooKeeper的observer 当ZooKeeper集群中follower的数量很多时，投票过程会成为一个性能瓶颈，为了解决投票造成的压力，于是出现了observer角色。 observer角色不参与投票，它只是投票结果的”听众”，除此之外，它和follower完全一样，例如能接受读、写请求。就这一个特点，让整个ZooKeeper集群性能大大改善。 和follower一样，当observer收到客户端的读请求时，会直接从内存数据库中取出数据返回给客户端。 对于写请求，当写请求发送到某server上后，无论这个节点是follower还是observer，都会将它发送给leader。然后leader组织投票过程，所有server都收到这个proposal(包括observer，因为proposal是广播出去的)，但是leader和follower以及observer通过配置文件，都知道自己是不是observer以及谁是observer。自己是observer的server不参与投票。当leader收集完投票后，将那些observer的server去掉，在剩下的server中计算大多数，如果投票结果达到了大多数，这次写事务就成功，于是leader通知所有的节点(包括observer)，让它们将事务写入事务日志，并提交。 使用 redis 如何设计分布式锁?说一下实现思路?使用 zk 可以吗?如何实现?这两种有什 么区别? redis: 线程 A setnx(上锁的对象,超时时的时间戳 t1)，如果返回 true，获得锁。 线程 B 用 get 获取 t1,与当前时间戳比较,判断是是否超时,没超时 false,若超时执行第 3 步; 计算新的超时时间 t2,使用 getset 命令返回 t3(该值可能其他线程已经修改过),如果 t1==t3，获得锁，如果 t1!=t3 说明锁被其他线程获取了。 获取锁后，处理完业务逻辑，再去判断锁是否超时，如果没超时删除锁，如果已超时， 不用处理(防止删除其他线程的锁)。 zk: 客户端对某个方法加锁时，在 zk 上的与该方法对应的指定节点的目录下，生成一个唯一 的瞬时有序节点 node1; 客户端获取该路径下所有已经创建的子节点，如果发现自己创建的 node1 的序号是最小 的，就认为这个客户端获得了锁。 如果发现 node1 不是最小的，则监听比自己创建节点序号小的最大的节点，进入等待。 获取锁后，处理完逻辑，删除自己创建的 node1 即可。 区别:zk 性能差一些，开销大，实现简单。 redis分布式锁的缺点 比如分布式环境下，A获取到了锁之后，因为线程A的业务代码耗时过长，导致锁的超时时间，锁自动失效。 后续线程B就意外的持有了锁，之后线程A再次恢复执行，直接用del命令释放锁，这样就错误的将线程B同样Key的锁误删除了。代码耗时过长还是比较常见的场景，假如你的代码中有外部通讯接口调用，就容易产生这样的场景。 https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg Zookeeper队列管理(文件系统、通知机制) 两种类型的队列: 同步队列，当一个队列的成员都聚⻬时，这个队列才可用，否则一直等待所有成员到达。 队列按照 FIFO 方式进行入队和出队操作。 第一类，在约定目录下创建临时目录节点，监听节点数目是否是我们要求的数目。 第二类，和分布式锁服务中的控制时序场景基本原理一致，入列有编号，出列按编号。在特定的目录下创建 PERSISTENT_SEQUENTIAL节点，创建成功时Watcher通知等待的队列，队列删除序列号最小的节点用以消费。 此场景下Zookeeper的znode用于消息存储，znode存储的数据就是消息队列中的消息内容，SEQUENTIAL序列号就是消息的编 号，按序取出即可。由于创建的节点是持久化的，所以不必担心队列消息的丢失问题。" />
-<meta property="og:description" content="数据与存储 内存数据，Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。 　　1. DataTree，DataTree是内存数据存储的核心，是一个树结构，代表了内存中一份完整的数据。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。 　　2. DataNode，DataNode是数据存储的最小单元，其内部除了保存了结点的数据内容、ACL列表、节点状态之外，还记录了父节点的引用和子节点列表两个属性，其也提供了对子节点列表进行操作的接口。 　　3. ZKDatabase，Zookeeper的内存数据库，管理Zookeeper的所有会话、DataTree存储和事务日志。ZKDatabase会定时向磁盘dump快照数据，同时在Zookeeper启动时，会通过磁盘的事务日志和快照文件恢复成一个完整的内存数据库。 事务日志，FileTxnLog https://www.cnblogs.com/leesf456/p/6179118.html 散点 临时节点不允许有子节点，Ephemeral Node 每个节点大小不超过1MB 使用场景 注册中心 配置中心 HBase之MetaData存储 分布式锁 常用命令 ./zkServer.sh start | stop ./zkServer.sh status ./zkCli.sh ls / stat / ls2 / create /node1 /node1-content create -e /node1-temp /node1-content-temp https://blog.csdn.net/dandandeshangni/article/details/80558383 阿里为什么不用 ZooKeeper 做服务发现？ 基于CP而非AP 自身仅仅是主从的集群，而非分布式集群 The King Of Coordination for Big Data ZooKeeper的observer 当ZooKeeper集群中follower的数量很多时，投票过程会成为一个性能瓶颈，为了解决投票造成的压力，于是出现了observer角色。 observer角色不参与投票，它只是投票结果的”听众”，除此之外，它和follower完全一样，例如能接受读、写请求。就这一个特点，让整个ZooKeeper集群性能大大改善。 和follower一样，当observer收到客户端的读请求时，会直接从内存数据库中取出数据返回给客户端。 对于写请求，当写请求发送到某server上后，无论这个节点是follower还是observer，都会将它发送给leader。然后leader组织投票过程，所有server都收到这个proposal(包括observer，因为proposal是广播出去的)，但是leader和follower以及observer通过配置文件，都知道自己是不是observer以及谁是observer。自己是observer的server不参与投票。当leader收集完投票后，将那些observer的server去掉，在剩下的server中计算大多数，如果投票结果达到了大多数，这次写事务就成功，于是leader通知所有的节点(包括observer)，让它们将事务写入事务日志，并提交。 使用 redis 如何设计分布式锁?说一下实现思路?使用 zk 可以吗?如何实现?这两种有什 么区别? redis: 线程 A setnx(上锁的对象,超时时的时间戳 t1)，如果返回 true，获得锁。 线程 B 用 get 获取 t1,与当前时间戳比较,判断是是否超时,没超时 false,若超时执行第 3 步; 计算新的超时时间 t2,使用 getset 命令返回 t3(该值可能其他线程已经修改过),如果 t1==t3，获得锁，如果 t1!=t3 说明锁被其他线程获取了。 获取锁后，处理完业务逻辑，再去判断锁是否超时，如果没超时删除锁，如果已超时， 不用处理(防止删除其他线程的锁)。 zk: 客户端对某个方法加锁时，在 zk 上的与该方法对应的指定节点的目录下，生成一个唯一 的瞬时有序节点 node1; 客户端获取该路径下所有已经创建的子节点，如果发现自己创建的 node1 的序号是最小 的，就认为这个客户端获得了锁。 如果发现 node1 不是最小的，则监听比自己创建节点序号小的最大的节点，进入等待。 获取锁后，处理完逻辑，删除自己创建的 node1 即可。 区别:zk 性能差一些，开销大，实现简单。 redis分布式锁的缺点 比如分布式环境下，A获取到了锁之后，因为线程A的业务代码耗时过长，导致锁的超时时间，锁自动失效。 后续线程B就意外的持有了锁，之后线程A再次恢复执行，直接用del命令释放锁，这样就错误的将线程B同样Key的锁误删除了。代码耗时过长还是比较常见的场景，假如你的代码中有外部通讯接口调用，就容易产生这样的场景。 https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg Zookeeper队列管理(文件系统、通知机制) 两种类型的队列: 同步队列，当一个队列的成员都聚⻬时，这个队列才可用，否则一直等待所有成员到达。 队列按照 FIFO 方式进行入队和出队操作。 第一类，在约定目录下创建临时目录节点，监听节点数目是否是我们要求的数目。 第二类，和分布式锁服务中的控制时序场景基本原理一致，入列有编号，出列按编号。在特定的目录下创建 PERSISTENT_SEQUENTIAL节点，创建成功时Watcher通知等待的队列，队列删除序列号最小的节点用以消费。 此场景下Zookeeper的znode用于消息存储，znode存储的数据就是消息队列中的消息内容，SEQUENTIAL序列号就是消息的编 号，按序取出即可。由于创建的节点是持久化的，所以不必担心队列消息的丢失问题。" />
+<meta name="description" content="引言 ZooKeeper 是 Apache 基金会下的一个开源分布式协调服务，最初由雅虎研究院开发，后成为 Hadoop 生态系统的重要组件。它为分布式应用提供了一致性服务，包括配置维护、名字服务、分布式同步和组服务等。本文将从 ZooKeeper 的数据模型、存储机制出发，深入探讨其使用场景、集群架构以及与 Redis 在分布式锁实现上的对比。 数据模型与存储机制 ZooKeeper 的数据模型是一个树形结构（类似文件系统），每个节点称为 ZNode。整棵树的数据存储在内存中，同时定期持久化到磁盘，保证了高性能读写与数据可靠性。 核心数据结构 DataTree：内存数据存储的核心，代表一棵完整的数据树。它是一个独立的组件，不包含任何与网络、客户端连接及请求处理相关的业务逻辑。 DataNode：数据存储的最小单元。内部保存了节点数据内容、ACL 列表、节点状态，还记录了父节点引用和子节点列表，并提供了对子节点列表进行操作的接口。 ZKDatabase：ZooKeeper 的内存数据库，管理所有会话、DataTree 存储和事务日志。ZKDatabase 会定时向磁盘 dump 快照数据，启动时通过磁盘上的事务日志和快照文件恢复为完整的内存数据库。 事务日志 ZooKeeper 通过 FileTxnLog 记录所有写操作的事务日志。事务日志是保证数据一致性和持久性的关键——即使节点崩溃，也能通过重放事务日志恢复数据。 参考：https://www.cnblogs.com/leesf456/p/6179118.html ZNode 特性 临时节点（Ephemeral Node）不允许拥有子节点，其生命周期与客户端会话绑定，会话结束后自动删除。 每个节点的数据大小不超过 1MB，ZooKeeper 的设计初衷是存储协调数据（如配置、状态），而非大规模业务数据。 典型使用场景 ZooKeeper 凭借其强一致性和 Watcher 通知机制，在分布式系统中有以下经典应用： 场景 说明 注册中心 服务提供者在 ZK 上注册临时节点，消费者通过 Watcher 感知服务上下线 配置中心 将配置数据存储在 ZNode 中，客户端监听节点变化，实现动态配置更新 HBase MetaData 存储 HBase 利用 ZK 存储 RegionServer 的元数据和 Master 选举信息 分布式锁 利用临时顺序节点和 Watcher 机制实现公平的分布式锁 常用命令 ./zkServer.sh start | stop ./zkServer.sh status ./zkCli.sh ls / stat / ls2 / create /node1 /node1-content create -e /node1-temp /node1-content-temp 更多命令参考：https://blog.csdn.net/dandandeshangni/article/details/80558383 阿里为什么不用 ZooKeeper 做服务发现？ 这是一个经典的架构选型问题，核心原因在于 CAP 定理的取舍： ZooKeeper 是 CP 系统：当网络分区发生时，ZK 会优先保证一致性（Consistency），牺牲可用性（Availability）。在服务发现场景中，可用性往往比强一致性更重要——即使拿到的是稍旧的服务列表，也好过完全不可用。 ZK 是主从集群，而非分布式集群：其 Leader-Follower 架构在写入时存在单点瓶颈，不适合高频的服务注册/注销操作。 定位不同：ZooKeeper 的定位是 “The King of Coordination for Big Data”，它更适合做分布式协调（如选举、锁），而非高频的服务发现。 阿里后来自研了 Nacos，采用 AP 优先的设计，更好地满足了大规模微服务场景下的服务发现需求。 Observer 角色：解决投票瓶颈 当 ZooKeeper 集群中 Follower 数量较多时，每次写操作都需要多数派投票，投票过程会成为性能瓶颈。为此，ZK 引入了 Observer 角色。 Observer 的核心特点： 不参与投票：它是投票结果的”听众”，不会增加投票的网络开销 功能与 Follower 一致：能接受读请求（直接从内存数据库返回）和写请求（转发给 Leader） 接收 Proposal 广播：Leader 将 Proposal 广播给所有节点（包括 Observer），但在计算大多数时排除 Observer 提交事务：当投票通过后，Leader 通知所有节点（包括 Observer）写入事务日志并提交 通过引入 Observer，可以在不影响写性能的前提下横向扩展读能力，特别适合跨数据中心部署。 分布式锁对比：Redis vs ZooKeeper 分布式锁是分布式系统中的常见需求，Redis 和 ZooKeeper 各有实现方式和适用场景。 Redis 实现 线程 A 执行 SETNX(锁对象, 超时时间戳 t1)，返回 true 则获得锁 线程 B 执行 GET 获取 t1，与当前时间戳比较判断是否超时；未超时则等待 若已超时，计算新的超时时间 t2，使用 GETSET 命令返回 t3。若 t1 == t3 获得锁，否则说明锁已被其他线程获取 获取锁后处理业务逻辑，再判断锁是否超时：未超时则删除锁，已超时则不处理（防止误删其他线程的锁） Redis 分布式锁的缺陷：在分布式环境下，线程 A 获取锁后如果业务代码耗时过长（如外部接口调用），锁可能因超时自动失效。此时线程 B 意外获得了锁，而线程 A 恢复执行后直接用 DEL 释放锁，就会错误地把线程 B 的锁删除。 ZooKeeper 实现 客户端在指定节点目录下创建一个临时顺序节点 node1 获取该路径下所有子节点，若 node1 的序号最小，则获得锁 若 node1 不是最小的，则监听比自己序号小的最大节点，进入等待 业务处理完成后，删除 node1 即释放锁 对比总结 维度 Redis ZooKeeper 性能 高 较低（涉及节点创建和 Watcher） 实现复杂度 较高（需处理超时、误删等边界情况） 较低（临时节点 + 顺序节点天然支持） 可靠性 依赖超时机制，存在锁失效风险 临时节点与会话绑定，客户端断开自动释放 适用场景 高并发、对性能要求极高 对正确性要求极高、并发量适中 参考：https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg 队列管理 ZooKeeper 还可以实现两种类型的队列： 同步队列 当一个队列的成员全部聚齐时队列才可用，否则一直等待。实现方式：在约定目录下创建临时节点，通过 Watcher 监听节点数目是否达到预期。 FIFO 队列 原理与分布式锁的顺序控制类似：在特定目录下创建 PERSISTENT_SEQUENTIAL 节点，创建成功时 Watcher 通知等待的消费者，消费者删除序列号最小的节点完成消费。 ZNode 存储的数据即消息内容，SEQUENTIAL 序列号即消息编号。由于创建的是持久化节点，不必担心队列消息丢失。不过在实际生产中，ZooKeeper 的队列功能更多用于协调场景，大规模消息队列建议使用 Kafka、RocketMQ 等专业中间件。 总结 ZooKeeper 作为分布式协调服务的标杆，其核心价值在于为分布式系统提供了强一致性的协调原语。理解它的数据模型（DataTree/DataNode/ZKDatabase）、节点类型（临时/持久/顺序）和 Watcher 机制，是用好 ZooKeeper 的基础。在实际架构选型中，需要根据业务场景在 CP 和 AP 之间做出取舍——ZooKeeper 适合对一致性要求极高的协调场景，而服务发现等高可用场景可能更适合 Nacos、Consul 等 AP 优先的方案。" />
+<meta property="og:description" content="引言 ZooKeeper 是 Apache 基金会下的一个开源分布式协调服务，最初由雅虎研究院开发，后成为 Hadoop 生态系统的重要组件。它为分布式应用提供了一致性服务，包括配置维护、名字服务、分布式同步和组服务等。本文将从 ZooKeeper 的数据模型、存储机制出发，深入探讨其使用场景、集群架构以及与 Redis 在分布式锁实现上的对比。 数据模型与存储机制 ZooKeeper 的数据模型是一个树形结构（类似文件系统），每个节点称为 ZNode。整棵树的数据存储在内存中，同时定期持久化到磁盘，保证了高性能读写与数据可靠性。 核心数据结构 DataTree：内存数据存储的核心，代表一棵完整的数据树。它是一个独立的组件，不包含任何与网络、客户端连接及请求处理相关的业务逻辑。 DataNode：数据存储的最小单元。内部保存了节点数据内容、ACL 列表、节点状态，还记录了父节点引用和子节点列表，并提供了对子节点列表进行操作的接口。 ZKDatabase：ZooKeeper 的内存数据库，管理所有会话、DataTree 存储和事务日志。ZKDatabase 会定时向磁盘 dump 快照数据，启动时通过磁盘上的事务日志和快照文件恢复为完整的内存数据库。 事务日志 ZooKeeper 通过 FileTxnLog 记录所有写操作的事务日志。事务日志是保证数据一致性和持久性的关键——即使节点崩溃，也能通过重放事务日志恢复数据。 参考：https://www.cnblogs.com/leesf456/p/6179118.html ZNode 特性 临时节点（Ephemeral Node）不允许拥有子节点，其生命周期与客户端会话绑定，会话结束后自动删除。 每个节点的数据大小不超过 1MB，ZooKeeper 的设计初衷是存储协调数据（如配置、状态），而非大规模业务数据。 典型使用场景 ZooKeeper 凭借其强一致性和 Watcher 通知机制，在分布式系统中有以下经典应用： 场景 说明 注册中心 服务提供者在 ZK 上注册临时节点，消费者通过 Watcher 感知服务上下线 配置中心 将配置数据存储在 ZNode 中，客户端监听节点变化，实现动态配置更新 HBase MetaData 存储 HBase 利用 ZK 存储 RegionServer 的元数据和 Master 选举信息 分布式锁 利用临时顺序节点和 Watcher 机制实现公平的分布式锁 常用命令 ./zkServer.sh start | stop ./zkServer.sh status ./zkCli.sh ls / stat / ls2 / create /node1 /node1-content create -e /node1-temp /node1-content-temp 更多命令参考：https://blog.csdn.net/dandandeshangni/article/details/80558383 阿里为什么不用 ZooKeeper 做服务发现？ 这是一个经典的架构选型问题，核心原因在于 CAP 定理的取舍： ZooKeeper 是 CP 系统：当网络分区发生时，ZK 会优先保证一致性（Consistency），牺牲可用性（Availability）。在服务发现场景中，可用性往往比强一致性更重要——即使拿到的是稍旧的服务列表，也好过完全不可用。 ZK 是主从集群，而非分布式集群：其 Leader-Follower 架构在写入时存在单点瓶颈，不适合高频的服务注册/注销操作。 定位不同：ZooKeeper 的定位是 “The King of Coordination for Big Data”，它更适合做分布式协调（如选举、锁），而非高频的服务发现。 阿里后来自研了 Nacos，采用 AP 优先的设计，更好地满足了大规模微服务场景下的服务发现需求。 Observer 角色：解决投票瓶颈 当 ZooKeeper 集群中 Follower 数量较多时，每次写操作都需要多数派投票，投票过程会成为性能瓶颈。为此，ZK 引入了 Observer 角色。 Observer 的核心特点： 不参与投票：它是投票结果的”听众”，不会增加投票的网络开销 功能与 Follower 一致：能接受读请求（直接从内存数据库返回）和写请求（转发给 Leader） 接收 Proposal 广播：Leader 将 Proposal 广播给所有节点（包括 Observer），但在计算大多数时排除 Observer 提交事务：当投票通过后，Leader 通知所有节点（包括 Observer）写入事务日志并提交 通过引入 Observer，可以在不影响写性能的前提下横向扩展读能力，特别适合跨数据中心部署。 分布式锁对比：Redis vs ZooKeeper 分布式锁是分布式系统中的常见需求，Redis 和 ZooKeeper 各有实现方式和适用场景。 Redis 实现 线程 A 执行 SETNX(锁对象, 超时时间戳 t1)，返回 true 则获得锁 线程 B 执行 GET 获取 t1，与当前时间戳比较判断是否超时；未超时则等待 若已超时，计算新的超时时间 t2，使用 GETSET 命令返回 t3。若 t1 == t3 获得锁，否则说明锁已被其他线程获取 获取锁后处理业务逻辑，再判断锁是否超时：未超时则删除锁，已超时则不处理（防止误删其他线程的锁） Redis 分布式锁的缺陷：在分布式环境下，线程 A 获取锁后如果业务代码耗时过长（如外部接口调用），锁可能因超时自动失效。此时线程 B 意外获得了锁，而线程 A 恢复执行后直接用 DEL 释放锁，就会错误地把线程 B 的锁删除。 ZooKeeper 实现 客户端在指定节点目录下创建一个临时顺序节点 node1 获取该路径下所有子节点，若 node1 的序号最小，则获得锁 若 node1 不是最小的，则监听比自己序号小的最大节点，进入等待 业务处理完成后，删除 node1 即释放锁 对比总结 维度 Redis ZooKeeper 性能 高 较低（涉及节点创建和 Watcher） 实现复杂度 较高（需处理超时、误删等边界情况） 较低（临时节点 + 顺序节点天然支持） 可靠性 依赖超时机制，存在锁失效风险 临时节点与会话绑定，客户端断开自动释放 适用场景 高并发、对性能要求极高 对正确性要求极高、并发量适中 参考：https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg 队列管理 ZooKeeper 还可以实现两种类型的队列： 同步队列 当一个队列的成员全部聚齐时队列才可用，否则一直等待。实现方式：在约定目录下创建临时节点，通过 Watcher 监听节点数目是否达到预期。 FIFO 队列 原理与分布式锁的顺序控制类似：在特定目录下创建 PERSISTENT_SEQUENTIAL 节点，创建成功时 Watcher 通知等待的消费者，消费者删除序列号最小的节点完成消费。 ZNode 存储的数据即消息内容，SEQUENTIAL 序列号即消息编号。由于创建的是持久化节点，不必担心队列消息丢失。不过在实际生产中，ZooKeeper 的队列功能更多用于协调场景，大规模消息队列建议使用 Kafka、RocketMQ 等专业中间件。 总结 ZooKeeper 作为分布式协调服务的标杆，其核心价值在于为分布式系统提供了强一致性的协调原语。理解它的数据模型（DataTree/DataNode/ZKDatabase）、节点类型（临时/持久/顺序）和 Watcher 机制，是用好 ZooKeeper 的基础。在实际架构选型中，需要根据业务场景在 CP 和 AP 之间做出取舍——ZooKeeper 适合对一致性要求极高的协调场景，而服务发现等高可用场景可能更适合 Nacos、Consul 等 AP 优先的方案。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-06-06T12:17:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="ZooKeeper" />
+<meta property="twitter:title" content="深入理解ZooKeeper：分布式协调服务的核心原理与实践" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-06-06T12:17:00+08:00","datePublished":"2020-06-06T12:17:00+08:00","description":"数据与存储 内存数据，Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。 　　1. DataTree，DataTree是内存数据存储的核心，是一个树结构，代表了内存中一份完整的数据。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。 　　2. DataNode，DataNode是数据存储的最小单元，其内部除了保存了结点的数据内容、ACL列表、节点状态之外，还记录了父节点的引用和子节点列表两个属性，其也提供了对子节点列表进行操作的接口。 　　3. ZKDatabase，Zookeeper的内存数据库，管理Zookeeper的所有会话、DataTree存储和事务日志。ZKDatabase会定时向磁盘dump快照数据，同时在Zookeeper启动时，会通过磁盘的事务日志和快照文件恢复成一个完整的内存数据库。 事务日志，FileTxnLog https://www.cnblogs.com/leesf456/p/6179118.html 散点 临时节点不允许有子节点，Ephemeral Node 每个节点大小不超过1MB 使用场景 注册中心 配置中心 HBase之MetaData存储 分布式锁 常用命令 ./zkServer.sh start | stop ./zkServer.sh status ./zkCli.sh ls / stat / ls2 / create /node1 /node1-content create -e /node1-temp /node1-content-temp https://blog.csdn.net/dandandeshangni/article/details/80558383 阿里为什么不用 ZooKeeper 做服务发现？ 基于CP而非AP 自身仅仅是主从的集群，而非分布式集群 The King Of Coordination for Big Data ZooKeeper的observer 当ZooKeeper集群中follower的数量很多时，投票过程会成为一个性能瓶颈，为了解决投票造成的压力，于是出现了observer角色。 observer角色不参与投票，它只是投票结果的”听众”，除此之外，它和follower完全一样，例如能接受读、写请求。就这一个特点，让整个ZooKeeper集群性能大大改善。 和follower一样，当observer收到客户端的读请求时，会直接从内存数据库中取出数据返回给客户端。 对于写请求，当写请求发送到某server上后，无论这个节点是follower还是observer，都会将它发送给leader。然后leader组织投票过程，所有server都收到这个proposal(包括observer，因为proposal是广播出去的)，但是leader和follower以及observer通过配置文件，都知道自己是不是observer以及谁是observer。自己是observer的server不参与投票。当leader收集完投票后，将那些observer的server去掉，在剩下的server中计算大多数，如果投票结果达到了大多数，这次写事务就成功，于是leader通知所有的节点(包括observer)，让它们将事务写入事务日志，并提交。 使用 redis 如何设计分布式锁?说一下实现思路?使用 zk 可以吗?如何实现?这两种有什 么区别? redis: 线程 A setnx(上锁的对象,超时时的时间戳 t1)，如果返回 true，获得锁。 线程 B 用 get 获取 t1,与当前时间戳比较,判断是是否超时,没超时 false,若超时执行第 3 步; 计算新的超时时间 t2,使用 getset 命令返回 t3(该值可能其他线程已经修改过),如果 t1==t3，获得锁，如果 t1!=t3 说明锁被其他线程获取了。 获取锁后，处理完业务逻辑，再去判断锁是否超时，如果没超时删除锁，如果已超时， 不用处理(防止删除其他线程的锁)。 zk: 客户端对某个方法加锁时，在 zk 上的与该方法对应的指定节点的目录下，生成一个唯一 的瞬时有序节点 node1; 客户端获取该路径下所有已经创建的子节点，如果发现自己创建的 node1 的序号是最小 的，就认为这个客户端获得了锁。 如果发现 node1 不是最小的，则监听比自己创建节点序号小的最大的节点，进入等待。 获取锁后，处理完逻辑，删除自己创建的 node1 即可。 区别:zk 性能差一些，开销大，实现简单。 redis分布式锁的缺点 比如分布式环境下，A获取到了锁之后，因为线程A的业务代码耗时过长，导致锁的超时时间，锁自动失效。 后续线程B就意外的持有了锁，之后线程A再次恢复执行，直接用del命令释放锁，这样就错误的将线程B同样Key的锁误删除了。代码耗时过长还是比较常见的场景，假如你的代码中有外部通讯接口调用，就容易产生这样的场景。 https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg Zookeeper队列管理(文件系统、通知机制) 两种类型的队列: 同步队列，当一个队列的成员都聚⻬时，这个队列才可用，否则一直等待所有成员到达。 队列按照 FIFO 方式进行入队和出队操作。 第一类，在约定目录下创建临时目录节点，监听节点数目是否是我们要求的数目。 第二类，和分布式锁服务中的控制时序场景基本原理一致，入列有编号，出列按编号。在特定的目录下创建 PERSISTENT_SEQUENTIAL节点，创建成功时Watcher通知等待的队列，队列删除序列号最小的节点用以消费。 此场景下Zookeeper的znode用于消息存储，znode存储的数据就是消息队列中的消息内容，SEQUENTIAL序列号就是消息的编 号，按序取出即可。由于创建的节点是持久化的，所以不必担心队列消息的丢失问题。","headline":"ZooKeeper","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-06-06T12:17:00+08:00","datePublished":"2020-06-06T12:17:00+08:00","description":"引言 ZooKeeper 是 Apache 基金会下的一个开源分布式协调服务，最初由雅虎研究院开发，后成为 Hadoop 生态系统的重要组件。它为分布式应用提供了一致性服务，包括配置维护、名字服务、分布式同步和组服务等。本文将从 ZooKeeper 的数据模型、存储机制出发，深入探讨其使用场景、集群架构以及与 Redis 在分布式锁实现上的对比。 数据模型与存储机制 ZooKeeper 的数据模型是一个树形结构（类似文件系统），每个节点称为 ZNode。整棵树的数据存储在内存中，同时定期持久化到磁盘，保证了高性能读写与数据可靠性。 核心数据结构 DataTree：内存数据存储的核心，代表一棵完整的数据树。它是一个独立的组件，不包含任何与网络、客户端连接及请求处理相关的业务逻辑。 DataNode：数据存储的最小单元。内部保存了节点数据内容、ACL 列表、节点状态，还记录了父节点引用和子节点列表，并提供了对子节点列表进行操作的接口。 ZKDatabase：ZooKeeper 的内存数据库，管理所有会话、DataTree 存储和事务日志。ZKDatabase 会定时向磁盘 dump 快照数据，启动时通过磁盘上的事务日志和快照文件恢复为完整的内存数据库。 事务日志 ZooKeeper 通过 FileTxnLog 记录所有写操作的事务日志。事务日志是保证数据一致性和持久性的关键——即使节点崩溃，也能通过重放事务日志恢复数据。 参考：https://www.cnblogs.com/leesf456/p/6179118.html ZNode 特性 临时节点（Ephemeral Node）不允许拥有子节点，其生命周期与客户端会话绑定，会话结束后自动删除。 每个节点的数据大小不超过 1MB，ZooKeeper 的设计初衷是存储协调数据（如配置、状态），而非大规模业务数据。 典型使用场景 ZooKeeper 凭借其强一致性和 Watcher 通知机制，在分布式系统中有以下经典应用： 场景 说明 注册中心 服务提供者在 ZK 上注册临时节点，消费者通过 Watcher 感知服务上下线 配置中心 将配置数据存储在 ZNode 中，客户端监听节点变化，实现动态配置更新 HBase MetaData 存储 HBase 利用 ZK 存储 RegionServer 的元数据和 Master 选举信息 分布式锁 利用临时顺序节点和 Watcher 机制实现公平的分布式锁 常用命令 ./zkServer.sh start | stop ./zkServer.sh status ./zkCli.sh ls / stat / ls2 / create /node1 /node1-content create -e /node1-temp /node1-content-temp 更多命令参考：https://blog.csdn.net/dandandeshangni/article/details/80558383 阿里为什么不用 ZooKeeper 做服务发现？ 这是一个经典的架构选型问题，核心原因在于 CAP 定理的取舍： ZooKeeper 是 CP 系统：当网络分区发生时，ZK 会优先保证一致性（Consistency），牺牲可用性（Availability）。在服务发现场景中，可用性往往比强一致性更重要——即使拿到的是稍旧的服务列表，也好过完全不可用。 ZK 是主从集群，而非分布式集群：其 Leader-Follower 架构在写入时存在单点瓶颈，不适合高频的服务注册/注销操作。 定位不同：ZooKeeper 的定位是 “The King of Coordination for Big Data”，它更适合做分布式协调（如选举、锁），而非高频的服务发现。 阿里后来自研了 Nacos，采用 AP 优先的设计，更好地满足了大规模微服务场景下的服务发现需求。 Observer 角色：解决投票瓶颈 当 ZooKeeper 集群中 Follower 数量较多时，每次写操作都需要多数派投票，投票过程会成为性能瓶颈。为此，ZK 引入了 Observer 角色。 Observer 的核心特点： 不参与投票：它是投票结果的”听众”，不会增加投票的网络开销 功能与 Follower 一致：能接受读请求（直接从内存数据库返回）和写请求（转发给 Leader） 接收 Proposal 广播：Leader 将 Proposal 广播给所有节点（包括 Observer），但在计算大多数时排除 Observer 提交事务：当投票通过后，Leader 通知所有节点（包括 Observer）写入事务日志并提交 通过引入 Observer，可以在不影响写性能的前提下横向扩展读能力，特别适合跨数据中心部署。 分布式锁对比：Redis vs ZooKeeper 分布式锁是分布式系统中的常见需求，Redis 和 ZooKeeper 各有实现方式和适用场景。 Redis 实现 线程 A 执行 SETNX(锁对象, 超时时间戳 t1)，返回 true 则获得锁 线程 B 执行 GET 获取 t1，与当前时间戳比较判断是否超时；未超时则等待 若已超时，计算新的超时时间 t2，使用 GETSET 命令返回 t3。若 t1 == t3 获得锁，否则说明锁已被其他线程获取 获取锁后处理业务逻辑，再判断锁是否超时：未超时则删除锁，已超时则不处理（防止误删其他线程的锁） Redis 分布式锁的缺陷：在分布式环境下，线程 A 获取锁后如果业务代码耗时过长（如外部接口调用），锁可能因超时自动失效。此时线程 B 意外获得了锁，而线程 A 恢复执行后直接用 DEL 释放锁，就会错误地把线程 B 的锁删除。 ZooKeeper 实现 客户端在指定节点目录下创建一个临时顺序节点 node1 获取该路径下所有子节点，若 node1 的序号最小，则获得锁 若 node1 不是最小的，则监听比自己序号小的最大节点，进入等待 业务处理完成后，删除 node1 即释放锁 对比总结 维度 Redis ZooKeeper 性能 高 较低（涉及节点创建和 Watcher） 实现复杂度 较高（需处理超时、误删等边界情况） 较低（临时节点 + 顺序节点天然支持） 可靠性 依赖超时机制，存在锁失效风险 临时节点与会话绑定，客户端断开自动释放 适用场景 高并发、对性能要求极高 对正确性要求极高、并发量适中 参考：https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg 队列管理 ZooKeeper 还可以实现两种类型的队列： 同步队列 当一个队列的成员全部聚齐时队列才可用，否则一直等待。实现方式：在约定目录下创建临时节点，通过 Watcher 监听节点数目是否达到预期。 FIFO 队列 原理与分布式锁的顺序控制类似：在特定目录下创建 PERSISTENT_SEQUENTIAL 节点，创建成功时 Watcher 通知等待的消费者，消费者删除序列号最小的节点完成消费。 ZNode 存储的数据即消息内容，SEQUENTIAL 序列号即消息编号。由于创建的是持久化节点，不必担心队列消息丢失。不过在实际生产中，ZooKeeper 的队列功能更多用于协调场景，大规模消息队列建议使用 Kafka、RocketMQ 等专业中间件。 总结 ZooKeeper 作为分布式协调服务的标杆，其核心价值在于为分布式系统提供了强一致性的协调原语。理解它的数据模型（DataTree/DataNode/ZKDatabase）、节点类型（临时/持久/顺序）和 Watcher 机制，是用好 ZooKeeper 的基础。在实际架构选型中，需要根据业务场景在 CP 和 AP 之间做出取舍——ZooKeeper 适合对一致性要求极高的协调场景，而服务发现等高可用场景可能更适合 Nacos、Consul 等 AP 优先的方案。","headline":"深入理解ZooKeeper：分布式协调服务的核心原理与实践","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html">&laquo; '图'相关算法</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html">&laquo; 图论算法全景：从基础遍历到最短路径...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html">大数据常用算法概述 &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/07/BigDataAlgorithm.html">大数据算法全景：从海量数据处理到机... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">ZooKeeper</h1>
+    <h1 class="asset-name entry-title">深入理解ZooKeeper：分布式协调服务的核心原理与实践</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,31 +97,74 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="数据与存储">数据与存储</h4>
-<ul>
-  <li>内存数据，Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。
-　　1. DataTree，DataTree是内存数据存储的核心，是一个树结构，代表了内存中一份完整的数据。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。
-　　2. DataNode，DataNode是数据存储的最小单元，其内部除了保存了结点的数据内容、ACL列表、节点状态之外，还记录了父节点的引用和子节点列表两个属性，其也提供了对子节点列表进行操作的接口。
-　　3. ZKDatabase，Zookeeper的内存数据库，管理Zookeeper的所有会话、DataTree存储和事务日志。ZKDatabase会定时向磁盘dump快照数据，同时在Zookeeper启动时，会通过磁盘的事务日志和快照文件恢复成一个完整的内存数据库。</li>
-  <li>事务日志，FileTxnLog</li>
-</ul>
-<p><a href="https://www.cnblogs.com/leesf456/p/6179118.html">https://www.cnblogs.com/leesf456/p/6179118.html</a></p>
+      <h3 id="引言">引言</h3>
 
-<h4 id="散点">散点</h4>
+<p>ZooKeeper 是 Apache 基金会下的一个开源分布式协调服务，最初由雅虎研究院开发，后成为 Hadoop 生态系统的重要组件。它为分布式应用提供了一致性服务，包括配置维护、名字服务、分布式同步和组服务等。本文将从 ZooKeeper 的数据模型、存储机制出发，深入探讨其使用场景、集群架构以及与 Redis 在分布式锁实现上的对比。</p>
+
+<hr />
+
+<h3 id="数据模型与存储机制">数据模型与存储机制</h3>
+
+<p>ZooKeeper 的数据模型是一个<strong>树形结构</strong>（类似文件系统），每个节点称为 ZNode。整棵树的数据存储在内存中，同时定期持久化到磁盘，保证了高性能读写与数据可靠性。</p>
+
+<h4 id="核心数据结构">核心数据结构</h4>
+
+<ol>
+  <li><strong>DataTree</strong>：内存数据存储的核心，代表一棵完整的数据树。它是一个独立的组件，不包含任何与网络、客户端连接及请求处理相关的业务逻辑。</li>
+  <li><strong>DataNode</strong>：数据存储的最小单元。内部保存了节点数据内容、ACL 列表、节点状态，还记录了父节点引用和子节点列表，并提供了对子节点列表进行操作的接口。</li>
+  <li><strong>ZKDatabase</strong>：ZooKeeper 的内存数据库，管理所有会话、DataTree 存储和事务日志。ZKDatabase 会定时向磁盘 dump 快照数据，启动时通过磁盘上的事务日志和快照文件恢复为完整的内存数据库。</li>
+</ol>
+
+<h4 id="事务日志">事务日志</h4>
+
+<p>ZooKeeper 通过 <code class="language-plaintext highlighter-rouge">FileTxnLog</code> 记录所有写操作的事务日志。事务日志是保证数据一致性和持久性的关键——即使节点崩溃，也能通过重放事务日志恢复数据。</p>
+
+<p>参考：<a href="https://www.cnblogs.com/leesf456/p/6179118.html">https://www.cnblogs.com/leesf456/p/6179118.html</a></p>
+
+<h4 id="znode-特性">ZNode 特性</h4>
+
 <ul>
-  <li>临时节点不允许有子节点，Ephemeral Node</li>
-  <li>每个节点大小不超过1MB</li>
+  <li><strong>临时节点（Ephemeral Node）</strong>不允许拥有子节点，其生命周期与客户端会话绑定，会话结束后自动删除。</li>
+  <li>每个节点的数据大小不超过 <strong>1MB</strong>，ZooKeeper 的设计初衷是存储协调数据（如配置、状态），而非大规模业务数据。</li>
 </ul>
 
-<h4 id="使用场景">使用场景</h4>
-<ul>
-  <li>注册中心</li>
-  <li>配置中心</li>
-  <li>HBase之MetaData存储</li>
-  <li>分布式锁</li>
-</ul>
+<hr />
 
-<h4 id="常用命令">常用命令</h4>
+<h3 id="典型使用场景">典型使用场景</h3>
+
+<p>ZooKeeper 凭借其强一致性和 Watcher 通知机制，在分布式系统中有以下经典应用：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>场景</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>注册中心</strong></td>
+      <td>服务提供者在 ZK 上注册临时节点，消费者通过 Watcher 感知服务上下线</td>
+    </tr>
+    <tr>
+      <td><strong>配置中心</strong></td>
+      <td>将配置数据存储在 ZNode 中，客户端监听节点变化，实现动态配置更新</td>
+    </tr>
+    <tr>
+      <td><strong>HBase MetaData 存储</strong></td>
+      <td>HBase 利用 ZK 存储 RegionServer 的元数据和 Master 选举信息</td>
+    </tr>
+    <tr>
+      <td><strong>分布式锁</strong></td>
+      <td>利用临时顺序节点和 Watcher 机制实现公平的分布式锁</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="常用命令">常用命令</h3>
+
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./zkServer.sh start | stop 
 ./zkServer.sh status
 ./zkCli.sh 
@@ -133,61 +176,120 @@ ls2 /
 create /node1 /node1-content
 create <span class="nt">-e</span> /node1-temp /node1-content-temp
 </code></pre></div></div>
-<p><a href="https://blog.csdn.net/dandandeshangni/article/details/80558383">https://blog.csdn.net/dandandeshangni/article/details/80558383</a></p>
 
-<h4 id="阿里为什么不用-zookeeper-做服务发现">阿里为什么不用 ZooKeeper 做服务发现？</h4>
+<p>更多命令参考：<a href="https://blog.csdn.net/dandandeshangni/article/details/80558383">https://blog.csdn.net/dandandeshangni/article/details/80558383</a></p>
+
+<hr />
+
+<h3 id="阿里为什么不用-zookeeper-做服务发现">阿里为什么不用 ZooKeeper 做服务发现？</h3>
+
+<p>这是一个经典的架构选型问题，核心原因在于 CAP 定理的取舍：</p>
+
 <ul>
-  <li>基于CP而非AP</li>
-  <li>自身仅仅是主从的集群，而非分布式集群</li>
-  <li>The King Of Coordination for Big Data</li>
+  <li><strong>ZooKeeper 是 CP 系统</strong>：当网络分区发生时，ZK 会优先保证一致性（Consistency），牺牲可用性（Availability）。在服务发现场景中，可用性往往比强一致性更重要——即使拿到的是稍旧的服务列表，也好过完全不可用。</li>
+  <li><strong>ZK 是主从集群，而非分布式集群</strong>：其 Leader-Follower 架构在写入时存在单点瓶颈，不适合高频的服务注册/注销操作。</li>
+  <li><strong>定位不同</strong>：ZooKeeper 的定位是 “The King of Coordination for Big Data”，它更适合做分布式协调（如选举、锁），而非高频的服务发现。</li>
 </ul>
 
-<h4 id="zookeeper的observer">ZooKeeper的observer</h4>
-<p>当ZooKeeper集群中follower的数量很多时，投票过程会成为一个性能瓶颈，为了解决投票造成的压力，于是出现了observer角色。
-observer角色不参与投票，它只是投票结果的”听众”，除此之外，它和follower完全一样，例如能接受读、写请求。就这一个特点，让整个ZooKeeper集群性能大大改善。
-和follower一样，当observer收到客户端的读请求时，会直接从内存数据库中取出数据返回给客户端。
-对于写请求，当写请求发送到某server上后，无论这个节点是follower还是observer，都会将它发送给leader。然后leader组织投票过程，所有server都收到这个proposal(包括observer，因为proposal是广播出去的)，但是leader和follower以及observer通过配置文件，都知道自己是不是observer以及谁是observer。自己是observer的server不参与投票。当leader收集完投票后，将那些observer的server去掉，在剩下的server中计算大多数，如果投票结果达到了大多数，这次写事务就成功，于是leader通知所有的节点(包括observer)，让它们将事务写入事务日志，并提交。</p>
+<p>阿里后来自研了 Nacos，采用 AP 优先的设计，更好地满足了大规模微服务场景下的服务发现需求。</p>
 
-<h4 id="使用-redis-如何设计分布式锁说一下实现思路使用-zk-可以吗如何实现这两种有什-么区别">使用 redis 如何设计分布式锁?说一下实现思路?使用 zk 可以吗?如何实现?这两种有什 么区别?</h4>
+<hr />
+
+<h3 id="observer-角色解决投票瓶颈">Observer 角色：解决投票瓶颈</h3>
+
+<p>当 ZooKeeper 集群中 Follower 数量较多时，每次写操作都需要多数派投票，投票过程会成为性能瓶颈。为此，ZK 引入了 <strong>Observer</strong> 角色。</p>
+
+<p>Observer 的核心特点：</p>
 <ul>
-  <li>redis:
-    <ol>
-      <li>线程 A setnx(上锁的对象,超时时的时间戳 t1)，如果返回 true，获得锁。</li>
-      <li>线程 B 用 get 获取 t1,与当前时间戳比较,判断是是否超时,没超时 false,若超时执行第 3 步;</li>
-      <li>计算新的超时时间 t2,使用 getset 命令返回 t3(该值可能其他线程已经修改过),如果 t1==t3，获得锁，如果 t1!=t3 说明锁被其他线程获取了。</li>
-      <li>获取锁后，处理完业务逻辑，再去判断锁是否超时，如果没超时删除锁，如果已超时， 不用处理(防止删除其他线程的锁)。</li>
-    </ol>
-  </li>
-  <li>zk:
-    <ol>
-      <li>客户端对某个方法加锁时，在 zk 上的与该方法对应的指定节点的目录下，生成一个唯一 的瞬时有序节点 node1;</li>
-      <li>客户端获取该路径下所有已经创建的子节点，如果发现自己创建的 node1 的序号是最小 的，就认为这个客户端获得了锁。</li>
-      <li>如果发现 node1 不是最小的，则监听比自己创建节点序号小的最大的节点，进入等待。</li>
-      <li>获取锁后，处理完逻辑，删除自己创建的 node1 即可。 区别:zk 性能差一些，开销大，实现简单。</li>
-    </ol>
-  </li>
-  <li>redis分布式锁的缺点
-    <ul>
-      <li>比如分布式环境下，A获取到了锁之后，因为线程A的业务代码耗时过长，导致锁的超时时间，锁自动失效。
-后续线程B就意外的持有了锁，之后线程A再次恢复执行，直接用del命令释放锁，这样就错误的将线程B同样Key的锁误删除了。代码耗时过长还是比较常见的场景，假如你的代码中有外部通讯接口调用，就容易产生这样的场景。</li>
-    </ul>
-  </li>
+  <li><strong>不参与投票</strong>：它是投票结果的”听众”，不会增加投票的网络开销</li>
+  <li><strong>功能与 Follower 一致</strong>：能接受读请求（直接从内存数据库返回）和写请求（转发给 Leader）</li>
+  <li><strong>接收 Proposal 广播</strong>：Leader 将 Proposal 广播给所有节点（包括 Observer），但在计算大多数时排除 Observer</li>
+  <li><strong>提交事务</strong>：当投票通过后，Leader 通知所有节点（包括 Observer）写入事务日志并提交</li>
 </ul>
 
-<p><a href="https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg">https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg</a></p>
+<p>通过引入 Observer，可以在不影响写性能的前提下横向扩展读能力，特别适合跨数据中心部署。</p>
 
-<h4 id="zookeeper队列管理文件系统通知机制">Zookeeper队列管理(文件系统、通知机制)</h4>
-<ul>
-  <li>两种类型的队列:
-    <ul>
-      <li>同步队列，当一个队列的成员都聚⻬时，这个队列才可用，否则一直等待所有成员到达。</li>
-      <li>队列按照 FIFO 方式进行入队和出队操作。</li>
-    </ul>
-  </li>
-  <li>第一类，在约定目录下创建临时目录节点，监听节点数目是否是我们要求的数目。</li>
-  <li>第二类，和分布式锁服务中的控制时序场景基本原理一致，入列有编号，出列按编号。在特定的目录下创建 PERSISTENT_SEQUENTIAL节点，创建成功时Watcher通知等待的队列，队列删除序列号最小的节点用以消费。</li>
-  <li>此场景下Zookeeper的znode用于消息存储，znode存储的数据就是消息队列中的消息内容，SEQUENTIAL序列号就是消息的编 号，按序取出即可。由于创建的节点是持久化的，所以不必担心队列消息的丢失问题。</li>
-</ul>
+<hr />
+
+<h3 id="分布式锁对比redis-vs-zookeeper">分布式锁对比：Redis vs ZooKeeper</h3>
+
+<p>分布式锁是分布式系统中的常见需求，Redis 和 ZooKeeper 各有实现方式和适用场景。</p>
+
+<h4 id="redis-实现">Redis 实现</h4>
+
+<ol>
+  <li>线程 A 执行 <code class="language-plaintext highlighter-rouge">SETNX(锁对象, 超时时间戳 t1)</code>，返回 true 则获得锁</li>
+  <li>线程 B 执行 <code class="language-plaintext highlighter-rouge">GET</code> 获取 t1，与当前时间戳比较判断是否超时；未超时则等待</li>
+  <li>若已超时，计算新的超时时间 t2，使用 <code class="language-plaintext highlighter-rouge">GETSET</code> 命令返回 t3。若 <code class="language-plaintext highlighter-rouge">t1 == t3</code> 获得锁，否则说明锁已被其他线程获取</li>
+  <li>获取锁后处理业务逻辑，再判断锁是否超时：未超时则删除锁，已超时则不处理（防止误删其他线程的锁）</li>
+</ol>
+
+<p><strong>Redis 分布式锁的缺陷</strong>：在分布式环境下，线程 A 获取锁后如果业务代码耗时过长（如外部接口调用），锁可能因超时自动失效。此时线程 B 意外获得了锁，而线程 A 恢复执行后直接用 <code class="language-plaintext highlighter-rouge">DEL</code> 释放锁，就会错误地把线程 B 的锁删除。</p>
+
+<h4 id="zookeeper-实现">ZooKeeper 实现</h4>
+
+<ol>
+  <li>客户端在指定节点目录下创建一个<strong>临时顺序节点</strong> node1</li>
+  <li>获取该路径下所有子节点，若 node1 的序号最小，则获得锁</li>
+  <li>若 node1 不是最小的，则监听比自己序号小的最大节点，进入等待</li>
+  <li>业务处理完成后，删除 node1 即释放锁</li>
+</ol>
+
+<h4 id="对比总结">对比总结</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>维度</th>
+      <th>Redis</th>
+      <th>ZooKeeper</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>性能</td>
+      <td>高</td>
+      <td>较低（涉及节点创建和 Watcher）</td>
+    </tr>
+    <tr>
+      <td>实现复杂度</td>
+      <td>较高（需处理超时、误删等边界情况）</td>
+      <td>较低（临时节点 + 顺序节点天然支持）</td>
+    </tr>
+    <tr>
+      <td>可靠性</td>
+      <td>依赖超时机制，存在锁失效风险</td>
+      <td>临时节点与会话绑定，客户端断开自动释放</td>
+    </tr>
+    <tr>
+      <td>适用场景</td>
+      <td>高并发、对性能要求极高</td>
+      <td>对正确性要求极高、并发量适中</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>参考：<a href="https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg">https://mp.weixin.qq.com/s/ouayPydKCWc0FfGlaSnCrg</a></p>
+
+<hr />
+
+<h3 id="队列管理">队列管理</h3>
+
+<p>ZooKeeper 还可以实现两种类型的队列：</p>
+
+<h4 id="同步队列">同步队列</h4>
+<p>当一个队列的成员全部聚齐时队列才可用，否则一直等待。实现方式：在约定目录下创建临时节点，通过 Watcher 监听节点数目是否达到预期。</p>
+
+<h4 id="fifo-队列">FIFO 队列</h4>
+<p>原理与分布式锁的顺序控制类似：在特定目录下创建 <code class="language-plaintext highlighter-rouge">PERSISTENT_SEQUENTIAL</code> 节点，创建成功时 Watcher 通知等待的消费者，消费者删除序列号最小的节点完成消费。</p>
+
+<p>ZNode 存储的数据即消息内容，SEQUENTIAL 序列号即消息编号。由于创建的是持久化节点，不必担心队列消息丢失。不过在实际生产中，ZooKeeper 的队列功能更多用于协调场景，大规模消息队列建议使用 Kafka、RocketMQ 等专业中间件。</p>
+
+<hr />
+
+<h3 id="总结">总结</h3>
+
+<p>ZooKeeper 作为分布式协调服务的标杆，其核心价值在于为分布式系统提供了强一致性的协调原语。理解它的数据模型（DataTree/DataNode/ZKDatabase）、节点类型（临时/持久/顺序）和 Watcher 机制，是用好 ZooKeeper 的基础。在实际架构选型中，需要根据业务场景在 CP 和 AP 之间做出取舍——ZooKeeper 适合对一致性要求极高的协调场景，而服务发现等高可用场景可能更适合 Nacos、Consul 等 AP 优先的方案。</p>
 
     </div>
   </div>
@@ -219,33 +321,33 @@ observer角色不参与投票，它只是投票结果的”听众”，除此之
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

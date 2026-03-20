@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>多路复用select poll epoll - Code & Coffee</title>
+  <title>IO 多路复用深入解析：select、poll 与 epoll 的演进之路 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>多路复用select poll epoll | Code &amp; Coffee</title>
+<title>IO 多路复用深入解析：select、poll 与 epoll 的演进之路 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="多路复用select poll epoll" />
+<meta property="og:title" content="IO 多路复用深入解析：select、poll 与 epoll 的演进之路" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="需要反复看看 https://www.cnblogs.com/itxiaok/p/10357825.html 相比 select ，poll 有这些优点： 由于 poll 在 pollfd 里用 int fd 来表示文件描述符而不像 select 里用的 fd_set 来分别表示描述符，所以没有必须小于 1024 的限制，也没有数量限制； 由于 poll 用 events 表示期待的事件，通过修改 revents 来表示发生的事件，所以不需要像 select 在每次调用前重新设置描述符和期待的事件。 除此之外，poll 和 select 几乎相同。在 poll 返回后，需要遍历 fdarray 来检查各个 pollfd 里的 revents 是否发生了期待的事件；每次调用 poll 时， 把 fdarray 复制到内核空间。在描述符太多而每次准备好的较少时，poll 有同样的性能问题。 epoll 解决了 poll 和 select 的问题： 只在 epoll_ctl 的时候把数据复制到内核空间，这保证了每个描述符和事件一定只会被复制到内核空间一次；每次调用 epoll_wait 都不会复制新数据到内核空间。相比之下，select 每次调用都会把三个 fd_set 复制一遍；poll 每次调用都会把 fdarray 复制一遍。 epoll_wait 返回 n ，那么只需要做 n 次循环，可以保证遍历的每一次都是有意义的。相比之下，select 需要做至少 n 次至多 maxfdp1 次循环；poll 需要遍历完 fdarray 即做 nfds 次循环。 在内部实现上，epoll 使用了回调的方法。调用 epoll_ctl 时，就是注册了一个事件：在集合中放入文件描述符以及事件数据，并且加上一个回调函数。一旦文件描述符上的对应事件发生，就会调用回调函数，这个函数会把这个文件描述符加入到就绪队列上。当你调用 epoll_wait 时，它只是在查看就绪队列上是否有内容，有的话就返回给你的程序。select() poll() epoll_wait() 三个函数在操作系统看来，都是睡眠一会儿然后判断一会儿的循环，但是 select 和 poll 在醒着的时候要遍历整个文件描述符集合，而 epoll_wait 只是看看就绪队列是否为空而已。这是 epoll 高性能的理由，使得其 I/O 的效率不会像使用轮询的 select/poll 随着描述符增加而大大降低。 Epoll的机理，我们便能很容易掌握epoll的用法了。一句话描述就是：三步曲。 epoll_create()系统调用。此调用返回一个句柄，之后所有的使用都依靠这个句柄来标识。 struct rb_root rbr; 红黑树的根节点，这颗树中存储着所有添加到epoll中的需要监控的事件 struct list_head rdlist; 双链表中则存放着将要通过epoll_wait返回给用户的满足条件的事件 epoll_ctl()系统调用。通过此调用向epoll对象中添加、删除、修改感兴趣的事件，返回0标识成功，返回-1表示失败。 调用epoll_ctl向epoll对象中添加这100万个连接的套接字 而所有添加到epoll中的事件都会与设备(网卡)驱动程序建立回调关系，也就是说，当相应的事件发生时会调用这个回调方法。这个回调方法在内核中叫ep_poll_callback,它会将发生的事件添加到rdlist双链表中。 epoll_wait()系统调用。通过此调用收集在epoll监控中已经发生的事件。 再次总结 历史 select出现是1984年在BSD里面实现的(为了减少数据拷贝带来的性能损坏，内核对被监控的fd_set集合大小做了限制，并且这个是通过宏控制的，大小不可改变(限制为1024)) 14年之后也就是1997年才实现了poll，其实拖那么久也不是效率问题， 而是那个时代的硬件实在太弱，一台服务器处理1千多个链接简直就是神一样的存在了，select很长段时间已经满足需求 2002, 大神 Davide Libenzi 实现了epoll 区别 操作方式：select/poll依靠遍历，而epll靠回调 IO效率：由于操作方式，select/poll时间复杂度是O(n)，epoll是O(1) 数据结构：select(数组)、poll(链表)、epoll(哈希表) 最大连接数：由于数据结构的原因，poll/epoll突破了数量的限制，而select只支持1024(2048) fd拷贝：select/poll都需要把fd集合从用户态拷贝到内核态，epoll没有描述符个数限制，使用一个文件描述符管理多个描述符，将用户关心的文件描述符的事件存放到内核的一个事件表中，这样在用户空间和内核空间的copy只需一次。 epoll是通过内核于用户空间mmap同一块内存实现了节省拷贝的动作。 源代码 // select int select(int maxfdp1,fd_set *readset,fd_set *writeset,fd_set *exceptset,const struct timeval *timeout); // 主要问题在于在用户态创建fd_set然后拷贝到内核态，再由内核态装配数据后，在用户态中进行遍历 // 并且每次都需要重新初始化fd_set // poll int poll(struct pollfd *fds, nfds_t nfds, int timeout); typedef struct pollfd { int fd; // 需要被检测或选择的文件描述符 short events; // 对文件描述符fd上感兴趣的事件 short revents; // 文件描述符fd上当前实际发生的事件 } // epoll int epoll_create(int size); // 函数创建一个epoll句柄，参数size表明内核要监听的描述符数量。调用成功时返回一个epoll句柄描述符，失败时返回-1。 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event); // epfd 表示epoll句柄 // op 表示fd操作类型，有如下3种 // EPOLL_CTL_ADD 注册新的fd到epfd中 // EPOLL_CTL_MOD 修改已注册的fd的监听事件 // EPOLL_CTL_DEL 从epfd中删除一个fd // fd 是要监听的描述符 // event 表示要监听的事件 struct epoll_event { __uint32_t events; /* Epoll events */ epoll_data_t data; /* User data variable */ }; typedef union epoll_data { void *ptr; int fd; __uint32_t u32; __uint64_t u64; } epoll_data_t; int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout); // epfd 是epoll句柄 // events 表示从内核得到的就绪事件集合 // maxevents 告诉内核events的大小 // timeout 表示等待的超时事件 参考 IO多路复用的三种机制Select，Poll，Epoll https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA IO模型及select、poll、epoll和kqueue的区别 https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A Select，Poll，Epoll详解 https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg 大量代码 深入分析select&amp;poll&amp;epoll原理 https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g 简单总结三者区别 一切都与历史有关，都是历史发展造成差异 select最早出现（1983年在BSD里实现），由以下几个特点 无论效率如何确实实现了多路复用 原理也就是内核态监听最多1024个链接，任意一个链接有数据了，通知用户态去遍历所有链接获取数据 由于编程的原因把1024写在了linux的头文件FD_SETSIZE中 由于编程的原因数据直接写到了参数的地址上，导致需要每次需要重置参数 poll 在1997年推出，修复select的两个问题（也是历史原因，当时机器硬件性能不高没有必要修复） 最大监听连接数修改为在 /proc/sys/fs/file-max 获取 内核通过修改pollfd.revents反馈其中的就绪时间 仍然需要遍历，效率仍然低，时间复杂度O(n) epoll，革新以上两种方式，内核只返回就绪的那一个链接，不需要遍历，所以效率提升了 epoll其实也需要调用epoll_wait不断轮询就绪链表，期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。 epoll对文件描述符的操作有两种模式：LT（level trigger）和ET（edge trigger）。LT模式是默认模式，LT模式与ET模式的区别如下： LT模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。 ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。 LT模式，LT(level triggered)是缺省的工作方式，并且同时支持block和no-block socket。在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，内核还是会继续通知你的。 ET模式，ET(edge-triggered)是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知，直到你做了某些操作导致那个文件描述符不再为就绪状态了(比如，你在发送，接收或者接收请求，或者发送接收的数据少于一定量时导致了一个EWOULDBLOCK 错误）。但是请注意，如果一直不对这个fd作IO操作(从而导致它再次变成未就绪)，内核不会发送更多的通知(only once)。ET模式在很大程度上减少了epoll事件被重复触发的次数，因此效率要比LT模式高。epoll工作在ET模式的时候，必须使用非阻塞套接口，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。 在select/poll中，进程只有在调用一定的方法后，内核才对所有监视的文件描述符进行扫描，而epoll事先通过epoll_ctl()来注册一个文件描述符，一旦基于某个文件描述符就绪时，内核会采用类似callback的回调机制，迅速激活这个文件描述符，当进程调用epoll_wait()时便得到通知。(此处去掉了遍历文件描述符，而是通过监听回调的的机制。这正是epoll的魅力所在。) 参考资料 https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A C10K到C10M http://www.52im.net/thread-561-1-1.html" />
-<meta property="og:description" content="需要反复看看 https://www.cnblogs.com/itxiaok/p/10357825.html 相比 select ，poll 有这些优点： 由于 poll 在 pollfd 里用 int fd 来表示文件描述符而不像 select 里用的 fd_set 来分别表示描述符，所以没有必须小于 1024 的限制，也没有数量限制； 由于 poll 用 events 表示期待的事件，通过修改 revents 来表示发生的事件，所以不需要像 select 在每次调用前重新设置描述符和期待的事件。 除此之外，poll 和 select 几乎相同。在 poll 返回后，需要遍历 fdarray 来检查各个 pollfd 里的 revents 是否发生了期待的事件；每次调用 poll 时， 把 fdarray 复制到内核空间。在描述符太多而每次准备好的较少时，poll 有同样的性能问题。 epoll 解决了 poll 和 select 的问题： 只在 epoll_ctl 的时候把数据复制到内核空间，这保证了每个描述符和事件一定只会被复制到内核空间一次；每次调用 epoll_wait 都不会复制新数据到内核空间。相比之下，select 每次调用都会把三个 fd_set 复制一遍；poll 每次调用都会把 fdarray 复制一遍。 epoll_wait 返回 n ，那么只需要做 n 次循环，可以保证遍历的每一次都是有意义的。相比之下，select 需要做至少 n 次至多 maxfdp1 次循环；poll 需要遍历完 fdarray 即做 nfds 次循环。 在内部实现上，epoll 使用了回调的方法。调用 epoll_ctl 时，就是注册了一个事件：在集合中放入文件描述符以及事件数据，并且加上一个回调函数。一旦文件描述符上的对应事件发生，就会调用回调函数，这个函数会把这个文件描述符加入到就绪队列上。当你调用 epoll_wait 时，它只是在查看就绪队列上是否有内容，有的话就返回给你的程序。select() poll() epoll_wait() 三个函数在操作系统看来，都是睡眠一会儿然后判断一会儿的循环，但是 select 和 poll 在醒着的时候要遍历整个文件描述符集合，而 epoll_wait 只是看看就绪队列是否为空而已。这是 epoll 高性能的理由，使得其 I/O 的效率不会像使用轮询的 select/poll 随着描述符增加而大大降低。 Epoll的机理，我们便能很容易掌握epoll的用法了。一句话描述就是：三步曲。 epoll_create()系统调用。此调用返回一个句柄，之后所有的使用都依靠这个句柄来标识。 struct rb_root rbr; 红黑树的根节点，这颗树中存储着所有添加到epoll中的需要监控的事件 struct list_head rdlist; 双链表中则存放着将要通过epoll_wait返回给用户的满足条件的事件 epoll_ctl()系统调用。通过此调用向epoll对象中添加、删除、修改感兴趣的事件，返回0标识成功，返回-1表示失败。 调用epoll_ctl向epoll对象中添加这100万个连接的套接字 而所有添加到epoll中的事件都会与设备(网卡)驱动程序建立回调关系，也就是说，当相应的事件发生时会调用这个回调方法。这个回调方法在内核中叫ep_poll_callback,它会将发生的事件添加到rdlist双链表中。 epoll_wait()系统调用。通过此调用收集在epoll监控中已经发生的事件。 再次总结 历史 select出现是1984年在BSD里面实现的(为了减少数据拷贝带来的性能损坏，内核对被监控的fd_set集合大小做了限制，并且这个是通过宏控制的，大小不可改变(限制为1024)) 14年之后也就是1997年才实现了poll，其实拖那么久也不是效率问题， 而是那个时代的硬件实在太弱，一台服务器处理1千多个链接简直就是神一样的存在了，select很长段时间已经满足需求 2002, 大神 Davide Libenzi 实现了epoll 区别 操作方式：select/poll依靠遍历，而epll靠回调 IO效率：由于操作方式，select/poll时间复杂度是O(n)，epoll是O(1) 数据结构：select(数组)、poll(链表)、epoll(哈希表) 最大连接数：由于数据结构的原因，poll/epoll突破了数量的限制，而select只支持1024(2048) fd拷贝：select/poll都需要把fd集合从用户态拷贝到内核态，epoll没有描述符个数限制，使用一个文件描述符管理多个描述符，将用户关心的文件描述符的事件存放到内核的一个事件表中，这样在用户空间和内核空间的copy只需一次。 epoll是通过内核于用户空间mmap同一块内存实现了节省拷贝的动作。 源代码 // select int select(int maxfdp1,fd_set *readset,fd_set *writeset,fd_set *exceptset,const struct timeval *timeout); // 主要问题在于在用户态创建fd_set然后拷贝到内核态，再由内核态装配数据后，在用户态中进行遍历 // 并且每次都需要重新初始化fd_set // poll int poll(struct pollfd *fds, nfds_t nfds, int timeout); typedef struct pollfd { int fd; // 需要被检测或选择的文件描述符 short events; // 对文件描述符fd上感兴趣的事件 short revents; // 文件描述符fd上当前实际发生的事件 } // epoll int epoll_create(int size); // 函数创建一个epoll句柄，参数size表明内核要监听的描述符数量。调用成功时返回一个epoll句柄描述符，失败时返回-1。 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event); // epfd 表示epoll句柄 // op 表示fd操作类型，有如下3种 // EPOLL_CTL_ADD 注册新的fd到epfd中 // EPOLL_CTL_MOD 修改已注册的fd的监听事件 // EPOLL_CTL_DEL 从epfd中删除一个fd // fd 是要监听的描述符 // event 表示要监听的事件 struct epoll_event { __uint32_t events; /* Epoll events */ epoll_data_t data; /* User data variable */ }; typedef union epoll_data { void *ptr; int fd; __uint32_t u32; __uint64_t u64; } epoll_data_t; int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout); // epfd 是epoll句柄 // events 表示从内核得到的就绪事件集合 // maxevents 告诉内核events的大小 // timeout 表示等待的超时事件 参考 IO多路复用的三种机制Select，Poll，Epoll https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA IO模型及select、poll、epoll和kqueue的区别 https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A Select，Poll，Epoll详解 https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg 大量代码 深入分析select&amp;poll&amp;epoll原理 https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g 简单总结三者区别 一切都与历史有关，都是历史发展造成差异 select最早出现（1983年在BSD里实现），由以下几个特点 无论效率如何确实实现了多路复用 原理也就是内核态监听最多1024个链接，任意一个链接有数据了，通知用户态去遍历所有链接获取数据 由于编程的原因把1024写在了linux的头文件FD_SETSIZE中 由于编程的原因数据直接写到了参数的地址上，导致需要每次需要重置参数 poll 在1997年推出，修复select的两个问题（也是历史原因，当时机器硬件性能不高没有必要修复） 最大监听连接数修改为在 /proc/sys/fs/file-max 获取 内核通过修改pollfd.revents反馈其中的就绪时间 仍然需要遍历，效率仍然低，时间复杂度O(n) epoll，革新以上两种方式，内核只返回就绪的那一个链接，不需要遍历，所以效率提升了 epoll其实也需要调用epoll_wait不断轮询就绪链表，期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。 epoll对文件描述符的操作有两种模式：LT（level trigger）和ET（edge trigger）。LT模式是默认模式，LT模式与ET模式的区别如下： LT模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。 ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。 LT模式，LT(level triggered)是缺省的工作方式，并且同时支持block和no-block socket。在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，内核还是会继续通知你的。 ET模式，ET(edge-triggered)是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知，直到你做了某些操作导致那个文件描述符不再为就绪状态了(比如，你在发送，接收或者接收请求，或者发送接收的数据少于一定量时导致了一个EWOULDBLOCK 错误）。但是请注意，如果一直不对这个fd作IO操作(从而导致它再次变成未就绪)，内核不会发送更多的通知(only once)。ET模式在很大程度上减少了epoll事件被重复触发的次数，因此效率要比LT模式高。epoll工作在ET模式的时候，必须使用非阻塞套接口，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。 在select/poll中，进程只有在调用一定的方法后，内核才对所有监视的文件描述符进行扫描，而epoll事先通过epoll_ctl()来注册一个文件描述符，一旦基于某个文件描述符就绪时，内核会采用类似callback的回调机制，迅速激活这个文件描述符，当进程调用epoll_wait()时便得到通知。(此处去掉了遍历文件描述符，而是通过监听回调的的机制。这正是epoll的魅力所在。) 参考资料 https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A C10K到C10M http://www.52im.net/thread-561-1-1.html" />
+<meta name="description" content="IO 多路复用是高性能网络编程的核心技术，它允许单个线程同时监视多个文件描述符（socket），在任何一个就绪时及时响应。从 1984 年的 select 到 2002 年的 epoll，IO 多路复用机制经历了近 20 年的演进。本文将深入剖析 select、poll、epoll 三种机制的原理、区别与实现细节。 一、历史背景 理解三者的差异，首先要了解它们诞生的历史背景： 1984 年：select 在 BSD 中实现。当时的硬件性能有限，一台服务器能处理 1000 多个连接就已经是”神一样的存在”，select 完全能满足需求。 1997 年：时隔 14 年，poll 问世。拖了这么久并非效率问题，而是当时的硬件水平使得 select 的限制并不构成瓶颈。 2002 年：大神 Davide Libenzi 实现了 epoll，彻底革新了 IO 多路复用的性能表现。 二、select 机制 select 是最早的 IO 多路复用实现，其核心思想是：内核监听一组文件描述符，当其中任意一个就绪时，通知用户态程序去遍历检查。 2.1 函数签名 int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, const struct timeval *timeout); 2.2 工作原理 用户态创建 fd_set，设置需要监听的文件描述符 将 fd_set 拷贝到内核态 内核遍历所有 fd，检查是否有事件就绪 如果有就绪事件，内核将结果写入 fd_set 并返回 用户态遍历 fd_set，找出就绪的文件描述符 2.3 select 的局限 数量限制：由于 fd_set 的实现方式（位图数组），最多只能监听 1024 个文件描述符（该值在 Linux 头文件 FD_SETSIZE 中写死，不可运行时修改） 每次重置：由于内核直接修改了 fd_set 参数的内存地址，每次调用前都需要重新初始化 fd_set 遍历开销：返回后需要遍历所有 fd（至少 n 次，至多 maxfdp1 次），而不仅仅是就绪的那些 拷贝开销：每次调用都会将三个 fd_set 完整地从用户态拷贝到内核态 三、poll 机制 poll 在 1997 年推出，修复了 select 的两个历史遗留问题。 3.1 函数签名 int poll(struct pollfd *fds, nfds_t nfds, int timeout); typedef struct pollfd { int fd; // 需要被检测或选择的文件描述符 short events; // 对文件描述符 fd 上感兴趣的事件 short revents; // 文件描述符 fd 上当前实际发生的事件 }; 3.2 相比 select 的改进 突破数量限制：poll 使用 int fd 代替 fd_set 来表示文件描述符，没有 1024 的硬编码限制。最大连接数可在 /proc/sys/fs/file-max 获取。 无需重置参数：poll 用 events 表示期待的事件，通过修改 revents 来反馈发生的事件，两个字段分离，无需每次重新设置。 3.3 poll 的不足 除了上述两点改进外，poll 和 select 几乎相同： 返回后仍然需要遍历整个 pollfd 数组（nfds 次循环），时间复杂度仍为 O(n) 每次调用仍需将整个 fdarray 从用户态拷贝到内核态 在描述符很多但每次就绪的很少时，存在同样的性能问题 四、epoll 机制 epoll 是 Linux 2.6 内核引入的革命性 IO 多路复用方案，从根本上解决了 select 和 poll 的性能瓶颈。 4.1 三步曲 API epoll 的使用分为三个系统调用： 1. epoll_create() —— 创建 epoll 实例 int epoll_create(int size); 返回一个 epoll 句柄，后续操作都依赖这个句柄。其内部维护两个关键数据结构： struct rb_root rbr：红黑树的根节点，存储所有添加到 epoll 中的需要监控的事件 struct list_head rdlist：双链表，存放将要通过 epoll_wait 返回给用户的就绪事件 2. epoll_ctl() —— 管理事件 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event); 通过此调用向 epoll 对象中添加、删除、修改感兴趣的事件。参数说明： epfd：epoll 句柄 op：操作类型（EPOLL_CTL_ADD 注册 / EPOLL_CTL_MOD 修改 / EPOLL_CTL_DEL 删除） fd：要监听的描述符 event：要监听的事件 struct epoll_event { __uint32_t events; /* Epoll events */ epoll_data_t data; /* User data variable */ }; typedef union epoll_data { void *ptr; int fd; __uint32_t u32; __uint64_t u64; } epoll_data_t; 调用 epoll_ctl 时，会为每个文件描述符注册一个回调函数（内核中叫 ep_poll_callback）。一旦对应事件发生，回调函数会将该文件描述符加入到就绪链表（rdlist）中。 3. epoll_wait() —— 等待就绪事件 int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout); 只需检查就绪队列是否为空。如果返回值为 n，则只需做 n 次循环，保证每一次遍历都是有意义的。 4.2 epoll 为什么高性能 epoll 的性能优势来自三个关键设计： 减少数据拷贝：只在 epoll_ctl 时将数据拷贝到内核空间，保证每个描述符只被拷贝一次。epoll_wait 调用时不需要复制新数据。而 select 和 poll 每次调用都要重新拷贝。 避免无效遍历：epoll_wait 返回 n 就只遍历 n 个就绪事件，而不是像 select/poll 那样遍历所有注册的描述符。 回调机制：select/poll 醒来时要遍历整个文件描述符集合，而 epoll_wait 只需查看就绪队列是否为空。epoll 通过内核与用户空间 mmap 同一块内存，进一步减少了拷贝开销。 4.3 LT 模式与 ET 模式 epoll 对文件描述符的操作有两种触发模式： LT（Level Trigger，水平触发）—— 默认模式 当 epoll_wait 检测到事件发生并通知应用程序后，应用程序可以不立即处理 下次调用 epoll_wait 时，会再次通知该事件 同时支持阻塞和非阻塞 socket ET（Edge Trigger，边沿触发）—— 高速模式 当 epoll_wait 检测到事件发生并通知应用程序后，应用程序必须立即处理 如果不处理，下次调用 epoll_wait 时不会再次通知 只支持非阻塞 socket（必须使用非阻塞套接口，避免阻塞读/写操作饿死其他文件描述符） ET 模式在很大程度上减少了 epoll 事件被重复触发的次数，因此效率比 LT 模式更高。但使用门槛也更高——必须确保每次通知时都将数据读取/写入完毕。 五、三者对比总结 维度 select poll epoll 诞生时间 1984 1997 2002 操作方式 遍历 遍历 回调 IO 效率 O(n) O(n) O(1) 底层数据结构 数组（位图） 链表 红黑树 + 就绪链表 最大连接数 1024（FD_SETSIZE 硬编码） 无限制（取决于系统 file-max） 无限制 fd 拷贝 每次调用全量拷贝 每次调用全量拷贝 epoll_ctl 时一次性注册，mmap 共享内存 参数重置 需要每次重新设置 不需要（events/revents 分离） 不需要 一切差异都与历史发展有关。select 在 1984 年实现了多路复用的基本能力；poll 在 1997 年修复了数量限制和参数重置的问题；epoll 在 2002 年通过回调机制和 mmap 共享内存，将 IO 多路复用的性能推向了新的高度。 参考资料 IO多路复用的三种机制Select，Poll，Epoll https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA IO模型及select、poll、epoll和kqueue的区别 https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A Select，Poll，Epoll详解 https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg 大量代码 深入分析select&amp;poll&amp;epoll原理 https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA C10K到C10M http://www.52im.net/thread-561-1-1.html https://www.cnblogs.com/itxiaok/p/10357825.html" />
+<meta property="og:description" content="IO 多路复用是高性能网络编程的核心技术，它允许单个线程同时监视多个文件描述符（socket），在任何一个就绪时及时响应。从 1984 年的 select 到 2002 年的 epoll，IO 多路复用机制经历了近 20 年的演进。本文将深入剖析 select、poll、epoll 三种机制的原理、区别与实现细节。 一、历史背景 理解三者的差异，首先要了解它们诞生的历史背景： 1984 年：select 在 BSD 中实现。当时的硬件性能有限，一台服务器能处理 1000 多个连接就已经是”神一样的存在”，select 完全能满足需求。 1997 年：时隔 14 年，poll 问世。拖了这么久并非效率问题，而是当时的硬件水平使得 select 的限制并不构成瓶颈。 2002 年：大神 Davide Libenzi 实现了 epoll，彻底革新了 IO 多路复用的性能表现。 二、select 机制 select 是最早的 IO 多路复用实现，其核心思想是：内核监听一组文件描述符，当其中任意一个就绪时，通知用户态程序去遍历检查。 2.1 函数签名 int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, const struct timeval *timeout); 2.2 工作原理 用户态创建 fd_set，设置需要监听的文件描述符 将 fd_set 拷贝到内核态 内核遍历所有 fd，检查是否有事件就绪 如果有就绪事件，内核将结果写入 fd_set 并返回 用户态遍历 fd_set，找出就绪的文件描述符 2.3 select 的局限 数量限制：由于 fd_set 的实现方式（位图数组），最多只能监听 1024 个文件描述符（该值在 Linux 头文件 FD_SETSIZE 中写死，不可运行时修改） 每次重置：由于内核直接修改了 fd_set 参数的内存地址，每次调用前都需要重新初始化 fd_set 遍历开销：返回后需要遍历所有 fd（至少 n 次，至多 maxfdp1 次），而不仅仅是就绪的那些 拷贝开销：每次调用都会将三个 fd_set 完整地从用户态拷贝到内核态 三、poll 机制 poll 在 1997 年推出，修复了 select 的两个历史遗留问题。 3.1 函数签名 int poll(struct pollfd *fds, nfds_t nfds, int timeout); typedef struct pollfd { int fd; // 需要被检测或选择的文件描述符 short events; // 对文件描述符 fd 上感兴趣的事件 short revents; // 文件描述符 fd 上当前实际发生的事件 }; 3.2 相比 select 的改进 突破数量限制：poll 使用 int fd 代替 fd_set 来表示文件描述符，没有 1024 的硬编码限制。最大连接数可在 /proc/sys/fs/file-max 获取。 无需重置参数：poll 用 events 表示期待的事件，通过修改 revents 来反馈发生的事件，两个字段分离，无需每次重新设置。 3.3 poll 的不足 除了上述两点改进外，poll 和 select 几乎相同： 返回后仍然需要遍历整个 pollfd 数组（nfds 次循环），时间复杂度仍为 O(n) 每次调用仍需将整个 fdarray 从用户态拷贝到内核态 在描述符很多但每次就绪的很少时，存在同样的性能问题 四、epoll 机制 epoll 是 Linux 2.6 内核引入的革命性 IO 多路复用方案，从根本上解决了 select 和 poll 的性能瓶颈。 4.1 三步曲 API epoll 的使用分为三个系统调用： 1. epoll_create() —— 创建 epoll 实例 int epoll_create(int size); 返回一个 epoll 句柄，后续操作都依赖这个句柄。其内部维护两个关键数据结构： struct rb_root rbr：红黑树的根节点，存储所有添加到 epoll 中的需要监控的事件 struct list_head rdlist：双链表，存放将要通过 epoll_wait 返回给用户的就绪事件 2. epoll_ctl() —— 管理事件 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event); 通过此调用向 epoll 对象中添加、删除、修改感兴趣的事件。参数说明： epfd：epoll 句柄 op：操作类型（EPOLL_CTL_ADD 注册 / EPOLL_CTL_MOD 修改 / EPOLL_CTL_DEL 删除） fd：要监听的描述符 event：要监听的事件 struct epoll_event { __uint32_t events; /* Epoll events */ epoll_data_t data; /* User data variable */ }; typedef union epoll_data { void *ptr; int fd; __uint32_t u32; __uint64_t u64; } epoll_data_t; 调用 epoll_ctl 时，会为每个文件描述符注册一个回调函数（内核中叫 ep_poll_callback）。一旦对应事件发生，回调函数会将该文件描述符加入到就绪链表（rdlist）中。 3. epoll_wait() —— 等待就绪事件 int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout); 只需检查就绪队列是否为空。如果返回值为 n，则只需做 n 次循环，保证每一次遍历都是有意义的。 4.2 epoll 为什么高性能 epoll 的性能优势来自三个关键设计： 减少数据拷贝：只在 epoll_ctl 时将数据拷贝到内核空间，保证每个描述符只被拷贝一次。epoll_wait 调用时不需要复制新数据。而 select 和 poll 每次调用都要重新拷贝。 避免无效遍历：epoll_wait 返回 n 就只遍历 n 个就绪事件，而不是像 select/poll 那样遍历所有注册的描述符。 回调机制：select/poll 醒来时要遍历整个文件描述符集合，而 epoll_wait 只需查看就绪队列是否为空。epoll 通过内核与用户空间 mmap 同一块内存，进一步减少了拷贝开销。 4.3 LT 模式与 ET 模式 epoll 对文件描述符的操作有两种触发模式： LT（Level Trigger，水平触发）—— 默认模式 当 epoll_wait 检测到事件发生并通知应用程序后，应用程序可以不立即处理 下次调用 epoll_wait 时，会再次通知该事件 同时支持阻塞和非阻塞 socket ET（Edge Trigger，边沿触发）—— 高速模式 当 epoll_wait 检测到事件发生并通知应用程序后，应用程序必须立即处理 如果不处理，下次调用 epoll_wait 时不会再次通知 只支持非阻塞 socket（必须使用非阻塞套接口，避免阻塞读/写操作饿死其他文件描述符） ET 模式在很大程度上减少了 epoll 事件被重复触发的次数，因此效率比 LT 模式更高。但使用门槛也更高——必须确保每次通知时都将数据读取/写入完毕。 五、三者对比总结 维度 select poll epoll 诞生时间 1984 1997 2002 操作方式 遍历 遍历 回调 IO 效率 O(n) O(n) O(1) 底层数据结构 数组（位图） 链表 红黑树 + 就绪链表 最大连接数 1024（FD_SETSIZE 硬编码） 无限制（取决于系统 file-max） 无限制 fd 拷贝 每次调用全量拷贝 每次调用全量拷贝 epoll_ctl 时一次性注册，mmap 共享内存 参数重置 需要每次重新设置 不需要（events/revents 分离） 不需要 一切差异都与历史发展有关。select 在 1984 年实现了多路复用的基本能力；poll 在 1997 年修复了数量限制和参数重置的问题；epoll 在 2002 年通过回调机制和 mmap 共享内存，将 IO 多路复用的性能推向了新的高度。 参考资料 IO多路复用的三种机制Select，Poll，Epoll https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA IO模型及select、poll、epoll和kqueue的区别 https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A Select，Poll，Epoll详解 https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg 大量代码 深入分析select&amp;poll&amp;epoll原理 https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA C10K到C10M http://www.52im.net/thread-561-1-1.html https://www.cnblogs.com/itxiaok/p/10357825.html" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-11-12T10:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="多路复用select poll epoll" />
+<meta property="twitter:title" content="IO 多路复用深入解析：select、poll 与 epoll 的演进之路" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"需要反复看看 https://www.cnblogs.com/itxiaok/p/10357825.html 相比 select ，poll 有这些优点： 由于 poll 在 pollfd 里用 int fd 来表示文件描述符而不像 select 里用的 fd_set 来分别表示描述符，所以没有必须小于 1024 的限制，也没有数量限制； 由于 poll 用 events 表示期待的事件，通过修改 revents 来表示发生的事件，所以不需要像 select 在每次调用前重新设置描述符和期待的事件。 除此之外，poll 和 select 几乎相同。在 poll 返回后，需要遍历 fdarray 来检查各个 pollfd 里的 revents 是否发生了期待的事件；每次调用 poll 时， 把 fdarray 复制到内核空间。在描述符太多而每次准备好的较少时，poll 有同样的性能问题。 epoll 解决了 poll 和 select 的问题： 只在 epoll_ctl 的时候把数据复制到内核空间，这保证了每个描述符和事件一定只会被复制到内核空间一次；每次调用 epoll_wait 都不会复制新数据到内核空间。相比之下，select 每次调用都会把三个 fd_set 复制一遍；poll 每次调用都会把 fdarray 复制一遍。 epoll_wait 返回 n ，那么只需要做 n 次循环，可以保证遍历的每一次都是有意义的。相比之下，select 需要做至少 n 次至多 maxfdp1 次循环；poll 需要遍历完 fdarray 即做 nfds 次循环。 在内部实现上，epoll 使用了回调的方法。调用 epoll_ctl 时，就是注册了一个事件：在集合中放入文件描述符以及事件数据，并且加上一个回调函数。一旦文件描述符上的对应事件发生，就会调用回调函数，这个函数会把这个文件描述符加入到就绪队列上。当你调用 epoll_wait 时，它只是在查看就绪队列上是否有内容，有的话就返回给你的程序。select() poll() epoll_wait() 三个函数在操作系统看来，都是睡眠一会儿然后判断一会儿的循环，但是 select 和 poll 在醒着的时候要遍历整个文件描述符集合，而 epoll_wait 只是看看就绪队列是否为空而已。这是 epoll 高性能的理由，使得其 I/O 的效率不会像使用轮询的 select/poll 随着描述符增加而大大降低。 Epoll的机理，我们便能很容易掌握epoll的用法了。一句话描述就是：三步曲。 epoll_create()系统调用。此调用返回一个句柄，之后所有的使用都依靠这个句柄来标识。 struct rb_root rbr; 红黑树的根节点，这颗树中存储着所有添加到epoll中的需要监控的事件 struct list_head rdlist; 双链表中则存放着将要通过epoll_wait返回给用户的满足条件的事件 epoll_ctl()系统调用。通过此调用向epoll对象中添加、删除、修改感兴趣的事件，返回0标识成功，返回-1表示失败。 调用epoll_ctl向epoll对象中添加这100万个连接的套接字 而所有添加到epoll中的事件都会与设备(网卡)驱动程序建立回调关系，也就是说，当相应的事件发生时会调用这个回调方法。这个回调方法在内核中叫ep_poll_callback,它会将发生的事件添加到rdlist双链表中。 epoll_wait()系统调用。通过此调用收集在epoll监控中已经发生的事件。 再次总结 历史 select出现是1984年在BSD里面实现的(为了减少数据拷贝带来的性能损坏，内核对被监控的fd_set集合大小做了限制，并且这个是通过宏控制的，大小不可改变(限制为1024)) 14年之后也就是1997年才实现了poll，其实拖那么久也不是效率问题， 而是那个时代的硬件实在太弱，一台服务器处理1千多个链接简直就是神一样的存在了，select很长段时间已经满足需求 2002, 大神 Davide Libenzi 实现了epoll 区别 操作方式：select/poll依靠遍历，而epll靠回调 IO效率：由于操作方式，select/poll时间复杂度是O(n)，epoll是O(1) 数据结构：select(数组)、poll(链表)、epoll(哈希表) 最大连接数：由于数据结构的原因，poll/epoll突破了数量的限制，而select只支持1024(2048) fd拷贝：select/poll都需要把fd集合从用户态拷贝到内核态，epoll没有描述符个数限制，使用一个文件描述符管理多个描述符，将用户关心的文件描述符的事件存放到内核的一个事件表中，这样在用户空间和内核空间的copy只需一次。 epoll是通过内核于用户空间mmap同一块内存实现了节省拷贝的动作。 源代码 // select int select(int maxfdp1,fd_set *readset,fd_set *writeset,fd_set *exceptset,const struct timeval *timeout); // 主要问题在于在用户态创建fd_set然后拷贝到内核态，再由内核态装配数据后，在用户态中进行遍历 // 并且每次都需要重新初始化fd_set // poll int poll(struct pollfd *fds, nfds_t nfds, int timeout); typedef struct pollfd { int fd; // 需要被检测或选择的文件描述符 short events; // 对文件描述符fd上感兴趣的事件 short revents; // 文件描述符fd上当前实际发生的事件 } // epoll int epoll_create(int size); // 函数创建一个epoll句柄，参数size表明内核要监听的描述符数量。调用成功时返回一个epoll句柄描述符，失败时返回-1。 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event); // epfd 表示epoll句柄 // op 表示fd操作类型，有如下3种 // EPOLL_CTL_ADD 注册新的fd到epfd中 // EPOLL_CTL_MOD 修改已注册的fd的监听事件 // EPOLL_CTL_DEL 从epfd中删除一个fd // fd 是要监听的描述符 // event 表示要监听的事件 struct epoll_event { __uint32_t events; /* Epoll events */ epoll_data_t data; /* User data variable */ }; typedef union epoll_data { void *ptr; int fd; __uint32_t u32; __uint64_t u64; } epoll_data_t; int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout); // epfd 是epoll句柄 // events 表示从内核得到的就绪事件集合 // maxevents 告诉内核events的大小 // timeout 表示等待的超时事件 参考 IO多路复用的三种机制Select，Poll，Epoll https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA IO模型及select、poll、epoll和kqueue的区别 https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A Select，Poll，Epoll详解 https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg 大量代码 深入分析select&amp;poll&amp;epoll原理 https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g 简单总结三者区别 一切都与历史有关，都是历史发展造成差异 select最早出现（1983年在BSD里实现），由以下几个特点 无论效率如何确实实现了多路复用 原理也就是内核态监听最多1024个链接，任意一个链接有数据了，通知用户态去遍历所有链接获取数据 由于编程的原因把1024写在了linux的头文件FD_SETSIZE中 由于编程的原因数据直接写到了参数的地址上，导致需要每次需要重置参数 poll 在1997年推出，修复select的两个问题（也是历史原因，当时机器硬件性能不高没有必要修复） 最大监听连接数修改为在 /proc/sys/fs/file-max 获取 内核通过修改pollfd.revents反馈其中的就绪时间 仍然需要遍历，效率仍然低，时间复杂度O(n) epoll，革新以上两种方式，内核只返回就绪的那一个链接，不需要遍历，所以效率提升了 epoll其实也需要调用epoll_wait不断轮询就绪链表，期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。 epoll对文件描述符的操作有两种模式：LT（level trigger）和ET（edge trigger）。LT模式是默认模式，LT模式与ET模式的区别如下： LT模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。 ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。 LT模式，LT(level triggered)是缺省的工作方式，并且同时支持block和no-block socket。在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，内核还是会继续通知你的。 ET模式，ET(edge-triggered)是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知，直到你做了某些操作导致那个文件描述符不再为就绪状态了(比如，你在发送，接收或者接收请求，或者发送接收的数据少于一定量时导致了一个EWOULDBLOCK 错误）。但是请注意，如果一直不对这个fd作IO操作(从而导致它再次变成未就绪)，内核不会发送更多的通知(only once)。ET模式在很大程度上减少了epoll事件被重复触发的次数，因此效率要比LT模式高。epoll工作在ET模式的时候，必须使用非阻塞套接口，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。 在select/poll中，进程只有在调用一定的方法后，内核才对所有监视的文件描述符进行扫描，而epoll事先通过epoll_ctl()来注册一个文件描述符，一旦基于某个文件描述符就绪时，内核会采用类似callback的回调机制，迅速激活这个文件描述符，当进程调用epoll_wait()时便得到通知。(此处去掉了遍历文件描述符，而是通过监听回调的的机制。这正是epoll的魅力所在。) 参考资料 https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A C10K到C10M http://www.52im.net/thread-561-1-1.html","headline":"多路复用select poll epoll","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"IO 多路复用是高性能网络编程的核心技术，它允许单个线程同时监视多个文件描述符（socket），在任何一个就绪时及时响应。从 1984 年的 select 到 2002 年的 epoll，IO 多路复用机制经历了近 20 年的演进。本文将深入剖析 select、poll、epoll 三种机制的原理、区别与实现细节。 一、历史背景 理解三者的差异，首先要了解它们诞生的历史背景： 1984 年：select 在 BSD 中实现。当时的硬件性能有限，一台服务器能处理 1000 多个连接就已经是”神一样的存在”，select 完全能满足需求。 1997 年：时隔 14 年，poll 问世。拖了这么久并非效率问题，而是当时的硬件水平使得 select 的限制并不构成瓶颈。 2002 年：大神 Davide Libenzi 实现了 epoll，彻底革新了 IO 多路复用的性能表现。 二、select 机制 select 是最早的 IO 多路复用实现，其核心思想是：内核监听一组文件描述符，当其中任意一个就绪时，通知用户态程序去遍历检查。 2.1 函数签名 int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, const struct timeval *timeout); 2.2 工作原理 用户态创建 fd_set，设置需要监听的文件描述符 将 fd_set 拷贝到内核态 内核遍历所有 fd，检查是否有事件就绪 如果有就绪事件，内核将结果写入 fd_set 并返回 用户态遍历 fd_set，找出就绪的文件描述符 2.3 select 的局限 数量限制：由于 fd_set 的实现方式（位图数组），最多只能监听 1024 个文件描述符（该值在 Linux 头文件 FD_SETSIZE 中写死，不可运行时修改） 每次重置：由于内核直接修改了 fd_set 参数的内存地址，每次调用前都需要重新初始化 fd_set 遍历开销：返回后需要遍历所有 fd（至少 n 次，至多 maxfdp1 次），而不仅仅是就绪的那些 拷贝开销：每次调用都会将三个 fd_set 完整地从用户态拷贝到内核态 三、poll 机制 poll 在 1997 年推出，修复了 select 的两个历史遗留问题。 3.1 函数签名 int poll(struct pollfd *fds, nfds_t nfds, int timeout); typedef struct pollfd { int fd; // 需要被检测或选择的文件描述符 short events; // 对文件描述符 fd 上感兴趣的事件 short revents; // 文件描述符 fd 上当前实际发生的事件 }; 3.2 相比 select 的改进 突破数量限制：poll 使用 int fd 代替 fd_set 来表示文件描述符，没有 1024 的硬编码限制。最大连接数可在 /proc/sys/fs/file-max 获取。 无需重置参数：poll 用 events 表示期待的事件，通过修改 revents 来反馈发生的事件，两个字段分离，无需每次重新设置。 3.3 poll 的不足 除了上述两点改进外，poll 和 select 几乎相同： 返回后仍然需要遍历整个 pollfd 数组（nfds 次循环），时间复杂度仍为 O(n) 每次调用仍需将整个 fdarray 从用户态拷贝到内核态 在描述符很多但每次就绪的很少时，存在同样的性能问题 四、epoll 机制 epoll 是 Linux 2.6 内核引入的革命性 IO 多路复用方案，从根本上解决了 select 和 poll 的性能瓶颈。 4.1 三步曲 API epoll 的使用分为三个系统调用： 1. epoll_create() —— 创建 epoll 实例 int epoll_create(int size); 返回一个 epoll 句柄，后续操作都依赖这个句柄。其内部维护两个关键数据结构： struct rb_root rbr：红黑树的根节点，存储所有添加到 epoll 中的需要监控的事件 struct list_head rdlist：双链表，存放将要通过 epoll_wait 返回给用户的就绪事件 2. epoll_ctl() —— 管理事件 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event); 通过此调用向 epoll 对象中添加、删除、修改感兴趣的事件。参数说明： epfd：epoll 句柄 op：操作类型（EPOLL_CTL_ADD 注册 / EPOLL_CTL_MOD 修改 / EPOLL_CTL_DEL 删除） fd：要监听的描述符 event：要监听的事件 struct epoll_event { __uint32_t events; /* Epoll events */ epoll_data_t data; /* User data variable */ }; typedef union epoll_data { void *ptr; int fd; __uint32_t u32; __uint64_t u64; } epoll_data_t; 调用 epoll_ctl 时，会为每个文件描述符注册一个回调函数（内核中叫 ep_poll_callback）。一旦对应事件发生，回调函数会将该文件描述符加入到就绪链表（rdlist）中。 3. epoll_wait() —— 等待就绪事件 int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout); 只需检查就绪队列是否为空。如果返回值为 n，则只需做 n 次循环，保证每一次遍历都是有意义的。 4.2 epoll 为什么高性能 epoll 的性能优势来自三个关键设计： 减少数据拷贝：只在 epoll_ctl 时将数据拷贝到内核空间，保证每个描述符只被拷贝一次。epoll_wait 调用时不需要复制新数据。而 select 和 poll 每次调用都要重新拷贝。 避免无效遍历：epoll_wait 返回 n 就只遍历 n 个就绪事件，而不是像 select/poll 那样遍历所有注册的描述符。 回调机制：select/poll 醒来时要遍历整个文件描述符集合，而 epoll_wait 只需查看就绪队列是否为空。epoll 通过内核与用户空间 mmap 同一块内存，进一步减少了拷贝开销。 4.3 LT 模式与 ET 模式 epoll 对文件描述符的操作有两种触发模式： LT（Level Trigger，水平触发）—— 默认模式 当 epoll_wait 检测到事件发生并通知应用程序后，应用程序可以不立即处理 下次调用 epoll_wait 时，会再次通知该事件 同时支持阻塞和非阻塞 socket ET（Edge Trigger，边沿触发）—— 高速模式 当 epoll_wait 检测到事件发生并通知应用程序后，应用程序必须立即处理 如果不处理，下次调用 epoll_wait 时不会再次通知 只支持非阻塞 socket（必须使用非阻塞套接口，避免阻塞读/写操作饿死其他文件描述符） ET 模式在很大程度上减少了 epoll 事件被重复触发的次数，因此效率比 LT 模式更高。但使用门槛也更高——必须确保每次通知时都将数据读取/写入完毕。 五、三者对比总结 维度 select poll epoll 诞生时间 1984 1997 2002 操作方式 遍历 遍历 回调 IO 效率 O(n) O(n) O(1) 底层数据结构 数组（位图） 链表 红黑树 + 就绪链表 最大连接数 1024（FD_SETSIZE 硬编码） 无限制（取决于系统 file-max） 无限制 fd 拷贝 每次调用全量拷贝 每次调用全量拷贝 epoll_ctl 时一次性注册，mmap 共享内存 参数重置 需要每次重新设置 不需要（events/revents 分离） 不需要 一切差异都与历史发展有关。select 在 1984 年实现了多路复用的基本能力；poll 在 1997 年修复了数量限制和参数重置的问题；epoll 在 2002 年通过回调机制和 mmap 共享内存，将 IO 多路复用的性能推向了新的高度。 参考资料 IO多路复用的三种机制Select，Poll，Epoll https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA IO模型及select、poll、epoll和kqueue的区别 https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A Select，Poll，Epoll详解 https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg 大量代码 深入分析select&amp;poll&amp;epoll原理 https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA C10K到C10M http://www.52im.net/thread-561-1-1.html https://www.cnblogs.com/itxiaok/p/10357825.html","headline":"IO 多路复用深入解析：select、poll 与 epoll 的演进之路","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/select-poll-epoll-multiIO.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html">&laquo; NIO-BIO-AIO</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NIO-BIO-AIO.html">&laquo; Java IO 模型详解：BIO、...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E9%9A%8F%E6%89%8B%E8%AE%B0/2019/12/01/HowToSuccess.html">为何我们不能获得真正的成功 &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E9%9A%8F%E6%89%8B%E8%AE%B0/2019/12/01/HowToSuccess.html">失败是通往成功的必经之路 &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">多路复用select poll epoll</h1>
+    <h1 class="asset-name entry-title">IO 多路复用深入解析：select、poll 与 epoll 的演进之路</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,141 +97,244 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <ul>
-  <li>需要反复看看 <a href="https://www.cnblogs.com/itxiaok/p/10357825.html">https://www.cnblogs.com/itxiaok/p/10357825.html</a></li>
-  <li>相比 select ，poll 有这些优点：
-  由于 poll 在 pollfd 里用 int fd 来表示文件描述符而不像 select 里用的 fd_set 来分别表示描述符，所以没有必须小于 1024 的限制，也没有数量限制；
-  由于 poll 用 events 表示期待的事件，通过修改 revents 来表示发生的事件，所以不需要像 select 在每次调用前重新设置描述符和期待的事件。
-  除此之外，poll 和 select 几乎相同。在 poll 返回后，需要遍历 fdarray 来检查各个 pollfd 里的 revents 是否发生了期待的事件；每次调用 poll 时，
-  把 fdarray 复制到内核空间。在描述符太多而每次准备好的较少时，poll 有同样的性能问题。</li>
-  <li>epoll 解决了 poll 和 select 的问题：
-    <ul>
-      <li>只在 epoll_ctl 的时候把数据复制到内核空间，这保证了每个描述符和事件一定只会被复制到内核空间一次；每次调用 epoll_wait 都不会复制新数据到内核空间。相比之下，select 每次调用都会把三个 fd_set 复制一遍；poll 每次调用都会把 fdarray 复制一遍。</li>
-      <li>epoll_wait 返回 n ，那么只需要做 n 次循环，可以保证遍历的每一次都是有意义的。相比之下，select 需要做至少 n 次至多 maxfdp1 次循环；poll 需要遍历完 fdarray 即做 nfds 次循环。</li>
-      <li>在内部实现上，epoll 使用了回调的方法。调用 epoll_ctl 时，就是注册了一个事件：在集合中放入文件描述符以及事件数据，并且加上一个回调函数。一旦文件描述符上的对应事件发生，就会调用回调函数，这个函数会把这个文件描述符加入到就绪队列上。当你调用 epoll_wait 时，它只是在查看就绪队列上是否有内容，有的话就返回给你的程序。select() poll() epoll_wait() 三个函数在操作系统看来，都是睡眠一会儿然后判断一会儿的循环，但是 select 和 poll 在醒着的时候要遍历整个文件描述符集合，而 epoll_wait 只是看看就绪队列是否为空而已。这是 epoll 高性能的理由，使得其 I/O 的效率不会像使用轮询的 select/poll 随着描述符增加而大大降低。</li>
-    </ul>
-  </li>
-  <li>Epoll的机理，我们便能很容易掌握epoll的用法了。一句话描述就是：三步曲。
-    <ol>
-      <li>epoll_create()系统调用。此调用返回一个句柄，之后所有的使用都依靠这个句柄来标识。</li>
-      <li>struct rb_root  rbr; 红黑树的根节点，这颗树中存储着所有添加到epoll中的需要监控的事件</li>
-      <li>struct list_head rdlist; 双链表中则存放着将要通过epoll_wait返回给用户的满足条件的事件</li>
-      <li>epoll_ctl()系统调用。通过此调用向epoll对象中添加、删除、修改感兴趣的事件，返回0标识成功，返回-1表示失败。</li>
-      <li>调用epoll_ctl向epoll对象中添加这100万个连接的套接字</li>
-      <li>而所有添加到epoll中的事件都会与设备(网卡)驱动程序建立回调关系，也就是说，当相应的事件发生时会调用这个回调方法。这个回调方法在内核中叫ep_poll_callback,它会将发生的事件添加到rdlist双链表中。</li>
-      <li>epoll_wait()系统调用。通过此调用收集在epoll监控中已经发生的事件。</li>
-    </ol>
-  </li>
-</ul>
+      <p>IO 多路复用是高性能网络编程的核心技术，它允许单个线程同时监视多个文件描述符（socket），在任何一个就绪时及时响应。从 1984 年的 select 到 2002 年的 epoll，IO 多路复用机制经历了近 20 年的演进。本文将深入剖析 select、poll、epoll 三种机制的原理、区别与实现细节。</p>
 
-<h3 id="再次总结">再次总结</h3>
-<h4 id="历史">历史</h4>
+<hr />
+
+<h2 id="一历史背景">一、历史背景</h2>
+
+<p>理解三者的差异，首先要了解它们诞生的历史背景：</p>
+
 <ul>
-  <li>select出现是1984年在BSD里面实现的(为了减少数据拷贝带来的性能损坏，内核对被监控的fd_set集合大小做了限制，并且这个是通过宏控制的，大小不可改变(限制为1024))</li>
-  <li>14年之后也就是1997年才实现了poll，其实拖那么久也不是效率问题， 而是那个时代的硬件实在太弱，一台服务器处理1千多个链接简直就是神一样的存在了，select很长段时间已经满足需求</li>
-  <li>2002, 大神 Davide Libenzi 实现了epoll</li>
+  <li><strong>1984 年</strong>：select 在 BSD 中实现。当时的硬件性能有限，一台服务器能处理 1000 多个连接就已经是”神一样的存在”，select 完全能满足需求。</li>
+  <li><strong>1997 年</strong>：时隔 14 年，poll 问世。拖了这么久并非效率问题，而是当时的硬件水平使得 select 的限制并不构成瓶颈。</li>
+  <li><strong>2002 年</strong>：大神 Davide Libenzi 实现了 epoll，彻底革新了 IO 多路复用的性能表现。</li>
 </ul>
 
-<h4 id="区别">区别</h4>
-<ul>
-  <li>操作方式：select/poll依靠遍历，而epll靠回调</li>
-  <li>IO效率：由于操作方式，select/poll时间复杂度是O(n)，epoll是O(1)</li>
-  <li>数据结构：select(数组)、poll(链表)、epoll(哈希表)</li>
-  <li>最大连接数：由于数据结构的原因，poll/epoll突破了数量的限制，而select只支持1024(2048)</li>
-  <li>fd拷贝：select/poll都需要把fd集合从用户态拷贝到内核态，epoll没有描述符个数限制，使用一个文件描述符管理多个描述符，将用户关心的文件描述符的事件存放到内核的一个事件表中，这样在用户空间和内核空间的copy只需一次。</li>
-  <li>epoll是通过内核于用户空间mmap同一块内存实现了节省拷贝的动作。</li>
-</ul>
+<hr />
 
-<h4 id="源代码">源代码</h4>
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// select</span>
-<span class="kt">int</span> <span class="nf">select</span><span class="o">(</span><span class="kt">int</span> <span class="n">maxfdp1</span><span class="o">,</span><span class="n">fd_set</span> <span class="o">*</span><span class="n">readset</span><span class="o">,</span><span class="n">fd_set</span> <span class="o">*</span><span class="n">writeset</span><span class="o">,</span><span class="n">fd_set</span> <span class="o">*</span><span class="n">exceptset</span><span class="o">,</span><span class="kd">const</span> <span class="n">struct</span> <span class="n">timeval</span> <span class="o">*</span><span class="n">timeout</span><span class="o">);</span>
-<span class="c1">// 主要问题在于在用户态创建fd_set然后拷贝到内核态，再由内核态装配数据后，在用户态中进行遍历</span>
-<span class="c1">// 并且每次都需要重新初始化fd_set</span>
+<h2 id="二select-机制">二、select 机制</h2>
 
-<span class="c1">// poll</span>
-<span class="kt">int</span> <span class="nf">poll</span><span class="o">(</span><span class="n">struct</span> <span class="n">pollfd</span> <span class="o">*</span><span class="n">fds</span><span class="o">,</span> <span class="n">nfds_t</span> <span class="n">nfds</span><span class="o">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="o">);</span>
+<p>select 是最早的 IO 多路复用实现，其核心思想是：内核监听一组文件描述符，当其中任意一个就绪时，通知用户态程序去遍历检查。</p>
+
+<h3 id="21-函数签名">2.1 函数签名</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">select</span><span class="o">(</span><span class="kt">int</span> <span class="n">maxfdp1</span><span class="o">,</span> <span class="n">fd_set</span> <span class="o">*</span><span class="n">readset</span><span class="o">,</span> <span class="n">fd_set</span> <span class="o">*</span><span class="n">writeset</span><span class="o">,</span> <span class="n">fd_set</span> <span class="o">*</span><span class="n">exceptset</span><span class="o">,</span> <span class="kd">const</span> <span class="n">struct</span> <span class="n">timeval</span> <span class="o">*</span><span class="n">timeout</span><span class="o">);</span>
+</code></pre></div></div>
+
+<h3 id="22-工作原理">2.2 工作原理</h3>
+
+<ol>
+  <li>用户态创建 fd_set，设置需要监听的文件描述符</li>
+  <li>将 fd_set 拷贝到内核态</li>
+  <li>内核遍历所有 fd，检查是否有事件就绪</li>
+  <li>如果有就绪事件，内核将结果写入 fd_set 并返回</li>
+  <li>用户态遍历 fd_set，找出就绪的文件描述符</li>
+</ol>
+
+<h3 id="23-select-的局限">2.3 select 的局限</h3>
+
+<ol>
+  <li><strong>数量限制</strong>：由于 fd_set 的实现方式（位图数组），最多只能监听 1024 个文件描述符（该值在 Linux 头文件 <code class="language-plaintext highlighter-rouge">FD_SETSIZE</code> 中写死，不可运行时修改）</li>
+  <li><strong>每次重置</strong>：由于内核直接修改了 fd_set 参数的内存地址，每次调用前都需要重新初始化 fd_set</li>
+  <li><strong>遍历开销</strong>：返回后需要遍历所有 fd（至少 n 次，至多 maxfdp1 次），而不仅仅是就绪的那些</li>
+  <li><strong>拷贝开销</strong>：每次调用都会将三个 fd_set 完整地从用户态拷贝到内核态</li>
+</ol>
+
+<hr />
+
+<h2 id="三poll-机制">三、poll 机制</h2>
+
+<p>poll 在 1997 年推出，修复了 select 的两个历史遗留问题。</p>
+
+<h3 id="31-函数签名">3.1 函数签名</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">poll</span><span class="o">(</span><span class="n">struct</span> <span class="n">pollfd</span> <span class="o">*</span><span class="n">fds</span><span class="o">,</span> <span class="n">nfds_t</span> <span class="n">nfds</span><span class="o">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="o">);</span>
+
 <span class="n">typedef</span> <span class="n">struct</span> <span class="n">pollfd</span> <span class="o">{</span>        
-<span class="kt">int</span> <span class="n">fd</span><span class="o">;</span>                         <span class="c1">// 需要被检测或选择的文件描述符        </span>
-<span class="kt">short</span> <span class="n">events</span><span class="o">;</span>                   <span class="c1">// 对文件描述符fd上感兴趣的事件        </span>
-<span class="kt">short</span> <span class="n">revents</span><span class="o">;</span>                  <span class="c1">// 文件描述符fd上当前实际发生的事件</span>
-<span class="o">}</span> 
+    <span class="kt">int</span> <span class="n">fd</span><span class="o">;</span>           <span class="c1">// 需要被检测或选择的文件描述符        </span>
+    <span class="kt">short</span> <span class="n">events</span><span class="o">;</span>     <span class="c1">// 对文件描述符 fd 上感兴趣的事件        </span>
+    <span class="kt">short</span> <span class="n">revents</span><span class="o">;</span>    <span class="c1">// 文件描述符 fd 上当前实际发生的事件</span>
+<span class="o">};</span>
+</code></pre></div></div>
 
+<h3 id="32-相比-select-的改进">3.2 相比 select 的改进</h3>
 
-<span class="c1">// epoll</span>
-<span class="kt">int</span> <span class="nf">epoll_create</span><span class="o">(</span><span class="kt">int</span> <span class="n">size</span><span class="o">);</span> <span class="c1">//  函数创建一个epoll句柄，参数size表明内核要监听的描述符数量。调用成功时返回一个epoll句柄描述符，失败时返回-1。</span>
-<span class="kt">int</span> <span class="nf">epoll_ctl</span><span class="o">(</span><span class="kt">int</span> <span class="n">epfd</span><span class="o">,</span> <span class="kt">int</span> <span class="n">op</span><span class="o">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="o">,</span> <span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">*</span><span class="n">event</span><span class="o">);</span>
-    <span class="c1">// epfd 表示epoll句柄</span>
-    <span class="c1">// op 表示fd操作类型，有如下3种</span>
-        <span class="c1">// EPOLL_CTL_ADD   注册新的fd到epfd中</span>
-        <span class="c1">// EPOLL_CTL_MOD 修改已注册的fd的监听事件</span>
-        <span class="c1">// EPOLL_CTL_DEL 从epfd中删除一个fd</span>
-    <span class="c1">// fd 是要监听的描述符</span>
-    <span class="c1">// event 表示要监听的事件</span>
-<span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">{</span>
+<ul>
+  <li><strong>突破数量限制</strong>：poll 使用 <code class="language-plaintext highlighter-rouge">int fd</code> 代替 fd_set 来表示文件描述符，没有 1024 的硬编码限制。最大连接数可在 <code class="language-plaintext highlighter-rouge">/proc/sys/fs/file-max</code> 获取。</li>
+  <li><strong>无需重置参数</strong>：poll 用 events 表示期待的事件，通过修改 revents 来反馈发生的事件，两个字段分离，无需每次重新设置。</li>
+</ul>
+
+<h3 id="33-poll-的不足">3.3 poll 的不足</h3>
+
+<p>除了上述两点改进外，poll 和 select 几乎相同：</p>
+
+<ul>
+  <li>返回后仍然需要遍历整个 pollfd 数组（nfds 次循环），时间复杂度仍为 O(n)</li>
+  <li>每次调用仍需将整个 fdarray 从用户态拷贝到内核态</li>
+  <li>在描述符很多但每次就绪的很少时，存在同样的性能问题</li>
+</ul>
+
+<hr />
+
+<h2 id="四epoll-机制">四、epoll 机制</h2>
+
+<p>epoll 是 Linux 2.6 内核引入的革命性 IO 多路复用方案，从根本上解决了 select 和 poll 的性能瓶颈。</p>
+
+<h3 id="41-三步曲-api">4.1 三步曲 API</h3>
+
+<p>epoll 的使用分为三个系统调用：</p>
+
+<p><strong>1. epoll_create()</strong> —— 创建 epoll 实例</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">epoll_create</span><span class="o">(</span><span class="kt">int</span> <span class="n">size</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>返回一个 epoll 句柄，后续操作都依赖这个句柄。其内部维护两个关键数据结构：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">struct rb_root rbr</code>：红黑树的根节点，存储所有添加到 epoll 中的需要监控的事件</li>
+  <li><code class="language-plaintext highlighter-rouge">struct list_head rdlist</code>：双链表，存放将要通过 epoll_wait 返回给用户的就绪事件</li>
+</ul>
+
+<p><strong>2. epoll_ctl()</strong> —— 管理事件</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">epoll_ctl</span><span class="o">(</span><span class="kt">int</span> <span class="n">epfd</span><span class="o">,</span> <span class="kt">int</span> <span class="n">op</span><span class="o">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="o">,</span> <span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">*</span><span class="n">event</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>通过此调用向 epoll 对象中添加、删除、修改感兴趣的事件。参数说明：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">epfd</code>：epoll 句柄</li>
+  <li><code class="language-plaintext highlighter-rouge">op</code>：操作类型（EPOLL_CTL_ADD 注册 / EPOLL_CTL_MOD 修改 / EPOLL_CTL_DEL 删除）</li>
+  <li><code class="language-plaintext highlighter-rouge">fd</code>：要监听的描述符</li>
+  <li><code class="language-plaintext highlighter-rouge">event</code>：要监听的事件</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">{</span>
     <span class="n">__uint32_t</span> <span class="n">events</span><span class="o">;</span>  <span class="cm">/* Epoll events */</span>    
-   <span class="n">epoll_data_t</span> <span class="n">data</span><span class="o">;</span>  <span class="cm">/* User data variable */</span>
+    <span class="n">epoll_data_t</span> <span class="n">data</span><span class="o">;</span>  <span class="cm">/* User data variable */</span>
 <span class="o">};</span>
 <span class="n">typedef</span> <span class="n">union</span> <span class="n">epoll_data</span> <span class="o">{</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="o">;</span>    <span class="kt">int</span> <span class="n">fd</span><span class="o">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">fd</span><span class="o">;</span>
     <span class="n">__uint32_t</span> <span class="n">u32</span><span class="o">;</span>
     <span class="n">__uint64_t</span> <span class="n">u64</span><span class="o">;</span>
 <span class="o">}</span> <span class="n">epoll_data_t</span><span class="o">;</span>
-<span class="kt">int</span> <span class="nf">epoll_wait</span><span class="o">(</span><span class="kt">int</span> <span class="n">epfd</span><span class="o">,</span> <span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">*</span> <span class="n">events</span><span class="o">,</span> <span class="kt">int</span> <span class="n">maxevents</span><span class="o">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="o">);</span>
-    <span class="c1">// epfd 是epoll句柄</span>
-    <span class="c1">// events 表示从内核得到的就绪事件集合</span>
-    <span class="c1">// maxevents 告诉内核events的大小</span>
-    <span class="c1">// timeout 表示等待的超时事件</span>
 </code></pre></div></div>
 
-<h4 id="参考">参考</h4>
+<p>调用 epoll_ctl 时，会为每个文件描述符注册一个回调函数（内核中叫 <code class="language-plaintext highlighter-rouge">ep_poll_callback</code>）。一旦对应事件发生，回调函数会将该文件描述符加入到就绪链表（rdlist）中。</p>
+
+<p><strong>3. epoll_wait()</strong> —— 等待就绪事件</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">epoll_wait</span><span class="o">(</span><span class="kt">int</span> <span class="n">epfd</span><span class="o">,</span> <span class="n">struct</span> <span class="n">epoll_event</span> <span class="o">*</span><span class="n">events</span><span class="o">,</span> <span class="kt">int</span> <span class="n">maxevents</span><span class="o">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>只需检查就绪队列是否为空。如果返回值为 n，则只需做 n 次循环，保证每一次遍历都是有意义的。</p>
+
+<h3 id="42-epoll-为什么高性能">4.2 epoll 为什么高性能</h3>
+
+<p>epoll 的性能优势来自三个关键设计：</p>
+
+<ol>
+  <li><strong>减少数据拷贝</strong>：只在 epoll_ctl 时将数据拷贝到内核空间，保证每个描述符只被拷贝一次。epoll_wait 调用时不需要复制新数据。而 select 和 poll 每次调用都要重新拷贝。</li>
+  <li><strong>避免无效遍历</strong>：epoll_wait 返回 n 就只遍历 n 个就绪事件，而不是像 select/poll 那样遍历所有注册的描述符。</li>
+  <li><strong>回调机制</strong>：select/poll 醒来时要遍历整个文件描述符集合，而 epoll_wait 只需查看就绪队列是否为空。epoll 通过内核与用户空间 mmap 同一块内存，进一步减少了拷贝开销。</li>
+</ol>
+
+<h3 id="43-lt-模式与-et-模式">4.3 LT 模式与 ET 模式</h3>
+
+<p>epoll 对文件描述符的操作有两种触发模式：</p>
+
+<p><strong>LT（Level Trigger，水平触发）</strong>—— 默认模式</p>
+<ul>
+  <li>当 epoll_wait 检测到事件发生并通知应用程序后，应用程序<strong>可以不立即处理</strong></li>
+  <li>下次调用 epoll_wait 时，会<strong>再次通知</strong>该事件</li>
+  <li>同时支持阻塞和非阻塞 socket</li>
+</ul>
+
+<p><strong>ET（Edge Trigger，边沿触发）</strong>—— 高速模式</p>
+<ul>
+  <li>当 epoll_wait 检测到事件发生并通知应用程序后，应用程序<strong>必须立即处理</strong></li>
+  <li>如果不处理，下次调用 epoll_wait 时<strong>不会再次通知</strong></li>
+  <li>只支持非阻塞 socket（必须使用非阻塞套接口，避免阻塞读/写操作饿死其他文件描述符）</li>
+</ul>
+
+<p>ET 模式在很大程度上减少了 epoll 事件被重复触发的次数，因此效率比 LT 模式更高。但使用门槛也更高——必须确保每次通知时都将数据读取/写入完毕。</p>
+
+<hr />
+
+<h2 id="五三者对比总结">五、三者对比总结</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>维度</th>
+      <th>select</th>
+      <th>poll</th>
+      <th>epoll</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>诞生时间</td>
+      <td>1984</td>
+      <td>1997</td>
+      <td>2002</td>
+    </tr>
+    <tr>
+      <td>操作方式</td>
+      <td>遍历</td>
+      <td>遍历</td>
+      <td>回调</td>
+    </tr>
+    <tr>
+      <td>IO 效率</td>
+      <td>O(n)</td>
+      <td>O(n)</td>
+      <td>O(1)</td>
+    </tr>
+    <tr>
+      <td>底层数据结构</td>
+      <td>数组（位图）</td>
+      <td>链表</td>
+      <td>红黑树 + 就绪链表</td>
+    </tr>
+    <tr>
+      <td>最大连接数</td>
+      <td>1024（FD_SETSIZE 硬编码）</td>
+      <td>无限制（取决于系统 file-max）</td>
+      <td>无限制</td>
+    </tr>
+    <tr>
+      <td>fd 拷贝</td>
+      <td>每次调用全量拷贝</td>
+      <td>每次调用全量拷贝</td>
+      <td>epoll_ctl 时一次性注册，mmap 共享内存</td>
+    </tr>
+    <tr>
+      <td>参数重置</td>
+      <td>需要每次重新设置</td>
+      <td>不需要（events/revents 分离）</td>
+      <td>不需要</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>一切差异都与历史发展有关。select 在 1984 年实现了多路复用的基本能力；poll 在 1997 年修复了数量限制和参数重置的问题；epoll 在 2002 年通过回调机制和 mmap 共享内存，将 IO 多路复用的性能推向了新的高度。</p>
+
+<hr />
+
+<h2 id="参考资料">参考资料</h2>
+
 <ul>
   <li>IO多路复用的三种机制Select，Poll，Epoll <a href="https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA">https://mp.weixin.qq.com/s/UWdZsvPsV46VLpr7qHjgjA</a></li>
   <li>IO模型及select、poll、epoll和kqueue的区别 <a href="https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A">https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A</a></li>
   <li>Select，Poll，Epoll详解 <a href="https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg">https://mp.weixin.qq.com/s/49yzOWWCoo1V1UG7iiJEVg</a></li>
   <li>大量代码 深入分析select&amp;poll&amp;epoll原理 <a href="https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g">https://mp.weixin.qq.com/s/HC-xEavwXTypDIRvX0Tu3g</a></li>
-</ul>
-
-<h3 id="简单总结三者区别">简单总结三者区别</h3>
-<ul>
-  <li>一切都与历史有关，都是历史发展造成差异</li>
-  <li>select最早出现（1983年在BSD里实现），由以下几个特点
-    <ol>
-      <li>无论效率如何确实实现了多路复用</li>
-      <li>原理也就是内核态监听最多1024个链接，任意一个链接有数据了，通知用户态去遍历所有链接获取数据</li>
-      <li>由于编程的原因把1024写在了linux的头文件FD_SETSIZE中</li>
-      <li>由于编程的原因数据直接写到了参数的地址上，导致需要每次需要重置参数</li>
-    </ol>
-  </li>
-  <li>poll 在1997年推出，修复select的两个问题（也是历史原因，当时机器硬件性能不高没有必要修复）
-    <ol>
-      <li>最大监听连接数修改为在 /proc/sys/fs/file-max 获取</li>
-      <li>内核通过修改pollfd.revents反馈其中的就绪时间</li>
-      <li>仍然需要遍历，效率仍然低，时间复杂度O(n)</li>
-    </ol>
-  </li>
-  <li>epoll，革新以上两种方式，内核只返回就绪的那一个链接，不需要遍历，所以效率提升了
-    <ol>
-      <li>epoll其实也需要调用epoll_wait不断轮询就绪链表，期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。</li>
-      <li>epoll对文件描述符的操作有两种模式：LT（level trigger）和ET（edge trigger）。LT模式是默认模式，LT模式与ET模式的区别如下：
-        <ul>
-          <li>LT模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。</li>
-          <li>ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。</li>
-          <li>LT模式，LT(level triggered)是缺省的工作方式，并且同时支持block和no-block socket。在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，内核还是会继续通知你的。</li>
-          <li>ET模式，ET(edge-triggered)是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知，直到你做了某些操作导致那个文件描述符不再为就绪状态了(比如，你在发送，接收或者接收请求，或者发送接收的数据少于一定量时导致了一个EWOULDBLOCK 错误）。但是请注意，如果一直不对这个fd作IO操作(从而导致它再次变成未就绪)，内核不会发送更多的通知(only once)。ET模式在很大程度上减少了epoll事件被重复触发的次数，因此效率要比LT模式高。epoll工作在ET模式的时候，必须使用非阻塞套接口，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。</li>
-          <li>在select/poll中，进程只有在调用一定的方法后，内核才对所有监视的文件描述符进行扫描，而epoll事先通过epoll_ctl()来注册一个文件描述符，一旦基于某个文件描述符就绪时，内核会采用类似callback的回调机制，迅速激活这个文件描述符，当进程调用epoll_wait()时便得到通知。(此处去掉了遍历文件描述符，而是通过监听回调的的机制。这正是epoll的魅力所在。)</li>
-        </ul>
-      </li>
-    </ol>
-  </li>
-</ul>
-
-<h4 id="参考资料">参考资料</h4>
-<ul>
   <li><a href="https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A">https://mp.weixin.qq.com/s/AXJW0Q77yYfld0cFEsLu1A</a></li>
   <li><a href="https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA">https://mp.weixin.qq.com/s/71-X1urvqgFG08cxS4TNvA</a></li>
   <li><a href="https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA">https://mp.weixin.qq.com/s/zg7Ty_aF-IO0A4w4b5UVjA</a></li>
-  <li><a href="https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A">https://mp.weixin.qq.com/s/R8cA0_1dNujVORionyg_4A</a></li>
   <li>C10K到C10M <a href="http://www.52im.net/thread-561-1-1.html">http://www.52im.net/thread-561-1-1.html</a></li>
+  <li><a href="https://www.cnblogs.com/itxiaok/p/10357825.html">https://www.cnblogs.com/itxiaok/p/10357825.html</a></li>
 </ul>
 
     </div>
@@ -264,33 +367,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

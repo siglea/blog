@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>一致性（Consistency）与 共识（Consensus） - Code & Coffee</title>
+  <title>分布式共识算法全解析：从 Paxos 到 Raft 与 ZAB - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>一致性（Consistency）与 共识（Consensus） | Code &amp; Coffee</title>
+<title>分布式共识算法全解析：从 Paxos 到 Raft 与 ZAB | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="一致性（Consistency）与 共识（Consensus）" />
+<meta property="og:title" content="分布式共识算法全解析：从 Paxos 到 Raft 与 ZAB" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Byzantine Fault Tolerance 分类 在分布式系统中，这种不听指挥的坏节点，就被称为“拜占庭错误节点”。一般来说，按照对“拜占庭错误节点”的容忍程度（简称BFT，Byzantine Fault Tolerance），分布式系统可以分为以下三类： 非BFT类：完全无法容忍“拜占庭错误节点”，但可以容忍其他错误的系统。（包括Pasox、SOLO、RAFT等。） BFT类：可以容忍“拜占庭错误节点”的系统。（包括PBFT、SBFT、VBFT、DBFT等。） 区块链类：不仅可以容忍“拜占庭错误节点”，还可以容忍节点的自由进出，这才是我们真正意义上的、狭义上的“区块链”。 （包括我们熟悉的POW、POS、DPOS等等。） 其实与git的版本分支管理思想是一致的 https://www.cnblogs.com/X-knight/p/9157814.html “一致性（Consistency）”和“共识（Consensus）” Paxos、Raft等通常被误称为“一致性算法”。但是“一致性（Consistency）”和“共识（Consensus）”并不是同一个概念。Paxos、Raft等其实都是共识（Consensus）算法。 从专业的角度来讲，我们通常所说的一致性（Consistency）在分布式系统中指的是对于同一个数据的多个副本，其对外表现的数据一致性，如强一致性、顺序一致性、最终一致性等，都是用来描述副本问题中的一致性的。而共识（Consensus）则不同，简单来说，共识问题是要经过某种算法使多个节点达成相同状态的一个过程。一致性强调结果，共识强调过程。 https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg 一致性分类 弱一致性（最终一致性） DNS（Domain Name System） Gossip（Cassandra、Redis的通信协议）https://www.jianshu.com/p/54eab117e6ae 强一致性 主从同步 多数一致，每次写都保证写入大于N/2个节点，每次读保证从大于N/2个节点中读。 Paxos、Raft（multi-paxos）、ZAB（multi-paxos，Zookeeper atomic broadcast protocol，是Zookeeper内部用到的一致性协议。基本与Raft相同） Pasox Paxos算法是莱斯利·兰伯特(Leslie Lamport)1990年提出的一种基于消息传递的一致性算法。 Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos Basic Paxos （忽然发现这个过程与3PC很相似，需要2次多数投票） 一阶段，Proposer发出prepare()，Acceptor给出承诺promise() Proposer生成全局唯一且递增的Proposal ID (可使用时间戳加Server ID)，向所有Acceptors发送Prepare请求，这里无需携带提案内容，只携带Proposal ID即可。 Acceptor承诺一：不再接受Proposal ID小于等于（注意：这里是&lt;= ）当前请求的Prepare请求。 Acceptor承诺二：不再接受Proposal ID小于（注意：这里是&lt; ）当前请求的Propose请求。 Acceptor应答一：不违背以前作出的承诺下，回复已经Accept过的提案中Proposal ID最大的那个提案的Value和Proposal ID，没有则返回空值。 二阶段，Proposer发出提议propose()，Acceptor接受accept() Proposer提案：Proposer收到多数Acceptors的Promise应答后，从应答中选择Proposal ID最大的提案的Value，作为本次要发起的提案。如果所有应答的提案Value均为空值，则可以自己随意决定提案Value。然后携带当前Proposal ID，向所有Acceptors发送Propose请求。 Acceptor接受：Acceptor收到Propose请求后，在不违背自己之前作出的承诺下，接受并持久化当前Proposal ID和提案Value。 三阶段，Proposer发送最终决议 Proposer收到多数Acceptors的Accept后，决议形成，将形成的决议发送给所有Learners。 https://zhuanlan.zhihu.com/p/31780743 https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg 活锁，可能会存在一种情况：假定有2个proposer先后向acceptor发送请求，acceptor在接收到proposer1的prepare请求后更新编号为proposer1的编号； 此时，proposer2接着向acceptor发送比proposer1编号更大的prepare请求，acceptor会立刻更新成proposer2的编号，那么当proposer1发送accept请求时由于编号不满足要求就会被accept给拒绝掉，则重新获取编号再次回到第一阶段发送prepare请求； 从此2个proposer之间不断重复发送prepare请求，导致系统出现活锁 如何解决split brain问题 分布式协议一个著名问题就是 split brain 问题。 简单说，就是比如当你的 cluster 里面有两个结点，它们都知道在这个 cluster 里需要选举出一个 master。那么当它们两之间的通信完全没有问题的时候，就会达成共识，选出其中一个作为 master。 但是如果它们之间的通信出了问题，那么两个结点都会觉得现在没有 master，所以每个都把自己选举成 master。于是 cluster 里面就会有两个 master。 区块链的分叉其实类似分布式系统的split brain。 一般来说，Zookeeper会默认设置： zookeeper cluster的节点数目必须是奇数。 zookeeper 集群中必须超过半数节点(Majority)可用，整个集群才能对外可用。 Majority(大多数) 就是一种 Quorum(法定代表人) 的方式来支持Leader选举，可以防止 split brain出现。奇数个节点可以在相同容错能力的情况下节省资源。 Multi Paxos之Raft (Reliable, Replicated, Redundant, And Fault-Tolerant) 多个follower变身为candidate，同时term++，投票给自己同时向其他节点发送RequestVote RPC 节点(N)会投票给term是最新的，log至少和自身(N)一样新的candidate candidate收到多数投票，然后发送自己已经是leader的HeartBeat，接受者转变为follower，选举结束 一段时间后依然没有胜者。该种情况下会开启新一轮的选举。（Raft中使用随机选举超时时间来解决当票数相同无法确定leader的问题。） 日志复制（Log Replication）主要作用是用于保证节点的一致性，这阶段所做的操作也是为了保证一致性与高可用性。 当Leader选举出来后便开始负责客户端的请求，所有事务（更新操作）请求都必须先经过Leader处理，日志复制（Log Replication）就是为了保证执行相同的操作序列所做的工作。 在Raft中当接收到客户端的日志（事务请求）后先把该日志追加到本地的Log中，然后通过heartbeat把该Entry同步给其他Follower，Follower接收到日志后记录日志然后向Leader发送ACK，当Leader收到大多数（n/2+1）Follower的ACK信息后将该日志设置为已提交并追加到本地磁盘中，通知客户端并在下个heartbeat中Leader将通知所有的Follower将该日志存储在自己的本地磁盘中。 https://www.cnblogs.com/binyue/p/8647733.html ZAB协议 2阶段 消息广播阶段 （类似2PC） leader写本地之后，同步给follower，大多数follower写成功并且ACK给leader，就表示写成功 否则表示集群故障了，进入崩溃恢复阶段 崩溃恢复阶段 （发现阶段、同步阶段zxid不是最大） 自我投票，之后让其他follower投票给自己 投票比较策略：当其他节点的纪元比自身高投它，如果纪元epoch相同比较自身的zxid的大小，选举zxid大的节点，这里的zxid代表节点所提交事务最大的id，zxid越大代表该节点的数据越完整。 最后如果epoch和zxid都相等，则比较服务的serverId，这个Id是配置zookeeper集群所配置的，所以我们配置zookeeper集群的时候可以把服务性能更高的集群的serverId配置大些，让性能好的机器担任leader角色。 leader产生后，当 Follower 链接上 Leader 之后，Leader 服务器会根据自己服务器上最后被提交的 ZXID 和 Follower 上的 ZXID 进行比对，比对结果要么回滚，要么和 Leader 同步。 ZAB算法 Zookeeper atomic broadcast protocol 基本与Raft相同，在一些名词叫起来是有区别的 ZAB将Leader的一个生命周期叫做epoch，而Raft称之为term 实现上也有些许不同，如raft保证日志的连续性，心跳是Leader向Follower发送，而ZAB方向与之相反 ZAB选举阶段只接受比自己大的zxid，意味着经过多次之后，拥有最新数据的节点才有可能成为leader raft 协议和 zab 协议区别 相同点 都使用 timeout 来重新选择 leader 采用quorum来确定整个系统的一致性,这个quorum一般实现是集群中半数以上的服务器, zookeeper里还提供了带权重的quorum实现. 都由leader来发起写操作. 都采用心跳检测存活性 leader election都采用先到先得的投票方式 zookeeper 的 zab 实现里选主要求选出来的主拥有 quorum 里最新的历史，而 raft 的 follower 的选主投票根据 term 的大小+日志完成度来选择投票给谁，这点上来看是比较类似的 不同点 zab用的是epoch和count的组合来唯一表示一个值,而raft用的是term和index zab的follower在投票给一个leader之前必须和leader的日志达成一致,而raft的follower则简单地说是谁的 term 高就投票给谁 raft协议的心跳是从leader到follower,而zab协议则相反 raft 协议数据只有单向地从 leader 到 follower（成为 leader 的条件之一就是拥有最新的 log），而 zab 的 zookeeper 实现中 ，一个 prospective leader (epoch最大但是zxid不是最大)需要将自己的 log 更新为 quorum 里面最新的 log，然后才好在 synchronization 阶段将 quorum 里的其他机器的 log 都同步到一致 https://www.cnblogs.com/think90/p/11443428.html 一致性算法的实践 使用Paxos的组件，Chubby(Google首次运用Multi Paxos算法到工程领域) 使用Raft的组件，Redis-Cluster、etcd 使用ZAB的组件，Zookeeper（Yahoo开源）" />
-<meta property="og:description" content="Byzantine Fault Tolerance 分类 在分布式系统中，这种不听指挥的坏节点，就被称为“拜占庭错误节点”。一般来说，按照对“拜占庭错误节点”的容忍程度（简称BFT，Byzantine Fault Tolerance），分布式系统可以分为以下三类： 非BFT类：完全无法容忍“拜占庭错误节点”，但可以容忍其他错误的系统。（包括Pasox、SOLO、RAFT等。） BFT类：可以容忍“拜占庭错误节点”的系统。（包括PBFT、SBFT、VBFT、DBFT等。） 区块链类：不仅可以容忍“拜占庭错误节点”，还可以容忍节点的自由进出，这才是我们真正意义上的、狭义上的“区块链”。 （包括我们熟悉的POW、POS、DPOS等等。） 其实与git的版本分支管理思想是一致的 https://www.cnblogs.com/X-knight/p/9157814.html “一致性（Consistency）”和“共识（Consensus）” Paxos、Raft等通常被误称为“一致性算法”。但是“一致性（Consistency）”和“共识（Consensus）”并不是同一个概念。Paxos、Raft等其实都是共识（Consensus）算法。 从专业的角度来讲，我们通常所说的一致性（Consistency）在分布式系统中指的是对于同一个数据的多个副本，其对外表现的数据一致性，如强一致性、顺序一致性、最终一致性等，都是用来描述副本问题中的一致性的。而共识（Consensus）则不同，简单来说，共识问题是要经过某种算法使多个节点达成相同状态的一个过程。一致性强调结果，共识强调过程。 https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg 一致性分类 弱一致性（最终一致性） DNS（Domain Name System） Gossip（Cassandra、Redis的通信协议）https://www.jianshu.com/p/54eab117e6ae 强一致性 主从同步 多数一致，每次写都保证写入大于N/2个节点，每次读保证从大于N/2个节点中读。 Paxos、Raft（multi-paxos）、ZAB（multi-paxos，Zookeeper atomic broadcast protocol，是Zookeeper内部用到的一致性协议。基本与Raft相同） Pasox Paxos算法是莱斯利·兰伯特(Leslie Lamport)1990年提出的一种基于消息传递的一致性算法。 Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos Basic Paxos （忽然发现这个过程与3PC很相似，需要2次多数投票） 一阶段，Proposer发出prepare()，Acceptor给出承诺promise() Proposer生成全局唯一且递增的Proposal ID (可使用时间戳加Server ID)，向所有Acceptors发送Prepare请求，这里无需携带提案内容，只携带Proposal ID即可。 Acceptor承诺一：不再接受Proposal ID小于等于（注意：这里是&lt;= ）当前请求的Prepare请求。 Acceptor承诺二：不再接受Proposal ID小于（注意：这里是&lt; ）当前请求的Propose请求。 Acceptor应答一：不违背以前作出的承诺下，回复已经Accept过的提案中Proposal ID最大的那个提案的Value和Proposal ID，没有则返回空值。 二阶段，Proposer发出提议propose()，Acceptor接受accept() Proposer提案：Proposer收到多数Acceptors的Promise应答后，从应答中选择Proposal ID最大的提案的Value，作为本次要发起的提案。如果所有应答的提案Value均为空值，则可以自己随意决定提案Value。然后携带当前Proposal ID，向所有Acceptors发送Propose请求。 Acceptor接受：Acceptor收到Propose请求后，在不违背自己之前作出的承诺下，接受并持久化当前Proposal ID和提案Value。 三阶段，Proposer发送最终决议 Proposer收到多数Acceptors的Accept后，决议形成，将形成的决议发送给所有Learners。 https://zhuanlan.zhihu.com/p/31780743 https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg 活锁，可能会存在一种情况：假定有2个proposer先后向acceptor发送请求，acceptor在接收到proposer1的prepare请求后更新编号为proposer1的编号； 此时，proposer2接着向acceptor发送比proposer1编号更大的prepare请求，acceptor会立刻更新成proposer2的编号，那么当proposer1发送accept请求时由于编号不满足要求就会被accept给拒绝掉，则重新获取编号再次回到第一阶段发送prepare请求； 从此2个proposer之间不断重复发送prepare请求，导致系统出现活锁 如何解决split brain问题 分布式协议一个著名问题就是 split brain 问题。 简单说，就是比如当你的 cluster 里面有两个结点，它们都知道在这个 cluster 里需要选举出一个 master。那么当它们两之间的通信完全没有问题的时候，就会达成共识，选出其中一个作为 master。 但是如果它们之间的通信出了问题，那么两个结点都会觉得现在没有 master，所以每个都把自己选举成 master。于是 cluster 里面就会有两个 master。 区块链的分叉其实类似分布式系统的split brain。 一般来说，Zookeeper会默认设置： zookeeper cluster的节点数目必须是奇数。 zookeeper 集群中必须超过半数节点(Majority)可用，整个集群才能对外可用。 Majority(大多数) 就是一种 Quorum(法定代表人) 的方式来支持Leader选举，可以防止 split brain出现。奇数个节点可以在相同容错能力的情况下节省资源。 Multi Paxos之Raft (Reliable, Replicated, Redundant, And Fault-Tolerant) 多个follower变身为candidate，同时term++，投票给自己同时向其他节点发送RequestVote RPC 节点(N)会投票给term是最新的，log至少和自身(N)一样新的candidate candidate收到多数投票，然后发送自己已经是leader的HeartBeat，接受者转变为follower，选举结束 一段时间后依然没有胜者。该种情况下会开启新一轮的选举。（Raft中使用随机选举超时时间来解决当票数相同无法确定leader的问题。） 日志复制（Log Replication）主要作用是用于保证节点的一致性，这阶段所做的操作也是为了保证一致性与高可用性。 当Leader选举出来后便开始负责客户端的请求，所有事务（更新操作）请求都必须先经过Leader处理，日志复制（Log Replication）就是为了保证执行相同的操作序列所做的工作。 在Raft中当接收到客户端的日志（事务请求）后先把该日志追加到本地的Log中，然后通过heartbeat把该Entry同步给其他Follower，Follower接收到日志后记录日志然后向Leader发送ACK，当Leader收到大多数（n/2+1）Follower的ACK信息后将该日志设置为已提交并追加到本地磁盘中，通知客户端并在下个heartbeat中Leader将通知所有的Follower将该日志存储在自己的本地磁盘中。 https://www.cnblogs.com/binyue/p/8647733.html ZAB协议 2阶段 消息广播阶段 （类似2PC） leader写本地之后，同步给follower，大多数follower写成功并且ACK给leader，就表示写成功 否则表示集群故障了，进入崩溃恢复阶段 崩溃恢复阶段 （发现阶段、同步阶段zxid不是最大） 自我投票，之后让其他follower投票给自己 投票比较策略：当其他节点的纪元比自身高投它，如果纪元epoch相同比较自身的zxid的大小，选举zxid大的节点，这里的zxid代表节点所提交事务最大的id，zxid越大代表该节点的数据越完整。 最后如果epoch和zxid都相等，则比较服务的serverId，这个Id是配置zookeeper集群所配置的，所以我们配置zookeeper集群的时候可以把服务性能更高的集群的serverId配置大些，让性能好的机器担任leader角色。 leader产生后，当 Follower 链接上 Leader 之后，Leader 服务器会根据自己服务器上最后被提交的 ZXID 和 Follower 上的 ZXID 进行比对，比对结果要么回滚，要么和 Leader 同步。 ZAB算法 Zookeeper atomic broadcast protocol 基本与Raft相同，在一些名词叫起来是有区别的 ZAB将Leader的一个生命周期叫做epoch，而Raft称之为term 实现上也有些许不同，如raft保证日志的连续性，心跳是Leader向Follower发送，而ZAB方向与之相反 ZAB选举阶段只接受比自己大的zxid，意味着经过多次之后，拥有最新数据的节点才有可能成为leader raft 协议和 zab 协议区别 相同点 都使用 timeout 来重新选择 leader 采用quorum来确定整个系统的一致性,这个quorum一般实现是集群中半数以上的服务器, zookeeper里还提供了带权重的quorum实现. 都由leader来发起写操作. 都采用心跳检测存活性 leader election都采用先到先得的投票方式 zookeeper 的 zab 实现里选主要求选出来的主拥有 quorum 里最新的历史，而 raft 的 follower 的选主投票根据 term 的大小+日志完成度来选择投票给谁，这点上来看是比较类似的 不同点 zab用的是epoch和count的组合来唯一表示一个值,而raft用的是term和index zab的follower在投票给一个leader之前必须和leader的日志达成一致,而raft的follower则简单地说是谁的 term 高就投票给谁 raft协议的心跳是从leader到follower,而zab协议则相反 raft 协议数据只有单向地从 leader 到 follower（成为 leader 的条件之一就是拥有最新的 log），而 zab 的 zookeeper 实现中 ，一个 prospective leader (epoch最大但是zxid不是最大)需要将自己的 log 更新为 quorum 里面最新的 log，然后才好在 synchronization 阶段将 quorum 里的其他机器的 log 都同步到一致 https://www.cnblogs.com/think90/p/11443428.html 一致性算法的实践 使用Paxos的组件，Chubby(Google首次运用Multi Paxos算法到工程领域) 使用Raft的组件，Redis-Cluster、etcd 使用ZAB的组件，Zookeeper（Yahoo开源）" />
+<meta name="description" content="在分布式系统中，如何让多个节点对某个值达成一致，是最核心也是最困难的问题之一。本文将系统梳理一致性与共识的概念区别，介绍 BFT 容错分类，并深入讲解 Paxos、Raft、ZAB 三种主流共识算法的原理与差异。 一、一致性（Consistency）与共识（Consensus）的区别 Paxos、Raft 等算法经常被误称为”一致性算法”，但实际上它们是共识（Consensus）算法。 一致性（Consistency）：指对于同一数据的多个副本，其对外表现的数据一致性。如强一致性、顺序一致性、最终一致性等，描述的是副本之间数据状态的统一程度。一致性强调结果。 共识（Consensus）：指通过某种算法使多个节点达成相同状态的过程。共识强调过程。 简言之，一致性关注的是”数据看起来是否一样”，共识关注的是”节点如何协商出一个统一的决定”。 参考：https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg 二、拜占庭容错（BFT）分类 在分布式系统中，节点可能因为各种原因而表现异常——不仅仅是崩溃，还可能发送错误甚至恶意的消息。这种不听指挥的坏节点被称为”拜占庭错误节点”。按照对拜占庭错误的容忍程度，分布式系统可以分为三类： 类别 特点 代表算法 非 BFT 类 完全无法容忍拜占庭错误，但可以容忍节点崩溃等故障 Paxos、SOLO、Raft BFT 类 可以容忍拜占庭错误节点 PBFT、SBFT、VBFT、DBFT 区块链类 不仅容忍拜占庭错误，还能容忍节点的自由进出 PoW、PoS、DPoS 这个分类思想其实与 Git 的版本分支管理颇为相似——都需要在多个”分支”之间协调出一个统一的”主线”。 参考：https://www.cnblogs.com/X-knight/p/9157814.html 三、一致性的分类 3.1 弱一致性（最终一致性） 不要求所有节点在任意时刻都能读到最新数据，但保证在一定时间后所有副本最终会收敛到一致状态。 典型代表： DNS（Domain Name System）：域名解析的传播有延迟窗口 Gossip 协议：Cassandra、Redis 集群的节点通信协议。参考：https://www.jianshu.com/p/54eab117e6ae 3.2 强一致性 每次读操作都能读到最近一次写操作的结果。实现方式包括： 主从同步：写操作完成后等待所有从节点同步完毕再返回 多数一致（Quorum）：每次写保证写入 &gt; N/2 个节点，每次读保证从 &gt; N/2 个节点中读取。代表算法：Paxos、Raft（Multi-Paxos）、ZAB（Multi-Paxos 变种） 四、Basic Paxos 算法 Paxos 算法是 Leslie Lamport 于 1990 年提出的基于消息传递的共识算法，是分布式共识领域的奠基之作。其发展分为 Basic Paxos、Multi Paxos 和 Fast Paxos。 Basic Paxos 的核心流程分为三个阶段（与 3PC 有相似之处，都需要两轮多数投票）： 4.1 第一阶段：Prepare / Promise Proposer 发出 Prepare 请求： Proposer 生成全局唯一且递增的 Proposal ID（可使用时间戳 + Server ID），向所有 Acceptor 发送 Prepare 请求，此时只需携带 Proposal ID，无需提案内容。 Acceptor 给出承诺： 承诺一：不再接受 Proposal ID ≤ 当前请求的 Prepare 请求 承诺二：不再接受 Proposal ID &lt; 当前请求的 Propose 请求 应答：在不违背已有承诺的前提下，回复已 Accept 过的提案中 Proposal ID 最大的那个提案的 Value 和 Proposal ID；如果没有，则返回空值 4.2 第二阶段：Propose / Accept Proposer 提案： 收到多数 Acceptor 的 Promise 应答后，从应答中选择 Proposal ID 最大的提案的 Value 作为本次要发起的提案。如果所有应答的 Value 均为空，则可以自行决定提案 Value。然后携带当前 Proposal ID，向所有 Acceptor 发送 Propose 请求。 Acceptor 接受： 在不违背之前承诺的前提下，接受并持久化当前 Proposal ID 和提案 Value。 4.3 第三阶段：发送最终决议 Proposer 收到多数 Acceptor 的 Accept 后，决议形成，将最终决议发送给所有 Learner。 参考： https://zhuanlan.zhihu.com/p/31780743 https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg 4.4 活锁问题 Basic Paxos 可能出现活锁：假设 Proposer1 和 Proposer2 先后向 Acceptor 发送请求。Acceptor 接收到 Proposer1 的 Prepare 后更新编号为 Proposer1 的编号；此时 Proposer2 发送了更大编号的 Prepare，Acceptor 又更新为 Proposer2 的编号。当 Proposer1 发送 Accept 请求时编号不满足要求被拒绝，于是重新获取编号回到第一阶段……两个 Proposer 之间不断重复，导致系统出现活锁。 解决方案通常是引入随机退避或选举出一个Leader Proposer来避免多个 Proposer 竞争。 五、Split Brain（脑裂）问题 脑裂是分布式协议中一个经典问题。当集群中的节点之间通信中断时，每个分区都可能认为自己是唯一的”主”，从而产生多个 Master。区块链中的分叉本质上也是一种脑裂现象。 5.1 Zookeeper 的解决方案 Zookeeper 通过以下策略避免脑裂： 集群节点数目必须是奇数 集群中必须超过半数节点（Majority） 可用，整个集群才能对外提供服务 Majority 是一种 Quorum（法定人数）机制来支持 Leader 选举，可以有效防止脑裂。使用奇数个节点可以在相同容错能力的情况下节省资源——例如 3 个节点和 4 个节点都只能容忍 1 个节点故障，所以 3 个节点更经济。 六、Raft 算法 Raft（Reliable, Replicated, Redundant, And Fault-Tolerant）是 Multi-Paxos 的一种简化实现，通过将共识问题分解为 Leader 选举 和 日志复制 两个子问题来降低理解和实现难度。 6.1 Leader 选举 多个 Follower 变身为 Candidate，同时 term++，投票给自己并向其他节点发送 RequestVote RPC 节点 N 会投票给 term 最新的、log 至少和自身一样新的 Candidate Candidate 收到多数投票后，发送 Leader 心跳，接收者转变为 Follower，选举结束 如果一段时间后仍无胜者（票数相同），则开启新一轮选举。Raft 使用随机选举超时时间来解决票数相同的问题 6.2 日志复制（Log Replication） 日志复制是保证节点一致性的核心机制。Leader 选举出来后负责处理客户端请求，所有更新操作都必须先经过 Leader。 Leader 接收到客户端日志后，先追加到本地 Log 通过心跳将该 Entry 同步给其他 Follower Follower 记录日志后向 Leader 发送 ACK 当 Leader 收到多数（n/2+1）Follower 的 ACK 后，将该日志设为已提交并追加到本地磁盘，通知客户端 在下个心跳中，Leader 通知所有 Follower 将该日志存储到本地磁盘 参考：https://www.cnblogs.com/binyue/p/8647733.html 七、ZAB 协议 ZAB（Zookeeper Atomic Broadcast）协议是 Zookeeper 内部使用的一致性协议，基本与 Raft 相同，分为两个阶段。 7.1 消息广播阶段（类似 2PC） Leader 写本地后，同步给 Follower 大多数 Follower 写成功并 ACK 给 Leader，表示写成功 否则表示集群故障，进入崩溃恢复阶段 7.2 崩溃恢复阶段（发现 + 同步） 自我投票：节点先投票给自己，然后请求其他节点投票 投票比较策略： 优先比较 epoch（纪元），epoch 大的优先 epoch 相同则比较 zxid（事务 ID），zxid 大的优先（zxid 越大表示数据越完整） epoch 和 zxid 都相等，则比较 serverId，serverId 大的优先（可以将性能更好的机器配置更大的 serverId） 数据同步：Leader 产生后，根据自己和 Follower 的 ZXID 进行比对，比对结果要么回滚，要么与 Leader 同步 八、Raft 与 ZAB 的异同 8.1 相同点 都使用 timeout 来触发重新选举 都采用 Quorum 机制（通常是集群半数以上）确定一致性 都由 Leader 发起写操作 都采用心跳检测存活性 Leader 选举都采用先到先得的投票方式 选主都要求候选者拥有最新的数据 8.2 不同点 维度 Raft ZAB 标识方式 term + index epoch + count（zxid） 日志一致性要求 Follower 投票时比较 term 和日志完成度 Follower 投票前必须和 Leader 日志达成一致 心跳方向 Leader → Follower Follower → Leader 数据流向 单向，Leader → Follower 可能双向，新 Leader（epoch 最大但 zxid 不是最大）需要先从 Quorum 中同步最新日志 ZAB 的一些术语与 Raft 不同：ZAB 将 Leader 的一个生命周期叫做 epoch，而 Raft 称之为 term。ZAB 选举阶段只接受比自己大的 zxid，意味着经过多轮投票后，拥有最新数据的节点才有可能成为 Leader。 参考：https://www.cnblogs.com/think90/p/11443428.html 九、共识算法的工程实践 不同的共识算法在工业界有着广泛的应用： 算法 使用组件 Paxos Chubby（Google 首次将 Multi-Paxos 应用于工程领域） Raft Redis Cluster、etcd ZAB Zookeeper（Yahoo 开源） 总结 共识算法是分布式系统的基石。从理论上的 Paxos 到工程友好的 Raft 和 ZAB，共识算法不断在正确性、可理解性和工程可实现性之间寻找平衡。理解这些算法的核心思想——多数派投票、Leader 选举、日志复制——对于设计和运维分布式系统至关重要。在实际选型时，Raft 因其简洁的设计成为当前最流行的选择，而 ZAB 则在 Zookeeper 生态中发挥着不可替代的作用。" />
+<meta property="og:description" content="在分布式系统中，如何让多个节点对某个值达成一致，是最核心也是最困难的问题之一。本文将系统梳理一致性与共识的概念区别，介绍 BFT 容错分类，并深入讲解 Paxos、Raft、ZAB 三种主流共识算法的原理与差异。 一、一致性（Consistency）与共识（Consensus）的区别 Paxos、Raft 等算法经常被误称为”一致性算法”，但实际上它们是共识（Consensus）算法。 一致性（Consistency）：指对于同一数据的多个副本，其对外表现的数据一致性。如强一致性、顺序一致性、最终一致性等，描述的是副本之间数据状态的统一程度。一致性强调结果。 共识（Consensus）：指通过某种算法使多个节点达成相同状态的过程。共识强调过程。 简言之，一致性关注的是”数据看起来是否一样”，共识关注的是”节点如何协商出一个统一的决定”。 参考：https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg 二、拜占庭容错（BFT）分类 在分布式系统中，节点可能因为各种原因而表现异常——不仅仅是崩溃，还可能发送错误甚至恶意的消息。这种不听指挥的坏节点被称为”拜占庭错误节点”。按照对拜占庭错误的容忍程度，分布式系统可以分为三类： 类别 特点 代表算法 非 BFT 类 完全无法容忍拜占庭错误，但可以容忍节点崩溃等故障 Paxos、SOLO、Raft BFT 类 可以容忍拜占庭错误节点 PBFT、SBFT、VBFT、DBFT 区块链类 不仅容忍拜占庭错误，还能容忍节点的自由进出 PoW、PoS、DPoS 这个分类思想其实与 Git 的版本分支管理颇为相似——都需要在多个”分支”之间协调出一个统一的”主线”。 参考：https://www.cnblogs.com/X-knight/p/9157814.html 三、一致性的分类 3.1 弱一致性（最终一致性） 不要求所有节点在任意时刻都能读到最新数据，但保证在一定时间后所有副本最终会收敛到一致状态。 典型代表： DNS（Domain Name System）：域名解析的传播有延迟窗口 Gossip 协议：Cassandra、Redis 集群的节点通信协议。参考：https://www.jianshu.com/p/54eab117e6ae 3.2 强一致性 每次读操作都能读到最近一次写操作的结果。实现方式包括： 主从同步：写操作完成后等待所有从节点同步完毕再返回 多数一致（Quorum）：每次写保证写入 &gt; N/2 个节点，每次读保证从 &gt; N/2 个节点中读取。代表算法：Paxos、Raft（Multi-Paxos）、ZAB（Multi-Paxos 变种） 四、Basic Paxos 算法 Paxos 算法是 Leslie Lamport 于 1990 年提出的基于消息传递的共识算法，是分布式共识领域的奠基之作。其发展分为 Basic Paxos、Multi Paxos 和 Fast Paxos。 Basic Paxos 的核心流程分为三个阶段（与 3PC 有相似之处，都需要两轮多数投票）： 4.1 第一阶段：Prepare / Promise Proposer 发出 Prepare 请求： Proposer 生成全局唯一且递增的 Proposal ID（可使用时间戳 + Server ID），向所有 Acceptor 发送 Prepare 请求，此时只需携带 Proposal ID，无需提案内容。 Acceptor 给出承诺： 承诺一：不再接受 Proposal ID ≤ 当前请求的 Prepare 请求 承诺二：不再接受 Proposal ID &lt; 当前请求的 Propose 请求 应答：在不违背已有承诺的前提下，回复已 Accept 过的提案中 Proposal ID 最大的那个提案的 Value 和 Proposal ID；如果没有，则返回空值 4.2 第二阶段：Propose / Accept Proposer 提案： 收到多数 Acceptor 的 Promise 应答后，从应答中选择 Proposal ID 最大的提案的 Value 作为本次要发起的提案。如果所有应答的 Value 均为空，则可以自行决定提案 Value。然后携带当前 Proposal ID，向所有 Acceptor 发送 Propose 请求。 Acceptor 接受： 在不违背之前承诺的前提下，接受并持久化当前 Proposal ID 和提案 Value。 4.3 第三阶段：发送最终决议 Proposer 收到多数 Acceptor 的 Accept 后，决议形成，将最终决议发送给所有 Learner。 参考： https://zhuanlan.zhihu.com/p/31780743 https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg 4.4 活锁问题 Basic Paxos 可能出现活锁：假设 Proposer1 和 Proposer2 先后向 Acceptor 发送请求。Acceptor 接收到 Proposer1 的 Prepare 后更新编号为 Proposer1 的编号；此时 Proposer2 发送了更大编号的 Prepare，Acceptor 又更新为 Proposer2 的编号。当 Proposer1 发送 Accept 请求时编号不满足要求被拒绝，于是重新获取编号回到第一阶段……两个 Proposer 之间不断重复，导致系统出现活锁。 解决方案通常是引入随机退避或选举出一个Leader Proposer来避免多个 Proposer 竞争。 五、Split Brain（脑裂）问题 脑裂是分布式协议中一个经典问题。当集群中的节点之间通信中断时，每个分区都可能认为自己是唯一的”主”，从而产生多个 Master。区块链中的分叉本质上也是一种脑裂现象。 5.1 Zookeeper 的解决方案 Zookeeper 通过以下策略避免脑裂： 集群节点数目必须是奇数 集群中必须超过半数节点（Majority） 可用，整个集群才能对外提供服务 Majority 是一种 Quorum（法定人数）机制来支持 Leader 选举，可以有效防止脑裂。使用奇数个节点可以在相同容错能力的情况下节省资源——例如 3 个节点和 4 个节点都只能容忍 1 个节点故障，所以 3 个节点更经济。 六、Raft 算法 Raft（Reliable, Replicated, Redundant, And Fault-Tolerant）是 Multi-Paxos 的一种简化实现，通过将共识问题分解为 Leader 选举 和 日志复制 两个子问题来降低理解和实现难度。 6.1 Leader 选举 多个 Follower 变身为 Candidate，同时 term++，投票给自己并向其他节点发送 RequestVote RPC 节点 N 会投票给 term 最新的、log 至少和自身一样新的 Candidate Candidate 收到多数投票后，发送 Leader 心跳，接收者转变为 Follower，选举结束 如果一段时间后仍无胜者（票数相同），则开启新一轮选举。Raft 使用随机选举超时时间来解决票数相同的问题 6.2 日志复制（Log Replication） 日志复制是保证节点一致性的核心机制。Leader 选举出来后负责处理客户端请求，所有更新操作都必须先经过 Leader。 Leader 接收到客户端日志后，先追加到本地 Log 通过心跳将该 Entry 同步给其他 Follower Follower 记录日志后向 Leader 发送 ACK 当 Leader 收到多数（n/2+1）Follower 的 ACK 后，将该日志设为已提交并追加到本地磁盘，通知客户端 在下个心跳中，Leader 通知所有 Follower 将该日志存储到本地磁盘 参考：https://www.cnblogs.com/binyue/p/8647733.html 七、ZAB 协议 ZAB（Zookeeper Atomic Broadcast）协议是 Zookeeper 内部使用的一致性协议，基本与 Raft 相同，分为两个阶段。 7.1 消息广播阶段（类似 2PC） Leader 写本地后，同步给 Follower 大多数 Follower 写成功并 ACK 给 Leader，表示写成功 否则表示集群故障，进入崩溃恢复阶段 7.2 崩溃恢复阶段（发现 + 同步） 自我投票：节点先投票给自己，然后请求其他节点投票 投票比较策略： 优先比较 epoch（纪元），epoch 大的优先 epoch 相同则比较 zxid（事务 ID），zxid 大的优先（zxid 越大表示数据越完整） epoch 和 zxid 都相等，则比较 serverId，serverId 大的优先（可以将性能更好的机器配置更大的 serverId） 数据同步：Leader 产生后，根据自己和 Follower 的 ZXID 进行比对，比对结果要么回滚，要么与 Leader 同步 八、Raft 与 ZAB 的异同 8.1 相同点 都使用 timeout 来触发重新选举 都采用 Quorum 机制（通常是集群半数以上）确定一致性 都由 Leader 发起写操作 都采用心跳检测存活性 Leader 选举都采用先到先得的投票方式 选主都要求候选者拥有最新的数据 8.2 不同点 维度 Raft ZAB 标识方式 term + index epoch + count（zxid） 日志一致性要求 Follower 投票时比较 term 和日志完成度 Follower 投票前必须和 Leader 日志达成一致 心跳方向 Leader → Follower Follower → Leader 数据流向 单向，Leader → Follower 可能双向，新 Leader（epoch 最大但 zxid 不是最大）需要先从 Quorum 中同步最新日志 ZAB 的一些术语与 Raft 不同：ZAB 将 Leader 的一个生命周期叫做 epoch，而 Raft 称之为 term。ZAB 选举阶段只接受比自己大的 zxid，意味着经过多轮投票后，拥有最新数据的节点才有可能成为 Leader。 参考：https://www.cnblogs.com/think90/p/11443428.html 九、共识算法的工程实践 不同的共识算法在工业界有着广泛的应用： 算法 使用组件 Paxos Chubby（Google 首次将 Multi-Paxos 应用于工程领域） Raft Redis Cluster、etcd ZAB Zookeeper（Yahoo 开源） 总结 共识算法是分布式系统的基石。从理论上的 Paxos 到工程友好的 Raft 和 ZAB，共识算法不断在正确性、可理解性和工程可实现性之间寻找平衡。理解这些算法的核心思想——多数派投票、Leader 选举、日志复制——对于设计和运维分布式系统至关重要。在实际选型时，Raft 因其简洁的设计成为当前最流行的选择，而 ZAB 则在 Zookeeper 生态中发挥着不可替代的作用。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-11-12T10:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="一致性（Consistency）与 共识（Consensus）" />
+<meta property="twitter:title" content="分布式共识算法全解析：从 Paxos 到 Raft 与 ZAB" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"Byzantine Fault Tolerance 分类 在分布式系统中，这种不听指挥的坏节点，就被称为“拜占庭错误节点”。一般来说，按照对“拜占庭错误节点”的容忍程度（简称BFT，Byzantine Fault Tolerance），分布式系统可以分为以下三类： 非BFT类：完全无法容忍“拜占庭错误节点”，但可以容忍其他错误的系统。（包括Pasox、SOLO、RAFT等。） BFT类：可以容忍“拜占庭错误节点”的系统。（包括PBFT、SBFT、VBFT、DBFT等。） 区块链类：不仅可以容忍“拜占庭错误节点”，还可以容忍节点的自由进出，这才是我们真正意义上的、狭义上的“区块链”。 （包括我们熟悉的POW、POS、DPOS等等。） 其实与git的版本分支管理思想是一致的 https://www.cnblogs.com/X-knight/p/9157814.html “一致性（Consistency）”和“共识（Consensus）” Paxos、Raft等通常被误称为“一致性算法”。但是“一致性（Consistency）”和“共识（Consensus）”并不是同一个概念。Paxos、Raft等其实都是共识（Consensus）算法。 从专业的角度来讲，我们通常所说的一致性（Consistency）在分布式系统中指的是对于同一个数据的多个副本，其对外表现的数据一致性，如强一致性、顺序一致性、最终一致性等，都是用来描述副本问题中的一致性的。而共识（Consensus）则不同，简单来说，共识问题是要经过某种算法使多个节点达成相同状态的一个过程。一致性强调结果，共识强调过程。 https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg 一致性分类 弱一致性（最终一致性） DNS（Domain Name System） Gossip（Cassandra、Redis的通信协议）https://www.jianshu.com/p/54eab117e6ae 强一致性 主从同步 多数一致，每次写都保证写入大于N/2个节点，每次读保证从大于N/2个节点中读。 Paxos、Raft（multi-paxos）、ZAB（multi-paxos，Zookeeper atomic broadcast protocol，是Zookeeper内部用到的一致性协议。基本与Raft相同） Pasox Paxos算法是莱斯利·兰伯特(Leslie Lamport)1990年提出的一种基于消息传递的一致性算法。 Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos Basic Paxos （忽然发现这个过程与3PC很相似，需要2次多数投票） 一阶段，Proposer发出prepare()，Acceptor给出承诺promise() Proposer生成全局唯一且递增的Proposal ID (可使用时间戳加Server ID)，向所有Acceptors发送Prepare请求，这里无需携带提案内容，只携带Proposal ID即可。 Acceptor承诺一：不再接受Proposal ID小于等于（注意：这里是&lt;= ）当前请求的Prepare请求。 Acceptor承诺二：不再接受Proposal ID小于（注意：这里是&lt; ）当前请求的Propose请求。 Acceptor应答一：不违背以前作出的承诺下，回复已经Accept过的提案中Proposal ID最大的那个提案的Value和Proposal ID，没有则返回空值。 二阶段，Proposer发出提议propose()，Acceptor接受accept() Proposer提案：Proposer收到多数Acceptors的Promise应答后，从应答中选择Proposal ID最大的提案的Value，作为本次要发起的提案。如果所有应答的提案Value均为空值，则可以自己随意决定提案Value。然后携带当前Proposal ID，向所有Acceptors发送Propose请求。 Acceptor接受：Acceptor收到Propose请求后，在不违背自己之前作出的承诺下，接受并持久化当前Proposal ID和提案Value。 三阶段，Proposer发送最终决议 Proposer收到多数Acceptors的Accept后，决议形成，将形成的决议发送给所有Learners。 https://zhuanlan.zhihu.com/p/31780743 https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg 活锁，可能会存在一种情况：假定有2个proposer先后向acceptor发送请求，acceptor在接收到proposer1的prepare请求后更新编号为proposer1的编号； 此时，proposer2接着向acceptor发送比proposer1编号更大的prepare请求，acceptor会立刻更新成proposer2的编号，那么当proposer1发送accept请求时由于编号不满足要求就会被accept给拒绝掉，则重新获取编号再次回到第一阶段发送prepare请求； 从此2个proposer之间不断重复发送prepare请求，导致系统出现活锁 如何解决split brain问题 分布式协议一个著名问题就是 split brain 问题。 简单说，就是比如当你的 cluster 里面有两个结点，它们都知道在这个 cluster 里需要选举出一个 master。那么当它们两之间的通信完全没有问题的时候，就会达成共识，选出其中一个作为 master。 但是如果它们之间的通信出了问题，那么两个结点都会觉得现在没有 master，所以每个都把自己选举成 master。于是 cluster 里面就会有两个 master。 区块链的分叉其实类似分布式系统的split brain。 一般来说，Zookeeper会默认设置： zookeeper cluster的节点数目必须是奇数。 zookeeper 集群中必须超过半数节点(Majority)可用，整个集群才能对外可用。 Majority(大多数) 就是一种 Quorum(法定代表人) 的方式来支持Leader选举，可以防止 split brain出现。奇数个节点可以在相同容错能力的情况下节省资源。 Multi Paxos之Raft (Reliable, Replicated, Redundant, And Fault-Tolerant) 多个follower变身为candidate，同时term++，投票给自己同时向其他节点发送RequestVote RPC 节点(N)会投票给term是最新的，log至少和自身(N)一样新的candidate candidate收到多数投票，然后发送自己已经是leader的HeartBeat，接受者转变为follower，选举结束 一段时间后依然没有胜者。该种情况下会开启新一轮的选举。（Raft中使用随机选举超时时间来解决当票数相同无法确定leader的问题。） 日志复制（Log Replication）主要作用是用于保证节点的一致性，这阶段所做的操作也是为了保证一致性与高可用性。 当Leader选举出来后便开始负责客户端的请求，所有事务（更新操作）请求都必须先经过Leader处理，日志复制（Log Replication）就是为了保证执行相同的操作序列所做的工作。 在Raft中当接收到客户端的日志（事务请求）后先把该日志追加到本地的Log中，然后通过heartbeat把该Entry同步给其他Follower，Follower接收到日志后记录日志然后向Leader发送ACK，当Leader收到大多数（n/2+1）Follower的ACK信息后将该日志设置为已提交并追加到本地磁盘中，通知客户端并在下个heartbeat中Leader将通知所有的Follower将该日志存储在自己的本地磁盘中。 https://www.cnblogs.com/binyue/p/8647733.html ZAB协议 2阶段 消息广播阶段 （类似2PC） leader写本地之后，同步给follower，大多数follower写成功并且ACK给leader，就表示写成功 否则表示集群故障了，进入崩溃恢复阶段 崩溃恢复阶段 （发现阶段、同步阶段zxid不是最大） 自我投票，之后让其他follower投票给自己 投票比较策略：当其他节点的纪元比自身高投它，如果纪元epoch相同比较自身的zxid的大小，选举zxid大的节点，这里的zxid代表节点所提交事务最大的id，zxid越大代表该节点的数据越完整。 最后如果epoch和zxid都相等，则比较服务的serverId，这个Id是配置zookeeper集群所配置的，所以我们配置zookeeper集群的时候可以把服务性能更高的集群的serverId配置大些，让性能好的机器担任leader角色。 leader产生后，当 Follower 链接上 Leader 之后，Leader 服务器会根据自己服务器上最后被提交的 ZXID 和 Follower 上的 ZXID 进行比对，比对结果要么回滚，要么和 Leader 同步。 ZAB算法 Zookeeper atomic broadcast protocol 基本与Raft相同，在一些名词叫起来是有区别的 ZAB将Leader的一个生命周期叫做epoch，而Raft称之为term 实现上也有些许不同，如raft保证日志的连续性，心跳是Leader向Follower发送，而ZAB方向与之相反 ZAB选举阶段只接受比自己大的zxid，意味着经过多次之后，拥有最新数据的节点才有可能成为leader raft 协议和 zab 协议区别 相同点 都使用 timeout 来重新选择 leader 采用quorum来确定整个系统的一致性,这个quorum一般实现是集群中半数以上的服务器, zookeeper里还提供了带权重的quorum实现. 都由leader来发起写操作. 都采用心跳检测存活性 leader election都采用先到先得的投票方式 zookeeper 的 zab 实现里选主要求选出来的主拥有 quorum 里最新的历史，而 raft 的 follower 的选主投票根据 term 的大小+日志完成度来选择投票给谁，这点上来看是比较类似的 不同点 zab用的是epoch和count的组合来唯一表示一个值,而raft用的是term和index zab的follower在投票给一个leader之前必须和leader的日志达成一致,而raft的follower则简单地说是谁的 term 高就投票给谁 raft协议的心跳是从leader到follower,而zab协议则相反 raft 协议数据只有单向地从 leader 到 follower（成为 leader 的条件之一就是拥有最新的 log），而 zab 的 zookeeper 实现中 ，一个 prospective leader (epoch最大但是zxid不是最大)需要将自己的 log 更新为 quorum 里面最新的 log，然后才好在 synchronization 阶段将 quorum 里的其他机器的 log 都同步到一致 https://www.cnblogs.com/think90/p/11443428.html 一致性算法的实践 使用Paxos的组件，Chubby(Google首次运用Multi Paxos算法到工程领域) 使用Raft的组件，Redis-Cluster、etcd 使用ZAB的组件，Zookeeper（Yahoo开源）","headline":"一致性（Consistency）与 共识（Consensus）","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"在分布式系统中，如何让多个节点对某个值达成一致，是最核心也是最困难的问题之一。本文将系统梳理一致性与共识的概念区别，介绍 BFT 容错分类，并深入讲解 Paxos、Raft、ZAB 三种主流共识算法的原理与差异。 一、一致性（Consistency）与共识（Consensus）的区别 Paxos、Raft 等算法经常被误称为”一致性算法”，但实际上它们是共识（Consensus）算法。 一致性（Consistency）：指对于同一数据的多个副本，其对外表现的数据一致性。如强一致性、顺序一致性、最终一致性等，描述的是副本之间数据状态的统一程度。一致性强调结果。 共识（Consensus）：指通过某种算法使多个节点达成相同状态的过程。共识强调过程。 简言之，一致性关注的是”数据看起来是否一样”，共识关注的是”节点如何协商出一个统一的决定”。 参考：https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg 二、拜占庭容错（BFT）分类 在分布式系统中，节点可能因为各种原因而表现异常——不仅仅是崩溃，还可能发送错误甚至恶意的消息。这种不听指挥的坏节点被称为”拜占庭错误节点”。按照对拜占庭错误的容忍程度，分布式系统可以分为三类： 类别 特点 代表算法 非 BFT 类 完全无法容忍拜占庭错误，但可以容忍节点崩溃等故障 Paxos、SOLO、Raft BFT 类 可以容忍拜占庭错误节点 PBFT、SBFT、VBFT、DBFT 区块链类 不仅容忍拜占庭错误，还能容忍节点的自由进出 PoW、PoS、DPoS 这个分类思想其实与 Git 的版本分支管理颇为相似——都需要在多个”分支”之间协调出一个统一的”主线”。 参考：https://www.cnblogs.com/X-knight/p/9157814.html 三、一致性的分类 3.1 弱一致性（最终一致性） 不要求所有节点在任意时刻都能读到最新数据，但保证在一定时间后所有副本最终会收敛到一致状态。 典型代表： DNS（Domain Name System）：域名解析的传播有延迟窗口 Gossip 协议：Cassandra、Redis 集群的节点通信协议。参考：https://www.jianshu.com/p/54eab117e6ae 3.2 强一致性 每次读操作都能读到最近一次写操作的结果。实现方式包括： 主从同步：写操作完成后等待所有从节点同步完毕再返回 多数一致（Quorum）：每次写保证写入 &gt; N/2 个节点，每次读保证从 &gt; N/2 个节点中读取。代表算法：Paxos、Raft（Multi-Paxos）、ZAB（Multi-Paxos 变种） 四、Basic Paxos 算法 Paxos 算法是 Leslie Lamport 于 1990 年提出的基于消息传递的共识算法，是分布式共识领域的奠基之作。其发展分为 Basic Paxos、Multi Paxos 和 Fast Paxos。 Basic Paxos 的核心流程分为三个阶段（与 3PC 有相似之处，都需要两轮多数投票）： 4.1 第一阶段：Prepare / Promise Proposer 发出 Prepare 请求： Proposer 生成全局唯一且递增的 Proposal ID（可使用时间戳 + Server ID），向所有 Acceptor 发送 Prepare 请求，此时只需携带 Proposal ID，无需提案内容。 Acceptor 给出承诺： 承诺一：不再接受 Proposal ID ≤ 当前请求的 Prepare 请求 承诺二：不再接受 Proposal ID &lt; 当前请求的 Propose 请求 应答：在不违背已有承诺的前提下，回复已 Accept 过的提案中 Proposal ID 最大的那个提案的 Value 和 Proposal ID；如果没有，则返回空值 4.2 第二阶段：Propose / Accept Proposer 提案： 收到多数 Acceptor 的 Promise 应答后，从应答中选择 Proposal ID 最大的提案的 Value 作为本次要发起的提案。如果所有应答的 Value 均为空，则可以自行决定提案 Value。然后携带当前 Proposal ID，向所有 Acceptor 发送 Propose 请求。 Acceptor 接受： 在不违背之前承诺的前提下，接受并持久化当前 Proposal ID 和提案 Value。 4.3 第三阶段：发送最终决议 Proposer 收到多数 Acceptor 的 Accept 后，决议形成，将最终决议发送给所有 Learner。 参考： https://zhuanlan.zhihu.com/p/31780743 https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg 4.4 活锁问题 Basic Paxos 可能出现活锁：假设 Proposer1 和 Proposer2 先后向 Acceptor 发送请求。Acceptor 接收到 Proposer1 的 Prepare 后更新编号为 Proposer1 的编号；此时 Proposer2 发送了更大编号的 Prepare，Acceptor 又更新为 Proposer2 的编号。当 Proposer1 发送 Accept 请求时编号不满足要求被拒绝，于是重新获取编号回到第一阶段……两个 Proposer 之间不断重复，导致系统出现活锁。 解决方案通常是引入随机退避或选举出一个Leader Proposer来避免多个 Proposer 竞争。 五、Split Brain（脑裂）问题 脑裂是分布式协议中一个经典问题。当集群中的节点之间通信中断时，每个分区都可能认为自己是唯一的”主”，从而产生多个 Master。区块链中的分叉本质上也是一种脑裂现象。 5.1 Zookeeper 的解决方案 Zookeeper 通过以下策略避免脑裂： 集群节点数目必须是奇数 集群中必须超过半数节点（Majority） 可用，整个集群才能对外提供服务 Majority 是一种 Quorum（法定人数）机制来支持 Leader 选举，可以有效防止脑裂。使用奇数个节点可以在相同容错能力的情况下节省资源——例如 3 个节点和 4 个节点都只能容忍 1 个节点故障，所以 3 个节点更经济。 六、Raft 算法 Raft（Reliable, Replicated, Redundant, And Fault-Tolerant）是 Multi-Paxos 的一种简化实现，通过将共识问题分解为 Leader 选举 和 日志复制 两个子问题来降低理解和实现难度。 6.1 Leader 选举 多个 Follower 变身为 Candidate，同时 term++，投票给自己并向其他节点发送 RequestVote RPC 节点 N 会投票给 term 最新的、log 至少和自身一样新的 Candidate Candidate 收到多数投票后，发送 Leader 心跳，接收者转变为 Follower，选举结束 如果一段时间后仍无胜者（票数相同），则开启新一轮选举。Raft 使用随机选举超时时间来解决票数相同的问题 6.2 日志复制（Log Replication） 日志复制是保证节点一致性的核心机制。Leader 选举出来后负责处理客户端请求，所有更新操作都必须先经过 Leader。 Leader 接收到客户端日志后，先追加到本地 Log 通过心跳将该 Entry 同步给其他 Follower Follower 记录日志后向 Leader 发送 ACK 当 Leader 收到多数（n/2+1）Follower 的 ACK 后，将该日志设为已提交并追加到本地磁盘，通知客户端 在下个心跳中，Leader 通知所有 Follower 将该日志存储到本地磁盘 参考：https://www.cnblogs.com/binyue/p/8647733.html 七、ZAB 协议 ZAB（Zookeeper Atomic Broadcast）协议是 Zookeeper 内部使用的一致性协议，基本与 Raft 相同，分为两个阶段。 7.1 消息广播阶段（类似 2PC） Leader 写本地后，同步给 Follower 大多数 Follower 写成功并 ACK 给 Leader，表示写成功 否则表示集群故障，进入崩溃恢复阶段 7.2 崩溃恢复阶段（发现 + 同步） 自我投票：节点先投票给自己，然后请求其他节点投票 投票比较策略： 优先比较 epoch（纪元），epoch 大的优先 epoch 相同则比较 zxid（事务 ID），zxid 大的优先（zxid 越大表示数据越完整） epoch 和 zxid 都相等，则比较 serverId，serverId 大的优先（可以将性能更好的机器配置更大的 serverId） 数据同步：Leader 产生后，根据自己和 Follower 的 ZXID 进行比对，比对结果要么回滚，要么与 Leader 同步 八、Raft 与 ZAB 的异同 8.1 相同点 都使用 timeout 来触发重新选举 都采用 Quorum 机制（通常是集群半数以上）确定一致性 都由 Leader 发起写操作 都采用心跳检测存活性 Leader 选举都采用先到先得的投票方式 选主都要求候选者拥有最新的数据 8.2 不同点 维度 Raft ZAB 标识方式 term + index epoch + count（zxid） 日志一致性要求 Follower 投票时比较 term 和日志完成度 Follower 投票前必须和 Leader 日志达成一致 心跳方向 Leader → Follower Follower → Leader 数据流向 单向，Leader → Follower 可能双向，新 Leader（epoch 最大但 zxid 不是最大）需要先从 Quorum 中同步最新日志 ZAB 的一些术语与 Raft 不同：ZAB 将 Leader 的一个生命周期叫做 epoch，而 Raft 称之为 term。ZAB 选举阶段只接受比自己大的 zxid，意味着经过多轮投票后，拥有最新数据的节点才有可能成为 Leader。 参考：https://www.cnblogs.com/think90/p/11443428.html 九、共识算法的工程实践 不同的共识算法在工业界有着广泛的应用： 算法 使用组件 Paxos Chubby（Google 首次将 Multi-Paxos 应用于工程领域） Raft Redis Cluster、etcd ZAB Zookeeper（Yahoo 开源） 总结 共识算法是分布式系统的基石。从理论上的 Paxos 到工程友好的 Raft 和 ZAB，共识算法不断在正确性、可理解性和工程可实现性之间寻找平衡。理解这些算法的核心思想——多数派投票、Leader 选举、日志复制——对于设计和运维分布式系统至关重要。在实际选型时，Raft 因其简洁的设计成为当前最流行的选择，而 ZAB 则在 Zookeeper 生态中发挥着不可替代的作用。","headline":"分布式共识算法全解析：从 Paxos 到 Raft 与 ZAB","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/ConsensusAlgorithm.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html">&laquo; Not Only SQL</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/NotOnlySQL.html">&laquo; NoSQL数据库全景解析：从存储原...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/SplitService.html">微服务拆分原则 &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/11/12/SplitService.html">微服务拆分的艺术：原则、方法与领域... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">一致性（Consistency）与 共识（Consensus）</h1>
+    <h1 class="asset-name entry-title">分布式共识算法全解析：从 Paxos 到 Raft 与 ZAB</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,158 +97,294 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="byzantine-fault-tolerance-分类">Byzantine Fault Tolerance 分类</h4>
-<p>在分布式系统中，这种不听指挥的坏节点，就被称为“拜占庭错误节点”。一般来说，按照对“拜占庭错误节点”的容忍程度（简称BFT，Byzantine Fault Tolerance），分布式系统可以分为以下三类：</p>
+      <p>在分布式系统中，如何让多个节点对某个值达成一致，是最核心也是最困难的问题之一。本文将系统梳理一致性与共识的概念区别，介绍 BFT 容错分类，并深入讲解 Paxos、Raft、ZAB 三种主流共识算法的原理与差异。</p>
+
+<hr />
+
+<h2 id="一一致性consistency与共识consensus的区别">一、一致性（Consistency）与共识（Consensus）的区别</h2>
+
+<p>Paxos、Raft 等算法经常被误称为”一致性算法”，但实际上它们是<strong>共识（Consensus）算法</strong>。</p>
+
 <ul>
-  <li>非BFT类：完全无法容忍“拜占庭错误节点”，但可以容忍其他错误的系统。（包括Pasox、SOLO、RAFT等。）</li>
-  <li>BFT类：可以容忍“拜占庭错误节点”的系统。（包括PBFT、SBFT、VBFT、DBFT等。）</li>
-  <li>区块链类：不仅可以容忍“拜占庭错误节点”，还可以容忍节点的自由进出，这才是我们真正意义上的、狭义上的“区块链”。
- （包括我们熟悉的POW、POS、DPOS等等。）</li>
-  <li>其实与git的版本分支管理思想是一致的</li>
+  <li><strong>一致性（Consistency）</strong>：指对于同一数据的多个副本，其对外表现的数据一致性。如强一致性、顺序一致性、最终一致性等，描述的是副本之间数据状态的统一程度。<strong>一致性强调结果。</strong></li>
+  <li><strong>共识（Consensus）</strong>：指通过某种算法使多个节点达成相同状态的过程。<strong>共识强调过程。</strong></li>
 </ul>
 
-<p><a href="https://www.cnblogs.com/X-knight/p/9157814.html">https://www.cnblogs.com/X-knight/p/9157814.html</a></p>
+<p>简言之，一致性关注的是”数据看起来是否一样”，共识关注的是”节点如何协商出一个统一的决定”。</p>
 
-<h4 id="一致性consistency和共识consensus">“一致性（Consistency）”和“共识（Consensus）”</h4>
-<p>Paxos、Raft等通常被误称为“一致性算法”。但是“一致性（Consistency）”和“共识（Consensus）”并不是同一个概念。Paxos、Raft等其实都是共识（Consensus）算法。
-从专业的角度来讲，我们通常所说的一致性（Consistency）在分布式系统中指的是对于同一个数据的多个副本，其对外表现的数据一致性，如强一致性、顺序一致性、最终一致性等，都是用来描述副本问题中的一致性的。而共识（Consensus）则不同，简单来说，共识问题是要经过某种算法使多个节点达成相同状态的一个过程。一致性强调结果，共识强调过程。
-<a href="https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg">https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg</a></p>
+<p>参考：<a href="https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg">https://mp.weixin.qq.com/s/2v2E3Ls8BO1tZhv9qz5vPg</a></p>
 
-<h4 id="一致性分类">一致性分类</h4>
+<hr />
+
+<h2 id="二拜占庭容错bft分类">二、拜占庭容错（BFT）分类</h2>
+
+<p>在分布式系统中，节点可能因为各种原因而表现异常——不仅仅是崩溃，还可能发送错误甚至恶意的消息。这种不听指挥的坏节点被称为”拜占庭错误节点”。按照对拜占庭错误的容忍程度，分布式系统可以分为三类：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>类别</th>
+      <th>特点</th>
+      <th>代表算法</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>非 BFT 类</strong></td>
+      <td>完全无法容忍拜占庭错误，但可以容忍节点崩溃等故障</td>
+      <td>Paxos、SOLO、Raft</td>
+    </tr>
+    <tr>
+      <td><strong>BFT 类</strong></td>
+      <td>可以容忍拜占庭错误节点</td>
+      <td>PBFT、SBFT、VBFT、DBFT</td>
+    </tr>
+    <tr>
+      <td><strong>区块链类</strong></td>
+      <td>不仅容忍拜占庭错误，还能容忍节点的自由进出</td>
+      <td>PoW、PoS、DPoS</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>这个分类思想其实与 Git 的版本分支管理颇为相似——都需要在多个”分支”之间协调出一个统一的”主线”。</p>
+
+<p>参考：<a href="https://www.cnblogs.com/X-knight/p/9157814.html">https://www.cnblogs.com/X-knight/p/9157814.html</a></p>
+
+<hr />
+
+<h2 id="三一致性的分类">三、一致性的分类</h2>
+
+<h3 id="31-弱一致性最终一致性">3.1 弱一致性（最终一致性）</h3>
+
+<p>不要求所有节点在任意时刻都能读到最新数据，但保证在一定时间后所有副本最终会收敛到一致状态。</p>
+
+<p>典型代表：</p>
 <ul>
-  <li>弱一致性（最终一致性）
-    <ol>
-      <li>DNS（Domain Name System）</li>
-      <li>Gossip（Cassandra、Redis的通信协议）<a href="https://www.jianshu.com/p/54eab117e6ae">https://www.jianshu.com/p/54eab117e6ae</a></li>
-    </ol>
-  </li>
-  <li>强一致性
-    <ul>
-      <li>主从同步</li>
-      <li>多数一致，每次写都保证写入大于N/2个节点，每次读保证从大于N/2个节点中读。
-Paxos、Raft（multi-paxos）、ZAB（multi-paxos，Zookeeper atomic broadcast protocol，是Zookeeper内部用到的一致性协议。基本与Raft相同）</li>
-    </ul>
-  </li>
+  <li><strong>DNS（Domain Name System）</strong>：域名解析的传播有延迟窗口</li>
+  <li><strong>Gossip 协议</strong>：Cassandra、Redis 集群的节点通信协议。参考：<a href="https://www.jianshu.com/p/54eab117e6ae">https://www.jianshu.com/p/54eab117e6ae</a></li>
 </ul>
 
-<h4 id="pasox">Pasox</h4>
-<p>Paxos算法是莱斯利·兰伯特(Leslie Lamport)1990年提出的一种基于消息传递的一致性算法。
-Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos</p>
+<h3 id="32-强一致性">3.2 强一致性</h3>
 
-<h4 id="basic-paxos-忽然发现这个过程与3pc很相似需要2次多数投票">Basic Paxos （忽然发现这个过程与3PC很相似，需要2次多数投票）</h4>
+<p>每次读操作都能读到最近一次写操作的结果。实现方式包括：</p>
+
 <ul>
-  <li>一阶段，Proposer发出prepare()，Acceptor给出承诺promise()
-    <ul>
-      <li>Proposer生成全局唯一且递增的Proposal ID (可使用时间戳加Server ID)，向所有Acceptors发送Prepare请求，这里无需携带提案内容，只携带Proposal ID即可。</li>
-      <li>Acceptor承诺一：不再接受Proposal ID小于等于（注意：这里是&lt;= ）当前请求的Prepare请求。</li>
-      <li>Acceptor承诺二：不再接受Proposal ID小于（注意：这里是&lt; ）当前请求的Propose请求。</li>
-      <li>Acceptor应答一：不违背以前作出的承诺下，回复已经Accept过的提案中Proposal ID最大的那个提案的Value和Proposal ID，没有则返回空值。</li>
-    </ul>
-  </li>
-  <li>二阶段，Proposer发出提议propose()，Acceptor接受accept()
-    <ul>
-      <li>Proposer提案：Proposer收到多数Acceptors的Promise应答后，从应答中选择Proposal ID最大的提案的Value，作为本次要发起的提案。如果所有应答的提案Value均为空值，则可以自己随意决定提案Value。然后携带当前Proposal ID，向所有Acceptors发送Propose请求。</li>
-      <li>Acceptor接受：Acceptor收到Propose请求后，在不违背自己之前作出的承诺下，接受并持久化当前Proposal ID和提案Value。</li>
-    </ul>
-  </li>
-  <li>三阶段，Proposer发送最终决议
-    <ul>
-      <li>Proposer收到多数Acceptors的Accept后，决议形成，将形成的决议发送给所有Learners。
-        <ol>
-          <li><a href="https://zhuanlan.zhihu.com/p/31780743">https://zhuanlan.zhihu.com/p/31780743</a></li>
-          <li><a href="https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg">https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg</a></li>
-        </ol>
-      </li>
-    </ul>
-  </li>
+  <li><strong>主从同步</strong>：写操作完成后等待所有从节点同步完毕再返回</li>
+  <li><strong>多数一致（Quorum）</strong>：每次写保证写入 &gt; N/2 个节点，每次读保证从 &gt; N/2 个节点中读取。代表算法：Paxos、Raft（Multi-Paxos）、ZAB（Multi-Paxos 变种）</li>
 </ul>
 
-<h4 id="活锁可能会存在一种情况假定有2个proposer先后向acceptor发送请求acceptor在接收到proposer1的prepare请求后更新编号为proposer1的编号">活锁，可能会存在一种情况：假定有2个proposer先后向acceptor发送请求，acceptor在接收到proposer1的prepare请求后更新编号为proposer1的编号；</h4>
-<p>此时，proposer2接着向acceptor发送比proposer1编号更大的prepare请求，acceptor会立刻更新成proposer2的编号，那么当proposer1发送accept请求时由于编号不满足要求就会被accept给拒绝掉，则重新获取编号再次回到第一阶段发送prepare请求；
-从此2个proposer之间不断重复发送prepare请求，导致系统出现活锁</p>
+<hr />
 
-<h4 id="如何解决split-brain问题">如何解决split brain问题</h4>
+<h2 id="四basic-paxos-算法">四、Basic Paxos 算法</h2>
+
+<p>Paxos 算法是 Leslie Lamport 于 1990 年提出的基于消息传递的共识算法，是分布式共识领域的奠基之作。其发展分为 Basic Paxos、Multi Paxos 和 Fast Paxos。</p>
+
+<p>Basic Paxos 的核心流程分为三个阶段（与 3PC 有相似之处，都需要两轮多数投票）：</p>
+
+<h3 id="41-第一阶段prepare--promise">4.1 第一阶段：Prepare / Promise</h3>
+
+<p><strong>Proposer 发出 Prepare 请求：</strong></p>
 <ul>
-  <li>分布式协议一个著名问题就是 split brain 问题。
-简单说，就是比如当你的 cluster 里面有两个结点，它们都知道在这个 cluster 里需要选举出一个 master。那么当它们两之间的通信完全没有问题的时候，就会达成共识，选出其中一个作为 master。
-但是如果它们之间的通信出了问题，那么两个结点都会觉得现在没有 master，所以每个都把自己选举成 master。于是 cluster 里面就会有两个 master。
-区块链的分叉其实类似分布式系统的split brain。
-一般来说，Zookeeper会默认设置：
-    <ul>
-      <li>zookeeper cluster的节点数目必须是奇数。</li>
-      <li>zookeeper 集群中必须超过半数节点(Majority)可用，整个集群才能对外可用。</li>
-    </ul>
-  </li>
-  <li>Majority(大多数) 就是一种 Quorum(法定代表人) 的方式来支持Leader选举，可以防止 split brain出现。奇数个节点可以在相同容错能力的情况下节省资源。</li>
+  <li>Proposer 生成全局唯一且递增的 Proposal ID（可使用时间戳 + Server ID），向所有 Acceptor 发送 Prepare 请求，此时只需携带 Proposal ID，无需提案内容。</li>
 </ul>
 
-<h4 id="multi-paxos之raft-reliable-replicated-redundant-and-fault-tolerant">Multi Paxos之Raft (Reliable, Replicated, Redundant, And Fault-Tolerant)</h4>
+<p><strong>Acceptor 给出承诺：</strong></p>
 <ul>
-  <li>多个follower变身为candidate，同时term++，投票给自己同时向其他节点发送RequestVote RPC</li>
-  <li>节点(N)会投票给term是最新的，log至少和自身(N)一样新的candidate</li>
-  <li>candidate收到多数投票，然后发送自己已经是leader的HeartBeat，接受者转变为follower，选举结束</li>
-  <li>一段时间后依然没有胜者。该种情况下会开启新一轮的选举。（Raft中使用随机选举超时时间来解决当票数相同无法确定leader的问题。）</li>
-  <li>日志复制（Log Replication）主要作用是用于保证节点的一致性，这阶段所做的操作也是为了保证一致性与高可用性。
-当Leader选举出来后便开始负责客户端的请求，所有事务（更新操作）请求都必须先经过Leader处理，日志复制（Log Replication）就是为了保证执行相同的操作序列所做的工作。
-在Raft中当接收到客户端的日志（事务请求）后先把该日志追加到本地的Log中，然后通过heartbeat把该Entry同步给其他Follower，Follower接收到日志后记录日志然后向Leader发送ACK，当Leader收到大多数（n/2+1）Follower的ACK信息后将该日志设置为已提交并追加到本地磁盘中，通知客户端并在下个heartbeat中Leader将通知所有的Follower将该日志存储在自己的本地磁盘中。</li>
+  <li>承诺一：不再接受 Proposal ID ≤ 当前请求的 Prepare 请求</li>
+  <li>承诺二：不再接受 Proposal ID &lt; 当前请求的 Propose 请求</li>
+  <li>应答：在不违背已有承诺的前提下，回复已 Accept 过的提案中 Proposal ID 最大的那个提案的 Value 和 Proposal ID；如果没有，则返回空值</li>
 </ul>
-<p><a href="https://www.cnblogs.com/binyue/p/8647733.html">https://www.cnblogs.com/binyue/p/8647733.html</a></p>
 
-<h4 id="zab协议-2阶段">ZAB协议 2阶段</h4>
+<h3 id="42-第二阶段propose--accept">4.2 第二阶段：Propose / Accept</h3>
+
+<p><strong>Proposer 提案：</strong></p>
+<ul>
+  <li>收到多数 Acceptor 的 Promise 应答后，从应答中选择 Proposal ID 最大的提案的 Value 作为本次要发起的提案。如果所有应答的 Value 均为空，则可以自行决定提案 Value。然后携带当前 Proposal ID，向所有 Acceptor 发送 Propose 请求。</li>
+</ul>
+
+<p><strong>Acceptor 接受：</strong></p>
+<ul>
+  <li>在不违背之前承诺的前提下，接受并持久化当前 Proposal ID 和提案 Value。</li>
+</ul>
+
+<h3 id="43-第三阶段发送最终决议">4.3 第三阶段：发送最终决议</h3>
+
+<p>Proposer 收到多数 Acceptor 的 Accept 后，决议形成，将最终决议发送给所有 Learner。</p>
+
+<p>参考：</p>
 <ol>
-  <li>消息广播阶段 （类似2PC）
-    <ul>
-      <li>leader写本地之后，同步给follower，大多数follower写成功并且ACK给leader，就表示写成功</li>
-      <li>否则表示集群故障了，进入崩溃恢复阶段</li>
-    </ul>
-  </li>
-  <li>崩溃恢复阶段 （发现阶段、同步阶段zxid不是最大）
-    <ul>
-      <li>自我投票，之后让其他follower投票给自己</li>
-      <li>投票比较策略：当其他节点的纪元比自身高投它，如果纪元epoch相同比较自身的zxid的大小，选举zxid大的节点，这里的zxid代表节点所提交事务最大的id，zxid越大代表该节点的数据越完整。
-  最后如果epoch和zxid都相等，则比较服务的serverId，这个Id是配置zookeeper集群所配置的，所以我们配置zookeeper集群的时候可以把服务性能更高的集群的serverId配置大些，让性能好的机器担任leader角色。</li>
-      <li>leader产生后，当 Follower 链接上 Leader 之后，Leader 服务器会根据自己服务器上最后被提交的 ZXID 和 Follower 上的 ZXID 进行比对，比对结果要么回滚，要么和 Leader 同步。</li>
-    </ul>
-  </li>
+  <li><a href="https://zhuanlan.zhihu.com/p/31780743">https://zhuanlan.zhihu.com/p/31780743</a></li>
+  <li><a href="https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg">https://mp.weixin.qq.com/s/j_08HupjHGHHwdyM8fsmfg</a></li>
 </ol>
 
-<h4 id="zab算法-zookeeper-atomic-broadcast-protocol">ZAB算法 Zookeeper atomic broadcast protocol</h4>
+<h3 id="44-活锁问题">4.4 活锁问题</h3>
+
+<p>Basic Paxos 可能出现活锁：假设 Proposer1 和 Proposer2 先后向 Acceptor 发送请求。Acceptor 接收到 Proposer1 的 Prepare 后更新编号为 Proposer1 的编号；此时 Proposer2 发送了更大编号的 Prepare，Acceptor 又更新为 Proposer2 的编号。当 Proposer1 发送 Accept 请求时编号不满足要求被拒绝，于是重新获取编号回到第一阶段……两个 Proposer 之间不断重复，导致系统出现活锁。</p>
+
+<p>解决方案通常是引入<strong>随机退避</strong>或选举出一个<strong>Leader Proposer</strong>来避免多个 Proposer 竞争。</p>
+
+<hr />
+
+<h2 id="五split-brain脑裂问题">五、Split Brain（脑裂）问题</h2>
+
+<p>脑裂是分布式协议中一个经典问题。当集群中的节点之间通信中断时，每个分区都可能认为自己是唯一的”主”，从而产生多个 Master。区块链中的分叉本质上也是一种脑裂现象。</p>
+
+<h3 id="51-zookeeper-的解决方案">5.1 Zookeeper 的解决方案</h3>
+
+<p>Zookeeper 通过以下策略避免脑裂：</p>
+
 <ul>
-  <li>基本与Raft相同，在一些名词叫起来是有区别的</li>
-  <li>ZAB将Leader的一个生命周期叫做epoch，而Raft称之为term</li>
-  <li>实现上也有些许不同，如raft保证日志的连续性，心跳是Leader向Follower发送，而ZAB方向与之相反</li>
-  <li>ZAB选举阶段只接受比自己大的zxid，意味着经过多次之后，拥有最新数据的节点才有可能成为leader</li>
+  <li>集群节点数目必须是<strong>奇数</strong></li>
+  <li>集群中必须<strong>超过半数节点（Majority）</strong> 可用，整个集群才能对外提供服务</li>
 </ul>
 
-<h4 id="raft-协议和-zab-协议区别">raft 协议和 zab 协议区别</h4>
-<ul>
-  <li>相同点
-    <ul>
-      <li>都使用 timeout 来重新选择 leader</li>
-      <li>采用quorum来确定整个系统的一致性,这个quorum一般实现是集群中半数以上的服务器, zookeeper里还提供了带权重的quorum实现.</li>
-      <li>都由leader来发起写操作.</li>
-      <li>都采用心跳检测存活性</li>
-      <li>leader election都采用先到先得的投票方式</li>
-      <li>zookeeper 的 zab 实现里选主要求选出来的主拥有 quorum 里最新的历史，而 raft 的 follower 的选主投票根据 term 的大小+日志完成度来选择投票给谁，这点上来看是比较类似的</li>
-    </ul>
-  </li>
-  <li>不同点
-    <ul>
-      <li>zab用的是epoch和count的组合来唯一表示一个值,而raft用的是term和index</li>
-      <li>zab的follower在投票给一个leader之前必须和leader的日志达成一致,而raft的follower则简单地说是谁的 term 高就投票给谁</li>
-      <li>raft协议的心跳是从leader到follower,而zab协议则相反</li>
-      <li>raft 协议数据只有单向地从 leader 到 follower（成为 leader 的条件之一就是拥有最新的 log），而 zab 的 zookeeper 实现中 ，一个 prospective leader (epoch最大但是zxid不是最大)需要将自己的 log 更新为 quorum 里面最新的 log，然后才好在 synchronization 阶段将 quorum 里的其他机器的 log 都同步到一致</li>
-    </ul>
-  </li>
-</ul>
-<p><a href="https://www.cnblogs.com/think90/p/11443428.html">https://www.cnblogs.com/think90/p/11443428.html</a></p>
+<p>Majority 是一种 Quorum（法定人数）机制来支持 Leader 选举，可以有效防止脑裂。使用奇数个节点可以在相同容错能力的情况下节省资源——例如 3 个节点和 4 个节点都只能容忍 1 个节点故障，所以 3 个节点更经济。</p>
 
-<h4 id="一致性算法的实践">一致性算法的实践</h4>
+<hr />
+
+<h2 id="六raft-算法">六、Raft 算法</h2>
+
+<p>Raft（Reliable, Replicated, Redundant, And Fault-Tolerant）是 Multi-Paxos 的一种简化实现，通过将共识问题分解为 <strong>Leader 选举</strong> 和 <strong>日志复制</strong> 两个子问题来降低理解和实现难度。</p>
+
+<h3 id="61-leader-选举">6.1 Leader 选举</h3>
+
+<ol>
+  <li>多个 Follower 变身为 Candidate，同时 term++，投票给自己并向其他节点发送 RequestVote RPC</li>
+  <li>节点 N 会投票给 term 最新的、log 至少和自身一样新的 Candidate</li>
+  <li>Candidate 收到多数投票后，发送 Leader 心跳，接收者转变为 Follower，选举结束</li>
+  <li>如果一段时间后仍无胜者（票数相同），则开启新一轮选举。Raft 使用<strong>随机选举超时时间</strong>来解决票数相同的问题</li>
+</ol>
+
+<h3 id="62-日志复制log-replication">6.2 日志复制（Log Replication）</h3>
+
+<p>日志复制是保证节点一致性的核心机制。Leader 选举出来后负责处理客户端请求，所有更新操作都必须先经过 Leader。</p>
+
+<ol>
+  <li>Leader 接收到客户端日志后，先追加到本地 Log</li>
+  <li>通过心跳将该 Entry 同步给其他 Follower</li>
+  <li>Follower 记录日志后向 Leader 发送 ACK</li>
+  <li>当 Leader 收到多数（n/2+1）Follower 的 ACK 后，将该日志设为已提交并追加到本地磁盘，通知客户端</li>
+  <li>在下个心跳中，Leader 通知所有 Follower 将该日志存储到本地磁盘</li>
+</ol>
+
+<p>参考：<a href="https://www.cnblogs.com/binyue/p/8647733.html">https://www.cnblogs.com/binyue/p/8647733.html</a></p>
+
+<hr />
+
+<h2 id="七zab-协议">七、ZAB 协议</h2>
+
+<p>ZAB（Zookeeper Atomic Broadcast）协议是 Zookeeper 内部使用的一致性协议，基本与 Raft 相同，分为两个阶段。</p>
+
+<h3 id="71-消息广播阶段类似-2pc">7.1 消息广播阶段（类似 2PC）</h3>
+
 <ul>
-  <li>使用Paxos的组件，Chubby(Google首次运用Multi Paxos算法到工程领域)</li>
-  <li>使用Raft的组件，Redis-Cluster、etcd</li>
-  <li>使用ZAB的组件，Zookeeper（Yahoo开源）</li>
+  <li>Leader 写本地后，同步给 Follower</li>
+  <li>大多数 Follower 写成功并 ACK 给 Leader，表示写成功</li>
+  <li>否则表示集群故障，进入崩溃恢复阶段</li>
 </ul>
+
+<h3 id="72-崩溃恢复阶段发现--同步">7.2 崩溃恢复阶段（发现 + 同步）</h3>
+
+<ol>
+  <li><strong>自我投票</strong>：节点先投票给自己，然后请求其他节点投票</li>
+  <li><strong>投票比较策略</strong>：
+    <ul>
+      <li>优先比较 epoch（纪元），epoch 大的优先</li>
+      <li>epoch 相同则比较 zxid（事务 ID），zxid 大的优先（zxid 越大表示数据越完整）</li>
+      <li>epoch 和 zxid 都相等，则比较 serverId，serverId 大的优先（可以将性能更好的机器配置更大的 serverId）</li>
+    </ul>
+  </li>
+  <li><strong>数据同步</strong>：Leader 产生后，根据自己和 Follower 的 ZXID 进行比对，比对结果要么回滚，要么与 Leader 同步</li>
+</ol>
+
+<hr />
+
+<h2 id="八raft-与-zab-的异同">八、Raft 与 ZAB 的异同</h2>
+
+<h3 id="81-相同点">8.1 相同点</h3>
+
+<ul>
+  <li>都使用 timeout 来触发重新选举</li>
+  <li>都采用 Quorum 机制（通常是集群半数以上）确定一致性</li>
+  <li>都由 Leader 发起写操作</li>
+  <li>都采用心跳检测存活性</li>
+  <li>Leader 选举都采用先到先得的投票方式</li>
+  <li>选主都要求候选者拥有最新的数据</li>
+</ul>
+
+<h3 id="82-不同点">8.2 不同点</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>维度</th>
+      <th>Raft</th>
+      <th>ZAB</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>标识方式</td>
+      <td>term + index</td>
+      <td>epoch + count（zxid）</td>
+    </tr>
+    <tr>
+      <td>日志一致性要求</td>
+      <td>Follower 投票时比较 term 和日志完成度</td>
+      <td>Follower 投票前必须和 Leader 日志达成一致</td>
+    </tr>
+    <tr>
+      <td>心跳方向</td>
+      <td>Leader → Follower</td>
+      <td>Follower → Leader</td>
+    </tr>
+    <tr>
+      <td>数据流向</td>
+      <td>单向，Leader → Follower</td>
+      <td>可能双向，新 Leader（epoch 最大但 zxid 不是最大）需要先从 Quorum 中同步最新日志</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>ZAB 的一些术语与 Raft 不同：ZAB 将 Leader 的一个生命周期叫做 epoch，而 Raft 称之为 term。ZAB 选举阶段只接受比自己大的 zxid，意味着经过多轮投票后，拥有最新数据的节点才有可能成为 Leader。</p>
+
+<p>参考：<a href="https://www.cnblogs.com/think90/p/11443428.html">https://www.cnblogs.com/think90/p/11443428.html</a></p>
+
+<hr />
+
+<h2 id="九共识算法的工程实践">九、共识算法的工程实践</h2>
+
+<p>不同的共识算法在工业界有着广泛的应用：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>算法</th>
+      <th>使用组件</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Paxos</strong></td>
+      <td>Chubby（Google 首次将 Multi-Paxos 应用于工程领域）</td>
+    </tr>
+    <tr>
+      <td><strong>Raft</strong></td>
+      <td>Redis Cluster、etcd</td>
+    </tr>
+    <tr>
+      <td><strong>ZAB</strong></td>
+      <td>Zookeeper（Yahoo 开源）</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="总结">总结</h2>
+
+<p>共识算法是分布式系统的基石。从理论上的 Paxos 到工程友好的 Raft 和 ZAB，共识算法不断在<strong>正确性</strong>、<strong>可理解性</strong>和<strong>工程可实现性</strong>之间寻找平衡。理解这些算法的核心思想——多数派投票、Leader 选举、日志复制——对于设计和运维分布式系统至关重要。在实际选型时，Raft 因其简洁的设计成为当前最流行的选择，而 ZAB 则在 Zookeeper 生态中发挥着不可替代的作用。</p>
 
     </div>
   </div>
@@ -280,33 +416,33 @@ Paxos的发展分类：Basic Paxos、Multi Paxos、Fast Paxos</p>
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

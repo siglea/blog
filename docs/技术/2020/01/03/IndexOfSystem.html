@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> 主流互联网公司系统概况及指标  - Code & Coffee</title>
+  <title>主流互联网公司高并发系统架构揭秘：指标、案例与技术选型 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>主流互联网公司系统概况及指标 | Code &amp; Coffee</title>
+<title>主流互联网公司高并发系统架构揭秘：指标、案例与技术选型 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="主流互联网公司系统概况及指标" />
+<meta property="og:title" content="主流互联网公司高并发系统架构揭秘：指标、案例与技术选型" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="微信 淘宝 2018年双11 交易创建30万QPS https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw 2019年双11 交易峰值54.5万笔/秒 https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ 阿里巴巴双11千万级实时监控系统技术揭秘 https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q 2019双11，支付宝有哪些“秘密武器” https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g 诺亚 (Noah) 自适应流控 https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6 12306 http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22 微博 https://www.cnblogs.com/shanyou/p/5048099.html 唯品会 唯品会OSP 微服务架构 用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力 https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ 达达 https://www.jianshu.com/p/67b710267d10 指标概述 https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA" />
-<meta property="og:description" content="微信 淘宝 2018年双11 交易创建30万QPS https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw 2019年双11 交易峰值54.5万笔/秒 https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ 阿里巴巴双11千万级实时监控系统技术揭秘 https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q 2019双11，支付宝有哪些“秘密武器” https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g 诺亚 (Noah) 自适应流控 https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6 12306 http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22 微博 https://www.cnblogs.com/shanyou/p/5048099.html 唯品会 唯品会OSP 微服务架构 用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力 https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ 达达 https://www.jianshu.com/p/67b710267d10 指标概述 https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA" />
+<meta name="description" content="每到双十一、春运抢票等大促场景，技术团队面对的核心挑战都是同一个问题：系统能不能扛住？这不仅是一个技术问题，更关乎业务存亡。了解主流互联网公司的系统规模和关键技术指标，能帮助我们建立对高并发系统的直觉和基准认知。本文汇总了国内几家头部互联网公司的系统架构概况和核心性能指标。 衡量高并发系统的关键指标 在深入具体案例之前，先明确几个核心指标： 指标 含义 说明 QPS（Queries Per Second） 每秒查询数 衡量系统处理读请求的能力 TPS（Transactions Per Second） 每秒事务数 衡量系统处理写请求（事务）的能力 RT（Response Time） 响应时间 通常关注 P99/P999 延迟 可用性 系统正常运行时间占比 4 个 9 = 99.99%，年故障时间 &lt; 53 分钟 并发连接数 系统同时承载的连接数 反映系统容量上限 参考阅读：系统指标概述 淘宝 / 天猫 淘宝的双 11 大促是全球最大规模的在线交易事件，其技术挑战堪称教科书级别。 核心数据 2018 年双 11：交易创建峰值达到 30 万 QPS 参考：2018 双 11 技术揭秘 2019 年双 11：交易峰值达到 54.5 万笔/秒，较上一年增长超 80% 参考：2019 双 11 技术揭秘 关键技术 全链路压测：在真实生产环境中进行模拟流量压测，提前暴露瓶颈 弹性伸缩：基于阿里云底层能力，在大促前快速扩容，大促后释放资源 千万级实时监控系统：对交易链路的每一个环节进行实时监控和告警 参考：阿里双 11 千万级实时监控系统技术揭秘 支付宝 2019 年双 11，支付宝的核心技术亮点： 分布式事务框架保证资金安全 智能风控系统实时识别异常交易 参考：2019 双 11 支付宝”秘密武器” 诺亚（Noah）自适应流控 阿里内部的自适应限流方案，通过实时感知系统负载自动调整流量阈值，避免人工配置限流规则的滞后性。 参考：诺亚自适应流控 微信 微信作为月活超 12 亿的国民级应用，其后端系统在以下方面有极高要求： 消息投递的可靠性：不丢消息、不重复、顺序正确 海量连接：数亿设备同时在线的长连接管理 朋友圈：Feed 流的高效分发和存储 微信的技术栈以 C++ 为主，自研了大量基础组件，包括协程框架、存储引擎、RPC 框架等。 12306 12306 是中国铁路的在线售票系统，每逢春运就面临极端的高并发挑战。其特殊性在于： 强一致性要求：同一张票不能卖给两个人 瞬时峰值极高：放票瞬间的访问量远超日常 库存模型复杂：一趟列车的区间票之间存在互斥关系 参考：12306 系统架构分析 微博 微博是典型的 Feed 流系统，其技术挑战主要在于： 热点事件的流量突增：某明星发微博可能导致瞬时流量暴涨数十倍 关注关系的复杂性：大 V 可能有数千万粉丝，一条微博需要推送给所有粉丝 推拉结合架构：对大 V 采用拉模式，对普通用户采用推模式 参考：微博架构分析 唯品会 唯品会的 OSP（Open Service Platform）微服务架构是其技术体系的核心。 以用户鉴权系统为例：单台服务器压力测试约 25,000 QPS 全域提供约 25 万 QPS 的服务能力 基于微服务架构实现了服务的独立部署、独立扩缩容 参考：唯品会 OSP 微服务架构 达达 达达作为本地即时配送平台，其技术挑战集中在： 实时调度：将订单高效分配给合适的骑手 位置服务：大量骑手的实时位置追踪和路径规划 峰值应对：午高峰和晚高峰的流量集中 参考：达达系统架构 经验总结与启示 从这些案例中，我们可以提炼出高并发系统的共性特征： 架构层面 微服务化：将单体应用拆分为独立服务，支持独立扩缩容 异步化：核心链路尽可能异步，用消息队列解耦 缓存为王：多级缓存（本地缓存 → 分布式缓存 → 数据库）是扛住读流量的关键 稳定性层面 限流降级：识别系统瓶颈，在过载时有序降级非核心功能 全链路压测：在真实环境中验证系统承载能力 实时监控：指标采集、告警、快速定位问题 数据层面 分库分表：水平拆分数据，突破单机存储和性能瓶颈 读写分离：主库写、从库读，提高读性能 热点处理：对热点数据做特殊处理（本地缓存、打散等） 这些指标和架构方案不仅是面试中的高频话题，更是在设计高并发系统时的重要参考基准。了解行业头部公司的技术水位，有助于我们在做技术方案时建立合理的性能预期。" />
+<meta property="og:description" content="每到双十一、春运抢票等大促场景，技术团队面对的核心挑战都是同一个问题：系统能不能扛住？这不仅是一个技术问题，更关乎业务存亡。了解主流互联网公司的系统规模和关键技术指标，能帮助我们建立对高并发系统的直觉和基准认知。本文汇总了国内几家头部互联网公司的系统架构概况和核心性能指标。 衡量高并发系统的关键指标 在深入具体案例之前，先明确几个核心指标： 指标 含义 说明 QPS（Queries Per Second） 每秒查询数 衡量系统处理读请求的能力 TPS（Transactions Per Second） 每秒事务数 衡量系统处理写请求（事务）的能力 RT（Response Time） 响应时间 通常关注 P99/P999 延迟 可用性 系统正常运行时间占比 4 个 9 = 99.99%，年故障时间 &lt; 53 分钟 并发连接数 系统同时承载的连接数 反映系统容量上限 参考阅读：系统指标概述 淘宝 / 天猫 淘宝的双 11 大促是全球最大规模的在线交易事件，其技术挑战堪称教科书级别。 核心数据 2018 年双 11：交易创建峰值达到 30 万 QPS 参考：2018 双 11 技术揭秘 2019 年双 11：交易峰值达到 54.5 万笔/秒，较上一年增长超 80% 参考：2019 双 11 技术揭秘 关键技术 全链路压测：在真实生产环境中进行模拟流量压测，提前暴露瓶颈 弹性伸缩：基于阿里云底层能力，在大促前快速扩容，大促后释放资源 千万级实时监控系统：对交易链路的每一个环节进行实时监控和告警 参考：阿里双 11 千万级实时监控系统技术揭秘 支付宝 2019 年双 11，支付宝的核心技术亮点： 分布式事务框架保证资金安全 智能风控系统实时识别异常交易 参考：2019 双 11 支付宝”秘密武器” 诺亚（Noah）自适应流控 阿里内部的自适应限流方案，通过实时感知系统负载自动调整流量阈值，避免人工配置限流规则的滞后性。 参考：诺亚自适应流控 微信 微信作为月活超 12 亿的国民级应用，其后端系统在以下方面有极高要求： 消息投递的可靠性：不丢消息、不重复、顺序正确 海量连接：数亿设备同时在线的长连接管理 朋友圈：Feed 流的高效分发和存储 微信的技术栈以 C++ 为主，自研了大量基础组件，包括协程框架、存储引擎、RPC 框架等。 12306 12306 是中国铁路的在线售票系统，每逢春运就面临极端的高并发挑战。其特殊性在于： 强一致性要求：同一张票不能卖给两个人 瞬时峰值极高：放票瞬间的访问量远超日常 库存模型复杂：一趟列车的区间票之间存在互斥关系 参考：12306 系统架构分析 微博 微博是典型的 Feed 流系统，其技术挑战主要在于： 热点事件的流量突增：某明星发微博可能导致瞬时流量暴涨数十倍 关注关系的复杂性：大 V 可能有数千万粉丝，一条微博需要推送给所有粉丝 推拉结合架构：对大 V 采用拉模式，对普通用户采用推模式 参考：微博架构分析 唯品会 唯品会的 OSP（Open Service Platform）微服务架构是其技术体系的核心。 以用户鉴权系统为例：单台服务器压力测试约 25,000 QPS 全域提供约 25 万 QPS 的服务能力 基于微服务架构实现了服务的独立部署、独立扩缩容 参考：唯品会 OSP 微服务架构 达达 达达作为本地即时配送平台，其技术挑战集中在： 实时调度：将订单高效分配给合适的骑手 位置服务：大量骑手的实时位置追踪和路径规划 峰值应对：午高峰和晚高峰的流量集中 参考：达达系统架构 经验总结与启示 从这些案例中，我们可以提炼出高并发系统的共性特征： 架构层面 微服务化：将单体应用拆分为独立服务，支持独立扩缩容 异步化：核心链路尽可能异步，用消息队列解耦 缓存为王：多级缓存（本地缓存 → 分布式缓存 → 数据库）是扛住读流量的关键 稳定性层面 限流降级：识别系统瓶颈，在过载时有序降级非核心功能 全链路压测：在真实环境中验证系统承载能力 实时监控：指标采集、告警、快速定位问题 数据层面 分库分表：水平拆分数据，突破单机存储和性能瓶颈 读写分离：主库写、从库读，提高读性能 热点处理：对热点数据做特殊处理（本地缓存、打散等） 这些指标和架构方案不仅是面试中的高频话题，更是在设计高并发系统时的重要参考基准。了解行业头部公司的技术水位，有助于我们在做技术方案时建立合理的性能预期。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-01-03T10:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="主流互联网公司系统概况及指标" />
+<meta property="twitter:title" content="主流互联网公司高并发系统架构揭秘：指标、案例与技术选型" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-01-03T10:25:00+08:00","datePublished":"2020-01-03T10:25:00+08:00","description":"微信 淘宝 2018年双11 交易创建30万QPS https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw 2019年双11 交易峰值54.5万笔/秒 https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ 阿里巴巴双11千万级实时监控系统技术揭秘 https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q 2019双11，支付宝有哪些“秘密武器” https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g 诺亚 (Noah) 自适应流控 https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6 12306 http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22 微博 https://www.cnblogs.com/shanyou/p/5048099.html 唯品会 唯品会OSP 微服务架构 用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力 https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ 达达 https://www.jianshu.com/p/67b710267d10 指标概述 https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA","headline":"主流互联网公司系统概况及指标","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-01-03T10:25:00+08:00","datePublished":"2020-01-03T10:25:00+08:00","description":"每到双十一、春运抢票等大促场景，技术团队面对的核心挑战都是同一个问题：系统能不能扛住？这不仅是一个技术问题，更关乎业务存亡。了解主流互联网公司的系统规模和关键技术指标，能帮助我们建立对高并发系统的直觉和基准认知。本文汇总了国内几家头部互联网公司的系统架构概况和核心性能指标。 衡量高并发系统的关键指标 在深入具体案例之前，先明确几个核心指标： 指标 含义 说明 QPS（Queries Per Second） 每秒查询数 衡量系统处理读请求的能力 TPS（Transactions Per Second） 每秒事务数 衡量系统处理写请求（事务）的能力 RT（Response Time） 响应时间 通常关注 P99/P999 延迟 可用性 系统正常运行时间占比 4 个 9 = 99.99%，年故障时间 &lt; 53 分钟 并发连接数 系统同时承载的连接数 反映系统容量上限 参考阅读：系统指标概述 淘宝 / 天猫 淘宝的双 11 大促是全球最大规模的在线交易事件，其技术挑战堪称教科书级别。 核心数据 2018 年双 11：交易创建峰值达到 30 万 QPS 参考：2018 双 11 技术揭秘 2019 年双 11：交易峰值达到 54.5 万笔/秒，较上一年增长超 80% 参考：2019 双 11 技术揭秘 关键技术 全链路压测：在真实生产环境中进行模拟流量压测，提前暴露瓶颈 弹性伸缩：基于阿里云底层能力，在大促前快速扩容，大促后释放资源 千万级实时监控系统：对交易链路的每一个环节进行实时监控和告警 参考：阿里双 11 千万级实时监控系统技术揭秘 支付宝 2019 年双 11，支付宝的核心技术亮点： 分布式事务框架保证资金安全 智能风控系统实时识别异常交易 参考：2019 双 11 支付宝”秘密武器” 诺亚（Noah）自适应流控 阿里内部的自适应限流方案，通过实时感知系统负载自动调整流量阈值，避免人工配置限流规则的滞后性。 参考：诺亚自适应流控 微信 微信作为月活超 12 亿的国民级应用，其后端系统在以下方面有极高要求： 消息投递的可靠性：不丢消息、不重复、顺序正确 海量连接：数亿设备同时在线的长连接管理 朋友圈：Feed 流的高效分发和存储 微信的技术栈以 C++ 为主，自研了大量基础组件，包括协程框架、存储引擎、RPC 框架等。 12306 12306 是中国铁路的在线售票系统，每逢春运就面临极端的高并发挑战。其特殊性在于： 强一致性要求：同一张票不能卖给两个人 瞬时峰值极高：放票瞬间的访问量远超日常 库存模型复杂：一趟列车的区间票之间存在互斥关系 参考：12306 系统架构分析 微博 微博是典型的 Feed 流系统，其技术挑战主要在于： 热点事件的流量突增：某明星发微博可能导致瞬时流量暴涨数十倍 关注关系的复杂性：大 V 可能有数千万粉丝，一条微博需要推送给所有粉丝 推拉结合架构：对大 V 采用拉模式，对普通用户采用推模式 参考：微博架构分析 唯品会 唯品会的 OSP（Open Service Platform）微服务架构是其技术体系的核心。 以用户鉴权系统为例：单台服务器压力测试约 25,000 QPS 全域提供约 25 万 QPS 的服务能力 基于微服务架构实现了服务的独立部署、独立扩缩容 参考：唯品会 OSP 微服务架构 达达 达达作为本地即时配送平台，其技术挑战集中在： 实时调度：将订单高效分配给合适的骑手 位置服务：大量骑手的实时位置追踪和路径规划 峰值应对：午高峰和晚高峰的流量集中 参考：达达系统架构 经验总结与启示 从这些案例中，我们可以提炼出高并发系统的共性特征： 架构层面 微服务化：将单体应用拆分为独立服务，支持独立扩缩容 异步化：核心链路尽可能异步，用消息队列解耦 缓存为王：多级缓存（本地缓存 → 分布式缓存 → 数据库）是扛住读流量的关键 稳定性层面 限流降级：识别系统瓶颈，在过载时有序降级非核心功能 全链路压测：在真实环境中验证系统承载能力 实时监控：指标采集、告警、快速定位问题 数据层面 分库分表：水平拆分数据，突破单机存储和性能瓶颈 读写分离：主库写、从库读，提高读性能 热点处理：对热点数据做特殊处理（本地缓存、打散等） 这些指标和架构方案不仅是面试中的高频话题，更是在设计高并发系统时的重要参考基准。了解行业头部公司的技术水位，有助于我们在做技术方案时建立合理的性能预期。","headline":"主流互联网公司高并发系统架构揭秘：指标、案例与技术选型","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/01/03/IndexOfSystem.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E9%9A%8F%E6%89%8B%E8%AE%B0/2019/12/14/TheUndercoverEconomist.html">&laquo; 卧底经济学</a></span>
+      <span class="nav-prev"><a href="/blog/%E9%9A%8F%E6%89%8B%E8%AE%B0/2019/12/14/TheUndercoverEconomist.html">&laquo; 《卧底经济学》读书笔记：三种市场失...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html">Docker &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/03/12/Docker.html">Docker 容器技术入门：从原理... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title"> 主流互联网公司系统概况及指标 </h1>
+    <h1 class="asset-name entry-title">主流互联网公司高并发系统架构揭秘：指标、案例与技术选型</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,50 +97,183 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="微信">微信</h4>
+      <p>每到双十一、春运抢票等大促场景，技术团队面对的核心挑战都是同一个问题：系统能不能扛住？这不仅是一个技术问题，更关乎业务存亡。了解主流互联网公司的系统规模和关键技术指标，能帮助我们建立对高并发系统的直觉和基准认知。本文汇总了国内几家头部互联网公司的系统架构概况和核心性能指标。</p>
 
-<h4 id="淘宝">淘宝</h4>
+<h2 id="衡量高并发系统的关键指标">衡量高并发系统的关键指标</h2>
+
+<p>在深入具体案例之前，先明确几个核心指标：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>指标</th>
+      <th>含义</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>QPS</strong>（Queries Per Second）</td>
+      <td>每秒查询数</td>
+      <td>衡量系统处理读请求的能力</td>
+    </tr>
+    <tr>
+      <td><strong>TPS</strong>（Transactions Per Second）</td>
+      <td>每秒事务数</td>
+      <td>衡量系统处理写请求（事务）的能力</td>
+    </tr>
+    <tr>
+      <td><strong>RT</strong>（Response Time）</td>
+      <td>响应时间</td>
+      <td>通常关注 P99/P999 延迟</td>
+    </tr>
+    <tr>
+      <td><strong>可用性</strong></td>
+      <td>系统正常运行时间占比</td>
+      <td>4 个 9 = 99.99%，年故障时间 &lt; 53 分钟</td>
+    </tr>
+    <tr>
+      <td><strong>并发连接数</strong></td>
+      <td>系统同时承载的连接数</td>
+      <td>反映系统容量上限</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>参考阅读：<a href="https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA">系统指标概述</a></p>
+
+<h2 id="淘宝--天猫">淘宝 / 天猫</h2>
+
+<p>淘宝的双 11 大促是全球最大规模的在线交易事件，其技术挑战堪称教科书级别。</p>
+
+<h3 id="核心数据">核心数据</h3>
+
 <ul>
-  <li>2018年双11 交易创建30万QPS</li>
+  <li><strong>2018 年双 11</strong>：交易创建峰值达到 <strong>30 万 QPS</strong>
+    <ul>
+      <li>参考：<a href="https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw">2018 双 11 技术揭秘</a></li>
+    </ul>
+  </li>
+  <li><strong>2019 年双 11</strong>：交易峰值达到 <strong>54.5 万笔/秒</strong>，较上一年增长超 80%
+    <ul>
+      <li>参考：<a href="https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ">2019 双 11 技术揭秘</a></li>
+    </ul>
+  </li>
 </ul>
-<p><a href="https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw">https://mp.weixin.qq.com/s/RjioDaUtxppie9FNv-o8rw</a></p>
+
+<h3 id="关键技术">关键技术</h3>
 
 <ul>
-  <li>2019年双11 交易峰值54.5万笔/秒</li>
+  <li><strong>全链路压测</strong>：在真实生产环境中进行模拟流量压测，提前暴露瓶颈</li>
+  <li><strong>弹性伸缩</strong>：基于阿里云底层能力，在大促前快速扩容，大促后释放资源</li>
+  <li><strong>千万级实时监控系统</strong>：对交易链路的每一个环节进行实时监控和告警
+    <ul>
+      <li>参考：<a href="https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q">阿里双 11 千万级实时监控系统技术揭秘</a></li>
+    </ul>
+  </li>
 </ul>
-<p><a href="https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ">https://mp.weixin.qq.com/s/q3kSWp5DTgo6i6vp3p9MuQ</a></p>
+
+<h3 id="支付宝">支付宝</h3>
+
+<p>2019 年双 11，支付宝的核心技术亮点：</p>
+<ul>
+  <li>分布式事务框架保证资金安全</li>
+  <li>智能风控系统实时识别异常交易</li>
+  <li>参考：<a href="https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g">2019 双 11 支付宝”秘密武器”</a></li>
+</ul>
+
+<h3 id="诺亚noah自适应流控">诺亚（Noah）自适应流控</h3>
+
+<p>阿里内部的自适应限流方案，通过实时感知系统负载自动调整流量阈值，避免人工配置限流规则的滞后性。</p>
+
+<p>参考：<a href="https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6">诺亚自适应流控</a></p>
+
+<h2 id="微信">微信</h2>
+
+<p>微信作为月活超 12 亿的国民级应用，其后端系统在以下方面有极高要求：</p>
 
 <ul>
-  <li>阿里巴巴双11千万级实时监控系统技术揭秘</li>
+  <li><strong>消息投递的可靠性</strong>：不丢消息、不重复、顺序正确</li>
+  <li><strong>海量连接</strong>：数亿设备同时在线的长连接管理</li>
+  <li><strong>朋友圈</strong>：Feed 流的高效分发和存储</li>
 </ul>
-<p><a href="https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q">https://mp.weixin.qq.com/s/Ucs1uq_IOJ0NH9OtZprS4Q</a></p>
+
+<p>微信的技术栈以 C++ 为主，自研了大量基础组件，包括协程框架、存储引擎、RPC 框架等。</p>
+
+<h2 id="12306">12306</h2>
+
+<p>12306 是中国铁路的在线售票系统，每逢春运就面临极端的高并发挑战。其特殊性在于：</p>
 
 <ul>
-  <li>2019双11，支付宝有哪些“秘密武器”</li>
+  <li><strong>强一致性要求</strong>：同一张票不能卖给两个人</li>
+  <li><strong>瞬时峰值极高</strong>：放票瞬间的访问量远超日常</li>
+  <li><strong>库存模型复杂</strong>：一趟列车的区间票之间存在互斥关系</li>
 </ul>
-<p><a href="https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g">https://mp.weixin.qq.com/s/wsQ_SMgXZ59cWLzOg_iD8g</a></p>
+
+<p>参考：<a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22">12306 系统架构分析</a></p>
+
+<h2 id="微博">微博</h2>
+
+<p>微博是典型的 Feed 流系统，其技术挑战主要在于：</p>
 
 <ul>
-  <li>诺亚 (Noah) 自适应流控</li>
+  <li><strong>热点事件的流量突增</strong>：某明星发微博可能导致瞬时流量暴涨数十倍</li>
+  <li><strong>关注关系的复杂性</strong>：大 V 可能有数千万粉丝，一条微博需要推送给所有粉丝</li>
+  <li><strong>推拉结合架构</strong>：对大 V 采用拉模式，对普通用户采用推模式</li>
 </ul>
-<p><a href="https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6">https://www.infoq.cn/article/UOOGzjsiWHE1FOtgx8S6</a></p>
 
-<h4 id="12306">12306</h4>
-<p><a href="http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22">http://www.52im.net/forum.php?mod=viewthread&amp;tid=2771&amp;ctid=22</a></p>
+<p>参考：<a href="https://www.cnblogs.com/shanyou/p/5048099.html">微博架构分析</a></p>
 
-<h4 id="微博">微博</h4>
-<p><a href="https://www.cnblogs.com/shanyou/p/5048099.html">https://www.cnblogs.com/shanyou/p/5048099.html</a></p>
+<h2 id="唯品会">唯品会</h2>
 
-<h4 id="唯品会">唯品会</h4>
-<p>唯品会OSP 微服务架构
-用户鉴权系统举例，单台服务器压力测试约为25000QPS，全域提供约25万QPS的服务能力
-<a href="https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ">https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ</a></p>
+<p>唯品会的 OSP（Open Service Platform）微服务架构是其技术体系的核心。</p>
 
-<h4 id="达达">达达</h4>
-<p><a href="https://www.jianshu.com/p/67b710267d10">https://www.jianshu.com/p/67b710267d10</a></p>
+<ul>
+  <li>以用户鉴权系统为例：单台服务器压力测试约 <strong>25,000 QPS</strong></li>
+  <li>全域提供约 <strong>25 万 QPS</strong> 的服务能力</li>
+  <li>基于微服务架构实现了服务的独立部署、独立扩缩容</li>
+</ul>
 
-<h4 id="指标概述">指标概述</h4>
-<p>https://mp.weixin.qq.com/s/4Dman7ts6X9vkF2iYrLFuA</p>
+<p>参考：<a href="https://mp.weixin.qq.com/s/fy31Qb7OCW3UuTx0tj9iGQ">唯品会 OSP 微服务架构</a></p>
+
+<h2 id="达达">达达</h2>
+
+<p>达达作为本地即时配送平台，其技术挑战集中在：</p>
+
+<ul>
+  <li><strong>实时调度</strong>：将订单高效分配给合适的骑手</li>
+  <li><strong>位置服务</strong>：大量骑手的实时位置追踪和路径规划</li>
+  <li><strong>峰值应对</strong>：午高峰和晚高峰的流量集中</li>
+</ul>
+
+<p>参考：<a href="https://www.jianshu.com/p/67b710267d10">达达系统架构</a></p>
+
+<h2 id="经验总结与启示">经验总结与启示</h2>
+
+<p>从这些案例中，我们可以提炼出高并发系统的共性特征：</p>
+
+<h3 id="架构层面">架构层面</h3>
+<ul>
+  <li><strong>微服务化</strong>：将单体应用拆分为独立服务，支持独立扩缩容</li>
+  <li><strong>异步化</strong>：核心链路尽可能异步，用消息队列解耦</li>
+  <li><strong>缓存为王</strong>：多级缓存（本地缓存 → 分布式缓存 → 数据库）是扛住读流量的关键</li>
+</ul>
+
+<h3 id="稳定性层面">稳定性层面</h3>
+<ul>
+  <li><strong>限流降级</strong>：识别系统瓶颈，在过载时有序降级非核心功能</li>
+  <li><strong>全链路压测</strong>：在真实环境中验证系统承载能力</li>
+  <li><strong>实时监控</strong>：指标采集、告警、快速定位问题</li>
+</ul>
+
+<h3 id="数据层面">数据层面</h3>
+<ul>
+  <li><strong>分库分表</strong>：水平拆分数据，突破单机存储和性能瓶颈</li>
+  <li><strong>读写分离</strong>：主库写、从库读，提高读性能</li>
+  <li><strong>热点处理</strong>：对热点数据做特殊处理（本地缓存、打散等）</li>
+</ul>
+
+<p>这些指标和架构方案不仅是面试中的高频话题，更是在设计高并发系统时的重要参考基准。了解行业头部公司的技术水位，有助于我们在做技术方案时建立合理的性能预期。</p>
 
     </div>
   </div>
@@ -172,33 +305,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "经典算法思想"
+title:  "经典算法思想详解：贪心、分治、动态规划与回溯"
 date:   2020-06-07 14:25:00 +0900
 comments: true
 tags:
@@ -8,22 +8,78 @@ tags:
 categories:
 - 技术
 ---
-数据结构算法，问题TOP10 <https://mp.weixin.qq.com/s/rqzCvFWira204eJ1HA22yg>
 
-#### 贪心算法
-- 贪心的意思在于在作出选择时，每次都要选择对自身最为有利的结果，保证自身利益的最大化。贪心算法就是利用这种贪心思想而得出一种算法。
-- 例：小明手中有 1，5，10，50，100 五种面额的纸币，每种纸币对应张数分别为 5，2，2，3，5 张。若小明需要支付 456 元，则需要多少张纸币？
-- 最小生成树 Kruskal算法
-- 最小生成树 prim算法
-- 分发饼干、跳跃游戏、无重叠区间、摆动序列 <https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw>
-- 分糖果、无重叠区间 <https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow>
+算法是计算机科学的灵魂。无论是日常开发中的性能优化，还是面试中的手撕代码，掌握经典的算法思想都是程序员的核心竞争力。本文将系统梳理六大经典算法思想——贪心算法、分治算法、动态规划、回溯法、分支定界法和字符串匹配算法，帮助你建立算法思维的整体框架。
 
-#### 分治算法
-- 快速排序算法、大整数乘法、残缺棋盘游戏 <https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ>
-- 汉诺塔、快速排序、归并排序 <https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ>
+> 数据结构算法问题 TOP10：<https://mp.weixin.qq.com/s/rqzCvFWira204eJ1HA22yg>
 
-#### 动态规划算法 Dynamic Programming
-```shell
+---
+
+## 贪心算法（Greedy Algorithm）
+
+### 核心思想
+
+贪心的含义在于每一步选择中都采取当前状态下的最优解，不考虑全局最优，期望通过局部最优的叠加达到全局最优。贪心算法的关键在于**贪心策略的选择**——并非所有问题都能用贪心得到全局最优解，只有满足**贪心选择性质**和**最优子结构**的问题才适合。
+
+### 经典例题
+
+**找零钱问题**：小明手中有 1、5、10、50、100 五种面额的纸币，每种纸币对应张数分别为 5、2、2、3、5 张。若小明需要支付 456 元，则需要多少张纸币？
+
+贪心策略是每次优先使用最大面额的纸币：
+- 100 元 × 4 张 = 400 元
+- 50 元 × 1 张 = 50 元
+- 5 元 × 1 张 = 5 元
+- 1 元 × 1 张 = 1 元
+- 共 7 张
+
+### 典型应用
+
+- **最小生成树**：Kruskal 算法（每次选择权值最小的边）和 Prim 算法（每次选择离已有树最近的顶点）
+- 分发饼干、跳跃游戏、无重叠区间、摆动序列等 LeetCode 经典题目
+
+> 参考：
+> - 分发饼干、跳跃游戏、无重叠区间、摆动序列：<https://mp.weixin.qq.com/s/4GKIwV34Zp4W1VFTwhx-uw>
+> - 分糖果、无重叠区间：<https://mp.weixin.qq.com/s/YhFGBAXhv8c-Rfs6Fuciow>
+
+---
+
+## 分治算法（Divide and Conquer）
+
+### 核心思想
+
+分治的核心是"分而治之"——将一个规模为 N 的问题分解为 K 个规模较小的子问题，这些子问题相互独立且与原问题性质相同。递归地解决这些子问题，然后将子问题的解合并得到原问题的解。
+
+分治算法的三个步骤：
+1. **分解（Divide）**：将原问题分解为若干个规模更小的同类子问题
+2. **解决（Conquer）**：递归地解决子问题，当子问题足够小时直接求解
+3. **合并（Combine）**：将子问题的解合并为原问题的解
+
+### 典型应用
+
+- **快速排序**：选择基准元素，将数组分为小于基准和大于基准两部分，递归排序
+- **归并排序**：将数组对半分，分别排序后合并两个有序数组
+- **大整数乘法**：将大数拆分为高位和低位分别计算
+- **汉诺塔问题**：经典的递归分治问题
+
+> 参考：
+> - 快速排序、大整数乘法、残缺棋盘游戏：<https://mp.weixin.qq.com/s/2rnEhHcJEGSEmlAK18B2VQ>
+> - 汉诺塔、快速排序、归并排序：<https://mp.weixin.qq.com/s/paOrlfpdMwvCUDywda0EvQ>
+
+---
+
+## 动态规划（Dynamic Programming）
+
+### 核心思想
+
+动态规划是解决多阶段决策过程最优化问题的重要方法。它与分治法类似，都是通过组合子问题的解来求解原问题。区别在于，分治法的子问题相互独立，而动态规划的子问题会重叠——同一个子问题可能被多次用到。
+
+动态规划通过将子问题的解缓存起来（称为"记忆化"），避免重复计算，从而大幅提升效率。
+
+### 三要素
+
+以经典的爬楼梯 / 斐波那契数列为例：
+
+```
 F(1) = 1;
 F(2) = 2; 
 F(n) = F(n-1)+F(n-2);（n>=3）
@@ -32,29 +88,135 @@ F(10) = F(9) + F(8) #最优子结构
 F(1) F(2) #边界
 F(n) = F(n-1) + F(n-2) #状态转移方程
 ```
-- 斐波那契 <https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ>
-- 上台阶与挖黄金 <https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg>
-- 高楼扔鸡蛋 <https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA>
 
-#### 回溯法
-- 深度优先遍历 <https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA>
-- 八皇后问题 <https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA>
-- 八皇后问题与数独 <https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg>
-- A*寻路算法 <https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA>
-- 多源最短路径，弗洛伊德算法 Floyd-Warshall <https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg>
+动态规划的三个核心要素：
 
-#### 分支定界法
-- 广度优先遍历 <https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ>
+| 要素 | 说明 | 示例 |
+|------|------|------|
+| **最优子结构** | 原问题的最优解包含子问题的最优解 | F(10) 的解依赖 F(9) 和 F(8) 的解 |
+| **边界条件** | 最简单的子问题的解，不需要再分解 | F(1) = 1, F(2) = 2 |
+| **状态转移方程** | 定义了问题的递推关系 | F(n) = F(n-1) + F(n-2) |
 
-#### 字符串匹配算法
-- BF算法，是Brute Force（暴力算法，按位比较 O(m*n)）<https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg>
-- RK算法，是Rabin-Karp (计算hash值进行比较 O(n)) <https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g>
-- Knuth-Morris-Pratt算法（简称KMP）是最常用的之一 <https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w>
-- 字符串匹配算法综述:BF、RK、KMP、BM、Sunday <https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA>
+### 解题步骤
 
-#### 参考
-- 小灰算法2017 <https://mp.weixin.qq.com/s/4kTtn_gLYQrX7JFlEJdsZg>
-- 小灰算法2018 <https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw>
-- 小灰算法2019 <https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw>
-- 小灰算法2020 <https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA>
-- 二十世纪最伟大的10大算法 <https://blog.csdn.net/v_JULY_v/article/details/6127953>
+1. 确定问题的状态（用什么变量描述子问题）
+2. 找到状态转移方程（子问题之间的递推关系）
+3. 确定边界条件
+4. 确定计算顺序（自底向上或自顶向下）
+
+### 典型应用
+
+- 斐波那契数列、爬楼梯
+- 背包问题（0-1 背包、完全背包）
+- 最长公共子序列（LCS）、最长递增子序列（LIS）
+- 高楼扔鸡蛋
+
+> 参考：
+> - 斐波那契：<https://mp.weixin.qq.com/s/3LR-iVC4zgj0tGhZ780PcQ>
+> - 上台阶与挖黄金：<https://mp.weixin.qq.com/s/3h9iqU4rdH3EIy5m6AzXsg>
+> - 高楼扔鸡蛋：<https://mp.weixin.qq.com/s/ncrvbpiZauXAGnUZTh5qtA>
+
+---
+
+## 回溯法（Backtracking）
+
+### 核心思想
+
+回溯法本质上是一种**深度优先搜索（DFS）**策略。它的思路是：从问题的某一种可能状态出发，搜索所有可以达到的状态。当发现当前选择无法导出有效解时，就"回溯"到上一步，换一个选择继续搜索。
+
+回溯法可以看作是暴力搜索的优化版本——通过**剪枝**操作提前排除不可能的路径，避免无效搜索。
+
+### 算法框架
+
+```python
+def backtrack(路径, 选择列表):
+    if 满足结束条件:
+        结果.add(路径)
+        return
+    for 选择 in 选择列表:
+        做选择
+        backtrack(路径, 选择列表)
+        撤销选择
+```
+
+### 典型应用
+
+- **八皇后问题**：在 8×8 棋盘上放置 8 个皇后，使得任意两个皇后不能在同一行、同一列或同一对角线上
+- **数独求解**：在 9×9 网格中填入数字，满足行、列、宫内不重复
+- **A* 寻路算法**：结合启发式函数的路径搜索
+- **Floyd-Warshall 多源最短路径算法**
+
+> 参考：
+> - 深度优先遍历：<https://mp.weixin.qq.com/s/UCTjKA7olFb00C6CLlqHAA>
+> - 八皇后问题：<https://mp.weixin.qq.com/s/puk7IAZkSe6FCkZnt0jnSA>
+> - 八皇后问题与数独：<https://mp.weixin.qq.com/s/vfItwB2GpXCy-s2dQJnkIg>
+> - A* 寻路算法：<https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA>
+> - 多源最短路径 Floyd-Warshall：<https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg>
+
+---
+
+## 分支定界法（Branch and Bound）
+
+### 核心思想
+
+分支定界法可以看作是回溯法的"兄弟"——回溯法使用深度优先搜索，而分支定界法使用**广度优先搜索（BFS）**。它通过"分支"产生所有可能的子节点，通过"定界"计算每个子节点的目标函数上下界，剪掉不可能产生最优解的分支。
+
+分支定界法在求解组合优化问题（如旅行商问题、整数线性规划）时表现出色。
+
+> 参考：
+> - 广度优先遍历：<https://mp.weixin.qq.com/s/Rdg14IPL4Czx4J5obgbqEQ>
+
+---
+
+## 字符串匹配算法
+
+字符串匹配是计算机科学中最基础也最实用的问题之一，从文本编辑器的查找功能到搜索引擎的全文检索，处处离不开高效的字符串匹配算法。
+
+### BF 算法（Brute Force，暴力匹配）
+
+最朴素的按位比较方法，时间复杂度 O(m×n)。虽然效率不高，但实现简单，在模式串较短时仍有实用价值。
+
+> 参考：<https://mp.weixin.qq.com/s/2RlyDBo-Ql-1Ofh8tMyikg>
+
+### RK 算法（Rabin-Karp，哈希匹配）
+
+通过计算模式串和文本子串的哈希值进行比较，期望时间复杂度 O(n)。利用滚动哈希技术，可以在 O(1) 时间内计算相邻子串的哈希值。
+
+> 参考：<https://mp.weixin.qq.com/s/EVkV1AQC9GBI29zNiWDH6g>
+
+### KMP 算法（Knuth-Morris-Pratt）
+
+最常用的字符串匹配算法之一。KMP 的核心思想是利用已匹配的信息避免从头开始比较，通过构建**部分匹配表（Partial Match Table / Next 数组）**实现匹配失败时的智能跳转，时间复杂度 O(m+n)。
+
+> 参考：<https://mp.weixin.qq.com/s/xr5rgSF3dOV9XH0gC5oO0w>
+
+### BM 算法和 Sunday 算法
+
+BM（Boyer-Moore）算法在实际应用中往往比 KMP 更快，它利用"坏字符规则"和"好后缀规则"实现更大幅度的跳转。Sunday 算法则是 BM 算法的简化版本，实现更简单，在实际工程中也很常用。
+
+> 字符串匹配算法综述（BF、RK、KMP、BM、Sunday）：<https://mp.weixin.qq.com/s/RSnFzrmitwCCgDuB73I2QA>
+
+---
+
+## 算法思想对比
+
+| 算法思想 | 搜索策略 | 核心特点 | 适用场景 |
+|----------|----------|----------|----------|
+| 贪心 | 局部最优 | 每步取当前最优，不回退 | 最小生成树、哈夫曼编码 |
+| 分治 | 递归分解 | 子问题独立，分解-求解-合并 | 排序、大数运算 |
+| 动态规划 | 自底向上 | 子问题重叠，缓存中间结果 | 最优化问题、计数问题 |
+| 回溯 | DFS | 试探+回退，可剪枝 | 组合、排列、约束满足 |
+| 分支定界 | BFS | 分支+定界，剪去无望节点 | 组合优化 |
+
+---
+
+## 总结
+
+算法思想是解决问题的"心法"，而具体的算法实现是"招式"。掌握贪心、分治、动态规划、回溯这四大核心思想，面对绝大多数算法问题都能找到突破口。学习算法最有效的方式是大量刷题练习，从具体问题中反复体会每种思想的适用场景和实现技巧。
+
+> 推荐阅读：
+> - 小灰算法 2017：<https://mp.weixin.qq.com/s/4kTtn_gLYQrX7JFlEJdsZg>
+> - 小灰算法 2018：<https://mp.weixin.qq.com/s/oFQHrCZvItgc8McrZSaovw>
+> - 小灰算法 2019：<https://mp.weixin.qq.com/s/Ok5SjqhiQkG5sLUPNY02Mw>
+> - 小灰算法 2020：<https://mp.weixin.qq.com/s/dpWZ6qOvU1T9sdOzMNVyAA>
+> - 二十世纪最伟大的 10 大算法：<https://blog.csdn.net/v_JULY_v/article/details/6127953>

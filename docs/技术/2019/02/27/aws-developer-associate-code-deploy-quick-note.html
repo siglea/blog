@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>aws developer associate test CodeDeploy quick note - Code & Coffee</title>
+  <title>AWS CodeDeploy 部署服务核心概念与实践指南 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>aws developer associate test CodeDeploy quick note | Code &amp; Coffee</title>
+<title>AWS CodeDeploy 部署服务核心概念与实践指南 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="aws developer associate test CodeDeploy quick note" />
+<meta property="og:title" content="AWS CodeDeploy 部署服务核心概念与实践指南" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="code deploy integrate with CI/CD tools as well as config management tools ansible, chef, puppet Steps to deploy a project deploy methods inplace as called rolling update stop the instance while updating and use other instances (capacity will be smaller) can be used for EC2, on-premise systems, not for lambda need redeploy for rollback green/blue prepare new instances and switch traffic once deployment is done blue is is the active deployment, green is the new release can also be used for lambda appspec file to configure deployment lambda deployment version resources (name and properties of lambda function) hooks (specify when should lambda function run) BeforeAllowTraffic AfterAllowTraffic ec2 and on premises version os files (source and destination) hooks ApplicationStop (Gracefully stio the app for the new verion) DownloadBundle (CD agent copies revision files to a temporary location) BeforeInstall (e.g backing up current revision, decrypting files) Install (copy revision files from temp to correct location) After install (e.g config tasks, change permission) ApplicationStart ValidateService (tests) BeforeBlockTraffic (tasks before deregistering from load balancer) BlockTraffic (deregister instances from load balancer) AfterBlockTraffic (tasks after deregistering from load balancer)" />
-<meta property="og:description" content="code deploy integrate with CI/CD tools as well as config management tools ansible, chef, puppet Steps to deploy a project deploy methods inplace as called rolling update stop the instance while updating and use other instances (capacity will be smaller) can be used for EC2, on-premise systems, not for lambda need redeploy for rollback green/blue prepare new instances and switch traffic once deployment is done blue is is the active deployment, green is the new release can also be used for lambda appspec file to configure deployment lambda deployment version resources (name and properties of lambda function) hooks (specify when should lambda function run) BeforeAllowTraffic AfterAllowTraffic ec2 and on premises version os files (source and destination) hooks ApplicationStop (Gracefully stio the app for the new verion) DownloadBundle (CD agent copies revision files to a temporary location) BeforeInstall (e.g backing up current revision, decrypting files) Install (copy revision files from temp to correct location) After install (e.g config tasks, change permission) ApplicationStart ValidateService (tests) BeforeBlockTraffic (tasks before deregistering from load balancer) BlockTraffic (deregister instances from load balancer) AfterBlockTraffic (tasks after deregistering from load balancer)" />
+<meta name="description" content="AWS CodeDeploy 是亚马逊云服务提供的一项全托管部署服务，能够自动将应用程序部署到 EC2 实例、本地服务器（On-Premises）以及 Lambda 函数。它是 AWS CI/CD 工具链中的重要一环，可以与 Jenkins、GitHub Actions 等 CI 工具以及 Ansible、Chef、Puppet 等配置管理工具无缝集成。 本文整理了 CodeDeploy 的核心概念，包括部署流程、部署方式和 AppSpec 配置文件，帮助你快速建立对这项服务的整体认知。 部署流程概览 CodeDeploy 的部署流程可以用下图概括： 整个流程的核心步骤包括： 打包应用：将代码和 AppSpec 配置文件一起打包为部署包（Revision） 上传到存储：将部署包上传到 S3 或 GitHub 创建部署：通过 AWS 控制台、CLI 或 API 触发部署 CodeDeploy Agent 执行：目标实例上预装的 Agent 从存储位置拉取部署包，按 AppSpec 文件定义的生命周期钩子（Hooks）依次执行部署动作 部署方式 CodeDeploy 支持两种主要的部署方式，适用于不同的业务场景和风险偏好。 1. In-Place 部署（就地部署） 也被称为 Rolling Update（滚动更新），是最直接的部署方式。 工作原理： 逐批停止实例上正在运行的应用，部署新版本后重新启动 部署期间被更新的实例暂时不可用，请求由其他实例处理（整体容量会暂时减小） 部署完成后实例重新加入负载均衡 适用范围： EC2 实例、On-Premises 服务器 不支持 Lambda 函数 回滚策略： 需要重新部署上一个版本（即再次执行一次完整的部署流程） 无法做到即时回滚 适用场景：对可用性要求不是极端苛刻的内部系统、测试环境，或者实例数量较多、滚动更新影响面可控的场景。 2. Blue/Green 部署（蓝绿部署） 蓝绿部署是一种零停机的部署策略，通过准备一套全新的环境来避免部署过程中的服务中断。 工作原理： 在新的实例集合（Green 环境）上部署新版本 部署验证通过后，将流量从旧环境（Blue）切换到新环境（Green） Blue 环境保留一段时间，便于快速回滚 命名约定： Blue：当前正在运行的活跃部署环境 Green：即将上线的新版本环境 适用范围： EC2 实例、On-Premises 服务器 Lambda 函数（通过流量权重切换实现） 优势： 零停机部署 回滚极快，只需将流量切回 Blue 环境 Green 环境可以在切换前进行充分的验收测试 AppSpec 文件配置 AppSpec（Application Specification）文件是 CodeDeploy 的核心配置文件，定义了部署的具体行为。不同的部署目标对应不同的配置结构。 Lambda 部署的 AppSpec 配置 version: 0.0 resources: - myLambdaFunction: Type: AWS::Lambda::Function Properties: Name: &quot;myFunction&quot; Alias: &quot;myAlias&quot; CurrentVersion: &quot;1&quot; TargetVersion: &quot;2&quot; hooks: - BeforeAllowTraffic: &quot;LambdaFunctionToValidateBeforeTrafficShift&quot; - AfterAllowTraffic: &quot;LambdaFunctionToValidateAfterTrafficShift&quot; 主要配置项： 字段 说明 version AppSpec 文件版本 resources Lambda 函数的名称和属性 hooks 指定在流量切换前后执行的验证函数 Lambda 部署的 Hooks 只有两个时机： BeforeAllowTraffic：流量切换前执行，用于预热或前置验证 AfterAllowTraffic：流量切换后执行，用于后置验证 EC2 / On-Premises 部署的 AppSpec 配置 version: 0.0 os: linux files: - source: /index.html destination: /var/www/html/ hooks: ApplicationStop: - location: scripts/stop_server.sh timeout: 300 BeforeInstall: - location: scripts/before_install.sh AfterInstall: - location: scripts/after_install.sh ApplicationStart: - location: scripts/start_server.sh ValidateService: - location: scripts/validate.sh timeout: 300 主要配置项： 字段 说明 version AppSpec 文件版本 os 操作系统类型（linux / windows） files 源文件和目标路径的映射 hooks 各生命周期阶段执行的脚本 EC2 / On-Premises 部署的生命周期 Hooks 更加丰富，完整的执行顺序如下： 阶段 说明 ApplicationStop 优雅停止当前版本的应用 DownloadBundle CodeDeploy Agent 将部署包下载到临时目录（系统自动执行） BeforeInstall 安装前的准备工作，如备份当前版本、解密文件等 Install 将文件从临时目录复制到目标位置（系统自动执行） AfterInstall 安装后的配置工作，如修改文件权限、更新配置文件等 ApplicationStart 启动新版本的应用 ValidateService 执行验证测试，确认部署成功 BeforeBlockTraffic 从负载均衡器注销实例前的准备工作 BlockTraffic 将实例从负载均衡器中注销（系统自动执行） AfterBlockTraffic 实例从负载均衡器注销后的清理工作 需要注意的是，DownloadBundle、Install、BlockTraffic 这三个阶段由 CodeDeploy Agent 自动执行，不支持自定义脚本。 实践建议 AppSpec 文件必须放在部署包的根目录，文件名为 appspec.yml 优先选择 Blue/Green 部署用于生产环境，In-Place 部署更适合开发测试环境 在 ValidateService 阶段编写充分的健康检查脚本，确保部署后服务真正可用 配合 CloudWatch 告警和 Auto Scaling，在部署异常时自动触发回滚 合理设置 Hooks 的 timeout，避免脚本执行超时导致部署失败 总结 AWS CodeDeploy 通过标准化的部署流程和灵活的 AppSpec 配置，降低了应用部署的复杂度和风险。In-Place 部署适合快速迭代的场景，Blue/Green 部署则提供了更高的安全性和可回滚性。理解 AppSpec 文件的生命周期 Hooks 是用好 CodeDeploy 的关键——它们定义了部署过程中每个阶段的行为，是实现自动化部署的基础。" />
+<meta property="og:description" content="AWS CodeDeploy 是亚马逊云服务提供的一项全托管部署服务，能够自动将应用程序部署到 EC2 实例、本地服务器（On-Premises）以及 Lambda 函数。它是 AWS CI/CD 工具链中的重要一环，可以与 Jenkins、GitHub Actions 等 CI 工具以及 Ansible、Chef、Puppet 等配置管理工具无缝集成。 本文整理了 CodeDeploy 的核心概念，包括部署流程、部署方式和 AppSpec 配置文件，帮助你快速建立对这项服务的整体认知。 部署流程概览 CodeDeploy 的部署流程可以用下图概括： 整个流程的核心步骤包括： 打包应用：将代码和 AppSpec 配置文件一起打包为部署包（Revision） 上传到存储：将部署包上传到 S3 或 GitHub 创建部署：通过 AWS 控制台、CLI 或 API 触发部署 CodeDeploy Agent 执行：目标实例上预装的 Agent 从存储位置拉取部署包，按 AppSpec 文件定义的生命周期钩子（Hooks）依次执行部署动作 部署方式 CodeDeploy 支持两种主要的部署方式，适用于不同的业务场景和风险偏好。 1. In-Place 部署（就地部署） 也被称为 Rolling Update（滚动更新），是最直接的部署方式。 工作原理： 逐批停止实例上正在运行的应用，部署新版本后重新启动 部署期间被更新的实例暂时不可用，请求由其他实例处理（整体容量会暂时减小） 部署完成后实例重新加入负载均衡 适用范围： EC2 实例、On-Premises 服务器 不支持 Lambda 函数 回滚策略： 需要重新部署上一个版本（即再次执行一次完整的部署流程） 无法做到即时回滚 适用场景：对可用性要求不是极端苛刻的内部系统、测试环境，或者实例数量较多、滚动更新影响面可控的场景。 2. Blue/Green 部署（蓝绿部署） 蓝绿部署是一种零停机的部署策略，通过准备一套全新的环境来避免部署过程中的服务中断。 工作原理： 在新的实例集合（Green 环境）上部署新版本 部署验证通过后，将流量从旧环境（Blue）切换到新环境（Green） Blue 环境保留一段时间，便于快速回滚 命名约定： Blue：当前正在运行的活跃部署环境 Green：即将上线的新版本环境 适用范围： EC2 实例、On-Premises 服务器 Lambda 函数（通过流量权重切换实现） 优势： 零停机部署 回滚极快，只需将流量切回 Blue 环境 Green 环境可以在切换前进行充分的验收测试 AppSpec 文件配置 AppSpec（Application Specification）文件是 CodeDeploy 的核心配置文件，定义了部署的具体行为。不同的部署目标对应不同的配置结构。 Lambda 部署的 AppSpec 配置 version: 0.0 resources: - myLambdaFunction: Type: AWS::Lambda::Function Properties: Name: &quot;myFunction&quot; Alias: &quot;myAlias&quot; CurrentVersion: &quot;1&quot; TargetVersion: &quot;2&quot; hooks: - BeforeAllowTraffic: &quot;LambdaFunctionToValidateBeforeTrafficShift&quot; - AfterAllowTraffic: &quot;LambdaFunctionToValidateAfterTrafficShift&quot; 主要配置项： 字段 说明 version AppSpec 文件版本 resources Lambda 函数的名称和属性 hooks 指定在流量切换前后执行的验证函数 Lambda 部署的 Hooks 只有两个时机： BeforeAllowTraffic：流量切换前执行，用于预热或前置验证 AfterAllowTraffic：流量切换后执行，用于后置验证 EC2 / On-Premises 部署的 AppSpec 配置 version: 0.0 os: linux files: - source: /index.html destination: /var/www/html/ hooks: ApplicationStop: - location: scripts/stop_server.sh timeout: 300 BeforeInstall: - location: scripts/before_install.sh AfterInstall: - location: scripts/after_install.sh ApplicationStart: - location: scripts/start_server.sh ValidateService: - location: scripts/validate.sh timeout: 300 主要配置项： 字段 说明 version AppSpec 文件版本 os 操作系统类型（linux / windows） files 源文件和目标路径的映射 hooks 各生命周期阶段执行的脚本 EC2 / On-Premises 部署的生命周期 Hooks 更加丰富，完整的执行顺序如下： 阶段 说明 ApplicationStop 优雅停止当前版本的应用 DownloadBundle CodeDeploy Agent 将部署包下载到临时目录（系统自动执行） BeforeInstall 安装前的准备工作，如备份当前版本、解密文件等 Install 将文件从临时目录复制到目标位置（系统自动执行） AfterInstall 安装后的配置工作，如修改文件权限、更新配置文件等 ApplicationStart 启动新版本的应用 ValidateService 执行验证测试，确认部署成功 BeforeBlockTraffic 从负载均衡器注销实例前的准备工作 BlockTraffic 将实例从负载均衡器中注销（系统自动执行） AfterBlockTraffic 实例从负载均衡器注销后的清理工作 需要注意的是，DownloadBundle、Install、BlockTraffic 这三个阶段由 CodeDeploy Agent 自动执行，不支持自定义脚本。 实践建议 AppSpec 文件必须放在部署包的根目录，文件名为 appspec.yml 优先选择 Blue/Green 部署用于生产环境，In-Place 部署更适合开发测试环境 在 ValidateService 阶段编写充分的健康检查脚本，确保部署后服务真正可用 配合 CloudWatch 告警和 Auto Scaling，在部署异常时自动触发回滚 合理设置 Hooks 的 timeout，避免脚本执行超时导致部署失败 总结 AWS CodeDeploy 通过标准化的部署流程和灵活的 AppSpec 配置，降低了应用部署的复杂度和风险。In-Place 部署适合快速迭代的场景，Blue/Green 部署则提供了更高的安全性和可回滚性。理解 AppSpec 文件的生命周期 Hooks 是用好 CodeDeploy 的关键——它们定义了部署过程中每个阶段的行为，是实现自动化部署的基础。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/02/27/aws-developer-associate-code-deploy-quick-note.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/02/27/aws-developer-associate-code-deploy-quick-note.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-02-27T18:00:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="aws developer associate test CodeDeploy quick note" />
+<meta property="twitter:title" content="AWS CodeDeploy 部署服务核心概念与实践指南" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-02-27T18:00:00+08:00","datePublished":"2019-02-27T18:00:00+08:00","description":"code deploy integrate with CI/CD tools as well as config management tools ansible, chef, puppet Steps to deploy a project deploy methods inplace as called rolling update stop the instance while updating and use other instances (capacity will be smaller) can be used for EC2, on-premise systems, not for lambda need redeploy for rollback green/blue prepare new instances and switch traffic once deployment is done blue is is the active deployment, green is the new release can also be used for lambda appspec file to configure deployment lambda deployment version resources (name and properties of lambda function) hooks (specify when should lambda function run) BeforeAllowTraffic AfterAllowTraffic ec2 and on premises version os files (source and destination) hooks ApplicationStop (Gracefully stio the app for the new verion) DownloadBundle (CD agent copies revision files to a temporary location) BeforeInstall (e.g backing up current revision, decrypting files) Install (copy revision files from temp to correct location) After install (e.g config tasks, change permission) ApplicationStart ValidateService (tests) BeforeBlockTraffic (tasks before deregistering from load balancer) BlockTraffic (deregister instances from load balancer) AfterBlockTraffic (tasks after deregistering from load balancer)","headline":"aws developer associate test CodeDeploy quick note","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/02/27/aws-developer-associate-code-deploy-quick-note.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/02/27/aws-developer-associate-code-deploy-quick-note.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-02-27T18:00:00+08:00","datePublished":"2019-02-27T18:00:00+08:00","description":"AWS CodeDeploy 是亚马逊云服务提供的一项全托管部署服务，能够自动将应用程序部署到 EC2 实例、本地服务器（On-Premises）以及 Lambda 函数。它是 AWS CI/CD 工具链中的重要一环，可以与 Jenkins、GitHub Actions 等 CI 工具以及 Ansible、Chef、Puppet 等配置管理工具无缝集成。 本文整理了 CodeDeploy 的核心概念，包括部署流程、部署方式和 AppSpec 配置文件，帮助你快速建立对这项服务的整体认知。 部署流程概览 CodeDeploy 的部署流程可以用下图概括： 整个流程的核心步骤包括： 打包应用：将代码和 AppSpec 配置文件一起打包为部署包（Revision） 上传到存储：将部署包上传到 S3 或 GitHub 创建部署：通过 AWS 控制台、CLI 或 API 触发部署 CodeDeploy Agent 执行：目标实例上预装的 Agent 从存储位置拉取部署包，按 AppSpec 文件定义的生命周期钩子（Hooks）依次执行部署动作 部署方式 CodeDeploy 支持两种主要的部署方式，适用于不同的业务场景和风险偏好。 1. In-Place 部署（就地部署） 也被称为 Rolling Update（滚动更新），是最直接的部署方式。 工作原理： 逐批停止实例上正在运行的应用，部署新版本后重新启动 部署期间被更新的实例暂时不可用，请求由其他实例处理（整体容量会暂时减小） 部署完成后实例重新加入负载均衡 适用范围： EC2 实例、On-Premises 服务器 不支持 Lambda 函数 回滚策略： 需要重新部署上一个版本（即再次执行一次完整的部署流程） 无法做到即时回滚 适用场景：对可用性要求不是极端苛刻的内部系统、测试环境，或者实例数量较多、滚动更新影响面可控的场景。 2. Blue/Green 部署（蓝绿部署） 蓝绿部署是一种零停机的部署策略，通过准备一套全新的环境来避免部署过程中的服务中断。 工作原理： 在新的实例集合（Green 环境）上部署新版本 部署验证通过后，将流量从旧环境（Blue）切换到新环境（Green） Blue 环境保留一段时间，便于快速回滚 命名约定： Blue：当前正在运行的活跃部署环境 Green：即将上线的新版本环境 适用范围： EC2 实例、On-Premises 服务器 Lambda 函数（通过流量权重切换实现） 优势： 零停机部署 回滚极快，只需将流量切回 Blue 环境 Green 环境可以在切换前进行充分的验收测试 AppSpec 文件配置 AppSpec（Application Specification）文件是 CodeDeploy 的核心配置文件，定义了部署的具体行为。不同的部署目标对应不同的配置结构。 Lambda 部署的 AppSpec 配置 version: 0.0 resources: - myLambdaFunction: Type: AWS::Lambda::Function Properties: Name: &quot;myFunction&quot; Alias: &quot;myAlias&quot; CurrentVersion: &quot;1&quot; TargetVersion: &quot;2&quot; hooks: - BeforeAllowTraffic: &quot;LambdaFunctionToValidateBeforeTrafficShift&quot; - AfterAllowTraffic: &quot;LambdaFunctionToValidateAfterTrafficShift&quot; 主要配置项： 字段 说明 version AppSpec 文件版本 resources Lambda 函数的名称和属性 hooks 指定在流量切换前后执行的验证函数 Lambda 部署的 Hooks 只有两个时机： BeforeAllowTraffic：流量切换前执行，用于预热或前置验证 AfterAllowTraffic：流量切换后执行，用于后置验证 EC2 / On-Premises 部署的 AppSpec 配置 version: 0.0 os: linux files: - source: /index.html destination: /var/www/html/ hooks: ApplicationStop: - location: scripts/stop_server.sh timeout: 300 BeforeInstall: - location: scripts/before_install.sh AfterInstall: - location: scripts/after_install.sh ApplicationStart: - location: scripts/start_server.sh ValidateService: - location: scripts/validate.sh timeout: 300 主要配置项： 字段 说明 version AppSpec 文件版本 os 操作系统类型（linux / windows） files 源文件和目标路径的映射 hooks 各生命周期阶段执行的脚本 EC2 / On-Premises 部署的生命周期 Hooks 更加丰富，完整的执行顺序如下： 阶段 说明 ApplicationStop 优雅停止当前版本的应用 DownloadBundle CodeDeploy Agent 将部署包下载到临时目录（系统自动执行） BeforeInstall 安装前的准备工作，如备份当前版本、解密文件等 Install 将文件从临时目录复制到目标位置（系统自动执行） AfterInstall 安装后的配置工作，如修改文件权限、更新配置文件等 ApplicationStart 启动新版本的应用 ValidateService 执行验证测试，确认部署成功 BeforeBlockTraffic 从负载均衡器注销实例前的准备工作 BlockTraffic 将实例从负载均衡器中注销（系统自动执行） AfterBlockTraffic 实例从负载均衡器注销后的清理工作 需要注意的是，DownloadBundle、Install、BlockTraffic 这三个阶段由 CodeDeploy Agent 自动执行，不支持自定义脚本。 实践建议 AppSpec 文件必须放在部署包的根目录，文件名为 appspec.yml 优先选择 Blue/Green 部署用于生产环境，In-Place 部署更适合开发测试环境 在 ValidateService 阶段编写充分的健康检查脚本，确保部署后服务真正可用 配合 CloudWatch 告警和 Auto Scaling，在部署异常时自动触发回滚 合理设置 Hooks 的 timeout，避免脚本执行超时导致部署失败 总结 AWS CodeDeploy 通过标准化的部署流程和灵活的 AppSpec 配置，降低了应用部署的复杂度和风险。In-Place 部署适合快速迭代的场景，Blue/Green 部署则提供了更高的安全性和可回滚性。理解 AppSpec 文件的生命周期 Hooks 是用好 CodeDeploy 的关键——它们定义了部署过程中每个阶段的行为，是实现自动化部署的基础。","headline":"AWS CodeDeploy 部署服务核心概念与实践指南","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/02/27/aws-developer-associate-code-deploy-quick-note.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/02/27/aws-developer-associate-code-deploy-quick-note.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html">&laquo; aws developer ass...</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html">&laquo; 深入理解 AWS IAM：身份与访...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html">Welcome to Jekyll! &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/14/welcome-to-jekyll.html">Jekyll 静态博客搭建指南：从... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">aws developer associate test CodeDeploy quick note</h1>
+    <h1 class="asset-name entry-title">AWS CodeDeploy 部署服务核心概念与实践指南</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,67 +97,264 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h1 id="code-deploy">code deploy</h1>
-<p>integrate with CI/CD tools as well as config management tools <code class="language-plaintext highlighter-rouge">ansible</code>, <code class="language-plaintext highlighter-rouge">chef</code>, <code class="language-plaintext highlighter-rouge">puppet</code></p>
+      <p>AWS CodeDeploy 是亚马逊云服务提供的一项全托管部署服务，能够自动将应用程序部署到 EC2 实例、本地服务器（On-Premises）以及 Lambda 函数。它是 AWS CI/CD 工具链中的重要一环，可以与 Jenkins、GitHub Actions 等 CI 工具以及 Ansible、Chef、Puppet 等配置管理工具无缝集成。</p>
 
-<h2 id="steps-to-deploy-a-project">Steps to deploy a project</h2>
+<p>本文整理了 CodeDeploy 的核心概念，包括部署流程、部署方式和 AppSpec 配置文件，帮助你快速建立对这项服务的整体认知。</p>
+
+<hr />
+
+<h2 id="部署流程概览">部署流程概览</h2>
+
+<p>CodeDeploy 的部署流程可以用下图概括：</p>
+
 <p><img src="/blog/img/code_deploy.png" /></p>
 
-<h2 id="deploy-methods">deploy methods</h2>
+<p>整个流程的核心步骤包括：</p>
+
 <ol>
-  <li>inplace
-    <ul>
-      <li>as called <code class="language-plaintext highlighter-rouge">rolling update</code></li>
-      <li>stop the instance while updating and use other instances (capacity will be smaller)</li>
-      <li>can be used for EC2, on-premise systems, not for lambda</li>
-      <li>need redeploy for rollback</li>
-    </ul>
-  </li>
-  <li>green/blue
-    <ul>
-      <li>prepare new instances and switch traffic once deployment is done</li>
-      <li>blue is is the active deployment, green is the new release</li>
-      <li>can also be used for lambda</li>
-    </ul>
-  </li>
+  <li><strong>打包应用</strong>：将代码和 AppSpec 配置文件一起打包为部署包（Revision）</li>
+  <li><strong>上传到存储</strong>：将部署包上传到 S3 或 GitHub</li>
+  <li><strong>创建部署</strong>：通过 AWS 控制台、CLI 或 API 触发部署</li>
+  <li><strong>CodeDeploy Agent 执行</strong>：目标实例上预装的 Agent 从存储位置拉取部署包，按 AppSpec 文件定义的生命周期钩子（Hooks）依次执行部署动作</li>
 </ol>
 
-<h2 id="appspec-file-to-configure-deployment">appspec file to configure deployment</h2>
+<hr />
+
+<h2 id="部署方式">部署方式</h2>
+
+<p>CodeDeploy 支持两种主要的部署方式，适用于不同的业务场景和风险偏好。</p>
+
+<h3 id="1-in-place-部署就地部署">1. In-Place 部署（就地部署）</h3>
+
+<p>也被称为 <strong>Rolling Update（滚动更新）</strong>，是最直接的部署方式。</p>
+
+<p><strong>工作原理</strong>：</p>
+<ul>
+  <li>逐批停止实例上正在运行的应用，部署新版本后重新启动</li>
+  <li>部署期间被更新的实例暂时不可用，请求由其他实例处理（整体容量会暂时减小）</li>
+  <li>部署完成后实例重新加入负载均衡</li>
+</ul>
+
+<p><strong>适用范围</strong>：</p>
+<ul>
+  <li>EC2 实例、On-Premises 服务器</li>
+  <li><strong>不支持</strong> Lambda 函数</li>
+</ul>
+
+<p><strong>回滚策略</strong>：</p>
+<ul>
+  <li>需要重新部署上一个版本（即再次执行一次完整的部署流程）</li>
+  <li>无法做到即时回滚</li>
+</ul>
+
+<p><strong>适用场景</strong>：对可用性要求不是极端苛刻的内部系统、测试环境，或者实例数量较多、滚动更新影响面可控的场景。</p>
+
+<h3 id="2-bluegreen-部署蓝绿部署">2. Blue/Green 部署（蓝绿部署）</h3>
+
+<p>蓝绿部署是一种零停机的部署策略，通过准备一套全新的环境来避免部署过程中的服务中断。</p>
+
+<p><strong>工作原理</strong>：</p>
+<ul>
+  <li>在新的实例集合（Green 环境）上部署新版本</li>
+  <li>部署验证通过后，将流量从旧环境（Blue）切换到新环境（Green）</li>
+  <li>Blue 环境保留一段时间，便于快速回滚</li>
+</ul>
+
+<p><strong>命名约定</strong>：</p>
+<ul>
+  <li><strong>Blue</strong>：当前正在运行的活跃部署环境</li>
+  <li><strong>Green</strong>：即将上线的新版本环境</li>
+</ul>
+
+<p><strong>适用范围</strong>：</p>
+<ul>
+  <li>EC2 实例、On-Premises 服务器</li>
+  <li>Lambda 函数（通过流量权重切换实现）</li>
+</ul>
+
+<p><strong>优势</strong>：</p>
+<ul>
+  <li>零停机部署</li>
+  <li>回滚极快，只需将流量切回 Blue 环境</li>
+  <li>Green 环境可以在切换前进行充分的验收测试</li>
+</ul>
+
+<hr />
+
+<h2 id="appspec-文件配置">AppSpec 文件配置</h2>
+
+<p>AppSpec（Application Specification）文件是 CodeDeploy 的核心配置文件，定义了部署的具体行为。不同的部署目标对应不同的配置结构。</p>
+
+<h3 id="lambda-部署的-appspec-配置">Lambda 部署的 AppSpec 配置</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">version</span><span class="pi">:</span> <span class="m">0.0</span>
+<span class="na">resources</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">myLambdaFunction</span><span class="pi">:</span>
+      <span class="na">Type</span><span class="pi">:</span> <span class="s">AWS::Lambda::Function</span>
+      <span class="na">Properties</span><span class="pi">:</span>
+        <span class="na">Name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">myFunction"</span>
+        <span class="na">Alias</span><span class="pi">:</span> <span class="s2">"</span><span class="s">myAlias"</span>
+        <span class="na">CurrentVersion</span><span class="pi">:</span> <span class="s2">"</span><span class="s">1"</span>
+        <span class="na">TargetVersion</span><span class="pi">:</span> <span class="s2">"</span><span class="s">2"</span>
+<span class="na">hooks</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">BeforeAllowTraffic</span><span class="pi">:</span> <span class="s2">"</span><span class="s">LambdaFunctionToValidateBeforeTrafficShift"</span>
+  <span class="pi">-</span> <span class="na">AfterAllowTraffic</span><span class="pi">:</span> <span class="s2">"</span><span class="s">LambdaFunctionToValidateAfterTrafficShift"</span>
+</code></pre></div></div>
+
+<p>主要配置项：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>字段</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>version</strong></td>
+      <td>AppSpec 文件版本</td>
+    </tr>
+    <tr>
+      <td><strong>resources</strong></td>
+      <td>Lambda 函数的名称和属性</td>
+    </tr>
+    <tr>
+      <td><strong>hooks</strong></td>
+      <td>指定在流量切换前后执行的验证函数</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Lambda 部署的 Hooks 只有两个时机：</p>
+<ul>
+  <li><strong>BeforeAllowTraffic</strong>：流量切换前执行，用于预热或前置验证</li>
+  <li><strong>AfterAllowTraffic</strong>：流量切换后执行，用于后置验证</li>
+</ul>
+
+<h3 id="ec2--on-premises-部署的-appspec-配置">EC2 / On-Premises 部署的 AppSpec 配置</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">version</span><span class="pi">:</span> <span class="m">0.0</span>
+<span class="na">os</span><span class="pi">:</span> <span class="s">linux</span>
+<span class="na">files</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">source</span><span class="pi">:</span> <span class="s">/index.html</span>
+    <span class="na">destination</span><span class="pi">:</span> <span class="s">/var/www/html/</span>
+<span class="na">hooks</span><span class="pi">:</span>
+  <span class="na">ApplicationStop</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">location</span><span class="pi">:</span> <span class="s">scripts/stop_server.sh</span>
+      <span class="na">timeout</span><span class="pi">:</span> <span class="m">300</span>
+  <span class="na">BeforeInstall</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">location</span><span class="pi">:</span> <span class="s">scripts/before_install.sh</span>
+  <span class="na">AfterInstall</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">location</span><span class="pi">:</span> <span class="s">scripts/after_install.sh</span>
+  <span class="na">ApplicationStart</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">location</span><span class="pi">:</span> <span class="s">scripts/start_server.sh</span>
+  <span class="na">ValidateService</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">location</span><span class="pi">:</span> <span class="s">scripts/validate.sh</span>
+      <span class="na">timeout</span><span class="pi">:</span> <span class="m">300</span>
+</code></pre></div></div>
+
+<p>主要配置项：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>字段</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>version</strong></td>
+      <td>AppSpec 文件版本</td>
+    </tr>
+    <tr>
+      <td><strong>os</strong></td>
+      <td>操作系统类型（linux / windows）</td>
+    </tr>
+    <tr>
+      <td><strong>files</strong></td>
+      <td>源文件和目标路径的映射</td>
+    </tr>
+    <tr>
+      <td><strong>hooks</strong></td>
+      <td>各生命周期阶段执行的脚本</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>EC2 / On-Premises 部署的生命周期 Hooks 更加丰富，完整的执行顺序如下：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>阶段</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>ApplicationStop</strong></td>
+      <td>优雅停止当前版本的应用</td>
+    </tr>
+    <tr>
+      <td><strong>DownloadBundle</strong></td>
+      <td>CodeDeploy Agent 将部署包下载到临时目录（系统自动执行）</td>
+    </tr>
+    <tr>
+      <td><strong>BeforeInstall</strong></td>
+      <td>安装前的准备工作，如备份当前版本、解密文件等</td>
+    </tr>
+    <tr>
+      <td><strong>Install</strong></td>
+      <td>将文件从临时目录复制到目标位置（系统自动执行）</td>
+    </tr>
+    <tr>
+      <td><strong>AfterInstall</strong></td>
+      <td>安装后的配置工作，如修改文件权限、更新配置文件等</td>
+    </tr>
+    <tr>
+      <td><strong>ApplicationStart</strong></td>
+      <td>启动新版本的应用</td>
+    </tr>
+    <tr>
+      <td><strong>ValidateService</strong></td>
+      <td>执行验证测试，确认部署成功</td>
+    </tr>
+    <tr>
+      <td><strong>BeforeBlockTraffic</strong></td>
+      <td>从负载均衡器注销实例前的准备工作</td>
+    </tr>
+    <tr>
+      <td><strong>BlockTraffic</strong></td>
+      <td>将实例从负载均衡器中注销（系统自动执行）</td>
+    </tr>
+    <tr>
+      <td><strong>AfterBlockTraffic</strong></td>
+      <td>实例从负载均衡器注销后的清理工作</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>需要注意的是，<code class="language-plaintext highlighter-rouge">DownloadBundle</code>、<code class="language-plaintext highlighter-rouge">Install</code>、<code class="language-plaintext highlighter-rouge">BlockTraffic</code> 这三个阶段由 CodeDeploy Agent 自动执行，不支持自定义脚本。</p>
+
+<hr />
+
+<h2 id="实践建议">实践建议</h2>
+
 <ol>
-  <li>lambda deployment
-    <ul>
-      <li>version</li>
-      <li>resources (name and properties of lambda function)</li>
-      <li>hooks (specify when should lambda function run)
-        <ul>
-          <li>BeforeAllowTraffic</li>
-          <li>AfterAllowTraffic</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>ec2 and on premises
-    <ul>
-      <li>version</li>
-      <li>os</li>
-      <li>files (source and destination)</li>
-      <li>hooks
-        <ul>
-          <li>ApplicationStop (Gracefully stio the app for the new verion)</li>
-          <li>DownloadBundle (CD agent copies revision files to a temporary location)</li>
-          <li>BeforeInstall (e.g backing up current revision, decrypting files)</li>
-          <li>Install (copy revision files from temp to correct location)</li>
-          <li>After install (e.g config tasks, change permission)</li>
-          <li>ApplicationStart</li>
-          <li>ValidateService (tests)</li>
-          <li>BeforeBlockTraffic (tasks before deregistering from load balancer)</li>
-          <li>BlockTraffic (deregister instances from load balancer)</li>
-          <li>AfterBlockTraffic (tasks after deregistering from load balancer)</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
+  <li><strong>AppSpec 文件必须放在部署包的根目录</strong>，文件名为 <code class="language-plaintext highlighter-rouge">appspec.yml</code></li>
+  <li><strong>优先选择 Blue/Green 部署</strong>用于生产环境，In-Place 部署更适合开发测试环境</li>
+  <li><strong>在 ValidateService 阶段编写充分的健康检查脚本</strong>，确保部署后服务真正可用</li>
+  <li><strong>配合 CloudWatch 告警和 Auto Scaling</strong>，在部署异常时自动触发回滚</li>
+  <li><strong>合理设置 Hooks 的 timeout</strong>，避免脚本执行超时导致部署失败</li>
 </ol>
+
+<hr />
+
+<h2 id="总结">总结</h2>
+
+<p>AWS CodeDeploy 通过标准化的部署流程和灵活的 AppSpec 配置，降低了应用部署的复杂度和风险。In-Place 部署适合快速迭代的场景，Blue/Green 部署则提供了更高的安全性和可回滚性。理解 AppSpec 文件的生命周期 Hooks 是用好 CodeDeploy 的关键——它们定义了部署过程中每个阶段的行为，是实现自动化部署的基础。</p>
 
     </div>
   </div>
@@ -187,33 +384,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

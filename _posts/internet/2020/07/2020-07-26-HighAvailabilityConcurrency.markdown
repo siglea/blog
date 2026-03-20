@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "高可用高并发"
+title:  "构建高可用高并发系统：限流、降级、缓存与扩容的工程实践"
 date:   2020-07-26 14:36:00 +0900
 comments: true
 tags:
@@ -8,76 +8,162 @@ tags:
 categories:
 - 技术
 ---
-#### 高可用
-- 负载均衡
-    - Consul + Consul-template 动态配置 Nginx upstream
-    - Nginx + lua 动态负载均衡
-- 限流，限制总并发数（池化）、排队或等待、降级
-    - 接入层限流：
-        - ngx_http_limit_conn_mode(连接数限制)
-        - ngx_http_limit_req_module(漏桶算法)
-        - openResty提供的Lua动态限流模块(lua-resty-limit-traffic)
-    - 应用层限流：Redis+Lua 、Nginx+Lua
-    - 节流，相同的事件特定窗口内只处理一次
-- 降级，主要是当服务出问题或影响到核心流程的性能，需要暂时屏蔽掉一些非核心流程
-    - 缓存是离用户越近越高效，而降级是离用户越近对系统的保护越好
-    - 超时降级、故障降级
-- 隔离
-    - 线程隔离，通过不同线程池实现
-    - 进程隔离，拆分子系统单独部署
-    - 爬虫隔离，区分正常请求与Spider请求
-    - 热点隔离，热点活动等
-    - 集群隔离、机房隔离、读写隔离、动静隔离、资源隔离（CPU绑定等）
-    - Hystrix隔离
-    - Servlet3，基于NIO的线程池及异步化
 
-    ```shell
-    HystrixComand.Setter.
-        .withGroupKey(groupKey) # 全局服务分组
-        .andCommandKey(commandKey) # 全局服务
-        .andThreadPoolKey(threadPookKey) # 全局线程名称
-        .andThreadPoolPropertiesDefaults(threadPoolPropDefaults)
-        .andCommandPropertiesDefaults();
-    
-    ```
-    
-- 超时与重试 
-- 回滚
-- 压测与预案
-    - JMeter/Apache ab/TCPCopy
+### 引言
 
-#### 高并发
-- 缓存，缓存主要是提高系统吞吐量
-    - 分层缓存
-        - 本地缓存(GuavaCache、Ehcache堆内外、MapDB堆内外)、应用将缓存、分布式缓存
-        - 客户端缓存、浏览器缓存
-        - Nginx代理层缓存
-    - 缓存回收策略：基于时间、基于容量、基于Java对象应用
-    - Java缓存类型：堆内缓存、堆外缓存、磁盘缓存
-    - 缓存使用的模式
-        - Cache-Aside：业务直接维护缓存
-        - Cache-As-SoR(system of record)：面向缓存，不CareDB  
-            - read-through、write-through、write-behind
-    - HTTP缓存
-        - Age/Vary/Via一般用于代理层CDN，比如代理层是否命中、使用什么协议
-        - Etag/Last-Modified，服务器用于判断本次请求与上次请求资源是否修改了
-- 池化
-    - 数据库连接池
-    - HTTPClient连接池
-    - 线程池
-- 异步并发
-    - 微服务情况下，请求合并
-- 扩容
-    - 系统拆分
-    - 数据拆分
-        - JIMDB，京东内存KV
-    - 任务拆分
-        - Quartz
-        - 当当开源 Elastic-Job-Lite
-    - 数据异构
-        - Canal是阿里开源的一款基于MySQL数据库binlog的增量订阅和消费组件
-- 队列
+在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发（High Concurrency）关注的是系统在大流量下高效处理请求的能力。两者相辅相成——没有高可用保障的高并发系统，一旦流量洪峰到来便可能全面崩溃；没有高并发能力的高可用系统，无法支撑业务增长。本文将从负载均衡、限流、降级、隔离、缓存、池化、异步和扩容等多个维度，系统性地梳理构建高可用高并发系统的工程实践。
 
-#### openresty
-https://www.jianshu.com/p/09c17230e1ae
-<https://zhuanlan.zhihu.com/p/37102791>
+---
+
+### 高可用
+
+高可用的核心思想是**冗余 + 自动故障转移**，在此基础上辅以限流、降级、隔离等保护机制。
+
+#### 负载均衡
+
+负载均衡是高可用的基础设施，常见的动态配置方案包括：
+
+- **Consul + Consul-template**：动态生成 Nginx upstream 配置，服务上下线自动更新
+- **Nginx + Lua**：利用 OpenResty 的 Lua 扩展能力实现动态负载均衡，无需重载 Nginx
+
+#### 限流
+
+限流的本质是**以有损服务换取系统整体可用**，即限制总并发数（池化）、排队或等待、降级。
+
+**接入层限流**（Nginx 层面）：
+- `ngx_http_limit_conn_module`：限制连接数
+- `ngx_http_limit_req_module`：基于漏桶算法限制请求速率
+- OpenResty 提供的 `lua-resty-limit-traffic` 模块：支持更灵活的动态限流策略
+
+**应用层限流**：
+- **Redis + Lua**：利用 Redis 的原子性操作实现滑动窗口或令牌桶限流
+- **Nginx + Lua**：在 OpenResty 中实现业务级别的精细限流
+
+**节流**：同一事件在特定时间窗口内只处理一次，避免重复计算和资源浪费。
+
+#### 降级
+
+降级的策略是：当服务出问题或影响到核心流程性能时，暂时屏蔽非核心流程。
+
+关键原则：
+- **缓存是离用户越近越高效**，而**降级是离用户越近对系统的保护越好**
+- 常见降级触发条件：**超时降级**（接口响应超过阈值自动降级）、**故障降级**（依赖服务不可用时返回兜底数据）
+
+#### 隔离
+
+隔离的目标是将故障控制在有限范围内，避免级联失败。
+
+| 隔离策略 | 说明 |
+|---------|------|
+| 线程隔离 | 通过不同线程池为不同服务分配独立的资源 |
+| 进程隔离 | 将子系统拆分为独立服务单独部署 |
+| 爬虫隔离 | 区分正常用户请求与爬虫请求，分别处理 |
+| 热点隔离 | 将热点活动（如秒杀）部署在独立集群 |
+| 集群/机房/读写/动静/资源隔离 | 多维度隔离，包括 CPU 绑定等硬件级隔离 |
+
+**Hystrix 隔离配置示例**：
+
+```shell
+HystrixComand.Setter.
+    .withGroupKey(groupKey) # 全局服务分组
+    .andCommandKey(commandKey) # 全局服务
+    .andThreadPoolKey(threadPookKey) # 全局线程名称
+    .andThreadPoolPropertiesDefaults(threadPoolPropDefaults)
+    .andCommandPropertiesDefaults();
+```
+
+**Servlet 3 异步化**：基于 NIO 的线程池及异步处理，将 I/O 等待从业务线程中解耦，提升线程利用率。
+
+#### 超时与重试
+
+合理设置超时时间是避免服务雪崩的关键。重试需要配合**退避策略**和**幂等性设计**，防止重试风暴。
+
+#### 回滚
+
+当发布新版本出现问题时，需要具备快速回滚能力。灰度发布、蓝绿部署、金丝雀发布等策略都是降低发布风险的手段。
+
+#### 压测与预案
+
+- 常用压测工具：**JMeter**、**Apache ab**、**TCPCopy**（流量复制回放）
+- 在大促等可预见的流量高峰前，必须进行全链路压测并准备详细的应急预案
+
+---
+
+### 高并发
+
+高并发的核心思想是**用空间换时间、用异步换同步**，通过缓存、池化、异步和扩容来提升系统吞吐量。
+
+#### 缓存
+
+缓存是提升系统吞吐量最直接有效的手段。
+
+**分层缓存架构**：
+- **客户端缓存 / 浏览器缓存**：最靠近用户，命中率最高时效果最好
+- **Nginx 代理层缓存**：在反向代理层拦截重复请求
+- **本地缓存**：GuavaCache、Ehcache（支持堆内外）、MapDB 等
+- **分布式缓存**：Redis、Memcached 等
+
+**缓存回收策略**：基于时间（TTL/TTI）、基于容量（LRU/LFU）、基于 Java 对象引用（软引用/弱引用）。
+
+**Java 缓存类型**：堆内缓存（速度最快、受 GC 影响）、堆外缓存（不受 GC 影响但序列化有开销）、磁盘缓存（容量大但速度慢）。
+
+**缓存使用模式**：
+- **Cache-Aside**：业务代码直接维护缓存，读时先查缓存再查数据库，写时更新数据库后失效缓存
+- **Cache-As-SoR（System of Record）**：面向缓存编程，不直接关心数据库
+  - read-through：缓存未命中时自动加载
+  - write-through：写入缓存时同步写入数据库
+  - write-behind：写入缓存后异步批量写入数据库
+
+**HTTP 缓存**：
+- `Age` / `Vary` / `Via`：一般用于代理层 CDN，标识代理命中情况和协议
+- `ETag` / `Last-Modified`：服务器用于判断客户端缓存资源是否已修改，支持条件请求
+
+#### 池化
+
+池化技术通过复用已创建的资源，避免频繁创建和销毁的开销：
+
+- **数据库连接池**：如 HikariCP、Druid
+- **HTTP 连接池**：如 Apache HttpClient 的连接池管理
+- **线程池**：如 Java 的 ThreadPoolExecutor
+
+#### 异步并发
+
+在微服务架构下，一个请求可能需要调用多个下游服务。通过**请求合并**和**并行调用**，可以显著降低整体响应时间。CompletableFuture、RxJava、Reactor 等框架都提供了优雅的异步编程模型。
+
+#### 扩容
+
+**系统拆分**：将单体应用拆分为微服务，各服务独立伸缩。
+
+**数据拆分**：
+- 分库分表：按业务维度或数据量进行水平拆分
+- JIMDB：京东自研的内存 KV 存储，适合热点数据的高速读写
+
+**任务拆分**：
+- **Quartz**：经典的 Java 任务调度框架
+- **Elastic-Job-Lite**：当当开源的分布式任务调度框架，支持任务分片
+
+**数据异构**：
+- **Canal**：阿里开源的基于 MySQL binlog 的增量订阅和消费组件，可用于将数据库变更实时同步到缓存、搜索引擎等异构存储
+
+**队列**：消息队列（Kafka、RocketMQ、RabbitMQ）是解耦和削峰填谷的核心组件。
+
+---
+
+### OpenResty：Nginx + Lua 的高性能网关
+
+OpenResty 是基于 Nginx 和 LuaJIT 的高性能 Web 平台，它将 Nginx 从一个 Web 服务器/反向代理升级为一个功能完整的 Web 应用服务器。在高可用高并发架构中，OpenResty 常用于：
+
+- 接入层限流与流量控制
+- 动态路由与负载均衡
+- 缓存加速（Lua 共享字典 + Redis）
+- WAF（Web Application Firewall）
+
+参考资料：
+- <https://www.jianshu.com/p/09c17230e1ae>
+- <https://zhuanlan.zhihu.com/p/37102791>
+
+---
+
+### 总结
+
+构建高可用高并发系统没有银弹，需要在架构设计、中间件选型和运维保障等多个层面协同发力。高可用通过负载均衡、限流、降级和隔离来"守住底线"；高并发通过缓存、池化、异步和扩容来"提升上限"。在实践中，需要根据业务特点选择合适的技术方案，并通过全链路压测验证系统的真实表现。记住一条核心原则：**设计时考虑最坏情况，运行时追求最优性能**。

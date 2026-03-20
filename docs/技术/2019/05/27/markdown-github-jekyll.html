@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>markdown-github-jekyll - Code & Coffee</title>
+  <title>从零搭建个人技术博客：Jekyll + GitHub Pages + Markdown 完全指南 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>markdown-github-jekyll | Code &amp; Coffee</title>
+<title>从零搭建个人技术博客：Jekyll + GitHub Pages + Markdown 完全指南 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="markdown-github-jekyll" />
+<meta property="og:title" content="从零搭建个人技术博客：Jekyll + GitHub Pages + Markdown 完全指南" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="jekyll安装 gem install jekyll gem install jekyll-archives gem install jekyll-paginate gem install jekyll-sitemap gem install jekyll-seo jekyll常用命令 jekyll s #编译并运行本地服务 jekyll b #编译 jekyll环境常用命令 rbenv local #查看或设置rbenv版本号 MarkDown语法 https://www.runoob.com/markdown/md-lists.html https://www.jianshu.com/p/191d1e21f7ed" />
-<meta property="og:description" content="jekyll安装 gem install jekyll gem install jekyll-archives gem install jekyll-paginate gem install jekyll-sitemap gem install jekyll-seo jekyll常用命令 jekyll s #编译并运行本地服务 jekyll b #编译 jekyll环境常用命令 rbenv local #查看或设置rbenv版本号 MarkDown语法 https://www.runoob.com/markdown/md-lists.html https://www.jianshu.com/p/191d1e21f7ed" />
+<meta name="description" content="如果你是一名技术人员，拥有一个自己的技术博客几乎是标配。相比 WordPress 等动态博客系统，Jekyll + GitHub Pages 的组合以其轻量、免费、版本控制友好等特性，成为了技术圈最受欢迎的博客方案之一。本文将带你从环境搭建到日常写作，完整走通这条路径。 为什么选择 Jekyll + GitHub Pages 在众多静态网站生成器（Hugo、Hexo、Gatsby 等）中，Jekyll 有几个独特优势： GitHub 原生支持：GitHub Pages 内置 Jekyll 构建，推送 Markdown 文件即可自动部署，无需额外 CI/CD 配置 Ruby 生态成熟：丰富的插件体系，主题选择多样 Markdown 原生：所有文章用 Markdown 编写，专注内容而非排版 免费托管：GitHub Pages 提供免费的 HTTPS 域名和托管服务 Jekyll 安装与环境配置 前置条件 Jekyll 基于 Ruby，因此需要先安装 Ruby 运行环境。推荐使用 rbenv 来管理 Ruby 版本，避免系统 Ruby 版本冲突。 macOS 用户可以通过 Homebrew 安装： brew install rbenv ruby-build rbenv install 3.1.0 rbenv global 3.1.0 安装 Jekyll 及常用插件 环境就绪后，通过 gem 安装 Jekyll 及博客常用插件： gem install jekyll gem install jekyll-archives gem install jekyll-paginate gem install jekyll-sitemap gem install jekyll-seo 各插件的作用： 插件 功能 jekyll-archives 按日期、标签、分类自动生成归档页面 jekyll-paginate 文章列表分页 jekyll-sitemap 自动生成 sitemap.xml，利于搜索引擎收录 jekyll-seo 自动注入 SEO 相关的 meta 标签 也可以在项目根目录创建 Gemfile，统一管理依赖： source &quot;https://rubygems.org&quot; gem &quot;jekyll&quot;, &quot;~&gt; 4.3&quot; gem &quot;jekyll-archives&quot; gem &quot;jekyll-paginate&quot; gem &quot;jekyll-sitemap&quot; gem &quot;jekyll-seo-tag&quot; 然后执行 bundle install 一次性安装。 Jekyll 常用命令 日常开发中，最常用的两个命令： jekyll s # 编译并启动本地开发服务器，默认 http://localhost:4000 jekyll b # 仅编译，输出到 _site 目录 jekyll s 支持实时监听文件变化并自动重新编译（_config.yml 修改除外，需要重启）。开发时推荐加上 --drafts 参数来预览草稿： jekyll s --drafts rbenv 环境管理 如果项目需要特定 Ruby 版本，可以使用 rbenv 的本地版本管理： rbenv local # 查看当前目录的 Ruby 版本 rbenv local 3.1.0 # 设置当前目录使用 3.1.0 版本 rbenv versions # 查看所有已安装的 Ruby 版本 Jekyll 项目结构概览 一个典型的 Jekyll 博客项目结构如下： myblog/ ├── _config.yml # 站点配置文件 ├── _posts/ # 博客文章目录 │ └── 2019-05-27-my-first-post.md ├── _drafts/ # 草稿目录 ├── _layouts/ # 页面布局模板 ├── _includes/ # 可复用的页面片段 ├── _sass/ # Sass 样式源文件 ├── assets/ # 静态资源（图片、CSS、JS） ├── index.html # 首页 └── Gemfile # Ruby 依赖管理 文章文件名必须遵循 YYYY-MM-DD-title.md 格式，Jekyll 通过文件名解析日期和 URL。 Markdown 写作基础 Jekyll 文章使用 Markdown 语法编写。每篇文章开头需要包含 YAML Front Matter： --- layout: post title: &quot;文章标题&quot; date: 2019-05-27 19:00:00 +0900 tags: - 标签1 - 标签2 categories: - 分类 --- 正文内容从这里开始... 常用 Markdown 语法速查 语法 效果 # 标题 一级标题 **粗体** 粗体 `代码` 行内代码 [链接](url) 超链接 ![图片](url) 图片 &gt; 引用 引用块 代码块使用三个反引号包裹，并指定语言以获得语法高亮： ```python print(&quot;Hello Jekyll!&quot;) ``` 更完整的 Markdown 语法参考： Markdown 官方教程 菜鸟教程 - Markdown 部署到 GitHub Pages 在 GitHub 创建名为 username.github.io 的仓库 将 Jekyll 项目推送到该仓库的 main 分支 在仓库 Settings → Pages 中确认构建源为正确的分支 访问 https://username.github.io 即可看到博客 如果需要自定义域名，在项目根目录添加 CNAME 文件，写入你的域名，然后在域名服务商配置 DNS 解析指向 GitHub Pages 的 IP。 总结 Jekyll + GitHub Pages + Markdown 的组合为技术人员提供了一套高效、免费、可控的博客方案。虽然初始配置需要一点时间，但一旦搭建完成，写作体验非常流畅——你只需要专注于 Markdown 内容，其余交给工具链处理。如果你还没有自己的技术博客，不妨从今天开始。" />
+<meta property="og:description" content="如果你是一名技术人员，拥有一个自己的技术博客几乎是标配。相比 WordPress 等动态博客系统，Jekyll + GitHub Pages 的组合以其轻量、免费、版本控制友好等特性，成为了技术圈最受欢迎的博客方案之一。本文将带你从环境搭建到日常写作，完整走通这条路径。 为什么选择 Jekyll + GitHub Pages 在众多静态网站生成器（Hugo、Hexo、Gatsby 等）中，Jekyll 有几个独特优势： GitHub 原生支持：GitHub Pages 内置 Jekyll 构建，推送 Markdown 文件即可自动部署，无需额外 CI/CD 配置 Ruby 生态成熟：丰富的插件体系，主题选择多样 Markdown 原生：所有文章用 Markdown 编写，专注内容而非排版 免费托管：GitHub Pages 提供免费的 HTTPS 域名和托管服务 Jekyll 安装与环境配置 前置条件 Jekyll 基于 Ruby，因此需要先安装 Ruby 运行环境。推荐使用 rbenv 来管理 Ruby 版本，避免系统 Ruby 版本冲突。 macOS 用户可以通过 Homebrew 安装： brew install rbenv ruby-build rbenv install 3.1.0 rbenv global 3.1.0 安装 Jekyll 及常用插件 环境就绪后，通过 gem 安装 Jekyll 及博客常用插件： gem install jekyll gem install jekyll-archives gem install jekyll-paginate gem install jekyll-sitemap gem install jekyll-seo 各插件的作用： 插件 功能 jekyll-archives 按日期、标签、分类自动生成归档页面 jekyll-paginate 文章列表分页 jekyll-sitemap 自动生成 sitemap.xml，利于搜索引擎收录 jekyll-seo 自动注入 SEO 相关的 meta 标签 也可以在项目根目录创建 Gemfile，统一管理依赖： source &quot;https://rubygems.org&quot; gem &quot;jekyll&quot;, &quot;~&gt; 4.3&quot; gem &quot;jekyll-archives&quot; gem &quot;jekyll-paginate&quot; gem &quot;jekyll-sitemap&quot; gem &quot;jekyll-seo-tag&quot; 然后执行 bundle install 一次性安装。 Jekyll 常用命令 日常开发中，最常用的两个命令： jekyll s # 编译并启动本地开发服务器，默认 http://localhost:4000 jekyll b # 仅编译，输出到 _site 目录 jekyll s 支持实时监听文件变化并自动重新编译（_config.yml 修改除外，需要重启）。开发时推荐加上 --drafts 参数来预览草稿： jekyll s --drafts rbenv 环境管理 如果项目需要特定 Ruby 版本，可以使用 rbenv 的本地版本管理： rbenv local # 查看当前目录的 Ruby 版本 rbenv local 3.1.0 # 设置当前目录使用 3.1.0 版本 rbenv versions # 查看所有已安装的 Ruby 版本 Jekyll 项目结构概览 一个典型的 Jekyll 博客项目结构如下： myblog/ ├── _config.yml # 站点配置文件 ├── _posts/ # 博客文章目录 │ └── 2019-05-27-my-first-post.md ├── _drafts/ # 草稿目录 ├── _layouts/ # 页面布局模板 ├── _includes/ # 可复用的页面片段 ├── _sass/ # Sass 样式源文件 ├── assets/ # 静态资源（图片、CSS、JS） ├── index.html # 首页 └── Gemfile # Ruby 依赖管理 文章文件名必须遵循 YYYY-MM-DD-title.md 格式，Jekyll 通过文件名解析日期和 URL。 Markdown 写作基础 Jekyll 文章使用 Markdown 语法编写。每篇文章开头需要包含 YAML Front Matter： --- layout: post title: &quot;文章标题&quot; date: 2019-05-27 19:00:00 +0900 tags: - 标签1 - 标签2 categories: - 分类 --- 正文内容从这里开始... 常用 Markdown 语法速查 语法 效果 # 标题 一级标题 **粗体** 粗体 `代码` 行内代码 [链接](url) 超链接 ![图片](url) 图片 &gt; 引用 引用块 代码块使用三个反引号包裹，并指定语言以获得语法高亮： ```python print(&quot;Hello Jekyll!&quot;) ``` 更完整的 Markdown 语法参考： Markdown 官方教程 菜鸟教程 - Markdown 部署到 GitHub Pages 在 GitHub 创建名为 username.github.io 的仓库 将 Jekyll 项目推送到该仓库的 main 分支 在仓库 Settings → Pages 中确认构建源为正确的分支 访问 https://username.github.io 即可看到博客 如果需要自定义域名，在项目根目录添加 CNAME 文件，写入你的域名，然后在域名服务商配置 DNS 解析指向 GitHub Pages 的 IP。 总结 Jekyll + GitHub Pages + Markdown 的组合为技术人员提供了一套高效、免费、可控的博客方案。虽然初始配置需要一点时间，但一旦搭建完成，写作体验非常流畅——你只需要专注于 Markdown 内容，其余交给工具链处理。如果你还没有自己的技术博客，不妨从今天开始。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-05-27T18:00:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="markdown-github-jekyll" />
+<meta property="twitter:title" content="从零搭建个人技术博客：Jekyll + GitHub Pages + Markdown 完全指南" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-05-27T18:00:00+08:00","datePublished":"2019-05-27T18:00:00+08:00","description":"jekyll安装 gem install jekyll gem install jekyll-archives gem install jekyll-paginate gem install jekyll-sitemap gem install jekyll-seo jekyll常用命令 jekyll s #编译并运行本地服务 jekyll b #编译 jekyll环境常用命令 rbenv local #查看或设置rbenv版本号 MarkDown语法 https://www.runoob.com/markdown/md-lists.html https://www.jianshu.com/p/191d1e21f7ed","headline":"markdown-github-jekyll","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-05-27T18:00:00+08:00","datePublished":"2019-05-27T18:00:00+08:00","description":"如果你是一名技术人员，拥有一个自己的技术博客几乎是标配。相比 WordPress 等动态博客系统，Jekyll + GitHub Pages 的组合以其轻量、免费、版本控制友好等特性，成为了技术圈最受欢迎的博客方案之一。本文将带你从环境搭建到日常写作，完整走通这条路径。 为什么选择 Jekyll + GitHub Pages 在众多静态网站生成器（Hugo、Hexo、Gatsby 等）中，Jekyll 有几个独特优势： GitHub 原生支持：GitHub Pages 内置 Jekyll 构建，推送 Markdown 文件即可自动部署，无需额外 CI/CD 配置 Ruby 生态成熟：丰富的插件体系，主题选择多样 Markdown 原生：所有文章用 Markdown 编写，专注内容而非排版 免费托管：GitHub Pages 提供免费的 HTTPS 域名和托管服务 Jekyll 安装与环境配置 前置条件 Jekyll 基于 Ruby，因此需要先安装 Ruby 运行环境。推荐使用 rbenv 来管理 Ruby 版本，避免系统 Ruby 版本冲突。 macOS 用户可以通过 Homebrew 安装： brew install rbenv ruby-build rbenv install 3.1.0 rbenv global 3.1.0 安装 Jekyll 及常用插件 环境就绪后，通过 gem 安装 Jekyll 及博客常用插件： gem install jekyll gem install jekyll-archives gem install jekyll-paginate gem install jekyll-sitemap gem install jekyll-seo 各插件的作用： 插件 功能 jekyll-archives 按日期、标签、分类自动生成归档页面 jekyll-paginate 文章列表分页 jekyll-sitemap 自动生成 sitemap.xml，利于搜索引擎收录 jekyll-seo 自动注入 SEO 相关的 meta 标签 也可以在项目根目录创建 Gemfile，统一管理依赖： source &quot;https://rubygems.org&quot; gem &quot;jekyll&quot;, &quot;~&gt; 4.3&quot; gem &quot;jekyll-archives&quot; gem &quot;jekyll-paginate&quot; gem &quot;jekyll-sitemap&quot; gem &quot;jekyll-seo-tag&quot; 然后执行 bundle install 一次性安装。 Jekyll 常用命令 日常开发中，最常用的两个命令： jekyll s # 编译并启动本地开发服务器，默认 http://localhost:4000 jekyll b # 仅编译，输出到 _site 目录 jekyll s 支持实时监听文件变化并自动重新编译（_config.yml 修改除外，需要重启）。开发时推荐加上 --drafts 参数来预览草稿： jekyll s --drafts rbenv 环境管理 如果项目需要特定 Ruby 版本，可以使用 rbenv 的本地版本管理： rbenv local # 查看当前目录的 Ruby 版本 rbenv local 3.1.0 # 设置当前目录使用 3.1.0 版本 rbenv versions # 查看所有已安装的 Ruby 版本 Jekyll 项目结构概览 一个典型的 Jekyll 博客项目结构如下： myblog/ ├── _config.yml # 站点配置文件 ├── _posts/ # 博客文章目录 │ └── 2019-05-27-my-first-post.md ├── _drafts/ # 草稿目录 ├── _layouts/ # 页面布局模板 ├── _includes/ # 可复用的页面片段 ├── _sass/ # Sass 样式源文件 ├── assets/ # 静态资源（图片、CSS、JS） ├── index.html # 首页 └── Gemfile # Ruby 依赖管理 文章文件名必须遵循 YYYY-MM-DD-title.md 格式，Jekyll 通过文件名解析日期和 URL。 Markdown 写作基础 Jekyll 文章使用 Markdown 语法编写。每篇文章开头需要包含 YAML Front Matter： --- layout: post title: &quot;文章标题&quot; date: 2019-05-27 19:00:00 +0900 tags: - 标签1 - 标签2 categories: - 分类 --- 正文内容从这里开始... 常用 Markdown 语法速查 语法 效果 # 标题 一级标题 **粗体** 粗体 `代码` 行内代码 [链接](url) 超链接 ![图片](url) 图片 &gt; 引用 引用块 代码块使用三个反引号包裹，并指定语言以获得语法高亮： ```python print(&quot;Hello Jekyll!&quot;) ``` 更完整的 Markdown 语法参考： Markdown 官方教程 菜鸟教程 - Markdown 部署到 GitHub Pages 在 GitHub 创建名为 username.github.io 的仓库 将 Jekyll 项目推送到该仓库的 main 分支 在仓库 Settings → Pages 中确认构建源为正确的分支 访问 https://username.github.io 即可看到博客 如果需要自定义域名，在项目根目录添加 CNAME 文件，写入你的域名，然后在域名服务商配置 DNS 解析指向 GitHub Pages 的 IP。 总结 Jekyll + GitHub Pages + Markdown 的组合为技术人员提供了一套高效、免费、可控的博客方案。虽然初始配置需要一点时间，但一旦搭建完成，写作体验非常流畅——你只需要专注于 Markdown 内容，其余交给工具链处理。如果你还没有自己的技术博客，不妨从今天开始。","headline":"从零搭建个人技术博客：Jekyll + GitHub Pages + Markdown 完全指南","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html">&laquo; Http&https抓包</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html">&laquo; Charles 抓包实战：HTTP...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/27/maven.html">maven使用 &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/27/maven.html">Maven 实战指南：依赖管理、冲... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">markdown-github-jekyll</h1>
+    <h1 class="asset-name entry-title">从零搭建个人技术博客：Jekyll + GitHub Pages + Markdown 完全指南</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,26 +97,208 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="jekyll安装">jekyll安装</h4>
+      <p>如果你是一名技术人员，拥有一个自己的技术博客几乎是标配。相比 WordPress 等动态博客系统，Jekyll + GitHub Pages 的组合以其轻量、免费、版本控制友好等特性，成为了技术圈最受欢迎的博客方案之一。本文将带你从环境搭建到日常写作，完整走通这条路径。</p>
+
+<h2 id="为什么选择-jekyll--github-pages">为什么选择 Jekyll + GitHub Pages</h2>
+
+<p>在众多静态网站生成器（Hugo、Hexo、Gatsby 等）中，Jekyll 有几个独特优势：</p>
+
+<ul>
+  <li><strong>GitHub 原生支持</strong>：GitHub Pages 内置 Jekyll 构建，推送 Markdown 文件即可自动部署，无需额外 CI/CD 配置</li>
+  <li><strong>Ruby 生态成熟</strong>：丰富的插件体系，主题选择多样</li>
+  <li><strong>Markdown 原生</strong>：所有文章用 Markdown 编写，专注内容而非排版</li>
+  <li><strong>免费托管</strong>：GitHub Pages 提供免费的 HTTPS 域名和托管服务</li>
+</ul>
+
+<h2 id="jekyll-安装与环境配置">Jekyll 安装与环境配置</h2>
+
+<h3 id="前置条件">前置条件</h3>
+
+<p>Jekyll 基于 Ruby，因此需要先安装 Ruby 运行环境。推荐使用 rbenv 来管理 Ruby 版本，避免系统 Ruby 版本冲突。</p>
+
+<p>macOS 用户可以通过 Homebrew 安装：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nb">install </span>rbenv ruby-build
+rbenv <span class="nb">install </span>3.1.0
+rbenv global 3.1.0
+</code></pre></div></div>
+
+<h3 id="安装-jekyll-及常用插件">安装 Jekyll 及常用插件</h3>
+
+<p>环境就绪后，通过 gem 安装 Jekyll 及博客常用插件：</p>
+
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem <span class="nb">install </span>jekyll
 gem <span class="nb">install </span>jekyll-archives
 gem <span class="nb">install </span>jekyll-paginate
 gem <span class="nb">install </span>jekyll-sitemap
 gem <span class="nb">install </span>jekyll-seo
 </code></pre></div></div>
-<h4 id="jekyll常用命令">jekyll常用命令</h4>
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jekyll s <span class="c">#编译并运行本地服务</span>
-jekyll b <span class="c">#编译</span>
-</code></pre></div></div>
-<h4 id="jekyll环境常用命令">jekyll环境常用命令</h4>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rbenv local #查看或设置rbenv版本号
-</code></pre></div></div>
-<h4 id="markdown语法">MarkDown语法</h4>
-<p><a href="https://www.runoob.com/markdown/md-lists.html">https://www.runoob.com/markdown/md-lists.html</a></p>
 
-<p><a href="https://www.jianshu.com/p/191d1e21f7ed">https://www.jianshu.com/p/191d1e21f7ed</a></p>
+<p>各插件的作用：</p>
 
-<hr />
+<table>
+  <thead>
+    <tr>
+      <th>插件</th>
+      <th>功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">jekyll-archives</code></td>
+      <td>按日期、标签、分类自动生成归档页面</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">jekyll-paginate</code></td>
+      <td>文章列表分页</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">jekyll-sitemap</code></td>
+      <td>自动生成 <code class="language-plaintext highlighter-rouge">sitemap.xml</code>，利于搜索引擎收录</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">jekyll-seo</code></td>
+      <td>自动注入 SEO 相关的 meta 标签</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>也可以在项目根目录创建 <code class="language-plaintext highlighter-rouge">Gemfile</code>，统一管理依赖：</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">source</span> <span class="s2">"https://rubygems.org"</span>
+
+<span class="n">gem</span> <span class="s2">"jekyll"</span><span class="p">,</span> <span class="s2">"~&gt; 4.3"</span>
+<span class="n">gem</span> <span class="s2">"jekyll-archives"</span>
+<span class="n">gem</span> <span class="s2">"jekyll-paginate"</span>
+<span class="n">gem</span> <span class="s2">"jekyll-sitemap"</span>
+<span class="n">gem</span> <span class="s2">"jekyll-seo-tag"</span>
+</code></pre></div></div>
+
+<p>然后执行 <code class="language-plaintext highlighter-rouge">bundle install</code> 一次性安装。</p>
+
+<h2 id="jekyll-常用命令">Jekyll 常用命令</h2>
+
+<p>日常开发中，最常用的两个命令：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jekyll s    <span class="c"># 编译并启动本地开发服务器，默认 http://localhost:4000</span>
+jekyll b    <span class="c"># 仅编译，输出到 _site 目录</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">jekyll s</code> 支持实时监听文件变化并自动重新编译（<code class="language-plaintext highlighter-rouge">_config.yml</code> 修改除外，需要重启）。开发时推荐加上 <code class="language-plaintext highlighter-rouge">--drafts</code> 参数来预览草稿：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jekyll s <span class="nt">--drafts</span>
+</code></pre></div></div>
+
+<h3 id="rbenv-环境管理">rbenv 环境管理</h3>
+
+<p>如果项目需要特定 Ruby 版本，可以使用 rbenv 的本地版本管理：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rbenv <span class="nb">local</span>          <span class="c"># 查看当前目录的 Ruby 版本</span>
+rbenv <span class="nb">local </span>3.1.0    <span class="c"># 设置当前目录使用 3.1.0 版本</span>
+rbenv versions       <span class="c"># 查看所有已安装的 Ruby 版本</span>
+</code></pre></div></div>
+
+<h2 id="jekyll-项目结构概览">Jekyll 项目结构概览</h2>
+
+<p>一个典型的 Jekyll 博客项目结构如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>myblog/
+├── _config.yml      # 站点配置文件
+├── _posts/          # 博客文章目录
+│   └── 2019-05-27-my-first-post.md
+├── _drafts/         # 草稿目录
+├── _layouts/        # 页面布局模板
+├── _includes/       # 可复用的页面片段
+├── _sass/           # Sass 样式源文件
+├── assets/          # 静态资源（图片、CSS、JS）
+├── index.html       # 首页
+└── Gemfile          # Ruby 依赖管理
+</code></pre></div></div>
+
+<p>文章文件名必须遵循 <code class="language-plaintext highlighter-rouge">YYYY-MM-DD-title.md</code> 格式，Jekyll 通过文件名解析日期和 URL。</p>
+
+<h2 id="markdown-写作基础">Markdown 写作基础</h2>
+
+<p>Jekyll 文章使用 Markdown 语法编写。每篇文章开头需要包含 YAML Front Matter：</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">---</span>
+<span class="na">layout</span><span class="pi">:</span> <span class="s">post</span>
+<span class="na">title</span><span class="pi">:</span> <span class="s2">"</span><span class="s">文章标题"</span>
+<span class="na">date</span><span class="pi">:</span> <span class="s">2019-05-27 19:00:00 +0900</span>
+<span class="na">tags</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="s">标签1</span>
+<span class="pi">-</span> <span class="s">标签2</span>
+<span class="na">categories</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="s">分类</span>
+<span class="nn">---</span>
+
+正文内容从这里开始...
+</code></pre></div></div>
+
+<h3 id="常用-markdown-语法速查">常用 Markdown 语法速查</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>语法</th>
+      <th>效果</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge"># 标题</code></td>
+      <td>一级标题</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">**粗体**</code></td>
+      <td><strong>粗体</strong></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">`代码`</code></td>
+      <td><code class="language-plaintext highlighter-rouge">行内代码</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">[链接](url)</code></td>
+      <td>超链接</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">![图片](url)</code></td>
+      <td>图片</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">&gt; 引用</code></td>
+      <td>引用块</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>代码块使用三个反引号包裹，并指定语言以获得语法高亮：</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">```</span><span class="nl">python
+</span><span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Hello Jekyll!</span><span class="sh">"</span><span class="p">)</span>
+<span class="p">```</span>
+</code></pre></div></div>
+
+<p>更完整的 Markdown 语法参考：</p>
+<ul>
+  <li><a href="https://www.markdownguide.org/">Markdown 官方教程</a></li>
+  <li><a href="https://www.runoob.com/markdown/md-lists.html">菜鸟教程 - Markdown</a></li>
+</ul>
+
+<h2 id="部署到-github-pages">部署到 GitHub Pages</h2>
+
+<ol>
+  <li>在 GitHub 创建名为 <code class="language-plaintext highlighter-rouge">username.github.io</code> 的仓库</li>
+  <li>将 Jekyll 项目推送到该仓库的 <code class="language-plaintext highlighter-rouge">main</code> 分支</li>
+  <li>在仓库 Settings → Pages 中确认构建源为正确的分支</li>
+  <li>访问 <code class="language-plaintext highlighter-rouge">https://username.github.io</code> 即可看到博客</li>
+</ol>
+
+<p>如果需要自定义域名，在项目根目录添加 <code class="language-plaintext highlighter-rouge">CNAME</code> 文件，写入你的域名，然后在域名服务商配置 DNS 解析指向 GitHub Pages 的 IP。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>Jekyll + GitHub Pages + Markdown 的组合为技术人员提供了一套高效、免费、可控的博客方案。虽然初始配置需要一点时间，但一旦搭建完成，写作体验非常流畅——你只需要专注于 Markdown 内容，其余交给工具链处理。如果你还没有自己的技术博客，不妨从今天开始。</p>
 
 
     </div>
@@ -147,33 +329,33 @@ jekyll b <span class="c">#编译</span>
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

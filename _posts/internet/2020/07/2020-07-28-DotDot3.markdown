@@ -1,48 +1,163 @@
 ---
 layout: post
-title:  "DotDot3"
+title:  "Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析"
 date:   2020-07-28 09:44:00 +0900
 comments: true
 tags:
 - Java
+- nosql
 categories:
 - 技术
 ---
-DDD
 
-#### Redis 的并发竞争问题如何解决
-- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis 对于多个客户端连接并不存在竞争，但是在业务客户端对 Redis 进行并发访问时会发生连接超时、数据转换错误、阻塞、客户端关闭连接等问题，这些问题均是由于客户端连接混乱造成
-- 解决方法：
-    - 客户端加锁（synchronized）
-    - 乐观锁（redis 的命令 watch）：
-    当执行多键值事务操作时，Redis 不仅要求这些键值需要落在同一个 Redis 实例上，还要求落在同一个 slot 上，所以 redis 的事务比较鸡肋
-    不过可以想办法遵循 redis 内部的分片算法把设计到的所有 key 分到同一个 slot
-    - redis 的 setnx 实现内置的锁：
-    要设置超时时间，防止抢占到锁的客户端因失败、崩溃或其他原因没有办法释放锁而造成死锁
+在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三个主题展开：Redis 的并发竞争问题及解决方案、MongoDB 的核心架构特点，以及 LMAX Disruptor 并发框架的设计思想。
 
-#### MongoDB
-- 概述 <https://mp.weixin.qq.com/s/hLPREeTvThUYuLe-VFOfOA>
-- 分片 <https://www.cnblogs.com/duanxz/p/10730121.html>
-- 扩容
-- MongoDB ，使用B-树，节点带数据
-- Mysql为什么不能使用内存映射
-- MongoDB VS MySQL <https://zhuanlan.zhihu.com/p/67350330>
+## Redis 的并发竞争问题及解决方案
 
-#### 并发框架Disruptor 
-<http://ifeve.com/lmax/>
-<http://ifeve.com/disruptor/>
+### 问题本质
 
+Redis 采用**单进程单线程**模型处理命令，所有客户端请求通过队列串行执行。这意味着 Redis 服务端本身不存在竞争条件——但问题出在客户端。
 
+当多个业务客户端同时对 Redis 进行并发操作时，可能出现：
+- 连接超时和阻塞
+- 数据读写的竞态条件（Read-Modify-Write 场景）
+- 客户端连接混乱导致的数据错误
 
+举个例子：两个客户端同时读取某个 key 的值为 10，各自加 1 后写回，期望结果为 12，但实际结果可能是 11。这就是典型的并发竞争问题。
 
+### 解决方案
 
+#### 方案一：客户端加锁
 
+在应用层使用 `synchronized` 或 `ReentrantLock` 等 Java 锁机制：
 
+```java
+synchronized (lockObject) {
+    String value = jedis.get("counter");
+    int newValue = Integer.parseInt(value) + 1;
+    jedis.set("counter", String.valueOf(newValue));
+}
+```
 
+**局限性**：仅适用于单机部署。在分布式环境中，不同 JVM 实例的锁互不可见。
 
+#### 方案二：Redis 乐观锁（WATCH + MULTI）
 
+Redis 提供了 `WATCH` 命令实现 CAS（Compare-And-Swap）语义的乐观锁：
 
+```
+WATCH counter
+val = GET counter
+val = val + 1
+MULTI
+SET counter val
+EXEC
+```
 
+如果在 `WATCH` 之后、`EXEC` 之前，被监视的 key 被其他客户端修改，事务会自动回滚。
 
+**注意事项**：在 Redis Cluster 模式下，事务要求所有涉及的 key 必须落在同一个 slot 上。这使得 Redis 的事务在集群环境中使用受限。不过可以通过 Hash Tag（如 `{order}:count`、`{order}:status`）将相关 key 路由到同一个 slot。
 
+#### 方案三：分布式锁（SETNX）
 
+使用 Redis 的 `SETNX`（SET if Not eXists）实现分布式锁：
+
+```
+SET lock_key unique_value NX PX 30000
+```
+
+关键要点：
+- **必须设置过期时间**（`PX 30000` 表示 30 秒），防止持锁客户端崩溃导致死锁
+- **value 需要唯一**（如 UUID），释放锁时需验证 value，避免误删其他客户端的锁
+- **释放锁需要原子操作**：用 Lua 脚本保证"比较并删除"的原子性
+
+```lua
+if redis.call("get", KEYS[1]) == ARGV[1] then
+    return redis.call("del", KEYS[1])
+else
+    return 0
+end
+```
+
+在生产环境中，推荐使用 Redisson 等成熟的客户端库来处理分布式锁，它们封装了续期（Watchdog）、可重入等复杂逻辑。
+
+## MongoDB 核心架构与对比
+
+### MongoDB 概述
+
+MongoDB 是面向文档的 NoSQL 数据库，以 BSON（Binary JSON）格式存储数据。它的核心特点：
+
+- **灵活的文档模型**：无需预定义 Schema，字段可以动态增减
+- **水平扩展**：内置分片（Sharding）支持
+- **丰富的查询语言**：支持聚合管道、地理位置查询、全文搜索等
+- **内存映射文件**：使用 MMAP 或 WiredTiger 引擎管理数据
+
+参考：[MongoDB 概述](https://mp.weixin.qq.com/s/hLPREeTvThUYuLe-VFOfOA)
+
+### MongoDB 分片架构
+
+当单机存储和性能达到瓶颈时，MongoDB 通过分片实现水平扩展。分片集群由三个角色组成：
+
+- **mongos**：路由节点，接收客户端请求并转发到正确的分片
+- **config server**：存储集群的元数据和路由信息
+- **shard**：实际存储数据的节点，每个 shard 通常是一个副本集
+
+参考：[MongoDB 分片详解](https://www.cnblogs.com/duanxz/p/10730121.html)
+
+### MongoDB vs MySQL：B-Tree vs B+Tree
+
+两者在索引结构上的选择差异值得深入理解：
+
+| 特性 | MongoDB（B-Tree） | MySQL InnoDB（B+Tree） |
+|------|------|------|
+| 数据存储位置 | 非叶子节点也存储数据 | 数据仅存储在叶子节点 |
+| 范围查询效率 | 需要中序遍历整棵树 | 叶子节点形成有序链表，范围查询高效 |
+| 单次查询 | 可能更快（数据在中间节点就命中） | 查询路径固定（始终到叶子节点） |
+| 适用场景 | 单文档查询、随机读 | 范围查询、排序、关系型数据 |
+
+MySQL 不使用内存映射文件（MMAP）的原因：InnoDB 需要对缓冲池（Buffer Pool）进行精细控制，包括脏页刷盘策略、LRU 淘汰策略等，MMAP 的粗粒度控制无法满足这些需求。
+
+参考：[MongoDB VS MySQL 深度对比](https://zhuanlan.zhihu.com/p/67350330)
+
+## Disruptor 高性能并发框架
+
+### 背景
+
+Disruptor 是由 LMAX Exchange（伦敦一家金融交易所）开源的高性能并发框架。它的设计目标是在单线程内实现每秒处理超过 600 万订单的能力，延迟控制在微秒级别。
+
+### 为什么比传统队列快
+
+传统的并发队列（如 `ArrayBlockingQueue`）存在以下性能瓶颈：
+
+1. **锁竞争**：生产者和消费者争抢同一把锁
+2. **伪共享（False Sharing）**：多个变量落在同一个 CPU Cache Line，一个变量的修改导致整条 Cache Line 失效
+3. **GC 压力**：队列中的节点对象频繁创建和回收
+
+Disruptor 的解决方案：
+
+- **无锁设计**：使用 CAS 操作代替锁，基于 Ring Buffer（环形数组）避免内存分配
+- **缓存行填充**：通过 padding 避免伪共享
+- **预分配内存**：Ring Buffer 中的 Entry 在初始化时一次性分配，运行时复用
+- **批量处理**：消费者可以批量获取多个事件，减少同步开销
+
+### 核心概念
+
+- **Ring Buffer**：环形数组，固定大小，通过序号（Sequence）追踪读写位置
+- **Sequence**：原子递增的序号，用于协调生产者和消费者的进度
+- **Event**：Ring Buffer 中的数据单元
+- **EventHandler**：消费者的事件处理逻辑
+- **WaitStrategy**：消费者等待新事件的策略（忙等、阻塞、让步等）
+
+参考阅读：
+- [LMAX Disruptor 架构介绍](http://ifeve.com/lmax/)
+- [Disruptor 详解](http://ifeve.com/disruptor/)
+
+## 总结
+
+本文覆盖了三个看似独立但内在相关的技术主题：
+
+1. **Redis 并发竞争**：理解其单线程模型的边界，在业务层选择合适的锁策略
+2. **MongoDB 架构**：理解其文档模型、分片设计和 B-Tree 索引的取舍
+3. **Disruptor**：理解高性能并发设计中的无锁、缓存友好、批量处理等核心思想
+
+这三者的共同线索是**并发与性能**——如何在保证正确性的前提下追求极致的系统吞吐量。在技术选型时，理解每个组件的设计哲学和适用边界，比单纯记忆 API 更重要。

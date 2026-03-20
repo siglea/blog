@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Netty In Action - Code & Coffee</title>
+  <title>Netty 实战：从核心组件到高性能网络编程 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Netty In Action | Code &amp; Coffee</title>
+<title>Netty 实战：从核心组件到高性能网络编程 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Netty In Action" />
+<meta property="og:title" content="Netty 实战：从核心组件到高性能网络编程" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="其他 Netty实战 https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg Java网络编程与NIO，多看几遍 https://www.cnblogs.com/itxiaok/category/1395489.html jemalloc之arena、chunk、page、subpage https://www.jianshu.com/p/f1988cc08dfd 内存规格、缓存&amp;结构、chunk、arena、page、subpage等概念介绍 https://blog.csdn.net/qq_33347239/article/details/104270629 Arena 简单来说，Arena就是一个内存分配器，所有分配的内存都是由Arena维护的，并且一般会有多个，目的是减少锁竞争。 而netty则是对jemalloc的Arena进行能更加具体的实现，也就是netty中的PoolArena。 Chunk chunk是Netty向操作系统申请内存的最小调度单位，根据上图，chunk大小固定为16mB，也就是说，Netty每次向操作系统申请内存最小为16mB。 Page 上面说了一个chunk大小是16mb，如果Netty每次分配一个ByteBuf，都用掉一个chunk的大小，那显然太浪费了。 于是设计者们就决定将一个chunk划分为2048个Page，每个Page大小为8kb，Page是给ByteBuf分配内存的最小调度单位，尽管还有更小的subpage级别，但是分配subpage时，仍然需要先拿到一个page。 当ByteBuf需要申请的内存大小（必定是2的幂次方） &gt;= 8kb时，会先取一个chunk，然后会以page级别分配内存，最后将当前chunk标记为“使用了一个部分”，然后放进对应占用率的chunkList。 SubPage 当ByteBuf需要申请的内存大小（必定是2的幂次方）&lt; 8kb时，比如现在需要size=2kb，则会先取一个chunk，然后再取一个page，然后将page分成4份（pageSize/size），每一份为2kb，然后取其中一份给ByteBuf初始化。 之后就是一个自底向上标记的过程了，将当前使用的一份subpage标记为“已使用”，上一层page标记为“部分使用”，再上一级chunk标记为“部分使用”，最终也是将chunk放进对应占用率的chunkList。 关于OS Page Cache的简单介绍，同时再一次介绍了kafka的零拷贝 https://www.cnblogs.com/leadership/p/12349486.html Netty的零拷贝体现在多个方面 NIO 的基于mmap的DirectMemory FileRegion 的基于sendFile的transferTo CompositeByteBuf的wrap数组合并与slice数组分拆 NIO Selector linux系统下sun.nio.ch.DefaultSelectorProvider.create(); 会生成一个sun.nio.ch.EPollSelectorProvider类型的SelectorProvider。 或者在META-INF/services包含有一个java.nio.channels.spi.SelectorProvider提供类配置文件 public static SelectorProvider provider() { synchronized (lock) { if (provider != null) return provider; return AccessController.doPrivileged( new PrivilegedAction&lt;&gt;() { public SelectorProvider run() { if (loadProviderFromProperty()) return provider; if (loadProviderAsService()) return provider; provider = sun.nio.ch.DefaultSelectorProvider.create(); return provider; } }); } } EPollSelectorImpl中初始化epoll相关方法 EPollSelectorImpl(SelectorProvider sp) throws IOException { super(sp); long pipeFds = IOUtil.makePipe(false); fd0 = (int) (pipeFds &gt;&gt;&gt; 32); fd1 = (int) pipeFds; try { pollWrapper = new EPollArrayWrapper(); pollWrapper.initInterrupt(fd0, fd1); fdToKey = new HashMap&lt;&gt;(); } catch (Throwable t) {} } // EPollArrayWrapper void initInterrupt(int fd0, int fd1) { outgoingInterruptFD = fd1; incomingInterruptFD = fd0; epollCtl(epfd, EPOLL_CTL_ADD, fd0, EPOLLIN); } private native int epollCreate(); private native void epollCtl(int epfd, int opcode, int fd, int events); private native int epollWait(long pollAddress, int numfds, long timeout, int epfd) throws IOException; Selector中维护3个特别重要的SelectionKey集合，分别是 keys：所有注册到Selector的Channel所表示的SelectionKey都会存在于该集合中。keys元素的添加会在Channel注册到Selector时发生。 selectedKeys：该集合中的每个SelectionKey都是其对应的Channel在上一次操作selection期间被检查到至少有一种SelectionKey中所感兴趣的操作已经准备好被处理。该集合是keys的一个子集。 cancelledKeys：执行了取消操作的SelectionKey会被放入到该集合中。该集合是keys的一个子集。 参考 https://www.cnblogs.com/itxiaok/p/10357828.html 再说epoll epoll相关系统调用是在Linux 2.5 后的某个版本开始引入的。该系统调用针对传统的select/poll不足，设计上作了很大的改动。select/poll 的缺点在于: 每次调用时要重复地从用户模式读入参数，并重复地扫描文件描述符。 每次在调用开始时，要把当前进程放入各个文件描述符的等待队列。在调用结束后，又把进程从各个等待队列中删除。 epoll 是把 select/poll 单个的操作拆分为 1 个 epollcreate，多个 epollctrl和一个 wait。 此外，操作系统内核针对 epoll 操作添加了一个文件系统，每一个或者多个要监视的文件描述符都有一个对应的inode 节点， 主要信息保存在 eventpoll 结构中。而被监视的文件的重要信息则保存在 epitem 结构中，是一对多的关系。 由于在执行 epollcreate 和 epollctrl 时，已经把用户模式的信息保存到内核了， 所以之后即便反复地调用 epoll_wait， 也不会重复地拷贝参数，不会重复扫描文件描述符，也不反复地把当前进程放入/拿出等待队列。 select，poll实现需要自己不断轮询所有fd集合，直到设备就绪，期间可能要睡眠和唤醒多次交替。而epoll其实也需要调用epoll_wait不断轮询就绪链表， 期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。虽然都要睡眠和交替， 但是select和poll在“醒着”的时候要遍历整个fd集合，而epoll在“醒着”的时候只要判断一下就绪链表是否为空就行了，这节省了大量的CPU时间。这就是回调机制带来的性能提升。 select，poll每次调用都要把fd集合从用户态往内核态拷贝一次，并且要把current往设备等待队列中挂一次，而epoll只要一次拷贝，而且把current往等待队列上挂也只挂一次 （在epoll_wait的开始，注意这里的等待队列并不是设备等待队列，只是一个epoll内部定义的等待队列）。这也能节省不少的开销。 Netty的组件 group() EventLoop -&gt; 控制流、多线程处理、并发 一个 EventLoopGroup 包含一个或者多个 EventLoop; 一个 EventLoop 在它的生命周期内只和一个 Thread 绑定; 所有由 EventLoop 处理的 I/O 事件都将在它专有的 Thread 上被处理; 一个 Channel 在它的生命周期内只注册于一个 EventLoop，一个Channel可以理解为一个用户; 一个 EventLoop 可能会被分配给一个或多个 Channel。 注意，在这种设计中，一个给定 Channel 的 I/O 操作都是由相同的 Thread 执行的，实际上消除了对于同步的需要。 EventLoop本身只由一个线程驱动，其处理了一个Channel的所有I/O事件，并且在该EventLoop的整个生命周期内都不会改变。 channel() Channel -&gt; Socket ChannelPipeline handler() ChannelHandler ChannelConfig ChannelFuture -&gt; 异步通知 Netty的数据容器ByteBuf 它可以被用户自定义的缓冲区类型扩展; 通过内置的复合缓冲区类型实现了透明的零拷贝; 容量可以按需增长(类似于 JDK 的 StringBuilder); 在读和写这两种模式之间切换不需要调用 ByteBuffer 的 flip()方法; 读和写使用了不同的索引; 支持方法的链式调用; 支持引用计数; 支持池化。 Netty的对象池化技术PooledByteBufAllocator 通过引用计数的方式实现 ReferenceCounted Unpooled.copiedBuffer(“Netty rocks!”,CharsetUtil.UTF-8); 由于采用引用计数，需要在消费完消息之后调用ReferenceCountUtil.release(msg); 可以通过 java -Dio.netty.leakDetectionLevel=ADVANCED 这个参数设置泄露检测级别 ChannelHandler ChannelPipeline ChannelHandlerContext 每个ChannelHandler都会分配一个ChannelHandlerContext 通过Channel、Handler的write会传递整个pipe，但是通过context的write只能传递对应Handler之后的handlers SimpleChannelInboundHandler，最常见的情况是，你的应用程序会利用一个 ChannelHandler 来接收解码消息，并对该数据应用业务逻辑。要创建一个这样的 ChannelHandler， 你只需要扩展基类 SimpleChannel- InboundHandler，其中 T 是你要处理的消息的 Java 类型 。 在这个 ChannelHandler 中， 你将需要重写基类的一个或者多个方法，并且获取一个到 ChannelHandlerContext 的引用， 这个引用将作为输入参数传递给 ChannelHandler 的所有方法。在这种类型的 ChannelHandler 中，最重要的方法是 channelRead0(Channel- HandlerContext,T)。除了要求不要阻塞当前的 I/O 线程之外，其具体实现完全取决于你。 ChannelOutboundHandlerAdapter，几乎所有的 ChannelOutboundHandler 上的方法都会传入一个 ChannelPromise 的实例。 作为 ChannelFuture 的子类，ChannelPromise 也可以被分配用于异步通知的监听器。 promise.addListener(new ChannelFutureListener() { @Override public void operationComplete(ChannelFuture f) { if (!f.isSuccess()) { f.cause().printStackTrace(); f.channel().close(); } }); EventLoop和线程池 本质是创建包含少量的线程EventLoop的线程池EventLoopGroup，一个EventLoop管理多个Channel， 实际上就是IO多路复用 Bootstrap 为什么引导类是 Cloneable 的 你有时可能会需要创建多个具有类似配置或者完全相同配置的Channel。为了支持这种模式而又不 需要为每个Channel都创建并配置一个新的引导类实例，AbstractBootstrap被标记为了 Cloneable1。在一个已经配置完成的引导类实例上调用clone()方法将返回另一个可以立即使用的引 导类实例。 注意，这种方式只会创建引导类实例的EventLoopGroup的一个浅拷贝，所以，后者 2将在所有克 隆的Channel实例之间共享。这是可以接受的，因为通常这些克隆的Channel的生命周期都很短暂，一 个典型的场景是——创建一个Channel以进行一次HTTP请求。 Netty 设计 从高层次的角度来看，Netty 解决了两个相应的关注领域，我们可将其大致标记为技术的和 体系结构的。 首先，它的基于 Java NIO 的异步的和事件驱动的实现，保证了高负载下应用程序 性能的最大化和可伸缩性。 其次，Netty 也包含了一组设计模式，将应用程序逻辑从网络层解耦， 简化了开发过程，同时也最大限度地提高了可测试性、模块化以及代码的可重用性。 不使用Netty的NIO Netty 的 OpenSSL/SSLEngine 实现 Netty 还提供了使用 OpenSSL 工具包(www.openssl.org)的 SSLEngine 实现。这个 OpenSsl-Engine 类提供了比 JDK 提供的 SSLEngine 实现更好的性能。 如果 OpenSSL 库可用，可以将 Netty 应用程序(客户端和服务器)配置为默认使用 OpenSslEngine。如果不可用，Netty 将会回退到 JDK 实现。有关配置 OpenSSL 支持的详细说明，参见 Netty 文档: http://netty.io/wiki/forked-tomcat-native.html#wikih2-1。 注意，无论你使用 JDK 的 SSLEngine 还是使用 Netty 的 OpenSslEngine，SSL API 和数据流都 是一致的。 SelfSignedCertificate cert = new SelfSignedCertificate(); SslContext context = SslContext.newServerContext(cert.certificate(), cert.privateKey()); SSLEngine engine = context.newEngine(ch.alloc()); engine.setUseClientMode(false); ch.pipeline().addFirst(new SslHandler(engine)); 检测空闲连接以及超时对于及时释放资源 new IdleStateHandler(0, 0, 60, TimeUnit.SECONDS) ReadTimeoutHandler exceptionCaught() WriteTimeoutHandler exceptionCaught() 写大数据 ChunkedFile 从文件中逐块获取数据，当你的平台不支持零拷贝或者你需要转换数据时使用 ChunkedNioFile 和 ChunkedFile 类似，只是它使用了 FileChannel ChunkedStream 从 InputStream 中逐块传输内容 ChunkedNioStream 从ReadableByteChannel中逐块传输内容 public final class WriteStreamHandler extends ChannelInboundHandlerAdapter { @Override public void channelActive(ChannelHandlerContext ctx)throws Exception { super.channelActive(ctx); ctx.writeAndFlush( new ChunkedStream(new FileInputStream(file))); } } WebSocketFrame BinaryWebSocketFrame 包含了二进制数据 TextWebSocketFrame 包含了文本数据 ContinuationWebSocketFrame 包含属于上一个BinaryWebSocketFrame或TextWebSocket-Frame 的文本数据或者二进制数据 CloseWebSocketFrame 表示一个 CLOSE 请求，包含一个关闭的状态码和关闭的原因 PingWebSocketFrame 作为一个对于 PingWebSocketFrame 的响应被发送 PongWebSocketFrame 请求传输一个 PongWebSocketFrame WebSocket示例 ChannelPipeline pipeline = ch.pipeline(); # http编解码 pipeline.addLast(new HttpServerCodec()); # 写入一个文件的内容 pipeline.addLast(new ChunkedWriteHandler()); # 将一个 HttpMessage 和跟随它的多个 HttpContent 聚合 # 为单个 FullHttpRequest 或者 FullHttpResponse(取决于它是被用来处理请求还是响应)。 # 安装了这个之后， ChannelPipeline 中的下一个 ChannelHandler 将只会 收到完整的 HTTP 请求或响应 pipeline.addLast(new HttpObjectAggregator(64 * 1024)); # 如果是/ws请求就交个下个handler，否则HTTP handler来处理 pipeline.addLast(new HttpRequestHandler(&quot;/ws&quot;)); # 按照 WebSocket 规范的要求，处理 WebSocket 升级握手、 PingWebSocketFrame 、 PongWebSocketFrame 和 CloseWebSocketFrame pipeline.addLast(new WebSocketServerProtocolHandler(&quot;/ws&quot;)); # 处理 TextWebSocketFrame 和握手完成事件 pipeline.addLast(new TextWebSocketFrameHandler(group)); 在从标准的HTTP或者HTTPS协议切换到WebSocket时，将会使用一种称为升级握手的机制。因此 ，使用WebSocket的应用程序将始终以HTTP/S作为开始，然后再执行升级。这个升级动 作发生的确切时刻特定于应用程序;它可能会发生在启动时，也可能会发生在请求了某个特定的 URL之后。 理解HTTP协议中的 Expect: 100-continue HTTP/1.1 协议里设计 100 (Continue) HTTP 状态码的的目的是，在客户端发送 Request Message 之前，HTTP/1.1 协议允许客户端先判定服务器是否愿意接受客户端发来的消息主体（基于 Request Headers）。 即， 客户端 在 Post（较大）数据到服务端之前，允许双方“握手”，如果匹配上了，Client 才开始发送（较大）数据。 这么做的原因是，如果客户端直接发送请求数据，但是服务器又将该请求拒绝的话，这种行为将带来很大的资源开销。 https://blog.csdn.net/skh2015java/article/details/88723028 http协议与websocket协议升级过程 # req GET /chat HTTP/1.1 Host: server.example.com Upgrade: websocket Connection: Upgrade Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 Origin: http://example.com # resp Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 http://www.xiaosongit.com/index/detail/id/645.html 其他 ChannelFuture 与 ChannelFutureListener相互结合，构成了Netty本身的关键构件之一 关于ServerBootStrap，因为服务器需要两组不同的 Channel。第一组将只包含一个 ServerChannel，代表服务 器自身的已绑定到某个本地端口的正在监听的套接字。而第二组将包含所有已创建的用来处理传 入客户端连接(对于每个服务器已经接受的连接都有一个)的 Channel。 PCB Process Control Block" />
-<meta property="og:description" content="其他 Netty实战 https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg Java网络编程与NIO，多看几遍 https://www.cnblogs.com/itxiaok/category/1395489.html jemalloc之arena、chunk、page、subpage https://www.jianshu.com/p/f1988cc08dfd 内存规格、缓存&amp;结构、chunk、arena、page、subpage等概念介绍 https://blog.csdn.net/qq_33347239/article/details/104270629 Arena 简单来说，Arena就是一个内存分配器，所有分配的内存都是由Arena维护的，并且一般会有多个，目的是减少锁竞争。 而netty则是对jemalloc的Arena进行能更加具体的实现，也就是netty中的PoolArena。 Chunk chunk是Netty向操作系统申请内存的最小调度单位，根据上图，chunk大小固定为16mB，也就是说，Netty每次向操作系统申请内存最小为16mB。 Page 上面说了一个chunk大小是16mb，如果Netty每次分配一个ByteBuf，都用掉一个chunk的大小，那显然太浪费了。 于是设计者们就决定将一个chunk划分为2048个Page，每个Page大小为8kb，Page是给ByteBuf分配内存的最小调度单位，尽管还有更小的subpage级别，但是分配subpage时，仍然需要先拿到一个page。 当ByteBuf需要申请的内存大小（必定是2的幂次方） &gt;= 8kb时，会先取一个chunk，然后会以page级别分配内存，最后将当前chunk标记为“使用了一个部分”，然后放进对应占用率的chunkList。 SubPage 当ByteBuf需要申请的内存大小（必定是2的幂次方）&lt; 8kb时，比如现在需要size=2kb，则会先取一个chunk，然后再取一个page，然后将page分成4份（pageSize/size），每一份为2kb，然后取其中一份给ByteBuf初始化。 之后就是一个自底向上标记的过程了，将当前使用的一份subpage标记为“已使用”，上一层page标记为“部分使用”，再上一级chunk标记为“部分使用”，最终也是将chunk放进对应占用率的chunkList。 关于OS Page Cache的简单介绍，同时再一次介绍了kafka的零拷贝 https://www.cnblogs.com/leadership/p/12349486.html Netty的零拷贝体现在多个方面 NIO 的基于mmap的DirectMemory FileRegion 的基于sendFile的transferTo CompositeByteBuf的wrap数组合并与slice数组分拆 NIO Selector linux系统下sun.nio.ch.DefaultSelectorProvider.create(); 会生成一个sun.nio.ch.EPollSelectorProvider类型的SelectorProvider。 或者在META-INF/services包含有一个java.nio.channels.spi.SelectorProvider提供类配置文件 public static SelectorProvider provider() { synchronized (lock) { if (provider != null) return provider; return AccessController.doPrivileged( new PrivilegedAction&lt;&gt;() { public SelectorProvider run() { if (loadProviderFromProperty()) return provider; if (loadProviderAsService()) return provider; provider = sun.nio.ch.DefaultSelectorProvider.create(); return provider; } }); } } EPollSelectorImpl中初始化epoll相关方法 EPollSelectorImpl(SelectorProvider sp) throws IOException { super(sp); long pipeFds = IOUtil.makePipe(false); fd0 = (int) (pipeFds &gt;&gt;&gt; 32); fd1 = (int) pipeFds; try { pollWrapper = new EPollArrayWrapper(); pollWrapper.initInterrupt(fd0, fd1); fdToKey = new HashMap&lt;&gt;(); } catch (Throwable t) {} } // EPollArrayWrapper void initInterrupt(int fd0, int fd1) { outgoingInterruptFD = fd1; incomingInterruptFD = fd0; epollCtl(epfd, EPOLL_CTL_ADD, fd0, EPOLLIN); } private native int epollCreate(); private native void epollCtl(int epfd, int opcode, int fd, int events); private native int epollWait(long pollAddress, int numfds, long timeout, int epfd) throws IOException; Selector中维护3个特别重要的SelectionKey集合，分别是 keys：所有注册到Selector的Channel所表示的SelectionKey都会存在于该集合中。keys元素的添加会在Channel注册到Selector时发生。 selectedKeys：该集合中的每个SelectionKey都是其对应的Channel在上一次操作selection期间被检查到至少有一种SelectionKey中所感兴趣的操作已经准备好被处理。该集合是keys的一个子集。 cancelledKeys：执行了取消操作的SelectionKey会被放入到该集合中。该集合是keys的一个子集。 参考 https://www.cnblogs.com/itxiaok/p/10357828.html 再说epoll epoll相关系统调用是在Linux 2.5 后的某个版本开始引入的。该系统调用针对传统的select/poll不足，设计上作了很大的改动。select/poll 的缺点在于: 每次调用时要重复地从用户模式读入参数，并重复地扫描文件描述符。 每次在调用开始时，要把当前进程放入各个文件描述符的等待队列。在调用结束后，又把进程从各个等待队列中删除。 epoll 是把 select/poll 单个的操作拆分为 1 个 epollcreate，多个 epollctrl和一个 wait。 此外，操作系统内核针对 epoll 操作添加了一个文件系统，每一个或者多个要监视的文件描述符都有一个对应的inode 节点， 主要信息保存在 eventpoll 结构中。而被监视的文件的重要信息则保存在 epitem 结构中，是一对多的关系。 由于在执行 epollcreate 和 epollctrl 时，已经把用户模式的信息保存到内核了， 所以之后即便反复地调用 epoll_wait， 也不会重复地拷贝参数，不会重复扫描文件描述符，也不反复地把当前进程放入/拿出等待队列。 select，poll实现需要自己不断轮询所有fd集合，直到设备就绪，期间可能要睡眠和唤醒多次交替。而epoll其实也需要调用epoll_wait不断轮询就绪链表， 期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。虽然都要睡眠和交替， 但是select和poll在“醒着”的时候要遍历整个fd集合，而epoll在“醒着”的时候只要判断一下就绪链表是否为空就行了，这节省了大量的CPU时间。这就是回调机制带来的性能提升。 select，poll每次调用都要把fd集合从用户态往内核态拷贝一次，并且要把current往设备等待队列中挂一次，而epoll只要一次拷贝，而且把current往等待队列上挂也只挂一次 （在epoll_wait的开始，注意这里的等待队列并不是设备等待队列，只是一个epoll内部定义的等待队列）。这也能节省不少的开销。 Netty的组件 group() EventLoop -&gt; 控制流、多线程处理、并发 一个 EventLoopGroup 包含一个或者多个 EventLoop; 一个 EventLoop 在它的生命周期内只和一个 Thread 绑定; 所有由 EventLoop 处理的 I/O 事件都将在它专有的 Thread 上被处理; 一个 Channel 在它的生命周期内只注册于一个 EventLoop，一个Channel可以理解为一个用户; 一个 EventLoop 可能会被分配给一个或多个 Channel。 注意，在这种设计中，一个给定 Channel 的 I/O 操作都是由相同的 Thread 执行的，实际上消除了对于同步的需要。 EventLoop本身只由一个线程驱动，其处理了一个Channel的所有I/O事件，并且在该EventLoop的整个生命周期内都不会改变。 channel() Channel -&gt; Socket ChannelPipeline handler() ChannelHandler ChannelConfig ChannelFuture -&gt; 异步通知 Netty的数据容器ByteBuf 它可以被用户自定义的缓冲区类型扩展; 通过内置的复合缓冲区类型实现了透明的零拷贝; 容量可以按需增长(类似于 JDK 的 StringBuilder); 在读和写这两种模式之间切换不需要调用 ByteBuffer 的 flip()方法; 读和写使用了不同的索引; 支持方法的链式调用; 支持引用计数; 支持池化。 Netty的对象池化技术PooledByteBufAllocator 通过引用计数的方式实现 ReferenceCounted Unpooled.copiedBuffer(“Netty rocks!”,CharsetUtil.UTF-8); 由于采用引用计数，需要在消费完消息之后调用ReferenceCountUtil.release(msg); 可以通过 java -Dio.netty.leakDetectionLevel=ADVANCED 这个参数设置泄露检测级别 ChannelHandler ChannelPipeline ChannelHandlerContext 每个ChannelHandler都会分配一个ChannelHandlerContext 通过Channel、Handler的write会传递整个pipe，但是通过context的write只能传递对应Handler之后的handlers SimpleChannelInboundHandler，最常见的情况是，你的应用程序会利用一个 ChannelHandler 来接收解码消息，并对该数据应用业务逻辑。要创建一个这样的 ChannelHandler， 你只需要扩展基类 SimpleChannel- InboundHandler，其中 T 是你要处理的消息的 Java 类型 。 在这个 ChannelHandler 中， 你将需要重写基类的一个或者多个方法，并且获取一个到 ChannelHandlerContext 的引用， 这个引用将作为输入参数传递给 ChannelHandler 的所有方法。在这种类型的 ChannelHandler 中，最重要的方法是 channelRead0(Channel- HandlerContext,T)。除了要求不要阻塞当前的 I/O 线程之外，其具体实现完全取决于你。 ChannelOutboundHandlerAdapter，几乎所有的 ChannelOutboundHandler 上的方法都会传入一个 ChannelPromise 的实例。 作为 ChannelFuture 的子类，ChannelPromise 也可以被分配用于异步通知的监听器。 promise.addListener(new ChannelFutureListener() { @Override public void operationComplete(ChannelFuture f) { if (!f.isSuccess()) { f.cause().printStackTrace(); f.channel().close(); } }); EventLoop和线程池 本质是创建包含少量的线程EventLoop的线程池EventLoopGroup，一个EventLoop管理多个Channel， 实际上就是IO多路复用 Bootstrap 为什么引导类是 Cloneable 的 你有时可能会需要创建多个具有类似配置或者完全相同配置的Channel。为了支持这种模式而又不 需要为每个Channel都创建并配置一个新的引导类实例，AbstractBootstrap被标记为了 Cloneable1。在一个已经配置完成的引导类实例上调用clone()方法将返回另一个可以立即使用的引 导类实例。 注意，这种方式只会创建引导类实例的EventLoopGroup的一个浅拷贝，所以，后者 2将在所有克 隆的Channel实例之间共享。这是可以接受的，因为通常这些克隆的Channel的生命周期都很短暂，一 个典型的场景是——创建一个Channel以进行一次HTTP请求。 Netty 设计 从高层次的角度来看，Netty 解决了两个相应的关注领域，我们可将其大致标记为技术的和 体系结构的。 首先，它的基于 Java NIO 的异步的和事件驱动的实现，保证了高负载下应用程序 性能的最大化和可伸缩性。 其次，Netty 也包含了一组设计模式，将应用程序逻辑从网络层解耦， 简化了开发过程，同时也最大限度地提高了可测试性、模块化以及代码的可重用性。 不使用Netty的NIO Netty 的 OpenSSL/SSLEngine 实现 Netty 还提供了使用 OpenSSL 工具包(www.openssl.org)的 SSLEngine 实现。这个 OpenSsl-Engine 类提供了比 JDK 提供的 SSLEngine 实现更好的性能。 如果 OpenSSL 库可用，可以将 Netty 应用程序(客户端和服务器)配置为默认使用 OpenSslEngine。如果不可用，Netty 将会回退到 JDK 实现。有关配置 OpenSSL 支持的详细说明，参见 Netty 文档: http://netty.io/wiki/forked-tomcat-native.html#wikih2-1。 注意，无论你使用 JDK 的 SSLEngine 还是使用 Netty 的 OpenSslEngine，SSL API 和数据流都 是一致的。 SelfSignedCertificate cert = new SelfSignedCertificate(); SslContext context = SslContext.newServerContext(cert.certificate(), cert.privateKey()); SSLEngine engine = context.newEngine(ch.alloc()); engine.setUseClientMode(false); ch.pipeline().addFirst(new SslHandler(engine)); 检测空闲连接以及超时对于及时释放资源 new IdleStateHandler(0, 0, 60, TimeUnit.SECONDS) ReadTimeoutHandler exceptionCaught() WriteTimeoutHandler exceptionCaught() 写大数据 ChunkedFile 从文件中逐块获取数据，当你的平台不支持零拷贝或者你需要转换数据时使用 ChunkedNioFile 和 ChunkedFile 类似，只是它使用了 FileChannel ChunkedStream 从 InputStream 中逐块传输内容 ChunkedNioStream 从ReadableByteChannel中逐块传输内容 public final class WriteStreamHandler extends ChannelInboundHandlerAdapter { @Override public void channelActive(ChannelHandlerContext ctx)throws Exception { super.channelActive(ctx); ctx.writeAndFlush( new ChunkedStream(new FileInputStream(file))); } } WebSocketFrame BinaryWebSocketFrame 包含了二进制数据 TextWebSocketFrame 包含了文本数据 ContinuationWebSocketFrame 包含属于上一个BinaryWebSocketFrame或TextWebSocket-Frame 的文本数据或者二进制数据 CloseWebSocketFrame 表示一个 CLOSE 请求，包含一个关闭的状态码和关闭的原因 PingWebSocketFrame 作为一个对于 PingWebSocketFrame 的响应被发送 PongWebSocketFrame 请求传输一个 PongWebSocketFrame WebSocket示例 ChannelPipeline pipeline = ch.pipeline(); # http编解码 pipeline.addLast(new HttpServerCodec()); # 写入一个文件的内容 pipeline.addLast(new ChunkedWriteHandler()); # 将一个 HttpMessage 和跟随它的多个 HttpContent 聚合 # 为单个 FullHttpRequest 或者 FullHttpResponse(取决于它是被用来处理请求还是响应)。 # 安装了这个之后， ChannelPipeline 中的下一个 ChannelHandler 将只会 收到完整的 HTTP 请求或响应 pipeline.addLast(new HttpObjectAggregator(64 * 1024)); # 如果是/ws请求就交个下个handler，否则HTTP handler来处理 pipeline.addLast(new HttpRequestHandler(&quot;/ws&quot;)); # 按照 WebSocket 规范的要求，处理 WebSocket 升级握手、 PingWebSocketFrame 、 PongWebSocketFrame 和 CloseWebSocketFrame pipeline.addLast(new WebSocketServerProtocolHandler(&quot;/ws&quot;)); # 处理 TextWebSocketFrame 和握手完成事件 pipeline.addLast(new TextWebSocketFrameHandler(group)); 在从标准的HTTP或者HTTPS协议切换到WebSocket时，将会使用一种称为升级握手的机制。因此 ，使用WebSocket的应用程序将始终以HTTP/S作为开始，然后再执行升级。这个升级动 作发生的确切时刻特定于应用程序;它可能会发生在启动时，也可能会发生在请求了某个特定的 URL之后。 理解HTTP协议中的 Expect: 100-continue HTTP/1.1 协议里设计 100 (Continue) HTTP 状态码的的目的是，在客户端发送 Request Message 之前，HTTP/1.1 协议允许客户端先判定服务器是否愿意接受客户端发来的消息主体（基于 Request Headers）。 即， 客户端 在 Post（较大）数据到服务端之前，允许双方“握手”，如果匹配上了，Client 才开始发送（较大）数据。 这么做的原因是，如果客户端直接发送请求数据，但是服务器又将该请求拒绝的话，这种行为将带来很大的资源开销。 https://blog.csdn.net/skh2015java/article/details/88723028 http协议与websocket协议升级过程 # req GET /chat HTTP/1.1 Host: server.example.com Upgrade: websocket Connection: Upgrade Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 Origin: http://example.com # resp Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 http://www.xiaosongit.com/index/detail/id/645.html 其他 ChannelFuture 与 ChannelFutureListener相互结合，构成了Netty本身的关键构件之一 关于ServerBootStrap，因为服务器需要两组不同的 Channel。第一组将只包含一个 ServerChannel，代表服务 器自身的已绑定到某个本地端口的正在监听的套接字。而第二组将包含所有已创建的用来处理传 入客户端连接(对于每个服务器已经接受的连接都有一个)的 Channel。 PCB Process Control Block" />
+<meta name="description" content="Netty 是 Java 生态中最流行的异步事件驱动网络框架，被广泛应用于 RPC 框架（如 Dubbo、gRPC）、消息中间件（如 RocketMQ）、大数据组件（如 Spark、Flink）等基础设施中。本文基于《Netty 实战》一书的核心内容，从内存管理、零拷贝、NIO Selector、核心组件、ChannelPipeline 到 WebSocket 等多个维度，系统梳理 Netty 的设计哲学与关键技术。 延伸阅读： Netty 实战 https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg Java 网络编程与 NIO https://www.cnblogs.com/itxiaok/category/1395489.html 一、Netty 的内存管理：Arena、Chunk、Page、SubPage Netty 的内存分配器借鉴了 jemalloc 的设计思想，通过多层级的内存管理结构实现了高效的内存分配与回收。 Arena：简单来说，Arena 就是一个内存分配器，所有分配的内存都由 Arena 维护。一般会有多个 Arena 实例，目的是减少锁竞争。Netty 对 jemalloc 的 Arena 进行了更具体的实现，即 PoolArena。 Chunk：Chunk 是 Netty 向操作系统申请内存的最小调度单位。Chunk 大小固定为 16MB，即 Netty 每次向操作系统申请内存最小为 16MB。 Page：一个 Chunk 被划分为 2048 个 Page，每个 Page 大小为 8KB。Page 是给 ByteBuf 分配内存的最小调度单位（尽管还有更小的 SubPage 级别，但分配 SubPage 时仍需先获取一个 Page）。当 ByteBuf 需要申请的内存大小（必定是 2 的幂次方）≥ 8KB 时，会先取一个 Chunk，然后以 Page 级别分配内存，最后将当前 Chunk 标记为”使用了一部分”并放进对应占用率的 ChunkList。 SubPage：当 ByteBuf 需要申请的内存大小（必定是 2 的幂次方）&lt; 8KB 时，例如需要 2KB，则会先取一个 Chunk，再取一个 Page，然后将 Page 分成 4 份（pageSize / size），每份 2KB，取其中一份给 ByteBuf 初始化。之后是一个自底向上标记的过程：将当前使用的 SubPage 标记为”已使用”，上一层 Page 标记为”部分使用”，再上一级 Chunk 标记为”部分使用”，最终将 Chunk 放进对应占用率的 ChunkList。 延伸阅读： jemalloc 之 Arena、Chunk、Page、SubPage https://www.jianshu.com/p/f1988cc08dfd 内存规格、缓存结构等概念介绍 https://blog.csdn.net/qq_33347239/article/details/104270629 关于 OS Page Cache 与 Kafka 零拷贝 https://www.cnblogs.com/leadership/p/12349486.html 二、Netty 的零拷贝 Netty 的零拷贝体现在多个层面，综合运用了操作系统和应用层的优化手段： NIO 的 DirectMemory：基于 mmap 的直接内存映射，避免了堆内外内存之间的数据拷贝。 FileRegion 的 transferTo：基于 sendFile 系统调用，实现文件到网络的零拷贝传输。 CompositeByteBuf：通过 wrap 将多个 ByteBuf 逻辑合并，以及通过 slice 对单个 ByteBuf 进行逻辑分拆，避免了内存层面的实际拷贝。 三、NIO Selector 与 epoll 3.1 Selector 的创建 在 Linux 系统下，sun.nio.ch.DefaultSelectorProvider.create() 会生成一个 EPollSelectorProvider 类型的 SelectorProvider。也可以在 META-INF/services 下配置 java.nio.channels.spi.SelectorProvider 来指定自定义实现。 public static SelectorProvider provider() { synchronized (lock) { if (provider != null) return provider; return AccessController.doPrivileged( new PrivilegedAction&lt;&gt;() { public SelectorProvider run() { if (loadProviderFromProperty()) return provider; if (loadProviderAsService()) return provider; provider = sun.nio.ch.DefaultSelectorProvider.create(); return provider; } }); } } 3.2 EPollSelectorImpl 的初始化 EPollSelectorImpl 在构造时会初始化 epoll 相关的底层资源： EPollSelectorImpl(SelectorProvider sp) throws IOException { super(sp); long pipeFds = IOUtil.makePipe(false); fd0 = (int) (pipeFds &gt;&gt;&gt; 32); fd1 = (int) pipeFds; try { pollWrapper = new EPollArrayWrapper(); pollWrapper.initInterrupt(fd0, fd1); fdToKey = new HashMap&lt;&gt;(); } catch (Throwable t) {} } // EPollArrayWrapper void initInterrupt(int fd0, int fd1) { outgoingInterruptFD = fd1; incomingInterruptFD = fd0; epollCtl(epfd, EPOLL_CTL_ADD, fd0, EPOLLIN); } private native int epollCreate(); private native void epollCtl(int epfd, int opcode, int fd, int events); private native int epollWait(long pollAddress, int numfds, long timeout, int epfd) throws IOException; 3.3 Selector 的三个 SelectionKey 集合 Selector 中维护了 3 个至关重要的 SelectionKey 集合： keys：所有注册到 Selector 的 Channel 所表示的 SelectionKey 都会存在于该集合中。元素的添加发生在 Channel 注册到 Selector 时。 selectedKeys：该集合中的每个 SelectionKey 都是其对应的 Channel 在上一次 selection 操作期间被检测到至少有一种感兴趣的操作已准备好被处理。它是 keys 的子集。 cancelledKeys：执行了取消操作的 SelectionKey 会被放入该集合中。它也是 keys 的子集。 参考： https://www.cnblogs.com/itxiaok/p/10357828.html 四、深入理解 epoll epoll 相关系统调用在 Linux 2.5 后引入，针对传统 select/poll 的不足做了重大改进。 select/poll 的缺点： 每次调用时要重复地从用户模式读入参数，并重复地扫描文件描述符。 每次调用开始时要把当前进程放入各个文件描述符的等待队列，调用结束后再从各个等待队列中删除。 epoll 的改进： 将 select/poll 单个操作拆分为 epoll_create、多个 epoll_ctl 和一个 epoll_wait。 操作系统内核针对 epoll 操作添加了一个文件系统，每个被监视的文件描述符都有对应的 inode 节点，主要信息保存在 eventpoll 结构中，被监视文件的信息则保存在 epitem 结构中（一对多关系）。 由于在执行 epoll_create 和 epoll_ctl 时已经把用户模式的信息保存到内核了，所以之后即便反复调用 epoll_wait，也不会重复拷贝参数、扫描文件描述符、频繁操作等待队列。 epoll 的性能优势核心在于回调机制： select/poll 在”醒着”的时候要遍历整个 fd 集合，而 epoll 在”醒着”的时候只需判断就绪链表是否为空。设备就绪时通过回调函数将就绪 fd 放入就绪链表并唤醒 epoll_wait 中睡眠的进程，节省了大量 CPU 时间。 select/poll 每次调用都要把 fd 集合从用户态往内核态拷贝一次，而 epoll 只需要一次拷贝，将 current 往等待队列上也只挂一次。 五、Netty 的核心组件 5.1 EventLoop 与 EventLoopGroup EventLoop 是 Netty 处理 I/O 事件的核心抽象，负责控制流、多线程处理与并发： 一个 EventLoopGroup 包含一个或多个 EventLoop 一个 EventLoop 在其生命周期内只和一个 Thread 绑定 所有由 EventLoop 处理的 I/O 事件都将在它专有的 Thread 上被处理 一个 Channel 在其生命周期内只注册于一个 EventLoop（一个 Channel 可理解为一个连接） 一个 EventLoop 可能被分配给多个 Channel——在这种设计中，给定 Channel 的 I/O 操作都由相同的 Thread 执行，实际上消除了对于同步的需要 EventLoop 本身只由一个线程驱动，处理一个 Channel 的所有 I/O 事件，且在整个生命周期内不会改变 5.2 Channel 与 ChannelPipeline Channel 对应网络 Socket，每个 Channel 关联一个 ChannelPipeline 和 ChannelConfig。 ChannelPipeline 是 ChannelHandler 的容器，消息在 Pipeline 中流经一系列 Handler 进行处理。 ChannelFuture 提供异步通知机制，与 ChannelFutureListener 结合构成了 Netty 的关键构件之一。 六、ByteBuf：Netty 的数据容器 Netty 的 ByteBuf 相比 JDK 原生的 ByteBuffer 有诸多优势： 可以被用户自定义的缓冲区类型扩展 通过内置的复合缓冲区类型实现了透明的零拷贝 容量可以按需增长（类似 JDK 的 StringBuilder） 在读和写两种模式之间切换不需要调用 ByteBuffer.flip() 方法 读和写使用了不同的索引 支持方法的链式调用 支持引用计数 支持池化 七、对象池化技术 PooledByteBufAllocator Netty 通过引用计数（ReferenceCounted 接口）实现对象的池化管理： 非池化场景可使用 Unpooled.copiedBuffer(&quot;Netty rocks!&quot;, CharsetUtil.UTF_8) 由于采用引用计数，需要在消费完消息之后调用 ReferenceCountUtil.release(msg) 可通过 java -Dio.netty.leakDetectionLevel=ADVANCED 设置泄露检测级别 八、ChannelHandler、ChannelPipeline 与 ChannelHandlerContext Netty 的 Handler 体系是理解其消息处理模型的关键： 每个 ChannelHandler 都会被分配一个 ChannelHandlerContext 通过 Channel 或 Handler 调用 write 会将消息传递给整个 Pipeline；但通过 ChannelHandlerContext 的 write 只会传递给对应 Handler 之后的 Handler SimpleChannelInboundHandler&lt;T&gt; 是最常用的入站 Handler 基类。继承它后只需重写 channelRead0(ChannelHandlerContext, T) 方法即可，除了不要阻塞当前 I/O 线程之外，具体实现完全取决于业务需求 ChannelOutboundHandlerAdapter 中几乎所有方法都会传入 ChannelPromise 实例。作为 ChannelFuture 的子类，ChannelPromise 也可以被分配用于异步通知的监听器： promise.addListener(new ChannelFutureListener() { @Override public void operationComplete(ChannelFuture f) { if (!f.isSuccess()) { f.cause().printStackTrace(); f.channel().close(); } }); 九、EventLoop 与线程模型 Netty 的线程模型本质上是创建包含少量线程的 EventLoop 线程池 EventLoopGroup，一个 EventLoop 管理多个 Channel，实际上就是 I/O 多路复用的体现。 十、Bootstrap 引导类 为什么引导类是 Cloneable 的？ 有时需要创建多个具有相似或相同配置的 Channel。为支持这种模式而不需要为每个 Channel 都创建并配置一个新的引导类实例，AbstractBootstrap 被标记为 Cloneable。在一个已配置完成的引导类实例上调用 clone() 将返回另一个可立即使用的引导类实例。 需要注意的是，这种方式只会创建引导类实例的 EventLoopGroup 的一个浅拷贝，后者将在所有克隆的 Channel 实例之间共享。这是可以接受的，因为通常这些克隆的 Channel 的生命周期都很短暂，典型场景是创建一个 Channel 以进行一次 HTTP 请求。 关于 ServerBootstrap：服务器需要两组不同的 Channel。第一组只包含一个 ServerChannel，代表服务器自身的已绑定到某个本地端口的正在监听的套接字。第二组包含所有已创建的用来处理传入客户端连接的 Channel（每个服务器已接受的连接都有一个对应的 Channel）。 十一、Netty 的设计哲学 从高层次角度来看，Netty 解决了两个相应的关注领域： 技术层面：基于 Java NIO 的异步和事件驱动实现，保证了高负载下应用程序性能的最大化和可伸缩性。 架构层面：包含了一组设计模式，将应用程序逻辑从网络层解耦，简化了开发过程，同时最大限度地提高了可测试性、模块化以及代码的可重用性。 不使用 Netty 的原生 NIO 十二、SSL/TLS 支持 Netty 提供了使用 OpenSSL 工具包的 SSLEngine 实现（OpenSslEngine），相比 JDK 提供的 SSLEngine 实现有更好的性能。如果 OpenSSL 库可用，可以将 Netty 应用程序配置为默认使用 OpenSslEngine；如果不可用，Netty 会回退到 JDK 实现。无论使用哪种实现，SSL API 和数据流都是一致的。 SelfSignedCertificate cert = new SelfSignedCertificate(); SslContext context = SslContext.newServerContext(cert.certificate(), cert.privateKey()); SSLEngine engine = context.newEngine(ch.alloc()); engine.setUseClientMode(false); ch.pipeline().addFirst(new SslHandler(engine)); 十三、空闲连接检测与超时处理 及时检测空闲连接并释放资源是保证服务稳定性的重要手段。Netty 内置了以下 Handler： IdleStateHandler(0, 0, 60, TimeUnit.SECONDS) —— 检测读写空闲 ReadTimeoutHandler —— 读超时时触发 exceptionCaught() WriteTimeoutHandler —— 写超时时触发 exceptionCaught() 十四、写大数据 当需要传输大文件或大量数据流时，Netty 提供了分块传输的支持： ChunkedFile：从文件中逐块获取数据，适用于平台不支持零拷贝或需要转换数据的场景 ChunkedNioFile：类似 ChunkedFile，但使用 FileChannel ChunkedStream：从 InputStream 中逐块传输内容 ChunkedNioStream：从 ReadableByteChannel 中逐块传输内容 public final class WriteStreamHandler extends ChannelInboundHandlerAdapter { @Override public void channelActive(ChannelHandlerContext ctx)throws Exception { super.channelActive(ctx); ctx.writeAndFlush( new ChunkedStream(new FileInputStream(file))); } } 十五、WebSocket 支持 15.1 WebSocketFrame 类型 BinaryWebSocketFrame：包含二进制数据 TextWebSocketFrame：包含文本数据 ContinuationWebSocketFrame：包含属于上一个 BinaryWebSocketFrame 或 TextWebSocketFrame 的后续数据 CloseWebSocketFrame：表示 CLOSE 请求，包含关闭状态码和原因 PingWebSocketFrame：请求传输一个 PongWebSocketFrame PongWebSocketFrame：作为 PingWebSocketFrame 的响应被发送 15.2 WebSocket 示例 下面展示了一个完整的 WebSocket 服务端 Pipeline 配置： ChannelPipeline pipeline = ch.pipeline(); # http编解码 pipeline.addLast(new HttpServerCodec()); # 写入一个文件的内容 pipeline.addLast(new ChunkedWriteHandler()); # 将一个 HttpMessage 和跟随它的多个 HttpContent 聚合 # 为单个 FullHttpRequest 或者 FullHttpResponse(取决于它是被用来处理请求还是响应)。 # 安装了这个之后， ChannelPipeline 中的下一个 ChannelHandler 将只会 收到完整的 HTTP 请求或响应 pipeline.addLast(new HttpObjectAggregator(64 * 1024)); # 如果是/ws请求就交个下个handler，否则HTTP handler来处理 pipeline.addLast(new HttpRequestHandler(&quot;/ws&quot;)); # 按照 WebSocket 规范的要求，处理 WebSocket 升级握手、 PingWebSocketFrame 、 PongWebSocketFrame 和 CloseWebSocketFrame pipeline.addLast(new WebSocketServerProtocolHandler(&quot;/ws&quot;)); # 处理 TextWebSocketFrame 和握手完成事件 pipeline.addLast(new TextWebSocketFrameHandler(group)); 在从标准 HTTP/HTTPS 协议切换到 WebSocket 时，使用一种称为升级握手的机制。因此，使用 WebSocket 的应用程序始终以 HTTP/S 作为开始，然后再执行升级。 15.3 HTTP 协议中的 Expect: 100-continue HTTP/1.1 协议中设计 100 (Continue) 状态码的目的是：在客户端发送 Request Message 之前，允许客户端先判定服务器是否愿意接受其消息主体（基于 Request Headers）。即客户端在 POST 较大数据到服务端之前，允许双方先”握手”——如果匹配上了，客户端才开始发送较大数据。这样做是因为如果客户端直接发送请求数据而服务器又拒绝该请求，会带来很大的资源开销。 参考： https://blog.csdn.net/skh2015java/article/details/88723028 15.4 WebSocket 升级过程 # req GET /chat HTTP/1.1 Host: server.example.com Upgrade: websocket Connection: Upgrade Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 Origin: http://example.com # resp Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 参考： http://www.xiaosongit.com/index/detail/id/645.html 十六、总结 Netty 之所以能成为 Java 网络编程的事实标准，在于它在多个层面做到了极致： 内存管理：借鉴 jemalloc 的 Arena/Chunk/Page/SubPage 分层设计，配合池化与引用计数，大幅降低了 GC 压力 I/O 模型：封装了 epoll 等高性能 I/O 多路复用机制，通过 EventLoop 消除了线程同步的复杂性 零拷贝：从操作系统到应用层多维度的零拷贝优化 协议支持：内置 HTTP、WebSocket、SSL/TLS 等主流协议的编解码器 架构设计：通过 ChannelPipeline 的责任链模式实现了高度模块化和可扩展性 理解 Netty 的这些设计，不仅有助于高效使用该框架，更能深化对高性能网络编程本质的理解。 PCB（Process Control Block）—— 操作系统中进程的核心数据结构，每个网络连接在 OS 层面都对应着进程/线程资源的管理。" />
+<meta property="og:description" content="Netty 是 Java 生态中最流行的异步事件驱动网络框架，被广泛应用于 RPC 框架（如 Dubbo、gRPC）、消息中间件（如 RocketMQ）、大数据组件（如 Spark、Flink）等基础设施中。本文基于《Netty 实战》一书的核心内容，从内存管理、零拷贝、NIO Selector、核心组件、ChannelPipeline 到 WebSocket 等多个维度，系统梳理 Netty 的设计哲学与关键技术。 延伸阅读： Netty 实战 https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg Java 网络编程与 NIO https://www.cnblogs.com/itxiaok/category/1395489.html 一、Netty 的内存管理：Arena、Chunk、Page、SubPage Netty 的内存分配器借鉴了 jemalloc 的设计思想，通过多层级的内存管理结构实现了高效的内存分配与回收。 Arena：简单来说，Arena 就是一个内存分配器，所有分配的内存都由 Arena 维护。一般会有多个 Arena 实例，目的是减少锁竞争。Netty 对 jemalloc 的 Arena 进行了更具体的实现，即 PoolArena。 Chunk：Chunk 是 Netty 向操作系统申请内存的最小调度单位。Chunk 大小固定为 16MB，即 Netty 每次向操作系统申请内存最小为 16MB。 Page：一个 Chunk 被划分为 2048 个 Page，每个 Page 大小为 8KB。Page 是给 ByteBuf 分配内存的最小调度单位（尽管还有更小的 SubPage 级别，但分配 SubPage 时仍需先获取一个 Page）。当 ByteBuf 需要申请的内存大小（必定是 2 的幂次方）≥ 8KB 时，会先取一个 Chunk，然后以 Page 级别分配内存，最后将当前 Chunk 标记为”使用了一部分”并放进对应占用率的 ChunkList。 SubPage：当 ByteBuf 需要申请的内存大小（必定是 2 的幂次方）&lt; 8KB 时，例如需要 2KB，则会先取一个 Chunk，再取一个 Page，然后将 Page 分成 4 份（pageSize / size），每份 2KB，取其中一份给 ByteBuf 初始化。之后是一个自底向上标记的过程：将当前使用的 SubPage 标记为”已使用”，上一层 Page 标记为”部分使用”，再上一级 Chunk 标记为”部分使用”，最终将 Chunk 放进对应占用率的 ChunkList。 延伸阅读： jemalloc 之 Arena、Chunk、Page、SubPage https://www.jianshu.com/p/f1988cc08dfd 内存规格、缓存结构等概念介绍 https://blog.csdn.net/qq_33347239/article/details/104270629 关于 OS Page Cache 与 Kafka 零拷贝 https://www.cnblogs.com/leadership/p/12349486.html 二、Netty 的零拷贝 Netty 的零拷贝体现在多个层面，综合运用了操作系统和应用层的优化手段： NIO 的 DirectMemory：基于 mmap 的直接内存映射，避免了堆内外内存之间的数据拷贝。 FileRegion 的 transferTo：基于 sendFile 系统调用，实现文件到网络的零拷贝传输。 CompositeByteBuf：通过 wrap 将多个 ByteBuf 逻辑合并，以及通过 slice 对单个 ByteBuf 进行逻辑分拆，避免了内存层面的实际拷贝。 三、NIO Selector 与 epoll 3.1 Selector 的创建 在 Linux 系统下，sun.nio.ch.DefaultSelectorProvider.create() 会生成一个 EPollSelectorProvider 类型的 SelectorProvider。也可以在 META-INF/services 下配置 java.nio.channels.spi.SelectorProvider 来指定自定义实现。 public static SelectorProvider provider() { synchronized (lock) { if (provider != null) return provider; return AccessController.doPrivileged( new PrivilegedAction&lt;&gt;() { public SelectorProvider run() { if (loadProviderFromProperty()) return provider; if (loadProviderAsService()) return provider; provider = sun.nio.ch.DefaultSelectorProvider.create(); return provider; } }); } } 3.2 EPollSelectorImpl 的初始化 EPollSelectorImpl 在构造时会初始化 epoll 相关的底层资源： EPollSelectorImpl(SelectorProvider sp) throws IOException { super(sp); long pipeFds = IOUtil.makePipe(false); fd0 = (int) (pipeFds &gt;&gt;&gt; 32); fd1 = (int) pipeFds; try { pollWrapper = new EPollArrayWrapper(); pollWrapper.initInterrupt(fd0, fd1); fdToKey = new HashMap&lt;&gt;(); } catch (Throwable t) {} } // EPollArrayWrapper void initInterrupt(int fd0, int fd1) { outgoingInterruptFD = fd1; incomingInterruptFD = fd0; epollCtl(epfd, EPOLL_CTL_ADD, fd0, EPOLLIN); } private native int epollCreate(); private native void epollCtl(int epfd, int opcode, int fd, int events); private native int epollWait(long pollAddress, int numfds, long timeout, int epfd) throws IOException; 3.3 Selector 的三个 SelectionKey 集合 Selector 中维护了 3 个至关重要的 SelectionKey 集合： keys：所有注册到 Selector 的 Channel 所表示的 SelectionKey 都会存在于该集合中。元素的添加发生在 Channel 注册到 Selector 时。 selectedKeys：该集合中的每个 SelectionKey 都是其对应的 Channel 在上一次 selection 操作期间被检测到至少有一种感兴趣的操作已准备好被处理。它是 keys 的子集。 cancelledKeys：执行了取消操作的 SelectionKey 会被放入该集合中。它也是 keys 的子集。 参考： https://www.cnblogs.com/itxiaok/p/10357828.html 四、深入理解 epoll epoll 相关系统调用在 Linux 2.5 后引入，针对传统 select/poll 的不足做了重大改进。 select/poll 的缺点： 每次调用时要重复地从用户模式读入参数，并重复地扫描文件描述符。 每次调用开始时要把当前进程放入各个文件描述符的等待队列，调用结束后再从各个等待队列中删除。 epoll 的改进： 将 select/poll 单个操作拆分为 epoll_create、多个 epoll_ctl 和一个 epoll_wait。 操作系统内核针对 epoll 操作添加了一个文件系统，每个被监视的文件描述符都有对应的 inode 节点，主要信息保存在 eventpoll 结构中，被监视文件的信息则保存在 epitem 结构中（一对多关系）。 由于在执行 epoll_create 和 epoll_ctl 时已经把用户模式的信息保存到内核了，所以之后即便反复调用 epoll_wait，也不会重复拷贝参数、扫描文件描述符、频繁操作等待队列。 epoll 的性能优势核心在于回调机制： select/poll 在”醒着”的时候要遍历整个 fd 集合，而 epoll 在”醒着”的时候只需判断就绪链表是否为空。设备就绪时通过回调函数将就绪 fd 放入就绪链表并唤醒 epoll_wait 中睡眠的进程，节省了大量 CPU 时间。 select/poll 每次调用都要把 fd 集合从用户态往内核态拷贝一次，而 epoll 只需要一次拷贝，将 current 往等待队列上也只挂一次。 五、Netty 的核心组件 5.1 EventLoop 与 EventLoopGroup EventLoop 是 Netty 处理 I/O 事件的核心抽象，负责控制流、多线程处理与并发： 一个 EventLoopGroup 包含一个或多个 EventLoop 一个 EventLoop 在其生命周期内只和一个 Thread 绑定 所有由 EventLoop 处理的 I/O 事件都将在它专有的 Thread 上被处理 一个 Channel 在其生命周期内只注册于一个 EventLoop（一个 Channel 可理解为一个连接） 一个 EventLoop 可能被分配给多个 Channel——在这种设计中，给定 Channel 的 I/O 操作都由相同的 Thread 执行，实际上消除了对于同步的需要 EventLoop 本身只由一个线程驱动，处理一个 Channel 的所有 I/O 事件，且在整个生命周期内不会改变 5.2 Channel 与 ChannelPipeline Channel 对应网络 Socket，每个 Channel 关联一个 ChannelPipeline 和 ChannelConfig。 ChannelPipeline 是 ChannelHandler 的容器，消息在 Pipeline 中流经一系列 Handler 进行处理。 ChannelFuture 提供异步通知机制，与 ChannelFutureListener 结合构成了 Netty 的关键构件之一。 六、ByteBuf：Netty 的数据容器 Netty 的 ByteBuf 相比 JDK 原生的 ByteBuffer 有诸多优势： 可以被用户自定义的缓冲区类型扩展 通过内置的复合缓冲区类型实现了透明的零拷贝 容量可以按需增长（类似 JDK 的 StringBuilder） 在读和写两种模式之间切换不需要调用 ByteBuffer.flip() 方法 读和写使用了不同的索引 支持方法的链式调用 支持引用计数 支持池化 七、对象池化技术 PooledByteBufAllocator Netty 通过引用计数（ReferenceCounted 接口）实现对象的池化管理： 非池化场景可使用 Unpooled.copiedBuffer(&quot;Netty rocks!&quot;, CharsetUtil.UTF_8) 由于采用引用计数，需要在消费完消息之后调用 ReferenceCountUtil.release(msg) 可通过 java -Dio.netty.leakDetectionLevel=ADVANCED 设置泄露检测级别 八、ChannelHandler、ChannelPipeline 与 ChannelHandlerContext Netty 的 Handler 体系是理解其消息处理模型的关键： 每个 ChannelHandler 都会被分配一个 ChannelHandlerContext 通过 Channel 或 Handler 调用 write 会将消息传递给整个 Pipeline；但通过 ChannelHandlerContext 的 write 只会传递给对应 Handler 之后的 Handler SimpleChannelInboundHandler&lt;T&gt; 是最常用的入站 Handler 基类。继承它后只需重写 channelRead0(ChannelHandlerContext, T) 方法即可，除了不要阻塞当前 I/O 线程之外，具体实现完全取决于业务需求 ChannelOutboundHandlerAdapter 中几乎所有方法都会传入 ChannelPromise 实例。作为 ChannelFuture 的子类，ChannelPromise 也可以被分配用于异步通知的监听器： promise.addListener(new ChannelFutureListener() { @Override public void operationComplete(ChannelFuture f) { if (!f.isSuccess()) { f.cause().printStackTrace(); f.channel().close(); } }); 九、EventLoop 与线程模型 Netty 的线程模型本质上是创建包含少量线程的 EventLoop 线程池 EventLoopGroup，一个 EventLoop 管理多个 Channel，实际上就是 I/O 多路复用的体现。 十、Bootstrap 引导类 为什么引导类是 Cloneable 的？ 有时需要创建多个具有相似或相同配置的 Channel。为支持这种模式而不需要为每个 Channel 都创建并配置一个新的引导类实例，AbstractBootstrap 被标记为 Cloneable。在一个已配置完成的引导类实例上调用 clone() 将返回另一个可立即使用的引导类实例。 需要注意的是，这种方式只会创建引导类实例的 EventLoopGroup 的一个浅拷贝，后者将在所有克隆的 Channel 实例之间共享。这是可以接受的，因为通常这些克隆的 Channel 的生命周期都很短暂，典型场景是创建一个 Channel 以进行一次 HTTP 请求。 关于 ServerBootstrap：服务器需要两组不同的 Channel。第一组只包含一个 ServerChannel，代表服务器自身的已绑定到某个本地端口的正在监听的套接字。第二组包含所有已创建的用来处理传入客户端连接的 Channel（每个服务器已接受的连接都有一个对应的 Channel）。 十一、Netty 的设计哲学 从高层次角度来看，Netty 解决了两个相应的关注领域： 技术层面：基于 Java NIO 的异步和事件驱动实现，保证了高负载下应用程序性能的最大化和可伸缩性。 架构层面：包含了一组设计模式，将应用程序逻辑从网络层解耦，简化了开发过程，同时最大限度地提高了可测试性、模块化以及代码的可重用性。 不使用 Netty 的原生 NIO 十二、SSL/TLS 支持 Netty 提供了使用 OpenSSL 工具包的 SSLEngine 实现（OpenSslEngine），相比 JDK 提供的 SSLEngine 实现有更好的性能。如果 OpenSSL 库可用，可以将 Netty 应用程序配置为默认使用 OpenSslEngine；如果不可用，Netty 会回退到 JDK 实现。无论使用哪种实现，SSL API 和数据流都是一致的。 SelfSignedCertificate cert = new SelfSignedCertificate(); SslContext context = SslContext.newServerContext(cert.certificate(), cert.privateKey()); SSLEngine engine = context.newEngine(ch.alloc()); engine.setUseClientMode(false); ch.pipeline().addFirst(new SslHandler(engine)); 十三、空闲连接检测与超时处理 及时检测空闲连接并释放资源是保证服务稳定性的重要手段。Netty 内置了以下 Handler： IdleStateHandler(0, 0, 60, TimeUnit.SECONDS) —— 检测读写空闲 ReadTimeoutHandler —— 读超时时触发 exceptionCaught() WriteTimeoutHandler —— 写超时时触发 exceptionCaught() 十四、写大数据 当需要传输大文件或大量数据流时，Netty 提供了分块传输的支持： ChunkedFile：从文件中逐块获取数据，适用于平台不支持零拷贝或需要转换数据的场景 ChunkedNioFile：类似 ChunkedFile，但使用 FileChannel ChunkedStream：从 InputStream 中逐块传输内容 ChunkedNioStream：从 ReadableByteChannel 中逐块传输内容 public final class WriteStreamHandler extends ChannelInboundHandlerAdapter { @Override public void channelActive(ChannelHandlerContext ctx)throws Exception { super.channelActive(ctx); ctx.writeAndFlush( new ChunkedStream(new FileInputStream(file))); } } 十五、WebSocket 支持 15.1 WebSocketFrame 类型 BinaryWebSocketFrame：包含二进制数据 TextWebSocketFrame：包含文本数据 ContinuationWebSocketFrame：包含属于上一个 BinaryWebSocketFrame 或 TextWebSocketFrame 的后续数据 CloseWebSocketFrame：表示 CLOSE 请求，包含关闭状态码和原因 PingWebSocketFrame：请求传输一个 PongWebSocketFrame PongWebSocketFrame：作为 PingWebSocketFrame 的响应被发送 15.2 WebSocket 示例 下面展示了一个完整的 WebSocket 服务端 Pipeline 配置： ChannelPipeline pipeline = ch.pipeline(); # http编解码 pipeline.addLast(new HttpServerCodec()); # 写入一个文件的内容 pipeline.addLast(new ChunkedWriteHandler()); # 将一个 HttpMessage 和跟随它的多个 HttpContent 聚合 # 为单个 FullHttpRequest 或者 FullHttpResponse(取决于它是被用来处理请求还是响应)。 # 安装了这个之后， ChannelPipeline 中的下一个 ChannelHandler 将只会 收到完整的 HTTP 请求或响应 pipeline.addLast(new HttpObjectAggregator(64 * 1024)); # 如果是/ws请求就交个下个handler，否则HTTP handler来处理 pipeline.addLast(new HttpRequestHandler(&quot;/ws&quot;)); # 按照 WebSocket 规范的要求，处理 WebSocket 升级握手、 PingWebSocketFrame 、 PongWebSocketFrame 和 CloseWebSocketFrame pipeline.addLast(new WebSocketServerProtocolHandler(&quot;/ws&quot;)); # 处理 TextWebSocketFrame 和握手完成事件 pipeline.addLast(new TextWebSocketFrameHandler(group)); 在从标准 HTTP/HTTPS 协议切换到 WebSocket 时，使用一种称为升级握手的机制。因此，使用 WebSocket 的应用程序始终以 HTTP/S 作为开始，然后再执行升级。 15.3 HTTP 协议中的 Expect: 100-continue HTTP/1.1 协议中设计 100 (Continue) 状态码的目的是：在客户端发送 Request Message 之前，允许客户端先判定服务器是否愿意接受其消息主体（基于 Request Headers）。即客户端在 POST 较大数据到服务端之前，允许双方先”握手”——如果匹配上了，客户端才开始发送较大数据。这样做是因为如果客户端直接发送请求数据而服务器又拒绝该请求，会带来很大的资源开销。 参考： https://blog.csdn.net/skh2015java/article/details/88723028 15.4 WebSocket 升级过程 # req GET /chat HTTP/1.1 Host: server.example.com Upgrade: websocket Connection: Upgrade Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 Origin: http://example.com # resp Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 参考： http://www.xiaosongit.com/index/detail/id/645.html 十六、总结 Netty 之所以能成为 Java 网络编程的事实标准，在于它在多个层面做到了极致： 内存管理：借鉴 jemalloc 的 Arena/Chunk/Page/SubPage 分层设计，配合池化与引用计数，大幅降低了 GC 压力 I/O 模型：封装了 epoll 等高性能 I/O 多路复用机制，通过 EventLoop 消除了线程同步的复杂性 零拷贝：从操作系统到应用层多维度的零拷贝优化 协议支持：内置 HTTP、WebSocket、SSL/TLS 等主流协议的编解码器 架构设计：通过 ChannelPipeline 的责任链模式实现了高度模块化和可扩展性 理解 Netty 的这些设计，不仅有助于高效使用该框架，更能深化对高性能网络编程本质的理解。 PCB（Process Control Block）—— 操作系统中进程的核心数据结构，每个网络连接在 OS 层面都对应着进程/线程资源的管理。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-07-08T18:18:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Netty In Action" />
+<meta property="twitter:title" content="Netty 实战：从核心组件到高性能网络编程" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-07-08T18:18:00+08:00","datePublished":"2020-07-08T18:18:00+08:00","description":"其他 Netty实战 https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg Java网络编程与NIO，多看几遍 https://www.cnblogs.com/itxiaok/category/1395489.html jemalloc之arena、chunk、page、subpage https://www.jianshu.com/p/f1988cc08dfd 内存规格、缓存&amp;结构、chunk、arena、page、subpage等概念介绍 https://blog.csdn.net/qq_33347239/article/details/104270629 Arena 简单来说，Arena就是一个内存分配器，所有分配的内存都是由Arena维护的，并且一般会有多个，目的是减少锁竞争。 而netty则是对jemalloc的Arena进行能更加具体的实现，也就是netty中的PoolArena。 Chunk chunk是Netty向操作系统申请内存的最小调度单位，根据上图，chunk大小固定为16mB，也就是说，Netty每次向操作系统申请内存最小为16mB。 Page 上面说了一个chunk大小是16mb，如果Netty每次分配一个ByteBuf，都用掉一个chunk的大小，那显然太浪费了。 于是设计者们就决定将一个chunk划分为2048个Page，每个Page大小为8kb，Page是给ByteBuf分配内存的最小调度单位，尽管还有更小的subpage级别，但是分配subpage时，仍然需要先拿到一个page。 当ByteBuf需要申请的内存大小（必定是2的幂次方） &gt;= 8kb时，会先取一个chunk，然后会以page级别分配内存，最后将当前chunk标记为“使用了一个部分”，然后放进对应占用率的chunkList。 SubPage 当ByteBuf需要申请的内存大小（必定是2的幂次方）&lt; 8kb时，比如现在需要size=2kb，则会先取一个chunk，然后再取一个page，然后将page分成4份（pageSize/size），每一份为2kb，然后取其中一份给ByteBuf初始化。 之后就是一个自底向上标记的过程了，将当前使用的一份subpage标记为“已使用”，上一层page标记为“部分使用”，再上一级chunk标记为“部分使用”，最终也是将chunk放进对应占用率的chunkList。 关于OS Page Cache的简单介绍，同时再一次介绍了kafka的零拷贝 https://www.cnblogs.com/leadership/p/12349486.html Netty的零拷贝体现在多个方面 NIO 的基于mmap的DirectMemory FileRegion 的基于sendFile的transferTo CompositeByteBuf的wrap数组合并与slice数组分拆 NIO Selector linux系统下sun.nio.ch.DefaultSelectorProvider.create(); 会生成一个sun.nio.ch.EPollSelectorProvider类型的SelectorProvider。 或者在META-INF/services包含有一个java.nio.channels.spi.SelectorProvider提供类配置文件 public static SelectorProvider provider() { synchronized (lock) { if (provider != null) return provider; return AccessController.doPrivileged( new PrivilegedAction&lt;&gt;() { public SelectorProvider run() { if (loadProviderFromProperty()) return provider; if (loadProviderAsService()) return provider; provider = sun.nio.ch.DefaultSelectorProvider.create(); return provider; } }); } } EPollSelectorImpl中初始化epoll相关方法 EPollSelectorImpl(SelectorProvider sp) throws IOException { super(sp); long pipeFds = IOUtil.makePipe(false); fd0 = (int) (pipeFds &gt;&gt;&gt; 32); fd1 = (int) pipeFds; try { pollWrapper = new EPollArrayWrapper(); pollWrapper.initInterrupt(fd0, fd1); fdToKey = new HashMap&lt;&gt;(); } catch (Throwable t) {} } // EPollArrayWrapper void initInterrupt(int fd0, int fd1) { outgoingInterruptFD = fd1; incomingInterruptFD = fd0; epollCtl(epfd, EPOLL_CTL_ADD, fd0, EPOLLIN); } private native int epollCreate(); private native void epollCtl(int epfd, int opcode, int fd, int events); private native int epollWait(long pollAddress, int numfds, long timeout, int epfd) throws IOException; Selector中维护3个特别重要的SelectionKey集合，分别是 keys：所有注册到Selector的Channel所表示的SelectionKey都会存在于该集合中。keys元素的添加会在Channel注册到Selector时发生。 selectedKeys：该集合中的每个SelectionKey都是其对应的Channel在上一次操作selection期间被检查到至少有一种SelectionKey中所感兴趣的操作已经准备好被处理。该集合是keys的一个子集。 cancelledKeys：执行了取消操作的SelectionKey会被放入到该集合中。该集合是keys的一个子集。 参考 https://www.cnblogs.com/itxiaok/p/10357828.html 再说epoll epoll相关系统调用是在Linux 2.5 后的某个版本开始引入的。该系统调用针对传统的select/poll不足，设计上作了很大的改动。select/poll 的缺点在于: 每次调用时要重复地从用户模式读入参数，并重复地扫描文件描述符。 每次在调用开始时，要把当前进程放入各个文件描述符的等待队列。在调用结束后，又把进程从各个等待队列中删除。 epoll 是把 select/poll 单个的操作拆分为 1 个 epollcreate，多个 epollctrl和一个 wait。 此外，操作系统内核针对 epoll 操作添加了一个文件系统，每一个或者多个要监视的文件描述符都有一个对应的inode 节点， 主要信息保存在 eventpoll 结构中。而被监视的文件的重要信息则保存在 epitem 结构中，是一对多的关系。 由于在执行 epollcreate 和 epollctrl 时，已经把用户模式的信息保存到内核了， 所以之后即便反复地调用 epoll_wait， 也不会重复地拷贝参数，不会重复扫描文件描述符，也不反复地把当前进程放入/拿出等待队列。 select，poll实现需要自己不断轮询所有fd集合，直到设备就绪，期间可能要睡眠和唤醒多次交替。而epoll其实也需要调用epoll_wait不断轮询就绪链表， 期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。虽然都要睡眠和交替， 但是select和poll在“醒着”的时候要遍历整个fd集合，而epoll在“醒着”的时候只要判断一下就绪链表是否为空就行了，这节省了大量的CPU时间。这就是回调机制带来的性能提升。 select，poll每次调用都要把fd集合从用户态往内核态拷贝一次，并且要把current往设备等待队列中挂一次，而epoll只要一次拷贝，而且把current往等待队列上挂也只挂一次 （在epoll_wait的开始，注意这里的等待队列并不是设备等待队列，只是一个epoll内部定义的等待队列）。这也能节省不少的开销。 Netty的组件 group() EventLoop -&gt; 控制流、多线程处理、并发 一个 EventLoopGroup 包含一个或者多个 EventLoop; 一个 EventLoop 在它的生命周期内只和一个 Thread 绑定; 所有由 EventLoop 处理的 I/O 事件都将在它专有的 Thread 上被处理; 一个 Channel 在它的生命周期内只注册于一个 EventLoop，一个Channel可以理解为一个用户; 一个 EventLoop 可能会被分配给一个或多个 Channel。 注意，在这种设计中，一个给定 Channel 的 I/O 操作都是由相同的 Thread 执行的，实际上消除了对于同步的需要。 EventLoop本身只由一个线程驱动，其处理了一个Channel的所有I/O事件，并且在该EventLoop的整个生命周期内都不会改变。 channel() Channel -&gt; Socket ChannelPipeline handler() ChannelHandler ChannelConfig ChannelFuture -&gt; 异步通知 Netty的数据容器ByteBuf 它可以被用户自定义的缓冲区类型扩展; 通过内置的复合缓冲区类型实现了透明的零拷贝; 容量可以按需增长(类似于 JDK 的 StringBuilder); 在读和写这两种模式之间切换不需要调用 ByteBuffer 的 flip()方法; 读和写使用了不同的索引; 支持方法的链式调用; 支持引用计数; 支持池化。 Netty的对象池化技术PooledByteBufAllocator 通过引用计数的方式实现 ReferenceCounted Unpooled.copiedBuffer(“Netty rocks!”,CharsetUtil.UTF-8); 由于采用引用计数，需要在消费完消息之后调用ReferenceCountUtil.release(msg); 可以通过 java -Dio.netty.leakDetectionLevel=ADVANCED 这个参数设置泄露检测级别 ChannelHandler ChannelPipeline ChannelHandlerContext 每个ChannelHandler都会分配一个ChannelHandlerContext 通过Channel、Handler的write会传递整个pipe，但是通过context的write只能传递对应Handler之后的handlers SimpleChannelInboundHandler，最常见的情况是，你的应用程序会利用一个 ChannelHandler 来接收解码消息，并对该数据应用业务逻辑。要创建一个这样的 ChannelHandler， 你只需要扩展基类 SimpleChannel- InboundHandler，其中 T 是你要处理的消息的 Java 类型 。 在这个 ChannelHandler 中， 你将需要重写基类的一个或者多个方法，并且获取一个到 ChannelHandlerContext 的引用， 这个引用将作为输入参数传递给 ChannelHandler 的所有方法。在这种类型的 ChannelHandler 中，最重要的方法是 channelRead0(Channel- HandlerContext,T)。除了要求不要阻塞当前的 I/O 线程之外，其具体实现完全取决于你。 ChannelOutboundHandlerAdapter，几乎所有的 ChannelOutboundHandler 上的方法都会传入一个 ChannelPromise 的实例。 作为 ChannelFuture 的子类，ChannelPromise 也可以被分配用于异步通知的监听器。 promise.addListener(new ChannelFutureListener() { @Override public void operationComplete(ChannelFuture f) { if (!f.isSuccess()) { f.cause().printStackTrace(); f.channel().close(); } }); EventLoop和线程池 本质是创建包含少量的线程EventLoop的线程池EventLoopGroup，一个EventLoop管理多个Channel， 实际上就是IO多路复用 Bootstrap 为什么引导类是 Cloneable 的 你有时可能会需要创建多个具有类似配置或者完全相同配置的Channel。为了支持这种模式而又不 需要为每个Channel都创建并配置一个新的引导类实例，AbstractBootstrap被标记为了 Cloneable1。在一个已经配置完成的引导类实例上调用clone()方法将返回另一个可以立即使用的引 导类实例。 注意，这种方式只会创建引导类实例的EventLoopGroup的一个浅拷贝，所以，后者 2将在所有克 隆的Channel实例之间共享。这是可以接受的，因为通常这些克隆的Channel的生命周期都很短暂，一 个典型的场景是——创建一个Channel以进行一次HTTP请求。 Netty 设计 从高层次的角度来看，Netty 解决了两个相应的关注领域，我们可将其大致标记为技术的和 体系结构的。 首先，它的基于 Java NIO 的异步的和事件驱动的实现，保证了高负载下应用程序 性能的最大化和可伸缩性。 其次，Netty 也包含了一组设计模式，将应用程序逻辑从网络层解耦， 简化了开发过程，同时也最大限度地提高了可测试性、模块化以及代码的可重用性。 不使用Netty的NIO Netty 的 OpenSSL/SSLEngine 实现 Netty 还提供了使用 OpenSSL 工具包(www.openssl.org)的 SSLEngine 实现。这个 OpenSsl-Engine 类提供了比 JDK 提供的 SSLEngine 实现更好的性能。 如果 OpenSSL 库可用，可以将 Netty 应用程序(客户端和服务器)配置为默认使用 OpenSslEngine。如果不可用，Netty 将会回退到 JDK 实现。有关配置 OpenSSL 支持的详细说明，参见 Netty 文档: http://netty.io/wiki/forked-tomcat-native.html#wikih2-1。 注意，无论你使用 JDK 的 SSLEngine 还是使用 Netty 的 OpenSslEngine，SSL API 和数据流都 是一致的。 SelfSignedCertificate cert = new SelfSignedCertificate(); SslContext context = SslContext.newServerContext(cert.certificate(), cert.privateKey()); SSLEngine engine = context.newEngine(ch.alloc()); engine.setUseClientMode(false); ch.pipeline().addFirst(new SslHandler(engine)); 检测空闲连接以及超时对于及时释放资源 new IdleStateHandler(0, 0, 60, TimeUnit.SECONDS) ReadTimeoutHandler exceptionCaught() WriteTimeoutHandler exceptionCaught() 写大数据 ChunkedFile 从文件中逐块获取数据，当你的平台不支持零拷贝或者你需要转换数据时使用 ChunkedNioFile 和 ChunkedFile 类似，只是它使用了 FileChannel ChunkedStream 从 InputStream 中逐块传输内容 ChunkedNioStream 从ReadableByteChannel中逐块传输内容 public final class WriteStreamHandler extends ChannelInboundHandlerAdapter { @Override public void channelActive(ChannelHandlerContext ctx)throws Exception { super.channelActive(ctx); ctx.writeAndFlush( new ChunkedStream(new FileInputStream(file))); } } WebSocketFrame BinaryWebSocketFrame 包含了二进制数据 TextWebSocketFrame 包含了文本数据 ContinuationWebSocketFrame 包含属于上一个BinaryWebSocketFrame或TextWebSocket-Frame 的文本数据或者二进制数据 CloseWebSocketFrame 表示一个 CLOSE 请求，包含一个关闭的状态码和关闭的原因 PingWebSocketFrame 作为一个对于 PingWebSocketFrame 的响应被发送 PongWebSocketFrame 请求传输一个 PongWebSocketFrame WebSocket示例 ChannelPipeline pipeline = ch.pipeline(); # http编解码 pipeline.addLast(new HttpServerCodec()); # 写入一个文件的内容 pipeline.addLast(new ChunkedWriteHandler()); # 将一个 HttpMessage 和跟随它的多个 HttpContent 聚合 # 为单个 FullHttpRequest 或者 FullHttpResponse(取决于它是被用来处理请求还是响应)。 # 安装了这个之后， ChannelPipeline 中的下一个 ChannelHandler 将只会 收到完整的 HTTP 请求或响应 pipeline.addLast(new HttpObjectAggregator(64 * 1024)); # 如果是/ws请求就交个下个handler，否则HTTP handler来处理 pipeline.addLast(new HttpRequestHandler(&quot;/ws&quot;)); # 按照 WebSocket 规范的要求，处理 WebSocket 升级握手、 PingWebSocketFrame 、 PongWebSocketFrame 和 CloseWebSocketFrame pipeline.addLast(new WebSocketServerProtocolHandler(&quot;/ws&quot;)); # 处理 TextWebSocketFrame 和握手完成事件 pipeline.addLast(new TextWebSocketFrameHandler(group)); 在从标准的HTTP或者HTTPS协议切换到WebSocket时，将会使用一种称为升级握手的机制。因此 ，使用WebSocket的应用程序将始终以HTTP/S作为开始，然后再执行升级。这个升级动 作发生的确切时刻特定于应用程序;它可能会发生在启动时，也可能会发生在请求了某个特定的 URL之后。 理解HTTP协议中的 Expect: 100-continue HTTP/1.1 协议里设计 100 (Continue) HTTP 状态码的的目的是，在客户端发送 Request Message 之前，HTTP/1.1 协议允许客户端先判定服务器是否愿意接受客户端发来的消息主体（基于 Request Headers）。 即， 客户端 在 Post（较大）数据到服务端之前，允许双方“握手”，如果匹配上了，Client 才开始发送（较大）数据。 这么做的原因是，如果客户端直接发送请求数据，但是服务器又将该请求拒绝的话，这种行为将带来很大的资源开销。 https://blog.csdn.net/skh2015java/article/details/88723028 http协议与websocket协议升级过程 # req GET /chat HTTP/1.1 Host: server.example.com Upgrade: websocket Connection: Upgrade Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 Origin: http://example.com # resp Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 http://www.xiaosongit.com/index/detail/id/645.html 其他 ChannelFuture 与 ChannelFutureListener相互结合，构成了Netty本身的关键构件之一 关于ServerBootStrap，因为服务器需要两组不同的 Channel。第一组将只包含一个 ServerChannel，代表服务 器自身的已绑定到某个本地端口的正在监听的套接字。而第二组将包含所有已创建的用来处理传 入客户端连接(对于每个服务器已经接受的连接都有一个)的 Channel。 PCB Process Control Block","headline":"Netty In Action","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-07-08T18:18:00+08:00","datePublished":"2020-07-08T18:18:00+08:00","description":"Netty 是 Java 生态中最流行的异步事件驱动网络框架，被广泛应用于 RPC 框架（如 Dubbo、gRPC）、消息中间件（如 RocketMQ）、大数据组件（如 Spark、Flink）等基础设施中。本文基于《Netty 实战》一书的核心内容，从内存管理、零拷贝、NIO Selector、核心组件、ChannelPipeline 到 WebSocket 等多个维度，系统梳理 Netty 的设计哲学与关键技术。 延伸阅读： Netty 实战 https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg Java 网络编程与 NIO https://www.cnblogs.com/itxiaok/category/1395489.html 一、Netty 的内存管理：Arena、Chunk、Page、SubPage Netty 的内存分配器借鉴了 jemalloc 的设计思想，通过多层级的内存管理结构实现了高效的内存分配与回收。 Arena：简单来说，Arena 就是一个内存分配器，所有分配的内存都由 Arena 维护。一般会有多个 Arena 实例，目的是减少锁竞争。Netty 对 jemalloc 的 Arena 进行了更具体的实现，即 PoolArena。 Chunk：Chunk 是 Netty 向操作系统申请内存的最小调度单位。Chunk 大小固定为 16MB，即 Netty 每次向操作系统申请内存最小为 16MB。 Page：一个 Chunk 被划分为 2048 个 Page，每个 Page 大小为 8KB。Page 是给 ByteBuf 分配内存的最小调度单位（尽管还有更小的 SubPage 级别，但分配 SubPage 时仍需先获取一个 Page）。当 ByteBuf 需要申请的内存大小（必定是 2 的幂次方）≥ 8KB 时，会先取一个 Chunk，然后以 Page 级别分配内存，最后将当前 Chunk 标记为”使用了一部分”并放进对应占用率的 ChunkList。 SubPage：当 ByteBuf 需要申请的内存大小（必定是 2 的幂次方）&lt; 8KB 时，例如需要 2KB，则会先取一个 Chunk，再取一个 Page，然后将 Page 分成 4 份（pageSize / size），每份 2KB，取其中一份给 ByteBuf 初始化。之后是一个自底向上标记的过程：将当前使用的 SubPage 标记为”已使用”，上一层 Page 标记为”部分使用”，再上一级 Chunk 标记为”部分使用”，最终将 Chunk 放进对应占用率的 ChunkList。 延伸阅读： jemalloc 之 Arena、Chunk、Page、SubPage https://www.jianshu.com/p/f1988cc08dfd 内存规格、缓存结构等概念介绍 https://blog.csdn.net/qq_33347239/article/details/104270629 关于 OS Page Cache 与 Kafka 零拷贝 https://www.cnblogs.com/leadership/p/12349486.html 二、Netty 的零拷贝 Netty 的零拷贝体现在多个层面，综合运用了操作系统和应用层的优化手段： NIO 的 DirectMemory：基于 mmap 的直接内存映射，避免了堆内外内存之间的数据拷贝。 FileRegion 的 transferTo：基于 sendFile 系统调用，实现文件到网络的零拷贝传输。 CompositeByteBuf：通过 wrap 将多个 ByteBuf 逻辑合并，以及通过 slice 对单个 ByteBuf 进行逻辑分拆，避免了内存层面的实际拷贝。 三、NIO Selector 与 epoll 3.1 Selector 的创建 在 Linux 系统下，sun.nio.ch.DefaultSelectorProvider.create() 会生成一个 EPollSelectorProvider 类型的 SelectorProvider。也可以在 META-INF/services 下配置 java.nio.channels.spi.SelectorProvider 来指定自定义实现。 public static SelectorProvider provider() { synchronized (lock) { if (provider != null) return provider; return AccessController.doPrivileged( new PrivilegedAction&lt;&gt;() { public SelectorProvider run() { if (loadProviderFromProperty()) return provider; if (loadProviderAsService()) return provider; provider = sun.nio.ch.DefaultSelectorProvider.create(); return provider; } }); } } 3.2 EPollSelectorImpl 的初始化 EPollSelectorImpl 在构造时会初始化 epoll 相关的底层资源： EPollSelectorImpl(SelectorProvider sp) throws IOException { super(sp); long pipeFds = IOUtil.makePipe(false); fd0 = (int) (pipeFds &gt;&gt;&gt; 32); fd1 = (int) pipeFds; try { pollWrapper = new EPollArrayWrapper(); pollWrapper.initInterrupt(fd0, fd1); fdToKey = new HashMap&lt;&gt;(); } catch (Throwable t) {} } // EPollArrayWrapper void initInterrupt(int fd0, int fd1) { outgoingInterruptFD = fd1; incomingInterruptFD = fd0; epollCtl(epfd, EPOLL_CTL_ADD, fd0, EPOLLIN); } private native int epollCreate(); private native void epollCtl(int epfd, int opcode, int fd, int events); private native int epollWait(long pollAddress, int numfds, long timeout, int epfd) throws IOException; 3.3 Selector 的三个 SelectionKey 集合 Selector 中维护了 3 个至关重要的 SelectionKey 集合： keys：所有注册到 Selector 的 Channel 所表示的 SelectionKey 都会存在于该集合中。元素的添加发生在 Channel 注册到 Selector 时。 selectedKeys：该集合中的每个 SelectionKey 都是其对应的 Channel 在上一次 selection 操作期间被检测到至少有一种感兴趣的操作已准备好被处理。它是 keys 的子集。 cancelledKeys：执行了取消操作的 SelectionKey 会被放入该集合中。它也是 keys 的子集。 参考： https://www.cnblogs.com/itxiaok/p/10357828.html 四、深入理解 epoll epoll 相关系统调用在 Linux 2.5 后引入，针对传统 select/poll 的不足做了重大改进。 select/poll 的缺点： 每次调用时要重复地从用户模式读入参数，并重复地扫描文件描述符。 每次调用开始时要把当前进程放入各个文件描述符的等待队列，调用结束后再从各个等待队列中删除。 epoll 的改进： 将 select/poll 单个操作拆分为 epoll_create、多个 epoll_ctl 和一个 epoll_wait。 操作系统内核针对 epoll 操作添加了一个文件系统，每个被监视的文件描述符都有对应的 inode 节点，主要信息保存在 eventpoll 结构中，被监视文件的信息则保存在 epitem 结构中（一对多关系）。 由于在执行 epoll_create 和 epoll_ctl 时已经把用户模式的信息保存到内核了，所以之后即便反复调用 epoll_wait，也不会重复拷贝参数、扫描文件描述符、频繁操作等待队列。 epoll 的性能优势核心在于回调机制： select/poll 在”醒着”的时候要遍历整个 fd 集合，而 epoll 在”醒着”的时候只需判断就绪链表是否为空。设备就绪时通过回调函数将就绪 fd 放入就绪链表并唤醒 epoll_wait 中睡眠的进程，节省了大量 CPU 时间。 select/poll 每次调用都要把 fd 集合从用户态往内核态拷贝一次，而 epoll 只需要一次拷贝，将 current 往等待队列上也只挂一次。 五、Netty 的核心组件 5.1 EventLoop 与 EventLoopGroup EventLoop 是 Netty 处理 I/O 事件的核心抽象，负责控制流、多线程处理与并发： 一个 EventLoopGroup 包含一个或多个 EventLoop 一个 EventLoop 在其生命周期内只和一个 Thread 绑定 所有由 EventLoop 处理的 I/O 事件都将在它专有的 Thread 上被处理 一个 Channel 在其生命周期内只注册于一个 EventLoop（一个 Channel 可理解为一个连接） 一个 EventLoop 可能被分配给多个 Channel——在这种设计中，给定 Channel 的 I/O 操作都由相同的 Thread 执行，实际上消除了对于同步的需要 EventLoop 本身只由一个线程驱动，处理一个 Channel 的所有 I/O 事件，且在整个生命周期内不会改变 5.2 Channel 与 ChannelPipeline Channel 对应网络 Socket，每个 Channel 关联一个 ChannelPipeline 和 ChannelConfig。 ChannelPipeline 是 ChannelHandler 的容器，消息在 Pipeline 中流经一系列 Handler 进行处理。 ChannelFuture 提供异步通知机制，与 ChannelFutureListener 结合构成了 Netty 的关键构件之一。 六、ByteBuf：Netty 的数据容器 Netty 的 ByteBuf 相比 JDK 原生的 ByteBuffer 有诸多优势： 可以被用户自定义的缓冲区类型扩展 通过内置的复合缓冲区类型实现了透明的零拷贝 容量可以按需增长（类似 JDK 的 StringBuilder） 在读和写两种模式之间切换不需要调用 ByteBuffer.flip() 方法 读和写使用了不同的索引 支持方法的链式调用 支持引用计数 支持池化 七、对象池化技术 PooledByteBufAllocator Netty 通过引用计数（ReferenceCounted 接口）实现对象的池化管理： 非池化场景可使用 Unpooled.copiedBuffer(&quot;Netty rocks!&quot;, CharsetUtil.UTF_8) 由于采用引用计数，需要在消费完消息之后调用 ReferenceCountUtil.release(msg) 可通过 java -Dio.netty.leakDetectionLevel=ADVANCED 设置泄露检测级别 八、ChannelHandler、ChannelPipeline 与 ChannelHandlerContext Netty 的 Handler 体系是理解其消息处理模型的关键： 每个 ChannelHandler 都会被分配一个 ChannelHandlerContext 通过 Channel 或 Handler 调用 write 会将消息传递给整个 Pipeline；但通过 ChannelHandlerContext 的 write 只会传递给对应 Handler 之后的 Handler SimpleChannelInboundHandler&lt;T&gt; 是最常用的入站 Handler 基类。继承它后只需重写 channelRead0(ChannelHandlerContext, T) 方法即可，除了不要阻塞当前 I/O 线程之外，具体实现完全取决于业务需求 ChannelOutboundHandlerAdapter 中几乎所有方法都会传入 ChannelPromise 实例。作为 ChannelFuture 的子类，ChannelPromise 也可以被分配用于异步通知的监听器： promise.addListener(new ChannelFutureListener() { @Override public void operationComplete(ChannelFuture f) { if (!f.isSuccess()) { f.cause().printStackTrace(); f.channel().close(); } }); 九、EventLoop 与线程模型 Netty 的线程模型本质上是创建包含少量线程的 EventLoop 线程池 EventLoopGroup，一个 EventLoop 管理多个 Channel，实际上就是 I/O 多路复用的体现。 十、Bootstrap 引导类 为什么引导类是 Cloneable 的？ 有时需要创建多个具有相似或相同配置的 Channel。为支持这种模式而不需要为每个 Channel 都创建并配置一个新的引导类实例，AbstractBootstrap 被标记为 Cloneable。在一个已配置完成的引导类实例上调用 clone() 将返回另一个可立即使用的引导类实例。 需要注意的是，这种方式只会创建引导类实例的 EventLoopGroup 的一个浅拷贝，后者将在所有克隆的 Channel 实例之间共享。这是可以接受的，因为通常这些克隆的 Channel 的生命周期都很短暂，典型场景是创建一个 Channel 以进行一次 HTTP 请求。 关于 ServerBootstrap：服务器需要两组不同的 Channel。第一组只包含一个 ServerChannel，代表服务器自身的已绑定到某个本地端口的正在监听的套接字。第二组包含所有已创建的用来处理传入客户端连接的 Channel（每个服务器已接受的连接都有一个对应的 Channel）。 十一、Netty 的设计哲学 从高层次角度来看，Netty 解决了两个相应的关注领域： 技术层面：基于 Java NIO 的异步和事件驱动实现，保证了高负载下应用程序性能的最大化和可伸缩性。 架构层面：包含了一组设计模式，将应用程序逻辑从网络层解耦，简化了开发过程，同时最大限度地提高了可测试性、模块化以及代码的可重用性。 不使用 Netty 的原生 NIO 十二、SSL/TLS 支持 Netty 提供了使用 OpenSSL 工具包的 SSLEngine 实现（OpenSslEngine），相比 JDK 提供的 SSLEngine 实现有更好的性能。如果 OpenSSL 库可用，可以将 Netty 应用程序配置为默认使用 OpenSslEngine；如果不可用，Netty 会回退到 JDK 实现。无论使用哪种实现，SSL API 和数据流都是一致的。 SelfSignedCertificate cert = new SelfSignedCertificate(); SslContext context = SslContext.newServerContext(cert.certificate(), cert.privateKey()); SSLEngine engine = context.newEngine(ch.alloc()); engine.setUseClientMode(false); ch.pipeline().addFirst(new SslHandler(engine)); 十三、空闲连接检测与超时处理 及时检测空闲连接并释放资源是保证服务稳定性的重要手段。Netty 内置了以下 Handler： IdleStateHandler(0, 0, 60, TimeUnit.SECONDS) —— 检测读写空闲 ReadTimeoutHandler —— 读超时时触发 exceptionCaught() WriteTimeoutHandler —— 写超时时触发 exceptionCaught() 十四、写大数据 当需要传输大文件或大量数据流时，Netty 提供了分块传输的支持： ChunkedFile：从文件中逐块获取数据，适用于平台不支持零拷贝或需要转换数据的场景 ChunkedNioFile：类似 ChunkedFile，但使用 FileChannel ChunkedStream：从 InputStream 中逐块传输内容 ChunkedNioStream：从 ReadableByteChannel 中逐块传输内容 public final class WriteStreamHandler extends ChannelInboundHandlerAdapter { @Override public void channelActive(ChannelHandlerContext ctx)throws Exception { super.channelActive(ctx); ctx.writeAndFlush( new ChunkedStream(new FileInputStream(file))); } } 十五、WebSocket 支持 15.1 WebSocketFrame 类型 BinaryWebSocketFrame：包含二进制数据 TextWebSocketFrame：包含文本数据 ContinuationWebSocketFrame：包含属于上一个 BinaryWebSocketFrame 或 TextWebSocketFrame 的后续数据 CloseWebSocketFrame：表示 CLOSE 请求，包含关闭状态码和原因 PingWebSocketFrame：请求传输一个 PongWebSocketFrame PongWebSocketFrame：作为 PingWebSocketFrame 的响应被发送 15.2 WebSocket 示例 下面展示了一个完整的 WebSocket 服务端 Pipeline 配置： ChannelPipeline pipeline = ch.pipeline(); # http编解码 pipeline.addLast(new HttpServerCodec()); # 写入一个文件的内容 pipeline.addLast(new ChunkedWriteHandler()); # 将一个 HttpMessage 和跟随它的多个 HttpContent 聚合 # 为单个 FullHttpRequest 或者 FullHttpResponse(取决于它是被用来处理请求还是响应)。 # 安装了这个之后， ChannelPipeline 中的下一个 ChannelHandler 将只会 收到完整的 HTTP 请求或响应 pipeline.addLast(new HttpObjectAggregator(64 * 1024)); # 如果是/ws请求就交个下个handler，否则HTTP handler来处理 pipeline.addLast(new HttpRequestHandler(&quot;/ws&quot;)); # 按照 WebSocket 规范的要求，处理 WebSocket 升级握手、 PingWebSocketFrame 、 PongWebSocketFrame 和 CloseWebSocketFrame pipeline.addLast(new WebSocketServerProtocolHandler(&quot;/ws&quot;)); # 处理 TextWebSocketFrame 和握手完成事件 pipeline.addLast(new TextWebSocketFrameHandler(group)); 在从标准 HTTP/HTTPS 协议切换到 WebSocket 时，使用一种称为升级握手的机制。因此，使用 WebSocket 的应用程序始终以 HTTP/S 作为开始，然后再执行升级。 15.3 HTTP 协议中的 Expect: 100-continue HTTP/1.1 协议中设计 100 (Continue) 状态码的目的是：在客户端发送 Request Message 之前，允许客户端先判定服务器是否愿意接受其消息主体（基于 Request Headers）。即客户端在 POST 较大数据到服务端之前，允许双方先”握手”——如果匹配上了，客户端才开始发送较大数据。这样做是因为如果客户端直接发送请求数据而服务器又拒绝该请求，会带来很大的资源开销。 参考： https://blog.csdn.net/skh2015java/article/details/88723028 15.4 WebSocket 升级过程 # req GET /chat HTTP/1.1 Host: server.example.com Upgrade: websocket Connection: Upgrade Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 Origin: http://example.com # resp Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw== Sec-WebSocket-Protocol: chat, superchat Sec-WebSocket-Version: 13 参考： http://www.xiaosongit.com/index/detail/id/645.html 十六、总结 Netty 之所以能成为 Java 网络编程的事实标准，在于它在多个层面做到了极致： 内存管理：借鉴 jemalloc 的 Arena/Chunk/Page/SubPage 分层设计，配合池化与引用计数，大幅降低了 GC 压力 I/O 模型：封装了 epoll 等高性能 I/O 多路复用机制，通过 EventLoop 消除了线程同步的复杂性 零拷贝：从操作系统到应用层多维度的零拷贝优化 协议支持：内置 HTTP、WebSocket、SSL/TLS 等主流协议的编解码器 架构设计：通过 ChannelPipeline 的责任链模式实现了高度模块化和可扩展性 理解 Netty 的这些设计，不仅有助于高效使用该框架，更能深化对高性能网络编程本质的理解。 PCB（Process Control Block）—— 操作系统中进程的核心数据结构，每个网络连接在 OS 层面都对应着进程/线程资源的管理。","headline":"Netty 实战：从核心组件到高性能网络编程","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/08/NettyInAction.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html">&laquo; DotDot</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/08/DotDot.html">&laquo; Java核心知识点精讲：并发编程、...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html">Case of online sy... &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/13/Cases.html">大型互联网系统架构实战案例解析 &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">Netty In Action</h1>
+    <h1 class="asset-name entry-title">Netty 实战：从核心组件到高性能网络编程</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,54 +97,61 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="其他">其他</h4>
+      <p>Netty 是 Java 生态中最流行的异步事件驱动网络框架，被广泛应用于 RPC 框架（如 Dubbo、gRPC）、消息中间件（如 RocketMQ）、大数据组件（如 Spark、Flink）等基础设施中。本文基于《Netty 实战》一书的核心内容，从内存管理、零拷贝、NIO Selector、核心组件、ChannelPipeline 到 WebSocket 等多个维度，系统梳理 Netty 的设计哲学与关键技术。</p>
+
+<p><strong>延伸阅读：</strong></p>
 <ul>
-  <li>Netty实战 <a href="https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg">https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg</a></li>
-  <li>Java网络编程与NIO，多看几遍 <a href="https://www.cnblogs.com/itxiaok/category/1395489.html">https://www.cnblogs.com/itxiaok/category/1395489.html</a></li>
-  <li>jemalloc之arena、chunk、page、subpage <a href="https://www.jianshu.com/p/f1988cc08dfd">https://www.jianshu.com/p/f1988cc08dfd</a></li>
-  <li>内存规格、缓存&amp;结构、chunk、arena、page、subpage等概念介绍 <a href="https://blog.csdn.net/qq_33347239/article/details/104270629">https://blog.csdn.net/qq_33347239/article/details/104270629</a>
-    <ul>
-      <li>Arena
-        <ul>
-          <li>简单来说，Arena就是一个内存分配器，所有分配的内存都是由Arena维护的，并且一般会有多个，目的是减少锁竞争。
-而netty则是对jemalloc的Arena进行能更加具体的实现，也就是netty中的PoolArena。</li>
-        </ul>
-      </li>
-      <li>Chunk
-        <ul>
-          <li>chunk是Netty向操作系统申请内存的最小调度单位，根据上图，chunk大小固定为16mB，也就是说，Netty每次向操作系统申请内存最小为16mB。</li>
-        </ul>
-      </li>
-      <li>Page
-        <ul>
-          <li>上面说了一个chunk大小是16mb，如果Netty每次分配一个ByteBuf，都用掉一个chunk的大小，那显然太浪费了。</li>
-          <li>于是设计者们就决定将一个chunk划分为2048个Page，每个Page大小为8kb，Page是给ByteBuf分配内存的最小调度单位，尽管还有更小的subpage级别，但是分配subpage时，仍然需要先拿到一个page。</li>
-          <li>当ByteBuf需要申请的内存大小（必定是2的幂次方） &gt;= 8kb时，会先取一个chunk，然后会以page级别分配内存，最后将当前chunk标记为“使用了一个部分”，然后放进对应占用率的chunkList。</li>
-        </ul>
-      </li>
-      <li>SubPage
-        <ul>
-          <li>当ByteBuf需要申请的内存大小（必定是2的幂次方）&lt; 8kb时，比如现在需要size=2kb，则会先取一个chunk，然后再取一个page，然后将page分成4份（pageSize/size），每一份为2kb，然后取其中一份给ByteBuf初始化。</li>
-          <li>之后就是一个自底向上标记的过程了，将当前使用的一份subpage标记为“已使用”，上一层page标记为“部分使用”，再上一级chunk标记为“部分使用”，最终也是将chunk放进对应占用率的chunkList。</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>关于OS Page Cache的简单介绍，同时再一次介绍了kafka的零拷贝 <a href="https://www.cnblogs.com/leadership/p/12349486.html">https://www.cnblogs.com/leadership/p/12349486.html</a></li>
+  <li>Netty 实战 <a href="https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg">https://mp.weixin.qq.com/s/OFG6tD9YRbII3BgjF4IKRg</a></li>
+  <li>Java 网络编程与 NIO <a href="https://www.cnblogs.com/itxiaok/category/1395489.html">https://www.cnblogs.com/itxiaok/category/1395489.html</a></li>
 </ul>
 
-<h4 id="netty的零拷贝体现在多个方面">Netty的零拷贝体现在多个方面</h4>
+<hr />
+
+<h3 id="一netty-的内存管理arenachunkpagesubpage">一、Netty 的内存管理：Arena、Chunk、Page、SubPage</h3>
+
+<p>Netty 的内存分配器借鉴了 jemalloc 的设计思想，通过多层级的内存管理结构实现了高效的内存分配与回收。</p>
+
+<ul>
+  <li>
+    <p><strong>Arena</strong>：简单来说，Arena 就是一个内存分配器，所有分配的内存都由 Arena 维护。一般会有多个 Arena 实例，目的是减少锁竞争。Netty 对 jemalloc 的 Arena 进行了更具体的实现，即 <code class="language-plaintext highlighter-rouge">PoolArena</code>。</p>
+  </li>
+  <li>
+    <p><strong>Chunk</strong>：Chunk 是 Netty 向操作系统申请内存的最小调度单位。Chunk 大小固定为 <strong>16MB</strong>，即 Netty 每次向操作系统申请内存最小为 16MB。</p>
+  </li>
+  <li>
+    <p><strong>Page</strong>：一个 Chunk 被划分为 <strong>2048 个 Page</strong>，每个 Page 大小为 <strong>8KB</strong>。Page 是给 ByteBuf 分配内存的最小调度单位（尽管还有更小的 SubPage 级别，但分配 SubPage 时仍需先获取一个 Page）。当 ByteBuf 需要申请的内存大小（必定是 2 的幂次方）≥ 8KB 时，会先取一个 Chunk，然后以 Page 级别分配内存，最后将当前 Chunk 标记为”使用了一部分”并放进对应占用率的 ChunkList。</p>
+  </li>
+  <li>
+    <p><strong>SubPage</strong>：当 ByteBuf 需要申请的内存大小（必定是 2 的幂次方）&lt; 8KB 时，例如需要 2KB，则会先取一个 Chunk，再取一个 Page，然后将 Page 分成 4 份（pageSize / size），每份 2KB，取其中一份给 ByteBuf 初始化。之后是一个自底向上标记的过程：将当前使用的 SubPage 标记为”已使用”，上一层 Page 标记为”部分使用”，再上一级 Chunk 标记为”部分使用”，最终将 Chunk 放进对应占用率的 ChunkList。</p>
+  </li>
+</ul>
+
+<p><strong>延伸阅读：</strong></p>
+<ul>
+  <li>jemalloc 之 Arena、Chunk、Page、SubPage <a href="https://www.jianshu.com/p/f1988cc08dfd">https://www.jianshu.com/p/f1988cc08dfd</a></li>
+  <li>内存规格、缓存结构等概念介绍 <a href="https://blog.csdn.net/qq_33347239/article/details/104270629">https://blog.csdn.net/qq_33347239/article/details/104270629</a></li>
+  <li>关于 OS Page Cache 与 Kafka 零拷贝 <a href="https://www.cnblogs.com/leadership/p/12349486.html">https://www.cnblogs.com/leadership/p/12349486.html</a></li>
+</ul>
+
+<hr />
+
+<h3 id="二netty-的零拷贝">二、Netty 的零拷贝</h3>
+
+<p>Netty 的零拷贝体现在多个层面，综合运用了操作系统和应用层的优化手段：</p>
+
 <ol>
-  <li>NIO 的基于mmap的DirectMemory</li>
-  <li>FileRegion 的基于sendFile的transferTo</li>
-  <li>CompositeByteBuf的wrap数组合并与slice数组分拆</li>
+  <li><strong>NIO 的 DirectMemory</strong>：基于 mmap 的直接内存映射，避免了堆内外内存之间的数据拷贝。</li>
+  <li><strong>FileRegion 的 transferTo</strong>：基于 sendFile 系统调用，实现文件到网络的零拷贝传输。</li>
+  <li><strong>CompositeByteBuf</strong>：通过 <code class="language-plaintext highlighter-rouge">wrap</code> 将多个 ByteBuf 逻辑合并，以及通过 <code class="language-plaintext highlighter-rouge">slice</code> 对单个 ByteBuf 进行逻辑分拆，避免了内存层面的实际拷贝。</li>
 </ol>
 
-<h4 id="nio-selector">NIO Selector</h4>
-<ul>
-  <li>linux系统下sun.nio.ch.DefaultSelectorProvider.create(); 会生成一个sun.nio.ch.EPollSelectorProvider类型的SelectorProvider。
-或者在META-INF/services包含有一个java.nio.channels.spi.SelectorProvider提供类配置文件</li>
-</ul>
+<hr />
+
+<h3 id="三nio-selector-与-epoll">三、NIO Selector 与 epoll</h3>
+
+<h4 id="31-selector-的创建">3.1 Selector 的创建</h4>
+
+<p>在 Linux 系统下，<code class="language-plaintext highlighter-rouge">sun.nio.ch.DefaultSelectorProvider.create()</code> 会生成一个 <code class="language-plaintext highlighter-rouge">EPollSelectorProvider</code> 类型的 SelectorProvider。也可以在 <code class="language-plaintext highlighter-rouge">META-INF/services</code> 下配置 <code class="language-plaintext highlighter-rouge">java.nio.channels.spi.SelectorProvider</code> 来指定自定义实现。</p>
 
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static SelectorProvider provider<span class="o">()</span> <span class="o">{</span>
     synchronized <span class="o">(</span>lock<span class="o">)</span> <span class="o">{</span>
@@ -165,9 +172,9 @@
 <span class="o">}</span>
 </code></pre></div></div>
 
-<ul>
-  <li>EPollSelectorImpl中初始化epoll相关方法</li>
-</ul>
+<h4 id="32-epollselectorimpl-的初始化">3.2 EPollSelectorImpl 的初始化</h4>
+
+<p>EPollSelectorImpl 在构造时会初始化 epoll 相关的底层资源：</p>
 
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>EPollSelectorImpl<span class="o">(</span>SelectorProvider sp<span class="o">)</span> throws IOException <span class="o">{</span>
         super<span class="o">(</span>sp<span class="o">)</span><span class="p">;</span>
@@ -192,137 +199,160 @@ private native void epollCtl<span class="o">(</span>int epfd, int opcode, int fd
 private native int epollWait<span class="o">(</span>long pollAddress, int numfds, long <span class="nb">timeout</span>,
                              int epfd<span class="o">)</span> throws IOException<span class="p">;</span>
 </code></pre></div></div>
+
+<h4 id="33-selector-的三个-selectionkey-集合">3.3 Selector 的三个 SelectionKey 集合</h4>
+
+<p>Selector 中维护了 3 个至关重要的 SelectionKey 集合：</p>
+
 <ul>
-  <li>Selector中维护3个特别重要的SelectionKey集合，分别是
-    <ul>
-      <li>keys：所有注册到Selector的Channel所表示的SelectionKey都会存在于该集合中。keys元素的添加会在Channel注册到Selector时发生。</li>
-      <li>selectedKeys：该集合中的每个SelectionKey都是其对应的Channel在上一次操作selection期间被检查到至少有一种SelectionKey中所感兴趣的操作已经准备好被处理。该集合是keys的一个子集。</li>
-      <li>cancelledKeys：执行了取消操作的SelectionKey会被放入到该集合中。该集合是keys的一个子集。</li>
-    </ul>
-  </li>
-  <li>参考 <a href="https://www.cnblogs.com/itxiaok/p/10357828.html">https://www.cnblogs.com/itxiaok/p/10357828.html</a></li>
+  <li><strong>keys</strong>：所有注册到 Selector 的 Channel 所表示的 SelectionKey 都会存在于该集合中。元素的添加发生在 Channel 注册到 Selector 时。</li>
+  <li><strong>selectedKeys</strong>：该集合中的每个 SelectionKey 都是其对应的 Channel 在上一次 selection 操作期间被检测到至少有一种感兴趣的操作已准备好被处理。它是 keys 的子集。</li>
+  <li><strong>cancelledKeys</strong>：执行了取消操作的 SelectionKey 会被放入该集合中。它也是 keys 的子集。</li>
 </ul>
 
-<h4 id="再说epoll">再说epoll</h4>
+<p><strong>参考：</strong> <a href="https://www.cnblogs.com/itxiaok/p/10357828.html">https://www.cnblogs.com/itxiaok/p/10357828.html</a></p>
+
+<hr />
+
+<h3 id="四深入理解-epoll">四、深入理解 epoll</h3>
+
+<p>epoll 相关系统调用在 Linux 2.5 后引入，针对传统 select/poll 的不足做了重大改进。</p>
+
+<p><strong>select/poll 的缺点：</strong></p>
 <ul>
-  <li>epoll相关系统调用是在Linux 2.5 后的某个版本开始引入的。该系统调用针对传统的select/poll不足，设计上作了很大的改动。select/poll 的缺点在于:
-    <ul>
-      <li>每次调用时要重复地从用户模式读入参数，并重复地扫描文件描述符。</li>
-      <li>每次在调用开始时，要把当前进程放入各个文件描述符的等待队列。在调用结束后，又把进程从各个等待队列中删除。</li>
-    </ul>
-  </li>
-  <li>epoll 是把 select/poll 单个的操作拆分为 1 个 epollcreate，多个 epollctrl和一个 wait。
-  此外，操作系统内核针对 epoll 操作添加了一个文件系统，每一个或者多个要监视的文件描述符都有一个对应的inode 节点，
-  主要信息保存在 eventpoll 结构中。而被监视的文件的重要信息则保存在 epitem 结构中，是一对多的关系。
-  由于在执行 epollcreate 和 epollctrl 时，已经把用户模式的信息保存到内核了， 所以之后即便反复地调用 epoll_wait，
-  也不会重复地拷贝参数，不会重复扫描文件描述符，也不反复地把当前进程放入/拿出等待队列。</li>
-  <li>select，poll实现需要自己不断轮询所有fd集合，直到设备就绪，期间可能要睡眠和唤醒多次交替。而epoll其实也需要调用epoll_wait不断轮询就绪链表，
-  期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。虽然都要睡眠和交替，
-  但是select和poll在“醒着”的时候要遍历整个fd集合，而epoll在“醒着”的时候只要判断一下就绪链表是否为空就行了，这节省了大量的CPU时间。这就是回调机制带来的性能提升。</li>
-  <li>select，poll每次调用都要把fd集合从用户态往内核态拷贝一次，并且要把current往设备等待队列中挂一次，而epoll只要一次拷贝，而且把current往等待队列上挂也只挂一次
-  （在epoll_wait的开始，注意这里的等待队列并不是设备等待队列，只是一个epoll内部定义的等待队列）。这也能节省不少的开销。</li>
+  <li>每次调用时要重复地从用户模式读入参数，并重复地扫描文件描述符。</li>
+  <li>每次调用开始时要把当前进程放入各个文件描述符的等待队列，调用结束后再从各个等待队列中删除。</li>
 </ul>
 
-<h4 id="netty的组件">Netty的组件</h4>
+<p><strong>epoll 的改进：</strong></p>
 <ul>
-  <li>group() EventLoop -&gt; 控制流、多线程处理、并发
-    <ul>
-      <li>一个 EventLoopGroup 包含一个或者多个 EventLoop;</li>
-      <li>一个 EventLoop 在它的生命周期内只和一个 Thread 绑定;</li>
-      <li>所有由 EventLoop 处理的 I/O 事件都将在它专有的 Thread 上被处理;</li>
-      <li>一个 Channel 在它的生命周期内只注册于一个 EventLoop，一个Channel可以理解为一个用户;</li>
-      <li>一个 EventLoop 可能会被分配给一个或多个 Channel。 注意，在这种设计中，一个给定 Channel 的 I/O 操作都是由相同的 Thread 执行的，实际上消除了对于同步的需要。</li>
-      <li>EventLoop本身只由一个线程驱动，其处理了一个Channel的所有I/O事件，并且在该EventLoop的整个生命周期内都不会改变。</li>
-    </ul>
-  </li>
-  <li>channel() Channel -&gt; Socket
-    <ul>
-      <li>ChannelPipeline
-        <ul>
-          <li>handler() ChannelHandler</li>
-        </ul>
-      </li>
-      <li>ChannelConfig</li>
-    </ul>
-  </li>
-  <li>ChannelFuture -&gt; 异步通知</li>
+  <li>将 select/poll 单个操作拆分为 <code class="language-plaintext highlighter-rouge">epoll_create</code>、多个 <code class="language-plaintext highlighter-rouge">epoll_ctl</code> 和一个 <code class="language-plaintext highlighter-rouge">epoll_wait</code>。</li>
+  <li>操作系统内核针对 epoll 操作添加了一个文件系统，每个被监视的文件描述符都有对应的 inode 节点，主要信息保存在 <code class="language-plaintext highlighter-rouge">eventpoll</code> 结构中，被监视文件的信息则保存在 <code class="language-plaintext highlighter-rouge">epitem</code> 结构中（一对多关系）。</li>
+  <li>由于在执行 <code class="language-plaintext highlighter-rouge">epoll_create</code> 和 <code class="language-plaintext highlighter-rouge">epoll_ctl</code> 时已经把用户模式的信息保存到内核了，所以之后即便反复调用 <code class="language-plaintext highlighter-rouge">epoll_wait</code>，也不会重复拷贝参数、扫描文件描述符、频繁操作等待队列。</li>
 </ul>
 
-<h4 id="netty的数据容器bytebuf">Netty的数据容器ByteBuf</h4>
+<p><strong>epoll 的性能优势核心在于回调机制：</strong></p>
 <ul>
-  <li>它可以被用户自定义的缓冲区类型扩展;</li>
-  <li>通过内置的复合缓冲区类型实现了透明的零拷贝;</li>
-  <li>容量可以按需增长(类似于 JDK 的 StringBuilder);</li>
-  <li>在读和写这两种模式之间切换不需要调用 ByteBuffer 的 flip()方法;</li>
-  <li>读和写使用了不同的索引;</li>
-  <li>支持方法的链式调用;</li>
-  <li>支持引用计数;</li>
-  <li>支持池化。</li>
+  <li>select/poll 在”醒着”的时候要遍历整个 fd 集合，而 epoll 在”醒着”的时候只需判断就绪链表是否为空。设备就绪时通过回调函数将就绪 fd 放入就绪链表并唤醒 epoll_wait 中睡眠的进程，节省了大量 CPU 时间。</li>
+  <li>select/poll 每次调用都要把 fd 集合从用户态往内核态拷贝一次，而 epoll 只需要一次拷贝，将 current 往等待队列上也只挂一次。</li>
 </ul>
 
-<h4 id="netty的对象池化技术pooledbytebufallocator">Netty的对象池化技术PooledByteBufAllocator</h4>
+<hr />
+
+<h3 id="五netty-的核心组件">五、Netty 的核心组件</h3>
+
+<h4 id="51-eventloop-与-eventloopgroup">5.1 EventLoop 与 EventLoopGroup</h4>
+
+<p><code class="language-plaintext highlighter-rouge">EventLoop</code> 是 Netty 处理 I/O 事件的核心抽象，负责控制流、多线程处理与并发：</p>
+
 <ul>
-  <li>通过引用计数的方式实现 ReferenceCounted</li>
-  <li>Unpooled.copiedBuffer(“Netty rocks!”,CharsetUtil.UTF-8);</li>
-  <li>由于采用引用计数，需要在消费完消息之后调用ReferenceCountUtil.release(msg);</li>
-  <li>可以通过 java -Dio.netty.leakDetectionLevel=ADVANCED 这个参数设置泄露检测级别
-<img src="/blog/img/leak_level.jpg" width="600px" /></li>
+  <li>一个 <code class="language-plaintext highlighter-rouge">EventLoopGroup</code> 包含一个或多个 <code class="language-plaintext highlighter-rouge">EventLoop</code></li>
+  <li>一个 <code class="language-plaintext highlighter-rouge">EventLoop</code> 在其生命周期内只和一个 Thread 绑定</li>
+  <li>所有由 <code class="language-plaintext highlighter-rouge">EventLoop</code> 处理的 I/O 事件都将在它专有的 Thread 上被处理</li>
+  <li>一个 <code class="language-plaintext highlighter-rouge">Channel</code> 在其生命周期内只注册于一个 <code class="language-plaintext highlighter-rouge">EventLoop</code>（一个 Channel 可理解为一个连接）</li>
+  <li>一个 <code class="language-plaintext highlighter-rouge">EventLoop</code> 可能被分配给多个 <code class="language-plaintext highlighter-rouge">Channel</code>——在这种设计中，给定 Channel 的 I/O 操作都由相同的 Thread 执行，实际上消除了对于同步的需要</li>
+  <li><code class="language-plaintext highlighter-rouge">EventLoop</code> 本身只由一个线程驱动，处理一个 Channel 的所有 I/O 事件，且在整个生命周期内不会改变</li>
 </ul>
 
-<h4 id="channelhandler-channelpipeline-channelhandlercontext">ChannelHandler ChannelPipeline ChannelHandlerContext</h4>
+<h4 id="52-channel-与-channelpipeline">5.2 Channel 与 ChannelPipeline</h4>
+
 <ul>
-  <li>每个ChannelHandler都会分配一个ChannelHandlerContext</li>
-  <li>通过Channel、Handler的write会传递整个pipe，但是通过context的write只能传递对应Handler之后的handlers</li>
-  <li>SimpleChannelInboundHandler<T>，最常见的情况是，你的应用程序会利用一个 ChannelHandler 来接收解码消息，并对该数据应用业务逻辑。要创建一个这样的 ChannelHandler，
-  你只需要扩展基类 SimpleChannel- InboundHandler<T>，其中 T 是你要处理的消息的 Java 类型 。
-  在这个 ChannelHandler 中， 你将需要重写基类的一个或者多个方法，并且获取一个到 ChannelHandlerContext 的引用， 
-  这个引用将作为输入参数传递给 ChannelHandler 的所有方法。在这种类型的 ChannelHandler 中，最重要的方法是 channelRead0(Channel- HandlerContext,T)。除了要求不要阻塞当前的 I/O 线程之外，其具体实现完全取决于你。</T></T></li>
-  <li>ChannelOutboundHandlerAdapter，几乎所有的 ChannelOutboundHandler 上的方法都会传入一个 ChannelPromise 的实例。
-  作为 ChannelFuture 的子类，ChannelPromise 也可以被分配用于异步通知的监听器。
-    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>promise.addListener<span class="o">(</span>new ChannelFutureListener<span class="o">()</span> <span class="o">{</span>
+  <li><strong>Channel</strong> 对应网络 Socket，每个 Channel 关联一个 <code class="language-plaintext highlighter-rouge">ChannelPipeline</code> 和 <code class="language-plaintext highlighter-rouge">ChannelConfig</code>。</li>
+  <li><strong>ChannelPipeline</strong> 是 ChannelHandler 的容器，消息在 Pipeline 中流经一系列 Handler 进行处理。</li>
+  <li><strong>ChannelFuture</strong> 提供异步通知机制，与 <code class="language-plaintext highlighter-rouge">ChannelFutureListener</code> 结合构成了 Netty 的关键构件之一。</li>
+</ul>
+
+<hr />
+
+<h3 id="六bytebufnetty-的数据容器">六、ByteBuf：Netty 的数据容器</h3>
+
+<p>Netty 的 <code class="language-plaintext highlighter-rouge">ByteBuf</code> 相比 JDK 原生的 <code class="language-plaintext highlighter-rouge">ByteBuffer</code> 有诸多优势：</p>
+
+<ul>
+  <li>可以被用户自定义的缓冲区类型扩展</li>
+  <li>通过内置的复合缓冲区类型实现了透明的零拷贝</li>
+  <li>容量可以按需增长（类似 JDK 的 StringBuilder）</li>
+  <li>在读和写两种模式之间切换不需要调用 <code class="language-plaintext highlighter-rouge">ByteBuffer.flip()</code> 方法</li>
+  <li>读和写使用了不同的索引</li>
+  <li>支持方法的链式调用</li>
+  <li>支持引用计数</li>
+  <li>支持池化</li>
+</ul>
+
+<hr />
+
+<h3 id="七对象池化技术-pooledbytebufallocator">七、对象池化技术 PooledByteBufAllocator</h3>
+
+<p>Netty 通过引用计数（<code class="language-plaintext highlighter-rouge">ReferenceCounted</code> 接口）实现对象的池化管理：</p>
+
+<ul>
+  <li>非池化场景可使用 <code class="language-plaintext highlighter-rouge">Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8)</code></li>
+  <li>由于采用引用计数，需要在消费完消息之后调用 <code class="language-plaintext highlighter-rouge">ReferenceCountUtil.release(msg)</code></li>
+  <li>可通过 <code class="language-plaintext highlighter-rouge">java -Dio.netty.leakDetectionLevel=ADVANCED</code> 设置泄露检测级别</li>
+</ul>
+
+<p><img src="/blog/img/leak_level.jpg" width="600px" /></p>
+
+<hr />
+
+<h3 id="八channelhandlerchannelpipeline-与-channelhandlercontext">八、ChannelHandler、ChannelPipeline 与 ChannelHandlerContext</h3>
+
+<p>Netty 的 Handler 体系是理解其消息处理模型的关键：</p>
+
+<ul>
+  <li>每个 <code class="language-plaintext highlighter-rouge">ChannelHandler</code> 都会被分配一个 <code class="language-plaintext highlighter-rouge">ChannelHandlerContext</code></li>
+  <li>通过 Channel 或 Handler 调用 <code class="language-plaintext highlighter-rouge">write</code> 会将消息传递给整个 Pipeline；但通过 <code class="language-plaintext highlighter-rouge">ChannelHandlerContext</code> 的 <code class="language-plaintext highlighter-rouge">write</code> 只会传递给对应 Handler 之后的 Handler</li>
+  <li><strong>SimpleChannelInboundHandler&lt;T&gt;</strong> 是最常用的入站 Handler 基类。继承它后只需重写 <code class="language-plaintext highlighter-rouge">channelRead0(ChannelHandlerContext, T)</code> 方法即可，除了不要阻塞当前 I/O 线程之外，具体实现完全取决于业务需求</li>
+  <li><strong>ChannelOutboundHandlerAdapter</strong> 中几乎所有方法都会传入 <code class="language-plaintext highlighter-rouge">ChannelPromise</code> 实例。作为 <code class="language-plaintext highlighter-rouge">ChannelFuture</code> 的子类，<code class="language-plaintext highlighter-rouge">ChannelPromise</code> 也可以被分配用于异步通知的监听器：</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>promise.addListener<span class="o">(</span>new ChannelFutureListener<span class="o">()</span> <span class="o">{</span>
 @Override
 public void operationComplete<span class="o">(</span>ChannelFuture f<span class="o">)</span> <span class="o">{</span>
 <span class="k">if</span> <span class="o">(!</span>f.isSuccess<span class="o">())</span> <span class="o">{</span> f.cause<span class="o">()</span>.printStackTrace<span class="o">()</span><span class="p">;</span>
-                      f.channel<span class="o">()</span>.close<span class="o">()</span><span class="p">;</span>
-                  <span class="o">}</span>
+                        f.channel<span class="o">()</span>.close<span class="o">()</span><span class="p">;</span>
+                    <span class="o">}</span>
 <span class="o">})</span><span class="p">;</span> 
-</code></pre></div>    </div>
-    <h4 id="eventloop和线程池">EventLoop和线程池</h4>
-  </li>
-  <li>本质是创建包含少量的线程EventLoop的线程池EventLoopGroup，一个EventLoop管理多个Channel，
-  实际上就是IO多路复用
-<img src="/blog/img/eventLoop.jpg" width="600px" /></li>
-</ul>
+</code></pre></div></div>
 
-<h4 id="bootstrap">Bootstrap</h4>
+<hr />
+
+<h3 id="九eventloop-与线程模型">九、EventLoop 与线程模型</h3>
+
+<p>Netty 的线程模型本质上是创建包含少量线程的 <code class="language-plaintext highlighter-rouge">EventLoop</code> 线程池 <code class="language-plaintext highlighter-rouge">EventLoopGroup</code>，一个 <code class="language-plaintext highlighter-rouge">EventLoop</code> 管理多个 Channel，实际上就是 I/O 多路复用的体现。</p>
+
+<p><img src="/blog/img/eventLoop.jpg" width="600px" /></p>
+
+<hr />
+
+<h3 id="十bootstrap-引导类">十、Bootstrap 引导类</h3>
+
+<p><strong>为什么引导类是 Cloneable 的？</strong> 有时需要创建多个具有相似或相同配置的 Channel。为支持这种模式而不需要为每个 Channel 都创建并配置一个新的引导类实例，<code class="language-plaintext highlighter-rouge">AbstractBootstrap</code> 被标记为 <code class="language-plaintext highlighter-rouge">Cloneable</code>。在一个已配置完成的引导类实例上调用 <code class="language-plaintext highlighter-rouge">clone()</code> 将返回另一个可立即使用的引导类实例。</p>
+
+<p>需要注意的是，这种方式只会创建引导类实例的 EventLoopGroup 的一个<strong>浅拷贝</strong>，后者将在所有克隆的 Channel 实例之间共享。这是可以接受的，因为通常这些克隆的 Channel 的生命周期都很短暂，典型场景是创建一个 Channel 以进行一次 HTTP 请求。</p>
+
+<p>关于 <strong>ServerBootstrap</strong>：服务器需要两组不同的 Channel。第一组只包含一个 <code class="language-plaintext highlighter-rouge">ServerChannel</code>，代表服务器自身的已绑定到某个本地端口的正在监听的套接字。第二组包含所有已创建的用来处理传入客户端连接的 Channel（每个服务器已接受的连接都有一个对应的 Channel）。</p>
+
+<hr />
+
+<h3 id="十一netty-的设计哲学">十一、Netty 的设计哲学</h3>
+
+<p>从高层次角度来看，Netty 解决了两个相应的关注领域：</p>
+
 <ul>
-  <li>为什么引导类是 Cloneable 的 你有时可能会需要创建多个具有类似配置或者完全相同配置的Channel。为了支持这种模式而又不
-    <ul>
-      <li>需要为每个Channel都创建并配置一个新的引导类实例，AbstractBootstrap被标记为了 Cloneable1。在一个已经配置完成的引导类实例上调用clone()方法将返回另一个可以立即使用的引 导类实例。</li>
-      <li>注意，这种方式只会创建引导类实例的EventLoopGroup的一个浅拷贝，所以，后者 2将在所有克 隆的Channel实例之间共享。这是可以接受的，因为通常这些克隆的Channel的生命周期都很短暂，一 个典型的场景是——创建一个Channel以进行一次HTTP请求。</li>
-    </ul>
-  </li>
+  <li><strong>技术层面</strong>：基于 Java NIO 的异步和事件驱动实现，保证了高负载下应用程序性能的最大化和可伸缩性。</li>
+  <li><strong>架构层面</strong>：包含了一组设计模式，将应用程序逻辑从网络层解耦，简化了开发过程，同时最大限度地提高了可测试性、模块化以及代码的可重用性。</li>
 </ul>
 
-<h4 id="netty-设计">Netty 设计</h4>
-<ul>
-  <li>从高层次的角度来看，Netty 解决了两个相应的关注领域，我们可将其大致标记为技术的和 体系结构的。
-    <ul>
-      <li>首先，它的基于 Java NIO 的异步的和事件驱动的实现，保证了高负载下应用程序 性能的最大化和可伸缩性。</li>
-      <li>其次，Netty 也包含了一组设计模式，将应用程序逻辑从网络层解耦， 简化了开发过程，同时也最大限度地提高了可测试性、模块化以及代码的可重用性。</li>
-    </ul>
-  </li>
-</ul>
+<h4 id="不使用-netty-的原生-nio">不使用 Netty 的原生 NIO</h4>
 
-<h4 id="不使用netty的nio">不使用Netty的NIO</h4>
 <p><img src="/blog/img/nio-selector.jpg" width="600px" /></p>
 
-<h4 id="netty-的-opensslsslengine-实现">Netty 的 OpenSSL/SSLEngine 实现</h4>
-<ul>
-  <li>Netty 还提供了使用 OpenSSL 工具包(www.openssl.org)的 SSLEngine 实现。这个 OpenSsl-Engine 类提供了比 JDK 提供的 SSLEngine 实现更好的性能。</li>
-  <li>如果 OpenSSL 库可用，可以将 Netty 应用程序(客户端和服务器)配置为默认使用 OpenSslEngine。如果不可用，Netty 将会回退到 JDK 实现。有关配置 OpenSSL 支持的详细说明，参见 Netty 文档: http://netty.io/wiki/forked-tomcat-native.html#wikih2-1。</li>
-  <li>注意，无论你使用 JDK 的 SSLEngine 还是使用 Netty 的 OpenSslEngine，SSL API 和数据流都 是一致的。</li>
-</ul>
+<hr />
+
+<h3 id="十二ssltls-支持">十二、SSL/TLS 支持</h3>
+
+<p>Netty 提供了使用 OpenSSL 工具包的 SSLEngine 实现（<code class="language-plaintext highlighter-rouge">OpenSslEngine</code>），相比 JDK 提供的 SSLEngine 实现有更好的性能。如果 OpenSSL 库可用，可以将 Netty 应用程序配置为默认使用 <code class="language-plaintext highlighter-rouge">OpenSslEngine</code>；如果不可用，Netty 会回退到 JDK 实现。无论使用哪种实现，SSL API 和数据流都是一致的。</p>
 
 <p><img src="/blog/img/ssl_tls.jpg" width="600px" /></p>
 
@@ -334,39 +364,60 @@ engine.setUseClientMode<span class="o">(</span><span class="nb">false</span><spa
 ch.pipeline<span class="o">()</span>.addFirst<span class="o">(</span>new SslHandler<span class="o">(</span>engine<span class="o">))</span><span class="p">;</span>
 </code></pre></div></div>
 
-<h4 id="检测空闲连接以及超时对于及时释放资源">检测空闲连接以及超时对于及时释放资源</h4>
+<hr />
+
+<h3 id="十三空闲连接检测与超时处理">十三、空闲连接检测与超时处理</h3>
+
+<p>及时检测空闲连接并释放资源是保证服务稳定性的重要手段。Netty 内置了以下 Handler：</p>
+
 <ul>
-  <li>new IdleStateHandler(0, 0, 60, TimeUnit.SECONDS)</li>
-  <li>ReadTimeoutHandler exceptionCaught()</li>
-  <li>WriteTimeoutHandler exceptionCaught()</li>
+  <li><code class="language-plaintext highlighter-rouge">IdleStateHandler(0, 0, 60, TimeUnit.SECONDS)</code> —— 检测读写空闲</li>
+  <li><code class="language-plaintext highlighter-rouge">ReadTimeoutHandler</code> —— 读超时时触发 <code class="language-plaintext highlighter-rouge">exceptionCaught()</code></li>
+  <li><code class="language-plaintext highlighter-rouge">WriteTimeoutHandler</code> —— 写超时时触发 <code class="language-plaintext highlighter-rouge">exceptionCaught()</code></li>
 </ul>
 
-<h4 id="写大数据">写大数据</h4>
+<hr />
+
+<h3 id="十四写大数据">十四、写大数据</h3>
+
+<p>当需要传输大文件或大量数据流时，Netty 提供了分块传输的支持：</p>
+
 <ul>
-  <li>ChunkedFile 从文件中逐块获取数据，当你的平台不支持零拷贝或者你需要转换数据时使用</li>
-  <li>ChunkedNioFile 和 ChunkedFile 类似，只是它使用了 FileChannel</li>
-  <li>ChunkedStream 从 InputStream 中逐块传输内容</li>
-  <li>ChunkedNioStream 从ReadableByteChannel中逐块传输内容
-    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final class WriteStreamHandler extends ChannelInboundHandlerAdapter <span class="o">{</span>
-  @Override
-  public void channelActive<span class="o">(</span>ChannelHandlerContext ctx<span class="o">)</span>throws Exception <span class="o">{</span>
-      super.channelActive<span class="o">(</span>ctx<span class="o">)</span><span class="p">;</span>
-      ctx.writeAndFlush<span class="o">(</span>
-      new ChunkedStream<span class="o">(</span>new FileInputStream<span class="o">(</span>file<span class="o">)))</span><span class="p">;</span>
-  <span class="o">}</span> 
+  <li><strong>ChunkedFile</strong>：从文件中逐块获取数据，适用于平台不支持零拷贝或需要转换数据的场景</li>
+  <li><strong>ChunkedNioFile</strong>：类似 ChunkedFile，但使用 FileChannel</li>
+  <li><strong>ChunkedStream</strong>：从 InputStream 中逐块传输内容</li>
+  <li><strong>ChunkedNioStream</strong>：从 ReadableByteChannel 中逐块传输内容</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public final class WriteStreamHandler extends ChannelInboundHandlerAdapter <span class="o">{</span>
+    @Override
+    public void channelActive<span class="o">(</span>ChannelHandlerContext ctx<span class="o">)</span>throws Exception <span class="o">{</span>
+        super.channelActive<span class="o">(</span>ctx<span class="o">)</span><span class="p">;</span>
+        ctx.writeAndFlush<span class="o">(</span>
+        new ChunkedStream<span class="o">(</span>new FileInputStream<span class="o">(</span>file<span class="o">)))</span><span class="p">;</span>
+    <span class="o">}</span> 
 <span class="o">}</span>
-</code></pre></div>    </div>
-    <h4 id="websocketframe">WebSocketFrame</h4>
-  </li>
-  <li>BinaryWebSocketFrame 包含了二进制数据</li>
-  <li>TextWebSocketFrame 包含了文本数据</li>
-  <li>ContinuationWebSocketFrame 包含属于上一个BinaryWebSocketFrame或TextWebSocket-Frame 的文本数据或者二进制数据</li>
-  <li>CloseWebSocketFrame 表示一个 CLOSE 请求，包含一个关闭的状态码和关闭的原因</li>
-  <li>PingWebSocketFrame 作为一个对于 PingWebSocketFrame 的响应被发送</li>
-  <li>PongWebSocketFrame 请求传输一个 PongWebSocketFrame</li>
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="十五websocket-支持">十五、WebSocket 支持</h3>
+
+<h4 id="151-websocketframe-类型">15.1 WebSocketFrame 类型</h4>
+
+<ul>
+  <li><strong>BinaryWebSocketFrame</strong>：包含二进制数据</li>
+  <li><strong>TextWebSocketFrame</strong>：包含文本数据</li>
+  <li><strong>ContinuationWebSocketFrame</strong>：包含属于上一个 BinaryWebSocketFrame 或 TextWebSocketFrame 的后续数据</li>
+  <li><strong>CloseWebSocketFrame</strong>：表示 CLOSE 请求，包含关闭状态码和原因</li>
+  <li><strong>PingWebSocketFrame</strong>：请求传输一个 PongWebSocketFrame</li>
+  <li><strong>PongWebSocketFrame</strong>：作为 PingWebSocketFrame 的响应被发送</li>
 </ul>
 
-<h4 id="websocket示例">WebSocket示例</h4>
+<h4 id="152-websocket-示例">15.2 WebSocket 示例</h4>
+
+<p>下面展示了一个完整的 WebSocket 服务端 Pipeline 配置：</p>
+
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ChannelPipeline pipeline <span class="o">=</span> ch.pipeline<span class="o">()</span><span class="p">;</span>
 <span class="c"># http编解码</span>
 pipeline.addLast<span class="o">(</span>new HttpServerCodec<span class="o">())</span><span class="p">;</span>
@@ -383,17 +434,17 @@ pipeline.addLast<span class="o">(</span>new WebSocketServerProtocolHandler<span 
 <span class="c"># 处理 TextWebSocketFrame 和握手完成事件</span>
 pipeline.addLast<span class="o">(</span>new TextWebSocketFrameHandler<span class="o">(</span>group<span class="o">))</span><span class="p">;</span>
 </code></pre></div></div>
-<p>在从标准的HTTP或者HTTPS协议切换到WebSocket时，将会使用一种称为升级握手的机制。因此 ，使用WebSocket的应用程序将始终以HTTP/S作为开始，然后再执行升级。这个升级动 作发生的确切时刻特定于应用程序;它可能会发生在启动时，也可能会发生在请求了某个特定的 URL之后。</p>
 
-<h4 id="理解http协议中的-expect-100-continue">理解HTTP协议中的 Expect: 100-continue</h4>
-<ul>
-  <li>HTTP/1.1 协议里设计 100 (Continue) HTTP 状态码的的目的是，在客户端发送 Request Message 之前，HTTP/1.1 协议允许客户端先判定服务器是否愿意接受客户端发来的消息主体（基于 Request Headers）。</li>
-  <li>即， 客户端 在 Post（较大）数据到服务端之前，允许双方“握手”，如果匹配上了，Client 才开始发送（较大）数据。</li>
-  <li>这么做的原因是，如果客户端直接发送请求数据，但是服务器又将该请求拒绝的话，这种行为将带来很大的资源开销。</li>
-</ul>
-<p><a href="https://blog.csdn.net/skh2015java/article/details/88723028">https://blog.csdn.net/skh2015java/article/details/88723028</a></p>
+<p>在从标准 HTTP/HTTPS 协议切换到 WebSocket 时，使用一种称为<strong>升级握手</strong>的机制。因此，使用 WebSocket 的应用程序始终以 HTTP/S 作为开始，然后再执行升级。</p>
 
-<h4 id="http协议与websocket协议升级过程">http协议与websocket协议升级过程</h4>
+<h4 id="153-http-协议中的-expect-100-continue">15.3 HTTP 协议中的 Expect: 100-continue</h4>
+
+<p>HTTP/1.1 协议中设计 <code class="language-plaintext highlighter-rouge">100 (Continue)</code> 状态码的目的是：在客户端发送 Request Message 之前，允许客户端先判定服务器是否愿意接受其消息主体（基于 Request Headers）。即客户端在 POST 较大数据到服务端之前，允许双方先”握手”——如果匹配上了，客户端才开始发送较大数据。这样做是因为如果客户端直接发送请求数据而服务器又拒绝该请求，会带来很大的资源开销。</p>
+
+<p><strong>参考：</strong> <a href="https://blog.csdn.net/skh2015java/article/details/88723028">https://blog.csdn.net/skh2015java/article/details/88723028</a></p>
+
+<h4 id="154-websocket-升级过程">15.4 WebSocket 升级过程</h4>
+
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># req</span>
 GET /chat HTTP/1.1
 Host: server.example.com
@@ -409,14 +460,26 @@ Sec-WebSocket-Key: <span class="nv">x3JJHMbDL1EzLkh9GBhXDw</span><span class="o"
 Sec-WebSocket-Protocol: chat, superchat
 Sec-WebSocket-Version: 13
 </code></pre></div></div>
-<p><a href="http://www.xiaosongit.com/index/detail/id/645.html">http://www.xiaosongit.com/index/detail/id/645.html</a></p>
 
-<h4 id="其他-1">其他</h4>
+<p><strong>参考：</strong> <a href="http://www.xiaosongit.com/index/detail/id/645.html">http://www.xiaosongit.com/index/detail/id/645.html</a></p>
+
+<hr />
+
+<h3 id="十六总结">十六、总结</h3>
+
+<p>Netty 之所以能成为 Java 网络编程的事实标准，在于它在多个层面做到了极致：</p>
+
 <ul>
-  <li>ChannelFuture 与 ChannelFutureListener相互结合，构成了Netty本身的关键构件之一</li>
-  <li>关于ServerBootStrap，因为服务器需要两组不同的 Channel。第一组将只包含一个 ServerChannel，代表服务 器自身的已绑定到某个本地端口的正在监听的套接字。而第二组将包含所有已创建的用来处理传 入客户端连接(对于每个服务器已经接受的连接都有一个)的 Channel。</li>
-  <li>PCB Process Control Block</li>
+  <li><strong>内存管理</strong>：借鉴 jemalloc 的 Arena/Chunk/Page/SubPage 分层设计，配合池化与引用计数，大幅降低了 GC 压力</li>
+  <li><strong>I/O 模型</strong>：封装了 epoll 等高性能 I/O 多路复用机制，通过 EventLoop 消除了线程同步的复杂性</li>
+  <li><strong>零拷贝</strong>：从操作系统到应用层多维度的零拷贝优化</li>
+  <li><strong>协议支持</strong>：内置 HTTP、WebSocket、SSL/TLS 等主流协议的编解码器</li>
+  <li><strong>架构设计</strong>：通过 ChannelPipeline 的责任链模式实现了高度模块化和可扩展性</li>
 </ul>
+
+<p>理解 Netty 的这些设计，不仅有助于高效使用该框架，更能深化对高性能网络编程本质的理解。</p>
+
+<p><strong>PCB</strong>（Process Control Block）—— 操作系统中进程的核心数据结构，每个网络连接在 OS 层面都对应着进程/线程资源的管理。</p>
 
     </div>
   </div>
@@ -448,33 +511,33 @@ Sec-WebSocket-Version: 13
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>'图'相关算法 - Code & Coffee</title>
+  <title>图论算法全景：从基础遍历到最短路径与最大流 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>‘图’相关算法 | Code &amp; Coffee</title>
+<title>图论算法全景：从基础遍历到最短路径与最大流 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="‘图’相关算法" />
+<meta property="og:title" content="图论算法全景：从基础遍历到最短路径与最大流" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="什么时”图” 可以简单理解我存储关系的数据结构，比如好友关系 分为有向图、无向图 存储结构 邻接矩阵（类似多维数组） 邻接表 （类似”正”索引） 逆邻接表 （类似倒排索引） 十字链表 （正倒索引联合） 深度优先遍历 和 广度优先遍历 深度优先遍历，沿着当前分支，直到最后一个节点，然后遍历相邻节点（二叉树的前中后序遍历就是深度优先遍历），重点在回溯 广度优先遍历，遍历完当前节点的所有子节点，然后切换到下级节点（类似二叉树的层级遍历），重点在重放 图的 “最短路径” 迪杰斯特拉算法 Dijkstra，解决带权重的A-&gt;G最短路径 https://mp.weixin.qq.com/s/ALQntqQJkdWf4RbPaGOOhg 多源最短路径，解决多个带权重节点间的最短路径，弗洛伊德算法 Floyd-Warshall https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg 路径规划之 A* 算法 https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA 最小生成树 把所有点在没有回路的情况下，连接起来，并且权重相加最小（权重可以理解为城市见的距离） Kruskal算法，克鲁斯卡尔算法的基本思想是以边为主导地位，始终选择当前可用的最小边权的边（可以直接快排或者algorithm的sort）。每次选择边权最小的边链接两个端点是kruskal的规则，并实时判断两个点之间有没有间接联通。 （也算是贪心算法思想）https://blog.csdn.net/qq_41754350/article/details/81460643 prim算法，这个算法是以图的顶点为基础，从一个初始顶点开始，寻找触达其他顶点权值最小的边，并把该顶点加入到已触达顶点的集合中。当全部顶点都加入到集合时，算法的工作就完成了。Prim算法的本质，是基于贪心算法。 https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA Ford-Fulkerson 最大流算法 解决的问题：在一个流里，有着每条边的运载能力限制，我最多能从源头运输多少数量到目的地。 https://www.cnblogs.com/DarrenChan/p/9563511.html https://blog.csdn.net/sinat_41613352/article/details/84481115" />
-<meta property="og:description" content="什么时”图” 可以简单理解我存储关系的数据结构，比如好友关系 分为有向图、无向图 存储结构 邻接矩阵（类似多维数组） 邻接表 （类似”正”索引） 逆邻接表 （类似倒排索引） 十字链表 （正倒索引联合） 深度优先遍历 和 广度优先遍历 深度优先遍历，沿着当前分支，直到最后一个节点，然后遍历相邻节点（二叉树的前中后序遍历就是深度优先遍历），重点在回溯 广度优先遍历，遍历完当前节点的所有子节点，然后切换到下级节点（类似二叉树的层级遍历），重点在重放 图的 “最短路径” 迪杰斯特拉算法 Dijkstra，解决带权重的A-&gt;G最短路径 https://mp.weixin.qq.com/s/ALQntqQJkdWf4RbPaGOOhg 多源最短路径，解决多个带权重节点间的最短路径，弗洛伊德算法 Floyd-Warshall https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg 路径规划之 A* 算法 https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA 最小生成树 把所有点在没有回路的情况下，连接起来，并且权重相加最小（权重可以理解为城市见的距离） Kruskal算法，克鲁斯卡尔算法的基本思想是以边为主导地位，始终选择当前可用的最小边权的边（可以直接快排或者algorithm的sort）。每次选择边权最小的边链接两个端点是kruskal的规则，并实时判断两个点之间有没有间接联通。 （也算是贪心算法思想）https://blog.csdn.net/qq_41754350/article/details/81460643 prim算法，这个算法是以图的顶点为基础，从一个初始顶点开始，寻找触达其他顶点权值最小的边，并把该顶点加入到已触达顶点的集合中。当全部顶点都加入到集合时，算法的工作就完成了。Prim算法的本质，是基于贪心算法。 https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA Ford-Fulkerson 最大流算法 解决的问题：在一个流里，有着每条边的运载能力限制，我最多能从源头运输多少数量到目的地。 https://www.cnblogs.com/DarrenChan/p/9563511.html https://blog.csdn.net/sinat_41613352/article/details/84481115" />
+<meta name="description" content="在数据结构的世界里，线性表描述的是一对一的关系，树描述的是一对多的关系，而”图”则是最通用的结构——它描述的是多对多的关系。社交网络中的好友关系、地图中的路线规划、网络中的路由选择，这些问题的背后都是图论算法在发挥作用。本文将系统梳理图的基本概念、存储方式、遍历策略以及几个经典算法。 什么是”图” 图（Graph）是由顶点（Vertex）和边（Edge）组成的数据结构，用于表示实体之间的关系。简单来说，你可以把图理解为存储关系的数据结构。 根据边是否有方向，图分为两类： 无向图：边没有方向，A-B 和 B-A 等价，例如微信好友关系 有向图：边有方向，A→B 不等于 B→A，例如微博关注关系 根据边是否有权重，又可分为： 无权图：边仅表示”是否连通” 带权图：边附带权重值，例如城市间的距离、网络链路的带宽 图的存储结构 如何在计算机中高效存储图？有以下几种经典方案： 邻接矩阵（Adjacency Matrix） 使用二维数组 matrix[i][j] 表示顶点 i 到顶点 j 是否有边。 优点：查询两个顶点是否相连是 O(1) 操作 缺点：对于稀疏图浪费大量空间，空间复杂度 O(V²) 邻接表（Adjacency List） 每个顶点维护一个链表，存储所有与之相连的顶点。类似于正向索引。 优点：节省空间，适合稀疏图 缺点：查询两个顶点是否相连需要遍历链表 逆邻接表 与邻接表方向相反，记录的是”谁指向我”。类似倒排索引。在有向图中，邻接表记录出度，逆邻接表记录入度。 十字链表（Orthogonal List） 将邻接表和逆邻接表合并的结构，既能快速找到某顶点的出边，也能快速找到入边。适用于需要同时处理出度和入度的有向图场景。 图的遍历 深度优先搜索（DFS, Depth-First Search） DFS 的策略是一条路走到黑，走不通再回头。沿着当前分支深入到最后一个节点，然后回溯到上一个分支继续探索。 核心特征：回溯。二叉树的前序、中序、后序遍历本质上都是深度优先遍历的特例。 DFS 通常使用递归或显式栈实现： def dfs(graph, node, visited): visited.add(node) for neighbor in graph[node]: if neighbor not in visited: dfs(graph, neighbor, visited) 时间复杂度：O(V + E)，其中 V 是顶点数，E 是边数。 广度优先搜索（BFS, Breadth-First Search） BFS 的策略是先访问所有邻居，再访问邻居的邻居。逐层向外扩展，类似二叉树的层序遍历。 核心特征：逐层扩展。BFS 使用队列实现： from collections import deque def bfs(graph, start): visited = {start} queue = deque([start]) while queue: node = queue.popleft() for neighbor in graph[node]: if neighbor not in visited: visited.add(neighbor) queue.append(neighbor) 时间复杂度同样为 O(V + E)。BFS 天然适合求最短路径（无权图场景）。 最短路径算法 Dijkstra 算法 解决单源最短路径问题：给定一个起点，求到图中所有其他顶点的最短路径。适用于边权非负的带权图。 核心思想是贪心：维护一个已确定最短路径的顶点集合，每次从未确定的顶点中选出距起点最近的，将其加入集合，并更新其邻居的距离。 初始化：起点距离为0，其余为∞ 重复： 1. 从未访问顶点中选出距离最小的顶点 u 2. 标记 u 为已访问 3. 对 u 的每个邻居 v：如果 dist[u] + weight(u,v) &lt; dist[v]，更新 dist[v] 使用优先队列（最小堆）优化后，时间复杂度为 O((V + E) log V)。 参考阅读：Dijkstra 算法详解 Floyd-Warshall 算法 解决多源最短路径问题：求任意两个顶点之间的最短路径。 核心思想是动态规划：对于每一对顶点 (i, j)，尝试经过每一个中间顶点 k，看是否能找到更短的路径。 for k in range(n): for i in range(n): for j in range(n): dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]) 时间复杂度 O(V³)，适合顶点数不太多的场景。 参考阅读：Floyd-Warshall 算法详解 A* 算法 A* 是对 Dijkstra 的优化，引入启发函数（Heuristic Function）来指导搜索方向，避免盲目扩展。广泛应用于游戏 AI 中的路径规划和地图导航。 评估函数：f(n) = g(n) + h(n) g(n)：从起点到当前节点的实际代价 h(n)：从当前节点到终点的估计代价（启发函数） 参考阅读：A* 算法详解 最小生成树 最小生成树（Minimum Spanning Tree, MST）要解决的问题是：在一个连通带权图中，找到一棵包含所有顶点的树，使得边权总和最小。典型应用如城市间铺设光缆的最小成本方案。 Kruskal 算法 以边为中心的贪心策略： 将所有边按权重排序 依次选择权重最小的边 如果该边连接的两个顶点不在同一个连通分量中（用并查集判断），则加入生成树 重复直到生成树包含 V-1 条边 时间复杂度：O(E log E)，排序是主要开销。 参考阅读：Kruskal 算法详解 Prim 算法 以顶点为中心的贪心策略： 从任意一个顶点出发，将其加入已选集合 在所有连接已选集合和未选集合的边中，选择权重最小的边 将该边连接的未选顶点加入已选集合 重复直到所有顶点都被选入 使用优先队列优化后，时间复杂度为 O((V + E) log V)。 参考阅读：Prim 算法详解 Kruskal vs Prim：Kruskal 适合稀疏图（边少），Prim 适合稠密图（边多）。 Ford-Fulkerson 最大流算法 最大流问题：在一个有向图中，每条边有容量上限，求从源点（Source）到汇点（Sink）能够传输的最大流量。 实际应用场景： 物流网络中的最大运输量 网络带宽中的最大吞吐量 二分图匹配问题 Ford-Fulkerson 算法的核心思路： 初始化所有边的流量为 0 寻找一条从源点到汇点的增广路径（路径上所有边的剩余容量 &gt; 0） 沿增广路径增加流量（取路径上最小剩余容量） 更新残余图（正向边减少容量，反向边增加容量） 重复直到找不到增广路径 参考阅读： Ford-Fulkerson 最大流算法 最大流算法详解 总结 图论算法是计算机科学中最丰富也最实用的算法领域之一。从基础的 DFS/BFS 遍历，到 Dijkstra/Floyd 最短路径，再到 Kruskal/Prim 最小生成树和 Ford-Fulkerson 最大流，这些算法在路由协议、社交网络分析、推荐系统、地图导航等领域都有广泛应用。 理解这些算法的关键在于把握其核心思想（贪心、动态规划、搜索），然后通过实际编码加深理解。建议从 LeetCode 的图论专题开始练手，逐步建立对图算法的直觉。" />
+<meta property="og:description" content="在数据结构的世界里，线性表描述的是一对一的关系，树描述的是一对多的关系，而”图”则是最通用的结构——它描述的是多对多的关系。社交网络中的好友关系、地图中的路线规划、网络中的路由选择，这些问题的背后都是图论算法在发挥作用。本文将系统梳理图的基本概念、存储方式、遍历策略以及几个经典算法。 什么是”图” 图（Graph）是由顶点（Vertex）和边（Edge）组成的数据结构，用于表示实体之间的关系。简单来说，你可以把图理解为存储关系的数据结构。 根据边是否有方向，图分为两类： 无向图：边没有方向，A-B 和 B-A 等价，例如微信好友关系 有向图：边有方向，A→B 不等于 B→A，例如微博关注关系 根据边是否有权重，又可分为： 无权图：边仅表示”是否连通” 带权图：边附带权重值，例如城市间的距离、网络链路的带宽 图的存储结构 如何在计算机中高效存储图？有以下几种经典方案： 邻接矩阵（Adjacency Matrix） 使用二维数组 matrix[i][j] 表示顶点 i 到顶点 j 是否有边。 优点：查询两个顶点是否相连是 O(1) 操作 缺点：对于稀疏图浪费大量空间，空间复杂度 O(V²) 邻接表（Adjacency List） 每个顶点维护一个链表，存储所有与之相连的顶点。类似于正向索引。 优点：节省空间，适合稀疏图 缺点：查询两个顶点是否相连需要遍历链表 逆邻接表 与邻接表方向相反，记录的是”谁指向我”。类似倒排索引。在有向图中，邻接表记录出度，逆邻接表记录入度。 十字链表（Orthogonal List） 将邻接表和逆邻接表合并的结构，既能快速找到某顶点的出边，也能快速找到入边。适用于需要同时处理出度和入度的有向图场景。 图的遍历 深度优先搜索（DFS, Depth-First Search） DFS 的策略是一条路走到黑，走不通再回头。沿着当前分支深入到最后一个节点，然后回溯到上一个分支继续探索。 核心特征：回溯。二叉树的前序、中序、后序遍历本质上都是深度优先遍历的特例。 DFS 通常使用递归或显式栈实现： def dfs(graph, node, visited): visited.add(node) for neighbor in graph[node]: if neighbor not in visited: dfs(graph, neighbor, visited) 时间复杂度：O(V + E)，其中 V 是顶点数，E 是边数。 广度优先搜索（BFS, Breadth-First Search） BFS 的策略是先访问所有邻居，再访问邻居的邻居。逐层向外扩展，类似二叉树的层序遍历。 核心特征：逐层扩展。BFS 使用队列实现： from collections import deque def bfs(graph, start): visited = {start} queue = deque([start]) while queue: node = queue.popleft() for neighbor in graph[node]: if neighbor not in visited: visited.add(neighbor) queue.append(neighbor) 时间复杂度同样为 O(V + E)。BFS 天然适合求最短路径（无权图场景）。 最短路径算法 Dijkstra 算法 解决单源最短路径问题：给定一个起点，求到图中所有其他顶点的最短路径。适用于边权非负的带权图。 核心思想是贪心：维护一个已确定最短路径的顶点集合，每次从未确定的顶点中选出距起点最近的，将其加入集合，并更新其邻居的距离。 初始化：起点距离为0，其余为∞ 重复： 1. 从未访问顶点中选出距离最小的顶点 u 2. 标记 u 为已访问 3. 对 u 的每个邻居 v：如果 dist[u] + weight(u,v) &lt; dist[v]，更新 dist[v] 使用优先队列（最小堆）优化后，时间复杂度为 O((V + E) log V)。 参考阅读：Dijkstra 算法详解 Floyd-Warshall 算法 解决多源最短路径问题：求任意两个顶点之间的最短路径。 核心思想是动态规划：对于每一对顶点 (i, j)，尝试经过每一个中间顶点 k，看是否能找到更短的路径。 for k in range(n): for i in range(n): for j in range(n): dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]) 时间复杂度 O(V³)，适合顶点数不太多的场景。 参考阅读：Floyd-Warshall 算法详解 A* 算法 A* 是对 Dijkstra 的优化，引入启发函数（Heuristic Function）来指导搜索方向，避免盲目扩展。广泛应用于游戏 AI 中的路径规划和地图导航。 评估函数：f(n) = g(n) + h(n) g(n)：从起点到当前节点的实际代价 h(n)：从当前节点到终点的估计代价（启发函数） 参考阅读：A* 算法详解 最小生成树 最小生成树（Minimum Spanning Tree, MST）要解决的问题是：在一个连通带权图中，找到一棵包含所有顶点的树，使得边权总和最小。典型应用如城市间铺设光缆的最小成本方案。 Kruskal 算法 以边为中心的贪心策略： 将所有边按权重排序 依次选择权重最小的边 如果该边连接的两个顶点不在同一个连通分量中（用并查集判断），则加入生成树 重复直到生成树包含 V-1 条边 时间复杂度：O(E log E)，排序是主要开销。 参考阅读：Kruskal 算法详解 Prim 算法 以顶点为中心的贪心策略： 从任意一个顶点出发，将其加入已选集合 在所有连接已选集合和未选集合的边中，选择权重最小的边 将该边连接的未选顶点加入已选集合 重复直到所有顶点都被选入 使用优先队列优化后，时间复杂度为 O((V + E) log V)。 参考阅读：Prim 算法详解 Kruskal vs Prim：Kruskal 适合稀疏图（边少），Prim 适合稠密图（边多）。 Ford-Fulkerson 最大流算法 最大流问题：在一个有向图中，每条边有容量上限，求从源点（Source）到汇点（Sink）能够传输的最大流量。 实际应用场景： 物流网络中的最大运输量 网络带宽中的最大吞吐量 二分图匹配问题 Ford-Fulkerson 算法的核心思路： 初始化所有边的流量为 0 寻找一条从源点到汇点的增广路径（路径上所有边的剩余容量 &gt; 0） 沿增广路径增加流量（取路径上最小剩余容量） 更新残余图（正向边减少容量，反向边增加容量） 重复直到找不到增广路径 参考阅读： Ford-Fulkerson 最大流算法 最大流算法详解 总结 图论算法是计算机科学中最丰富也最实用的算法领域之一。从基础的 DFS/BFS 遍历，到 Dijkstra/Floyd 最短路径，再到 Kruskal/Prim 最小生成树和 Ford-Fulkerson 最大流，这些算法在路由协议、社交网络分析、推荐系统、地图导航等领域都有广泛应用。 理解这些算法的关键在于把握其核心思想（贪心、动态规划、搜索），然后通过实际编码加深理解。建议从 LeetCode 的图论专题开始练手，逐步建立对图算法的直觉。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-06-06T09:17:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="‘图’相关算法" />
+<meta property="twitter:title" content="图论算法全景：从基础遍历到最短路径与最大流" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-06-06T09:17:00+08:00","datePublished":"2020-06-06T09:17:00+08:00","description":"什么时”图” 可以简单理解我存储关系的数据结构，比如好友关系 分为有向图、无向图 存储结构 邻接矩阵（类似多维数组） 邻接表 （类似”正”索引） 逆邻接表 （类似倒排索引） 十字链表 （正倒索引联合） 深度优先遍历 和 广度优先遍历 深度优先遍历，沿着当前分支，直到最后一个节点，然后遍历相邻节点（二叉树的前中后序遍历就是深度优先遍历），重点在回溯 广度优先遍历，遍历完当前节点的所有子节点，然后切换到下级节点（类似二叉树的层级遍历），重点在重放 图的 “最短路径” 迪杰斯特拉算法 Dijkstra，解决带权重的A-&gt;G最短路径 https://mp.weixin.qq.com/s/ALQntqQJkdWf4RbPaGOOhg 多源最短路径，解决多个带权重节点间的最短路径，弗洛伊德算法 Floyd-Warshall https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg 路径规划之 A* 算法 https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA 最小生成树 把所有点在没有回路的情况下，连接起来，并且权重相加最小（权重可以理解为城市见的距离） Kruskal算法，克鲁斯卡尔算法的基本思想是以边为主导地位，始终选择当前可用的最小边权的边（可以直接快排或者algorithm的sort）。每次选择边权最小的边链接两个端点是kruskal的规则，并实时判断两个点之间有没有间接联通。 （也算是贪心算法思想）https://blog.csdn.net/qq_41754350/article/details/81460643 prim算法，这个算法是以图的顶点为基础，从一个初始顶点开始，寻找触达其他顶点权值最小的边，并把该顶点加入到已触达顶点的集合中。当全部顶点都加入到集合时，算法的工作就完成了。Prim算法的本质，是基于贪心算法。 https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA Ford-Fulkerson 最大流算法 解决的问题：在一个流里，有着每条边的运载能力限制，我最多能从源头运输多少数量到目的地。 https://www.cnblogs.com/DarrenChan/p/9563511.html https://blog.csdn.net/sinat_41613352/article/details/84481115","headline":"‘图’相关算法","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-06-06T09:17:00+08:00","datePublished":"2020-06-06T09:17:00+08:00","description":"在数据结构的世界里，线性表描述的是一对一的关系，树描述的是一对多的关系，而”图”则是最通用的结构——它描述的是多对多的关系。社交网络中的好友关系、地图中的路线规划、网络中的路由选择，这些问题的背后都是图论算法在发挥作用。本文将系统梳理图的基本概念、存储方式、遍历策略以及几个经典算法。 什么是”图” 图（Graph）是由顶点（Vertex）和边（Edge）组成的数据结构，用于表示实体之间的关系。简单来说，你可以把图理解为存储关系的数据结构。 根据边是否有方向，图分为两类： 无向图：边没有方向，A-B 和 B-A 等价，例如微信好友关系 有向图：边有方向，A→B 不等于 B→A，例如微博关注关系 根据边是否有权重，又可分为： 无权图：边仅表示”是否连通” 带权图：边附带权重值，例如城市间的距离、网络链路的带宽 图的存储结构 如何在计算机中高效存储图？有以下几种经典方案： 邻接矩阵（Adjacency Matrix） 使用二维数组 matrix[i][j] 表示顶点 i 到顶点 j 是否有边。 优点：查询两个顶点是否相连是 O(1) 操作 缺点：对于稀疏图浪费大量空间，空间复杂度 O(V²) 邻接表（Adjacency List） 每个顶点维护一个链表，存储所有与之相连的顶点。类似于正向索引。 优点：节省空间，适合稀疏图 缺点：查询两个顶点是否相连需要遍历链表 逆邻接表 与邻接表方向相反，记录的是”谁指向我”。类似倒排索引。在有向图中，邻接表记录出度，逆邻接表记录入度。 十字链表（Orthogonal List） 将邻接表和逆邻接表合并的结构，既能快速找到某顶点的出边，也能快速找到入边。适用于需要同时处理出度和入度的有向图场景。 图的遍历 深度优先搜索（DFS, Depth-First Search） DFS 的策略是一条路走到黑，走不通再回头。沿着当前分支深入到最后一个节点，然后回溯到上一个分支继续探索。 核心特征：回溯。二叉树的前序、中序、后序遍历本质上都是深度优先遍历的特例。 DFS 通常使用递归或显式栈实现： def dfs(graph, node, visited): visited.add(node) for neighbor in graph[node]: if neighbor not in visited: dfs(graph, neighbor, visited) 时间复杂度：O(V + E)，其中 V 是顶点数，E 是边数。 广度优先搜索（BFS, Breadth-First Search） BFS 的策略是先访问所有邻居，再访问邻居的邻居。逐层向外扩展，类似二叉树的层序遍历。 核心特征：逐层扩展。BFS 使用队列实现： from collections import deque def bfs(graph, start): visited = {start} queue = deque([start]) while queue: node = queue.popleft() for neighbor in graph[node]: if neighbor not in visited: visited.add(neighbor) queue.append(neighbor) 时间复杂度同样为 O(V + E)。BFS 天然适合求最短路径（无权图场景）。 最短路径算法 Dijkstra 算法 解决单源最短路径问题：给定一个起点，求到图中所有其他顶点的最短路径。适用于边权非负的带权图。 核心思想是贪心：维护一个已确定最短路径的顶点集合，每次从未确定的顶点中选出距起点最近的，将其加入集合，并更新其邻居的距离。 初始化：起点距离为0，其余为∞ 重复： 1. 从未访问顶点中选出距离最小的顶点 u 2. 标记 u 为已访问 3. 对 u 的每个邻居 v：如果 dist[u] + weight(u,v) &lt; dist[v]，更新 dist[v] 使用优先队列（最小堆）优化后，时间复杂度为 O((V + E) log V)。 参考阅读：Dijkstra 算法详解 Floyd-Warshall 算法 解决多源最短路径问题：求任意两个顶点之间的最短路径。 核心思想是动态规划：对于每一对顶点 (i, j)，尝试经过每一个中间顶点 k，看是否能找到更短的路径。 for k in range(n): for i in range(n): for j in range(n): dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]) 时间复杂度 O(V³)，适合顶点数不太多的场景。 参考阅读：Floyd-Warshall 算法详解 A* 算法 A* 是对 Dijkstra 的优化，引入启发函数（Heuristic Function）来指导搜索方向，避免盲目扩展。广泛应用于游戏 AI 中的路径规划和地图导航。 评估函数：f(n) = g(n) + h(n) g(n)：从起点到当前节点的实际代价 h(n)：从当前节点到终点的估计代价（启发函数） 参考阅读：A* 算法详解 最小生成树 最小生成树（Minimum Spanning Tree, MST）要解决的问题是：在一个连通带权图中，找到一棵包含所有顶点的树，使得边权总和最小。典型应用如城市间铺设光缆的最小成本方案。 Kruskal 算法 以边为中心的贪心策略： 将所有边按权重排序 依次选择权重最小的边 如果该边连接的两个顶点不在同一个连通分量中（用并查集判断），则加入生成树 重复直到生成树包含 V-1 条边 时间复杂度：O(E log E)，排序是主要开销。 参考阅读：Kruskal 算法详解 Prim 算法 以顶点为中心的贪心策略： 从任意一个顶点出发，将其加入已选集合 在所有连接已选集合和未选集合的边中，选择权重最小的边 将该边连接的未选顶点加入已选集合 重复直到所有顶点都被选入 使用优先队列优化后，时间复杂度为 O((V + E) log V)。 参考阅读：Prim 算法详解 Kruskal vs Prim：Kruskal 适合稀疏图（边少），Prim 适合稠密图（边多）。 Ford-Fulkerson 最大流算法 最大流问题：在一个有向图中，每条边有容量上限，求从源点（Source）到汇点（Sink）能够传输的最大流量。 实际应用场景： 物流网络中的最大运输量 网络带宽中的最大吞吐量 二分图匹配问题 Ford-Fulkerson 算法的核心思路： 初始化所有边的流量为 0 寻找一条从源点到汇点的增广路径（路径上所有边的剩余容量 &gt; 0） 沿增广路径增加流量（取路径上最小剩余容量） 更新残余图（正向边减少容量，反向边增加容量） 重复直到找不到增广路径 参考阅读： Ford-Fulkerson 最大流算法 最大流算法详解 总结 图论算法是计算机科学中最丰富也最实用的算法领域之一。从基础的 DFS/BFS 遍历，到 Dijkstra/Floyd 最短路径，再到 Kruskal/Prim 最小生成树和 Ford-Fulkerson 最大流，这些算法在路由协议、社交网络分析、推荐系统、地图导航等领域都有广泛应用。 理解这些算法的关键在于把握其核心思想（贪心、动态规划、搜索），然后通过实际编码加深理解。建议从 LeetCode 的图论专题开始练手，逐步建立对图算法的直觉。","headline":"图论算法全景：从基础遍历到最短路径与最大流","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/06/06/GraphAlgorithm.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html">&laquo;  数据结构 </a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/05/31/DataStructure.html">&laquo; 程序员必知的核心数据结构详解</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html">ZooKeeper &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2020/06/06/Zookeeper.html">深入理解ZooKeeper：分布式... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">'图'相关算法</h1>
+    <h1 class="asset-name entry-title">图论算法全景：从基础遍历到最短路径与最大流</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,49 +97,211 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="什么时图">什么时”图”</h4>
+      <p>在数据结构的世界里，线性表描述的是一对一的关系，树描述的是一对多的关系，而”图”则是最通用的结构——它描述的是多对多的关系。社交网络中的好友关系、地图中的路线规划、网络中的路由选择，这些问题的背后都是图论算法在发挥作用。本文将系统梳理图的基本概念、存储方式、遍历策略以及几个经典算法。</p>
+
+<h2 id="什么是图">什么是”图”</h2>
+
+<p>图（Graph）是由顶点（Vertex）和边（Edge）组成的数据结构，用于表示实体之间的关系。简单来说，你可以把图理解为<strong>存储关系的数据结构</strong>。</p>
+
+<p>根据边是否有方向，图分为两类：</p>
+
 <ul>
-  <li>可以简单理解我存储关系的数据结构，比如好友关系</li>
-  <li>分为有向图、无向图</li>
-  <li>存储结构
-    <ul>
-      <li>邻接矩阵（类似多维数组）</li>
-      <li>邻接表  （类似”正”索引）</li>
-      <li>逆邻接表 （类似倒排索引）</li>
-      <li>十字链表  （正倒索引联合）</li>
-    </ul>
-  </li>
+  <li><strong>无向图</strong>：边没有方向，A-B 和 B-A 等价，例如微信好友关系</li>
+  <li><strong>有向图</strong>：边有方向，A→B 不等于 B→A，例如微博关注关系</li>
 </ul>
 
-<h4 id="深度优先遍历-和-广度优先遍历">深度优先遍历 和 广度优先遍历</h4>
+<p>根据边是否有权重，又可分为：</p>
+
 <ul>
-  <li>深度优先遍历，沿着当前分支，直到最后一个节点，然后遍历相邻节点（二叉树的前中后序遍历就是深度优先遍历），重点在回溯</li>
-  <li>广度优先遍历，遍历完当前节点的所有子节点，然后切换到下级节点（类似二叉树的层级遍历），重点在重放</li>
+  <li><strong>无权图</strong>：边仅表示”是否连通”</li>
+  <li><strong>带权图</strong>：边附带权重值，例如城市间的距离、网络链路的带宽</li>
 </ul>
 
-<h4 id="图的-最短路径">图的 “最短路径”</h4>
+<h2 id="图的存储结构">图的存储结构</h2>
+
+<p>如何在计算机中高效存储图？有以下几种经典方案：</p>
+
+<h3 id="邻接矩阵adjacency-matrix">邻接矩阵（Adjacency Matrix）</h3>
+
+<p>使用二维数组 <code class="language-plaintext highlighter-rouge">matrix[i][j]</code> 表示顶点 i 到顶点 j 是否有边。</p>
+
 <ul>
-  <li>迪杰斯特拉算法 Dijkstra，解决带权重的A-&gt;G最短路径 <a href="https://mp.weixin.qq.com/s/ALQntqQJkdWf4RbPaGOOhg">https://mp.weixin.qq.com/s/ALQntqQJkdWf4RbPaGOOhg</a></li>
-  <li>多源最短路径，解决多个带权重节点间的最短路径，弗洛伊德算法 Floyd-Warshall <a href="https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg">https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg</a></li>
-  <li>路径规划之 A* 算法 <a href="https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA">https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA</a></li>
+  <li><strong>优点</strong>：查询两个顶点是否相连是 O(1) 操作</li>
+  <li><strong>缺点</strong>：对于稀疏图浪费大量空间，空间复杂度 O(V²)</li>
 </ul>
 
-<h5 id="最小生成树">最小生成树</h5>
+<h3 id="邻接表adjacency-list">邻接表（Adjacency List）</h3>
+
+<p>每个顶点维护一个链表，存储所有与之相连的顶点。类似于正向索引。</p>
+
 <ul>
-  <li>把所有点在没有回路的情况下，连接起来，并且权重相加最小（权重可以理解为城市见的距离）</li>
-  <li>Kruskal算法，克鲁斯卡尔算法的基本思想是以边为主导地位，始终选择当前可用的最小边权的边（可以直接快排或者algorithm的sort）。每次选择边权最小的边链接两个端点是kruskal的规则，并实时判断两个点之间有没有间接联通。
-（也算是贪心算法思想）<a href="https://blog.csdn.net/qq_41754350/article/details/81460643">https://blog.csdn.net/qq_41754350/article/details/81460643</a></li>
-  <li>prim算法，这个算法是以图的顶点为基础，从一个初始顶点开始，寻找触达其他顶点权值最小的边，并把该顶点加入到已触达顶点的集合中。当全部顶点都加入到集合时，算法的工作就完成了。Prim算法的本质，是基于贪心算法。
-<a href="https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA">https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA</a></li>
+  <li><strong>优点</strong>：节省空间，适合稀疏图</li>
+  <li><strong>缺点</strong>：查询两个顶点是否相连需要遍历链表</li>
 </ul>
 
-<h4 id="ford-fulkerson-最大流算法">Ford-Fulkerson 最大流算法</h4>
+<h3 id="逆邻接表">逆邻接表</h3>
+
+<p>与邻接表方向相反，记录的是”谁指向我”。类似倒排索引。在有向图中，邻接表记录出度，逆邻接表记录入度。</p>
+
+<h3 id="十字链表orthogonal-list">十字链表（Orthogonal List）</h3>
+
+<p>将邻接表和逆邻接表合并的结构，既能快速找到某顶点的出边，也能快速找到入边。适用于需要同时处理出度和入度的有向图场景。</p>
+
+<h2 id="图的遍历">图的遍历</h2>
+
+<h3 id="深度优先搜索dfs-depth-first-search">深度优先搜索（DFS, Depth-First Search）</h3>
+
+<p>DFS 的策略是<strong>一条路走到黑，走不通再回头</strong>。沿着当前分支深入到最后一个节点，然后回溯到上一个分支继续探索。</p>
+
+<p>核心特征：<strong>回溯</strong>。二叉树的前序、中序、后序遍历本质上都是深度优先遍历的特例。</p>
+
+<p>DFS 通常使用递归或显式栈实现：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">dfs</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">visited</span><span class="p">):</span>
+    <span class="n">visited</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+            <span class="nf">dfs</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">,</span> <span class="n">visited</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>时间复杂度：O(V + E)，其中 V 是顶点数，E 是边数。</p>
+
+<h3 id="广度优先搜索bfs-breadth-first-search">广度优先搜索（BFS, Breadth-First Search）</h3>
+
+<p>BFS 的策略是<strong>先访问所有邻居，再访问邻居的邻居</strong>。逐层向外扩展，类似二叉树的层序遍历。</p>
+
+<p>核心特征：<strong>逐层扩展</strong>。BFS 使用队列实现：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+
+<span class="k">def</span> <span class="nf">bfs</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+    <span class="n">visited</span> <span class="o">=</span> <span class="p">{</span><span class="n">start</span><span class="p">}</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="nf">deque</span><span class="p">([</span><span class="n">start</span><span class="p">])</span>
+    <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">queue</span><span class="p">.</span><span class="nf">popleft</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                <span class="n">visited</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">neighbor</span><span class="p">)</span>
+                <span class="n">queue</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">neighbor</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>时间复杂度同样为 O(V + E)。BFS 天然适合<strong>求最短路径</strong>（无权图场景）。</p>
+
+<h2 id="最短路径算法">最短路径算法</h2>
+
+<h3 id="dijkstra-算法">Dijkstra 算法</h3>
+
+<p>解决<strong>单源最短路径</strong>问题：给定一个起点，求到图中所有其他顶点的最短路径。适用于<strong>边权非负</strong>的带权图。</p>
+
+<p>核心思想是贪心：维护一个已确定最短路径的顶点集合，每次从未确定的顶点中选出距起点最近的，将其加入集合，并更新其邻居的距离。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>初始化：起点距离为0，其余为∞
+重复：
+  1. 从未访问顶点中选出距离最小的顶点 u
+  2. 标记 u 为已访问
+  3. 对 u 的每个邻居 v：如果 dist[u] + weight(u,v) &lt; dist[v]，更新 dist[v]
+</code></pre></div></div>
+
+<p>使用优先队列（最小堆）优化后，时间复杂度为 O((V + E) log V)。</p>
+
+<p>参考阅读：<a href="https://mp.weixin.qq.com/s/ALQntqQJkdWf4RbPaGOOhg">Dijkstra 算法详解</a></p>
+
+<h3 id="floyd-warshall-算法">Floyd-Warshall 算法</h3>
+
+<p>解决<strong>多源最短路径</strong>问题：求任意两个顶点之间的最短路径。</p>
+
+<p>核心思想是动态规划：对于每一对顶点 (i, j)，尝试经过每一个中间顶点 k，看是否能找到更短的路径。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for k in range(n):
+    for i in range(n):
+        for j in range(n):
+            dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+</code></pre></div></div>
+
+<p>时间复杂度 O(V³)，适合顶点数不太多的场景。</p>
+
+<p>参考阅读：<a href="https://mp.weixin.qq.com/s/qnPSzv_xWSZN0VpdUgwvMg">Floyd-Warshall 算法详解</a></p>
+
+<h3 id="a-算法">A* 算法</h3>
+
+<p>A* 是对 Dijkstra 的优化，引入启发函数（Heuristic Function）来指导搜索方向，避免盲目扩展。广泛应用于游戏 AI 中的路径规划和地图导航。</p>
+
+<p>评估函数：<code class="language-plaintext highlighter-rouge">f(n) = g(n) + h(n)</code></p>
 <ul>
-  <li>解决的问题：在一个流里，有着每条边的运载能力限制，我最多能从源头运输多少数量到目的地。</li>
-  <li><a href="https://www.cnblogs.com/DarrenChan/p/9563511.html">https://www.cnblogs.com/DarrenChan/p/9563511.html</a></li>
-  <li><a href="https://blog.csdn.net/sinat_41613352/article/details/84481115">https://blog.csdn.net/sinat_41613352/article/details/84481115</a></li>
+  <li><code class="language-plaintext highlighter-rouge">g(n)</code>：从起点到当前节点的实际代价</li>
+  <li><code class="language-plaintext highlighter-rouge">h(n)</code>：从当前节点到终点的估计代价（启发函数）</li>
 </ul>
 
+<p>参考阅读：<a href="https://mp.weixin.qq.com/s/FYKR_1yBKR4GJTn0fFIuAA">A* 算法详解</a></p>
+
+<h2 id="最小生成树">最小生成树</h2>
+
+<p>最小生成树（Minimum Spanning Tree, MST）要解决的问题是：在一个连通带权图中，找到一棵包含所有顶点的树，使得边权总和最小。典型应用如城市间铺设光缆的最小成本方案。</p>
+
+<h3 id="kruskal-算法">Kruskal 算法</h3>
+
+<p><strong>以边为中心</strong>的贪心策略：</p>
+
+<ol>
+  <li>将所有边按权重排序</li>
+  <li>依次选择权重最小的边</li>
+  <li>如果该边连接的两个顶点不在同一个连通分量中（用并查集判断），则加入生成树</li>
+  <li>重复直到生成树包含 V-1 条边</li>
+</ol>
+
+<p>时间复杂度：O(E log E)，排序是主要开销。</p>
+
+<p>参考阅读：<a href="https://blog.csdn.net/qq_41754350/article/details/81460643">Kruskal 算法详解</a></p>
+
+<h3 id="prim-算法">Prim 算法</h3>
+
+<p><strong>以顶点为中心</strong>的贪心策略：</p>
+
+<ol>
+  <li>从任意一个顶点出发，将其加入已选集合</li>
+  <li>在所有连接已选集合和未选集合的边中，选择权重最小的边</li>
+  <li>将该边连接的未选顶点加入已选集合</li>
+  <li>重复直到所有顶点都被选入</li>
+</ol>
+
+<p>使用优先队列优化后，时间复杂度为 O((V + E) log V)。</p>
+
+<p>参考阅读：<a href="https://mp.weixin.qq.com/s/x7JT7re7W7IgNCgMf1kJTA">Prim 算法详解</a></p>
+
+<p><strong>Kruskal vs Prim</strong>：Kruskal 适合稀疏图（边少），Prim 适合稠密图（边多）。</p>
+
+<h2 id="ford-fulkerson-最大流算法">Ford-Fulkerson 最大流算法</h2>
+
+<p>最大流问题：在一个有向图中，每条边有容量上限，求从源点（Source）到汇点（Sink）能够传输的最大流量。</p>
+
+<p>实际应用场景：</p>
+<ul>
+  <li>物流网络中的最大运输量</li>
+  <li>网络带宽中的最大吞吐量</li>
+  <li>二分图匹配问题</li>
+</ul>
+
+<p>Ford-Fulkerson 算法的核心思路：</p>
+
+<ol>
+  <li>初始化所有边的流量为 0</li>
+  <li>寻找一条从源点到汇点的增广路径（路径上所有边的剩余容量 &gt; 0）</li>
+  <li>沿增广路径增加流量（取路径上最小剩余容量）</li>
+  <li>更新残余图（正向边减少容量，反向边增加容量）</li>
+  <li>重复直到找不到增广路径</li>
+</ol>
+
+<p>参考阅读：</p>
+<ul>
+  <li><a href="https://www.cnblogs.com/DarrenChan/p/9563511.html">Ford-Fulkerson 最大流算法</a></li>
+  <li><a href="https://blog.csdn.net/sinat_41613352/article/details/84481115">最大流算法详解</a></li>
+</ul>
+
+<h2 id="总结">总结</h2>
+
+<p>图论算法是计算机科学中最丰富也最实用的算法领域之一。从基础的 DFS/BFS 遍历，到 Dijkstra/Floyd 最短路径，再到 Kruskal/Prim 最小生成树和 Ford-Fulkerson 最大流，这些算法在路由协议、社交网络分析、推荐系统、地图导航等领域都有广泛应用。</p>
+
+<p>理解这些算法的关键在于把握其核心思想（贪心、动态规划、搜索），然后通过实际编码加深理解。建议从 LeetCode 的图论专题开始练手，逐步建立对图算法的直觉。</p>
 
     </div>
   </div>
@@ -169,33 +331,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Http&https抓包 - Code & Coffee</title>
+  <title>Charles 抓包实战：HTTP 与 HTTPS 调试的必备利器 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Http&amp;https抓包 | Code &amp; Coffee</title>
+<title>Charles 抓包实战：HTTP 与 HTTPS 调试的必备利器 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Http&amp;https抓包" />
+<meta property="og:title" content="Charles 抓包实战：HTTP 与 HTTPS 调试的必备利器" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="下载地址 https://www.charlesproxy.com/ 破解charles https://www.zzzmode.com/mytools/charles/ Https抓取 https://www.jianshu.com/p/ec0a38d9a8cf" />
-<meta property="og:description" content="下载地址 https://www.charlesproxy.com/ 破解charles https://www.zzzmode.com/mytools/charles/ Https抓取 https://www.jianshu.com/p/ec0a38d9a8cf" />
+<meta name="description" content="在日常开发和联调中，网络请求的调试是绑定不了的环节。无论是排查接口返回异常、验证请求参数，还是分析第三方 API 的交互细节，一个好用的抓包工具都能大幅提升效率。Charles 就是这样一款广受开发者青睐的 HTTP/HTTPS 代理调试工具。 什么是 Charles Charles 是一款跨平台的 HTTP 代理服务器（HTTP Proxy）/ HTTP 监视器（HTTP Monitor）/ 反向代理（Reverse Proxy），它允许开发者查看所有通过代理的 HTTP 和 SSL/HTTPS 流量。这意味着你可以查看请求、响应以及 HTTP 头（包含 cookies 和缓存信息）。 官方下载地址：https://www.charlesproxy.com/ Charles 的核心功能 1. 请求/响应查看 Charles 能够以结构化的方式展示 HTTP 请求和响应的完整信息，包括： Request Headers：查看请求头中的 Content-Type、Authorization、Cookie 等关键信息 Request Body：表单数据、JSON 请求体等一目了然 Response Headers：服务端返回的状态码、Cache-Control、Set-Cookie 等 Response Body：支持 JSON、XML、HTML 等多种格式的格式化展示 2. 断点调试（Breakpoints） Charles 允许在请求发出前或响应返回前设置断点，你可以： 修改请求参数后再发送到服务器 修改服务器返回的数据后再传递给客户端 模拟各种异常响应，测试客户端的容错能力 3. Map Local / Map Remote Map Local：将某个远程 URL 映射到本地文件，适用于前端资源的本地调试 Map Remote：将请求转发到另一个 URL，常用于接口环境切换 4. 限速模拟（Throttling） 模拟慢速网络环境（如 3G、2G），测试应用在弱网下的表现，这对移动端开发尤为重要。 5. 重发请求（Repeat / Repeat Advanced） 可以快速重发某个请求，也可以设置并发数和重复次数进行简单的压力测试。 HTTPS 抓取配置 HTTPS 抓包是 Charles 使用中最常见也最容易踩坑的环节。由于 HTTPS 的 SSL/TLS 加密机制，Charles 需要作为”中间人”来解密流量。核心步骤如下： PC 端配置 安装 Charles 根证书：菜单栏选择 Help → SSL Proxying → Install Charles Root Certificate，将证书安装到系统信任的根证书存储中 开启 SSL Proxying：进入 Proxy → SSL Proxying Settings，添加需要抓取的域名（可使用 * 通配符匹配所有域名） 验证：访问 HTTPS 站点，确认 Charles 中能看到解密后的明文内容 移动端配置 确保手机和电脑在同一局域网 手机设置 HTTP 代理，指向电脑的 IP 地址和 Charles 的代理端口（默认 8888） 手机浏览器访问 chls.pro/ssl 下载并安装证书 iOS 注意：安装后还需在 设置 → 通用 → 关于本机 → 证书信任设置 中手动开启信任 Android 7.0+：应用默认不再信任用户安装的 CA 证书，需要在应用的 network_security_config.xml 中配置或使用 root 设备 常见使用场景 场景 具体做法 接口联调 查看请求参数和返回值是否符合预期 Mock 数据 使用 Map Local 返回本地 JSON 文件 环境切换 使用 Map Remote 将线上请求重定向到测试环境 弱网测试 使用 Throttling 模拟 3G/丢包 性能分析 查看接口耗时，定位慢请求 排查缓存问题 检查 Cache-Control、ETag 等缓存头 使用技巧 善用过滤：在 Filter 栏输入域名关键词，过滤掉无关请求，专注于目标接口 保存 Session：可以将整个抓包会话保存为 .chls 文件，便于与同事共享排查 Focus 功能：右键某个域名选择 Focus，可以将其独立展示，减少干扰 对比请求：选中两个请求后右键选择 Compare，快速对比差异 替代工具对比 Fiddler：Windows 平台免费，功能与 Charles 类似，但 Mac 上体验较差 mitmproxy：命令行工具，适合自动化测试和 CI/CD 场景，支持 Python 脚本扩展 Wireshark：网络协议层面的抓包，比 Charles 更底层，适合排查 TCP/UDP 层问题 Chrome DevTools：浏览器内置，适合 Web 开发，但无法捕获非浏览器的流量 注意事项 Charles 本质是中间人代理，不要在生产环境中使用，避免敏感数据泄露 抓包完成后记得关闭系统代理设置，否则 Charles 关闭后网络将不可用 部分应用做了 SSL Pinning（证书锁定），即使安装了 Charles 证书也无法抓取，需要配合 Frida 等工具绕过 总结 Charles 是前后端开发者、测试人员和移动端工程师日常工作中不可或缺的调试工具。掌握它的核心功能——请求查看、HTTPS 解密、断点修改和 Map 映射，能让你在接口联调和问题排查中事半功倍。如果你还没有尝试过，不妨现在就下载体验。" />
+<meta property="og:description" content="在日常开发和联调中，网络请求的调试是绑定不了的环节。无论是排查接口返回异常、验证请求参数，还是分析第三方 API 的交互细节，一个好用的抓包工具都能大幅提升效率。Charles 就是这样一款广受开发者青睐的 HTTP/HTTPS 代理调试工具。 什么是 Charles Charles 是一款跨平台的 HTTP 代理服务器（HTTP Proxy）/ HTTP 监视器（HTTP Monitor）/ 反向代理（Reverse Proxy），它允许开发者查看所有通过代理的 HTTP 和 SSL/HTTPS 流量。这意味着你可以查看请求、响应以及 HTTP 头（包含 cookies 和缓存信息）。 官方下载地址：https://www.charlesproxy.com/ Charles 的核心功能 1. 请求/响应查看 Charles 能够以结构化的方式展示 HTTP 请求和响应的完整信息，包括： Request Headers：查看请求头中的 Content-Type、Authorization、Cookie 等关键信息 Request Body：表单数据、JSON 请求体等一目了然 Response Headers：服务端返回的状态码、Cache-Control、Set-Cookie 等 Response Body：支持 JSON、XML、HTML 等多种格式的格式化展示 2. 断点调试（Breakpoints） Charles 允许在请求发出前或响应返回前设置断点，你可以： 修改请求参数后再发送到服务器 修改服务器返回的数据后再传递给客户端 模拟各种异常响应，测试客户端的容错能力 3. Map Local / Map Remote Map Local：将某个远程 URL 映射到本地文件，适用于前端资源的本地调试 Map Remote：将请求转发到另一个 URL，常用于接口环境切换 4. 限速模拟（Throttling） 模拟慢速网络环境（如 3G、2G），测试应用在弱网下的表现，这对移动端开发尤为重要。 5. 重发请求（Repeat / Repeat Advanced） 可以快速重发某个请求，也可以设置并发数和重复次数进行简单的压力测试。 HTTPS 抓取配置 HTTPS 抓包是 Charles 使用中最常见也最容易踩坑的环节。由于 HTTPS 的 SSL/TLS 加密机制，Charles 需要作为”中间人”来解密流量。核心步骤如下： PC 端配置 安装 Charles 根证书：菜单栏选择 Help → SSL Proxying → Install Charles Root Certificate，将证书安装到系统信任的根证书存储中 开启 SSL Proxying：进入 Proxy → SSL Proxying Settings，添加需要抓取的域名（可使用 * 通配符匹配所有域名） 验证：访问 HTTPS 站点，确认 Charles 中能看到解密后的明文内容 移动端配置 确保手机和电脑在同一局域网 手机设置 HTTP 代理，指向电脑的 IP 地址和 Charles 的代理端口（默认 8888） 手机浏览器访问 chls.pro/ssl 下载并安装证书 iOS 注意：安装后还需在 设置 → 通用 → 关于本机 → 证书信任设置 中手动开启信任 Android 7.0+：应用默认不再信任用户安装的 CA 证书，需要在应用的 network_security_config.xml 中配置或使用 root 设备 常见使用场景 场景 具体做法 接口联调 查看请求参数和返回值是否符合预期 Mock 数据 使用 Map Local 返回本地 JSON 文件 环境切换 使用 Map Remote 将线上请求重定向到测试环境 弱网测试 使用 Throttling 模拟 3G/丢包 性能分析 查看接口耗时，定位慢请求 排查缓存问题 检查 Cache-Control、ETag 等缓存头 使用技巧 善用过滤：在 Filter 栏输入域名关键词，过滤掉无关请求，专注于目标接口 保存 Session：可以将整个抓包会话保存为 .chls 文件，便于与同事共享排查 Focus 功能：右键某个域名选择 Focus，可以将其独立展示，减少干扰 对比请求：选中两个请求后右键选择 Compare，快速对比差异 替代工具对比 Fiddler：Windows 平台免费，功能与 Charles 类似，但 Mac 上体验较差 mitmproxy：命令行工具，适合自动化测试和 CI/CD 场景，支持 Python 脚本扩展 Wireshark：网络协议层面的抓包，比 Charles 更底层，适合排查 TCP/UDP 层问题 Chrome DevTools：浏览器内置，适合 Web 开发，但无法捕获非浏览器的流量 注意事项 Charles 本质是中间人代理，不要在生产环境中使用，避免敏感数据泄露 抓包完成后记得关闭系统代理设置，否则 Charles 关闭后网络将不可用 部分应用做了 SSL Pinning（证书锁定），即使安装了 Charles 证书也无法抓取，需要配合 Frida 等工具绕过 总结 Charles 是前后端开发者、测试人员和移动端工程师日常工作中不可或缺的调试工具。掌握它的核心功能——请求查看、HTTPS 解密、断点修改和 Map 映射，能让你在接口联调和问题排查中事半功倍。如果你还没有尝试过，不妨现在就下载体验。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-05-27T18:00:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Http&amp;https抓包" />
+<meta property="twitter:title" content="Charles 抓包实战：HTTP 与 HTTPS 调试的必备利器" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-05-27T18:00:00+08:00","datePublished":"2019-05-27T18:00:00+08:00","description":"下载地址 https://www.charlesproxy.com/ 破解charles https://www.zzzmode.com/mytools/charles/ Https抓取 https://www.jianshu.com/p/ec0a38d9a8cf","headline":"Http&amp;https抓包","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-05-27T18:00:00+08:00","datePublished":"2019-05-27T18:00:00+08:00","description":"在日常开发和联调中，网络请求的调试是绑定不了的环节。无论是排查接口返回异常、验证请求参数，还是分析第三方 API 的交互细节，一个好用的抓包工具都能大幅提升效率。Charles 就是这样一款广受开发者青睐的 HTTP/HTTPS 代理调试工具。 什么是 Charles Charles 是一款跨平台的 HTTP 代理服务器（HTTP Proxy）/ HTTP 监视器（HTTP Monitor）/ 反向代理（Reverse Proxy），它允许开发者查看所有通过代理的 HTTP 和 SSL/HTTPS 流量。这意味着你可以查看请求、响应以及 HTTP 头（包含 cookies 和缓存信息）。 官方下载地址：https://www.charlesproxy.com/ Charles 的核心功能 1. 请求/响应查看 Charles 能够以结构化的方式展示 HTTP 请求和响应的完整信息，包括： Request Headers：查看请求头中的 Content-Type、Authorization、Cookie 等关键信息 Request Body：表单数据、JSON 请求体等一目了然 Response Headers：服务端返回的状态码、Cache-Control、Set-Cookie 等 Response Body：支持 JSON、XML、HTML 等多种格式的格式化展示 2. 断点调试（Breakpoints） Charles 允许在请求发出前或响应返回前设置断点，你可以： 修改请求参数后再发送到服务器 修改服务器返回的数据后再传递给客户端 模拟各种异常响应，测试客户端的容错能力 3. Map Local / Map Remote Map Local：将某个远程 URL 映射到本地文件，适用于前端资源的本地调试 Map Remote：将请求转发到另一个 URL，常用于接口环境切换 4. 限速模拟（Throttling） 模拟慢速网络环境（如 3G、2G），测试应用在弱网下的表现，这对移动端开发尤为重要。 5. 重发请求（Repeat / Repeat Advanced） 可以快速重发某个请求，也可以设置并发数和重复次数进行简单的压力测试。 HTTPS 抓取配置 HTTPS 抓包是 Charles 使用中最常见也最容易踩坑的环节。由于 HTTPS 的 SSL/TLS 加密机制，Charles 需要作为”中间人”来解密流量。核心步骤如下： PC 端配置 安装 Charles 根证书：菜单栏选择 Help → SSL Proxying → Install Charles Root Certificate，将证书安装到系统信任的根证书存储中 开启 SSL Proxying：进入 Proxy → SSL Proxying Settings，添加需要抓取的域名（可使用 * 通配符匹配所有域名） 验证：访问 HTTPS 站点，确认 Charles 中能看到解密后的明文内容 移动端配置 确保手机和电脑在同一局域网 手机设置 HTTP 代理，指向电脑的 IP 地址和 Charles 的代理端口（默认 8888） 手机浏览器访问 chls.pro/ssl 下载并安装证书 iOS 注意：安装后还需在 设置 → 通用 → 关于本机 → 证书信任设置 中手动开启信任 Android 7.0+：应用默认不再信任用户安装的 CA 证书，需要在应用的 network_security_config.xml 中配置或使用 root 设备 常见使用场景 场景 具体做法 接口联调 查看请求参数和返回值是否符合预期 Mock 数据 使用 Map Local 返回本地 JSON 文件 环境切换 使用 Map Remote 将线上请求重定向到测试环境 弱网测试 使用 Throttling 模拟 3G/丢包 性能分析 查看接口耗时，定位慢请求 排查缓存问题 检查 Cache-Control、ETag 等缓存头 使用技巧 善用过滤：在 Filter 栏输入域名关键词，过滤掉无关请求，专注于目标接口 保存 Session：可以将整个抓包会话保存为 .chls 文件，便于与同事共享排查 Focus 功能：右键某个域名选择 Focus，可以将其独立展示，减少干扰 对比请求：选中两个请求后右键选择 Compare，快速对比差异 替代工具对比 Fiddler：Windows 平台免费，功能与 Charles 类似，但 Mac 上体验较差 mitmproxy：命令行工具，适合自动化测试和 CI/CD 场景，支持 Python 脚本扩展 Wireshark：网络协议层面的抓包，比 Charles 更底层，适合排查 TCP/UDP 层问题 Chrome DevTools：浏览器内置，适合 Web 开发，但无法捕获非浏览器的流量 注意事项 Charles 本质是中间人代理，不要在生产环境中使用，避免敏感数据泄露 抓包完成后记得关闭系统代理设置，否则 Charles 关闭后网络将不可用 部分应用做了 SSL Pinning（证书锁定），即使安装了 Charles 证书也无法抓取，需要配合 Frida 等工具绕过 总结 Charles 是前后端开发者、测试人员和移动端工程师日常工作中不可或缺的调试工具。掌握它的核心功能——请求查看、HTTPS 解密、断点修改和 Map 映射，能让你在接口联调和问题排查中事半功倍。如果你还没有尝试过，不妨现在就下载体验。","headline":"Charles 抓包实战：HTTP 与 HTTPS 调试的必备利器","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/05/27/charles.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html">&laquo; TCP/IP十问</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/27/TCP-IP.html">&laquo; 深入理解TCP/IP协议：从三次握...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html">markdown-github-j... &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/05/27/markdown-github-jekyll.html">从零搭建个人技术博客：Jekyll... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">Http&https抓包</h1>
+    <h1 class="asset-name entry-title">Charles 抓包实战：HTTP 与 HTTPS 调试的必备利器</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,14 +97,140 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h4 id="下载地址">下载地址</h4>
-<p><a href="https://www.charlesproxy.com/">https://www.charlesproxy.com/</a></p>
+      <p>在日常开发和联调中，网络请求的调试是绑定不了的环节。无论是排查接口返回异常、验证请求参数，还是分析第三方 API 的交互细节，一个好用的抓包工具都能大幅提升效率。Charles 就是这样一款广受开发者青睐的 HTTP/HTTPS 代理调试工具。</p>
 
-<h4 id="破解charles">破解charles</h4>
-<p><a href="https://www.zzzmode.com/mytools/charles/">https://www.zzzmode.com/mytools/charles/</a></p>
+<h3 id="什么是-charles">什么是 Charles</h3>
 
-<h4 id="https抓取">Https抓取</h4>
-<p><a href="https://www.jianshu.com/p/ec0a38d9a8cf">https://www.jianshu.com/p/ec0a38d9a8cf</a></p>
+<p>Charles 是一款跨平台的 HTTP 代理服务器（HTTP Proxy）/ HTTP 监视器（HTTP Monitor）/ 反向代理（Reverse Proxy），它允许开发者查看所有通过代理的 HTTP 和 SSL/HTTPS 流量。这意味着你可以查看请求、响应以及 HTTP 头（包含 cookies 和缓存信息）。</p>
+
+<p>官方下载地址：<a href="https://www.charlesproxy.com/">https://www.charlesproxy.com/</a></p>
+
+<h3 id="charles-的核心功能">Charles 的核心功能</h3>
+
+<h4 id="1-请求响应查看">1. 请求/响应查看</h4>
+
+<p>Charles 能够以结构化的方式展示 HTTP 请求和响应的完整信息，包括：</p>
+
+<ul>
+  <li><strong>Request Headers</strong>：查看请求头中的 Content-Type、Authorization、Cookie 等关键信息</li>
+  <li><strong>Request Body</strong>：表单数据、JSON 请求体等一目了然</li>
+  <li><strong>Response Headers</strong>：服务端返回的状态码、Cache-Control、Set-Cookie 等</li>
+  <li><strong>Response Body</strong>：支持 JSON、XML、HTML 等多种格式的格式化展示</li>
+</ul>
+
+<h4 id="2-断点调试breakpoints">2. 断点调试（Breakpoints）</h4>
+
+<p>Charles 允许在请求发出前或响应返回前设置断点，你可以：</p>
+
+<ul>
+  <li>修改请求参数后再发送到服务器</li>
+  <li>修改服务器返回的数据后再传递给客户端</li>
+  <li>模拟各种异常响应，测试客户端的容错能力</li>
+</ul>
+
+<h4 id="3-map-local--map-remote">3. Map Local / Map Remote</h4>
+
+<ul>
+  <li><strong>Map Local</strong>：将某个远程 URL 映射到本地文件，适用于前端资源的本地调试</li>
+  <li><strong>Map Remote</strong>：将请求转发到另一个 URL，常用于接口环境切换</li>
+</ul>
+
+<h4 id="4-限速模拟throttling">4. 限速模拟（Throttling）</h4>
+
+<p>模拟慢速网络环境（如 3G、2G），测试应用在弱网下的表现，这对移动端开发尤为重要。</p>
+
+<h4 id="5-重发请求repeat--repeat-advanced">5. 重发请求（Repeat / Repeat Advanced）</h4>
+
+<p>可以快速重发某个请求，也可以设置并发数和重复次数进行简单的压力测试。</p>
+
+<h3 id="https-抓取配置">HTTPS 抓取配置</h3>
+
+<p>HTTPS 抓包是 Charles 使用中最常见也最容易踩坑的环节。由于 HTTPS 的 SSL/TLS 加密机制，Charles 需要作为”中间人”来解密流量。核心步骤如下：</p>
+
+<h4 id="pc-端配置">PC 端配置</h4>
+
+<ol>
+  <li><strong>安装 Charles 根证书</strong>：菜单栏选择 <code class="language-plaintext highlighter-rouge">Help → SSL Proxying → Install Charles Root Certificate</code>，将证书安装到系统信任的根证书存储中</li>
+  <li><strong>开启 SSL Proxying</strong>：进入 <code class="language-plaintext highlighter-rouge">Proxy → SSL Proxying Settings</code>，添加需要抓取的域名（可使用 <code class="language-plaintext highlighter-rouge">*</code> 通配符匹配所有域名）</li>
+  <li><strong>验证</strong>：访问 HTTPS 站点，确认 Charles 中能看到解密后的明文内容</li>
+</ol>
+
+<h4 id="移动端配置">移动端配置</h4>
+
+<ol>
+  <li>确保手机和电脑在同一局域网</li>
+  <li>手机设置 HTTP 代理，指向电脑的 IP 地址和 Charles 的代理端口（默认 8888）</li>
+  <li>手机浏览器访问 <code class="language-plaintext highlighter-rouge">chls.pro/ssl</code> 下载并安装证书</li>
+  <li><strong>iOS 注意</strong>：安装后还需在 <code class="language-plaintext highlighter-rouge">设置 → 通用 → 关于本机 → 证书信任设置</code> 中手动开启信任</li>
+  <li><strong>Android 7.0+</strong>：应用默认不再信任用户安装的 CA 证书，需要在应用的 <code class="language-plaintext highlighter-rouge">network_security_config.xml</code> 中配置或使用 root 设备</li>
+</ol>
+
+<h3 id="常见使用场景">常见使用场景</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>场景</th>
+      <th>具体做法</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>接口联调</td>
+      <td>查看请求参数和返回值是否符合预期</td>
+    </tr>
+    <tr>
+      <td>Mock 数据</td>
+      <td>使用 Map Local 返回本地 JSON 文件</td>
+    </tr>
+    <tr>
+      <td>环境切换</td>
+      <td>使用 Map Remote 将线上请求重定向到测试环境</td>
+    </tr>
+    <tr>
+      <td>弱网测试</td>
+      <td>使用 Throttling 模拟 3G/丢包</td>
+    </tr>
+    <tr>
+      <td>性能分析</td>
+      <td>查看接口耗时，定位慢请求</td>
+    </tr>
+    <tr>
+      <td>排查缓存问题</td>
+      <td>检查 Cache-Control、ETag 等缓存头</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="使用技巧">使用技巧</h3>
+
+<ol>
+  <li><strong>善用过滤</strong>：在 Filter 栏输入域名关键词，过滤掉无关请求，专注于目标接口</li>
+  <li><strong>保存 Session</strong>：可以将整个抓包会话保存为 <code class="language-plaintext highlighter-rouge">.chls</code> 文件，便于与同事共享排查</li>
+  <li><strong>Focus 功能</strong>：右键某个域名选择 Focus，可以将其独立展示，减少干扰</li>
+  <li><strong>对比请求</strong>：选中两个请求后右键选择 Compare，快速对比差异</li>
+</ol>
+
+<h3 id="替代工具对比">替代工具对比</h3>
+
+<ul>
+  <li><strong>Fiddler</strong>：Windows 平台免费，功能与 Charles 类似，但 Mac 上体验较差</li>
+  <li><strong>mitmproxy</strong>：命令行工具，适合自动化测试和 CI/CD 场景，支持 Python 脚本扩展</li>
+  <li><strong>Wireshark</strong>：网络协议层面的抓包，比 Charles 更底层，适合排查 TCP/UDP 层问题</li>
+  <li><strong>Chrome DevTools</strong>：浏览器内置，适合 Web 开发，但无法捕获非浏览器的流量</li>
+</ul>
+
+<h3 id="注意事项">注意事项</h3>
+
+<ul>
+  <li>Charles 本质是中间人代理，<strong>不要在生产环境中使用</strong>，避免敏感数据泄露</li>
+  <li>抓包完成后记得关闭系统代理设置，否则 Charles 关闭后网络将不可用</li>
+  <li>部分应用做了 SSL Pinning（证书锁定），即使安装了 Charles 证书也无法抓取，需要配合 Frida 等工具绕过</li>
+</ul>
+
+<h3 id="总结">总结</h3>
+
+<p>Charles 是前后端开发者、测试人员和移动端工程师日常工作中不可或缺的调试工具。掌握它的核心功能——请求查看、HTTPS 解密、断点修改和 Map 映射，能让你在接口联调和问题排查中事半功倍。如果你还没有尝试过，不妨现在就下载体验。</p>
 
     </div>
   </div>
@@ -134,33 +260,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     

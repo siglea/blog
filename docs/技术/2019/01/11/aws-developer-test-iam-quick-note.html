@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>aws developer associate test IAM quick note - Code & Coffee</title>
+  <title>深入理解 AWS IAM：身份与访问管理核心概念及实践 - Code & Coffee</title>
   <meta name="description" content="探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。">
   <link rel="stylesheet" href="/blog/css/main.css">
   <link rel="alternate" type="application/rss+xml" title="Code & Coffee" href="/blog/feed.xml">
   <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>aws developer associate test IAM quick note | Code &amp; Coffee</title>
+<title>深入理解 AWS IAM：身份与访问管理核心概念及实践 | Code &amp; Coffee</title>
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="aws developer associate test IAM quick note" />
+<meta property="og:title" content="深入理解 AWS IAM：身份与访问管理核心概念及实践" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="iam components: user, group, role, policy user has many groups role is defined for aws resources policy can be used to define role, user, group access policy is a json file defining one or more permissions create a user console need user name and password can reqeust to reset password programtic access key id, access key secret only able to see the secret when creating the user, need to download the csv for further reference create a role can create from a aws resource e.g EC2 giving s3 read permission, any instance has this role attached can access S3 exam tips iam is global, does not relate to region root account is the account first created, shouldn’t use this account normally always use MFA on root account" />
-<meta property="og:description" content="iam components: user, group, role, policy user has many groups role is defined for aws resources policy can be used to define role, user, group access policy is a json file defining one or more permissions create a user console need user name and password can reqeust to reset password programtic access key id, access key secret only able to see the secret when creating the user, need to download the csv for further reference create a role can create from a aws resource e.g EC2 giving s3 read permission, any instance has this role attached can access S3 exam tips iam is global, does not relate to region root account is the account first created, shouldn’t use this account normally always use MFA on root account" />
+<meta name="description" content="在云计算时代，安全是一切架构的基础。AWS Identity and Access Management（IAM）作为 AWS 安全体系的基石，控制着”谁可以在什么条件下对哪些资源执行什么操作”。无论你是准备 AWS Developer Associate 认证考试，还是在实际项目中需要配置权限管理，深入理解 IAM 都是必修课。 IAM 是什么 IAM 是 AWS 提供的免费服务，用于安全地管理对 AWS 资源的访问。它的核心能力包括： 身份认证（Authentication）：确认”你是谁” 授权（Authorization）：决定”你能做什么” 全局服务：IAM 是全球性的，不绑定到任何特定 Region IAM 四大核心组件 IAM 的权限模型围绕四个关键概念构建： 1. User（用户） User 代表一个具体的人或应用程序。每个 User 拥有独立的凭证，用于访问 AWS 资源。 创建用户时有两种访问方式： 控制台访问（Console Access） 需要设置用户名和密码 可以要求用户首次登录时重置密码 适用于需要通过 Web 管理界面操作 AWS 的场景 编程访问（Programmatic Access） 生成 Access Key ID 和 Secret Access Key Secret Access Key 仅在创建时显示一次，必须立即下载 CSV 文件妥善保存 适用于 CLI、SDK、API 调用等自动化场景 2. Group（组） Group 是 User 的集合，用于批量管理权限。例如： Developers 组：赋予 EC2、S3、CodeDeploy 等开发相关权限 DBAdmins 组：赋予 RDS、DynamoDB 管理权限 ReadOnly 组：仅赋予只读权限 一个 User 可以属于多个 Group，Group 不能嵌套（即 Group 不能包含其他 Group）。 3. Role（角色） Role 是为 AWS 资源或外部身份定义的临时权限集合。与 User 不同，Role 没有长期凭证，而是通过 STS（Security Token Service）签发临时凭证。 典型使用场景： EC2 实例角色：为 EC2 实例附加 Role，使其能够访问 S3 存储桶，而无需在实例中硬编码 Access Key 跨账号访问：允许另一个 AWS 账号的用户临时访问你的资源 联合身份：允许企业 AD 用户通过 SAML 登录 AWS 例如：创建一个 EC2-S3-ReadOnly 角色 → 受信实体：EC2 服务 → 附加策略：AmazonS3ReadOnlyAccess → 任何附加了此角色的 EC2 实例都可以读取 S3 数据 4. Policy（策略） Policy 是一个 JSON 文档，精确定义了允许或拒绝的操作。策略可以附加到 User、Group 或 Role 上。 一个典型的 Policy 文档结构： { &quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [ { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;s3:GetObject&quot;, &quot;s3:ListBucket&quot; ], &quot;Resource&quot;: [ &quot;arn:aws:s3:::my-bucket&quot;, &quot;arn:aws:s3:::my-bucket/*&quot; ] } ] } 关键字段说明： 字段 含义 Effect Allow 或 Deny Action 允许/拒绝的具体 API 操作 Resource 策略适用的 AWS 资源 ARN Condition 可选，限制策略生效的条件（如 IP 范围、时间等） IAM 最佳实践 在实际项目和考试中，以下最佳实践都是高频考点： 永远不要使用 Root 账号进行日常操作：Root 账号是创建 AWS 账号时的初始账号，拥有不可限制的完整权限 为 Root 账号启用 MFA（多因素认证）：即使密码泄露，攻击者也无法登录 遵循最小权限原则（Least Privilege）：只赋予完成任务所需的最小权限 使用 Group 管理权限：避免直接为单个 User 附加策略 定期轮换凭证：Access Key 应定期更换 使用 Role 而非 Access Key：在 AWS 资源之间交互时，优先使用 Role IAM 权限评估逻辑 当一个请求到达 AWS 时，IAM 按以下逻辑评估权限： 默认所有请求被隐式拒绝（Implicit Deny） 检查所有适用的策略，如果有 Allow，则进入下一步 如果有任何 Explicit Deny，则最终拒绝（Deny 始终优先于 Allow） 简单记忆：Deny &gt; Allow &gt; Default Deny 考试要点总结 IAM 是全局服务，不关联任何特定 Region Root 账号不应用于日常操作，务必开启 MFA Access Key Secret 仅在创建时可见，丢失只能重新生成 Policy 是 JSON 格式，可附加到 User、Group、Role Role 用于 AWS 资源间授权，优先于硬编码凭证 权限评估遵循 Explicit Deny &gt; Allow &gt; Implicit Deny 掌握 IAM 不仅是通过认证考试的关键，更是在实际 AWS 项目中构建安全架构的基础。建议在理解概念后，亲自在 AWS 控制台动手操作，加深理解。" />
+<meta property="og:description" content="在云计算时代，安全是一切架构的基础。AWS Identity and Access Management（IAM）作为 AWS 安全体系的基石，控制着”谁可以在什么条件下对哪些资源执行什么操作”。无论你是准备 AWS Developer Associate 认证考试，还是在实际项目中需要配置权限管理，深入理解 IAM 都是必修课。 IAM 是什么 IAM 是 AWS 提供的免费服务，用于安全地管理对 AWS 资源的访问。它的核心能力包括： 身份认证（Authentication）：确认”你是谁” 授权（Authorization）：决定”你能做什么” 全局服务：IAM 是全球性的，不绑定到任何特定 Region IAM 四大核心组件 IAM 的权限模型围绕四个关键概念构建： 1. User（用户） User 代表一个具体的人或应用程序。每个 User 拥有独立的凭证，用于访问 AWS 资源。 创建用户时有两种访问方式： 控制台访问（Console Access） 需要设置用户名和密码 可以要求用户首次登录时重置密码 适用于需要通过 Web 管理界面操作 AWS 的场景 编程访问（Programmatic Access） 生成 Access Key ID 和 Secret Access Key Secret Access Key 仅在创建时显示一次，必须立即下载 CSV 文件妥善保存 适用于 CLI、SDK、API 调用等自动化场景 2. Group（组） Group 是 User 的集合，用于批量管理权限。例如： Developers 组：赋予 EC2、S3、CodeDeploy 等开发相关权限 DBAdmins 组：赋予 RDS、DynamoDB 管理权限 ReadOnly 组：仅赋予只读权限 一个 User 可以属于多个 Group，Group 不能嵌套（即 Group 不能包含其他 Group）。 3. Role（角色） Role 是为 AWS 资源或外部身份定义的临时权限集合。与 User 不同，Role 没有长期凭证，而是通过 STS（Security Token Service）签发临时凭证。 典型使用场景： EC2 实例角色：为 EC2 实例附加 Role，使其能够访问 S3 存储桶，而无需在实例中硬编码 Access Key 跨账号访问：允许另一个 AWS 账号的用户临时访问你的资源 联合身份：允许企业 AD 用户通过 SAML 登录 AWS 例如：创建一个 EC2-S3-ReadOnly 角色 → 受信实体：EC2 服务 → 附加策略：AmazonS3ReadOnlyAccess → 任何附加了此角色的 EC2 实例都可以读取 S3 数据 4. Policy（策略） Policy 是一个 JSON 文档，精确定义了允许或拒绝的操作。策略可以附加到 User、Group 或 Role 上。 一个典型的 Policy 文档结构： { &quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [ { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;s3:GetObject&quot;, &quot;s3:ListBucket&quot; ], &quot;Resource&quot;: [ &quot;arn:aws:s3:::my-bucket&quot;, &quot;arn:aws:s3:::my-bucket/*&quot; ] } ] } 关键字段说明： 字段 含义 Effect Allow 或 Deny Action 允许/拒绝的具体 API 操作 Resource 策略适用的 AWS 资源 ARN Condition 可选，限制策略生效的条件（如 IP 范围、时间等） IAM 最佳实践 在实际项目和考试中，以下最佳实践都是高频考点： 永远不要使用 Root 账号进行日常操作：Root 账号是创建 AWS 账号时的初始账号，拥有不可限制的完整权限 为 Root 账号启用 MFA（多因素认证）：即使密码泄露，攻击者也无法登录 遵循最小权限原则（Least Privilege）：只赋予完成任务所需的最小权限 使用 Group 管理权限：避免直接为单个 User 附加策略 定期轮换凭证：Access Key 应定期更换 使用 Role 而非 Access Key：在 AWS 资源之间交互时，优先使用 Role IAM 权限评估逻辑 当一个请求到达 AWS 时，IAM 按以下逻辑评估权限： 默认所有请求被隐式拒绝（Implicit Deny） 检查所有适用的策略，如果有 Allow，则进入下一步 如果有任何 Explicit Deny，则最终拒绝（Deny 始终优先于 Allow） 简单记忆：Deny &gt; Allow &gt; Default Deny 考试要点总结 IAM 是全局服务，不关联任何特定 Region Root 账号不应用于日常操作，务必开启 MFA Access Key Secret 仅在创建时可见，丢失只能重新生成 Policy 是 JSON 格式，可附加到 User、Group、Role Role 用于 AWS 资源间授权，优先于硬编码凭证 权限评估遵循 Explicit Deny &gt; Allow &gt; Implicit Deny 掌握 IAM 不仅是通过认证考试的关键，更是在实际 AWS 项目中构建安全架构的基础。建议在理解概念后，亲自在 AWS 控制台动手操作，加深理解。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-01-11T22:30:09+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="aws developer associate test IAM quick note" />
+<meta property="twitter:title" content="深入理解 AWS IAM：身份与访问管理核心概念及实践" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-01-11T22:30:09+08:00","datePublished":"2019-01-11T22:30:09+08:00","description":"iam components: user, group, role, policy user has many groups role is defined for aws resources policy can be used to define role, user, group access policy is a json file defining one or more permissions create a user console need user name and password can reqeust to reset password programtic access key id, access key secret only able to see the secret when creating the user, need to download the csv for further reference create a role can create from a aws resource e.g EC2 giving s3 read permission, any instance has this role attached can access S3 exam tips iam is global, does not relate to region root account is the account first created, shouldn’t use this account normally always use MFA on root account","headline":"aws developer associate test IAM quick note","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-01-11T22:30:09+08:00","datePublished":"2019-01-11T22:30:09+08:00","description":"在云计算时代，安全是一切架构的基础。AWS Identity and Access Management（IAM）作为 AWS 安全体系的基石，控制着”谁可以在什么条件下对哪些资源执行什么操作”。无论你是准备 AWS Developer Associate 认证考试，还是在实际项目中需要配置权限管理，深入理解 IAM 都是必修课。 IAM 是什么 IAM 是 AWS 提供的免费服务，用于安全地管理对 AWS 资源的访问。它的核心能力包括： 身份认证（Authentication）：确认”你是谁” 授权（Authorization）：决定”你能做什么” 全局服务：IAM 是全球性的，不绑定到任何特定 Region IAM 四大核心组件 IAM 的权限模型围绕四个关键概念构建： 1. User（用户） User 代表一个具体的人或应用程序。每个 User 拥有独立的凭证，用于访问 AWS 资源。 创建用户时有两种访问方式： 控制台访问（Console Access） 需要设置用户名和密码 可以要求用户首次登录时重置密码 适用于需要通过 Web 管理界面操作 AWS 的场景 编程访问（Programmatic Access） 生成 Access Key ID 和 Secret Access Key Secret Access Key 仅在创建时显示一次，必须立即下载 CSV 文件妥善保存 适用于 CLI、SDK、API 调用等自动化场景 2. Group（组） Group 是 User 的集合，用于批量管理权限。例如： Developers 组：赋予 EC2、S3、CodeDeploy 等开发相关权限 DBAdmins 组：赋予 RDS、DynamoDB 管理权限 ReadOnly 组：仅赋予只读权限 一个 User 可以属于多个 Group，Group 不能嵌套（即 Group 不能包含其他 Group）。 3. Role（角色） Role 是为 AWS 资源或外部身份定义的临时权限集合。与 User 不同，Role 没有长期凭证，而是通过 STS（Security Token Service）签发临时凭证。 典型使用场景： EC2 实例角色：为 EC2 实例附加 Role，使其能够访问 S3 存储桶，而无需在实例中硬编码 Access Key 跨账号访问：允许另一个 AWS 账号的用户临时访问你的资源 联合身份：允许企业 AD 用户通过 SAML 登录 AWS 例如：创建一个 EC2-S3-ReadOnly 角色 → 受信实体：EC2 服务 → 附加策略：AmazonS3ReadOnlyAccess → 任何附加了此角色的 EC2 实例都可以读取 S3 数据 4. Policy（策略） Policy 是一个 JSON 文档，精确定义了允许或拒绝的操作。策略可以附加到 User、Group 或 Role 上。 一个典型的 Policy 文档结构： { &quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [ { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;s3:GetObject&quot;, &quot;s3:ListBucket&quot; ], &quot;Resource&quot;: [ &quot;arn:aws:s3:::my-bucket&quot;, &quot;arn:aws:s3:::my-bucket/*&quot; ] } ] } 关键字段说明： 字段 含义 Effect Allow 或 Deny Action 允许/拒绝的具体 API 操作 Resource 策略适用的 AWS 资源 ARN Condition 可选，限制策略生效的条件（如 IP 范围、时间等） IAM 最佳实践 在实际项目和考试中，以下最佳实践都是高频考点： 永远不要使用 Root 账号进行日常操作：Root 账号是创建 AWS 账号时的初始账号，拥有不可限制的完整权限 为 Root 账号启用 MFA（多因素认证）：即使密码泄露，攻击者也无法登录 遵循最小权限原则（Least Privilege）：只赋予完成任务所需的最小权限 使用 Group 管理权限：避免直接为单个 User 附加策略 定期轮换凭证：Access Key 应定期更换 使用 Role 而非 Access Key：在 AWS 资源之间交互时，优先使用 Role IAM 权限评估逻辑 当一个请求到达 AWS 时，IAM 按以下逻辑评估权限： 默认所有请求被隐式拒绝（Implicit Deny） 检查所有适用的策略，如果有 Allow，则进入下一步 如果有任何 Explicit Deny，则最终拒绝（Deny 始终优先于 Allow） 简单记忆：Deny &gt; Allow &gt; Default Deny 考试要点总结 IAM 是全局服务，不关联任何特定 Region Root 账号不应用于日常操作，务必开启 MFA Access Key Secret 仅在创建时可见，丢失只能重新生成 Policy 是 JSON 格式，可附加到 User、Group、Role Role 用于 AWS 资源间授权，优先于硬编码凭证 权限评估遵循 Explicit Deny &gt; Allow &gt; Implicit Deny 掌握 IAM 不仅是通过认证考试的关键，更是在实际 AWS 项目中构建安全架构的基础。建议在理解概念后，亲自在 AWS 控制台动手操作，加深理解。","headline":"深入理解 AWS IAM：身份与访问管理核心概念及实践","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/01/11/aws-developer-test-iam-quick-note.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -72,16 +72,16 @@
     </div>
     <div class="entry-location">
       
-      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html">&laquo; Numpy学习笔记</a></span>
+      <span class="nav-prev"><a href="/blog/%E6%8A%80%E6%9C%AF/2018/12/26/numpy-study-notes-1.html">&laquo; NumPy入门指南：数组操作、切片...</a></span>
       
       
-      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/02/27/aws-developer-associate-code-deploy-quick-note.html">aws developer ass... &raquo;</a></span>
+      <span class="nav-next"><a href="/blog/%E6%8A%80%E6%9C%AF/2019/02/27/aws-developer-associate-code-deploy-quick-note.html">AWS CodeDeploy 部署... &raquo;</a></span>
       
     </div>
   </div>
 
   <div class="asset-header">
-    <h1 class="asset-name entry-title">aws developer associate test IAM quick note</h1>
+    <h1 class="asset-name entry-title">深入理解 AWS IAM：身份与访问管理核心概念及实践</h1>
   </div>
 
   <div class="asset-meta">
@@ -97,47 +97,162 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-      <h1 id="iam">iam</h1>
+      <p>在云计算时代，安全是一切架构的基础。AWS Identity and Access Management（IAM）作为 AWS 安全体系的基石，控制着”谁可以在什么条件下对哪些资源执行什么操作”。无论你是准备 AWS Developer Associate 认证考试，还是在实际项目中需要配置权限管理，深入理解 IAM 都是必修课。</p>
+
+<h2 id="iam-是什么">IAM 是什么</h2>
+
+<p>IAM 是 AWS 提供的免费服务，用于安全地管理对 AWS 资源的访问。它的核心能力包括：</p>
+
 <ul>
-  <li>components: <code class="language-plaintext highlighter-rouge">user, group, role, policy</code></li>
-  <li>user has many groups</li>
-  <li>role is defined for aws resources</li>
-  <li>policy can be used to define <code class="language-plaintext highlighter-rouge">role, user, group</code> access</li>
-  <li>policy is a json file defining one or more permissions</li>
+  <li><strong>身份认证（Authentication）</strong>：确认”你是谁”</li>
+  <li><strong>授权（Authorization）</strong>：决定”你能做什么”</li>
+  <li><strong>全局服务</strong>：IAM 是全球性的，不绑定到任何特定 Region</li>
 </ul>
 
-<h2 id="create-a-user">create a user</h2>
-<ol>
-  <li>console
-    <ul>
-      <li>need user name and password</li>
-      <li>can reqeust to reset password</li>
-    </ul>
-  </li>
-  <li>programtic
-    <ul>
-      <li>access key id, access key secret</li>
-      <li>only able to see the secret when creating the user, need to download the csv for further reference</li>
-    </ul>
-  </li>
-</ol>
+<h2 id="iam-四大核心组件">IAM 四大核心组件</h2>
 
-<h2 id="create-a-role">create a role</h2>
-<ol>
-  <li>can create from a aws resource
-    <ul>
-      <li>e.g EC2 giving s3 read permission, any instance has this role attached can access S3</li>
-    </ul>
-  </li>
-</ol>
+<p>IAM 的权限模型围绕四个关键概念构建：</p>
 
-<h2 id="exam-tips">exam tips</h2>
+<h3 id="1-user用户">1. User（用户）</h3>
+
+<p>User 代表一个具体的人或应用程序。每个 User 拥有独立的凭证，用于访问 AWS 资源。</p>
+
+<p>创建用户时有两种访问方式：</p>
+
+<p><strong>控制台访问（Console Access）</strong></p>
 <ul>
-  <li>iam is global, does not relate to region</li>
-  <li>root account is the account first created, shouldn’t use this account normally</li>
-  <li>always use MFA on root account</li>
+  <li>需要设置用户名和密码</li>
+  <li>可以要求用户首次登录时重置密码</li>
+  <li>适用于需要通过 Web 管理界面操作 AWS 的场景</li>
 </ul>
 
+<p><strong>编程访问（Programmatic Access）</strong></p>
+<ul>
+  <li>生成 Access Key ID 和 Secret Access Key</li>
+  <li><strong>Secret Access Key 仅在创建时显示一次</strong>，必须立即下载 CSV 文件妥善保存</li>
+  <li>适用于 CLI、SDK、API 调用等自动化场景</li>
+</ul>
+
+<h3 id="2-group组">2. Group（组）</h3>
+
+<p>Group 是 User 的集合，用于批量管理权限。例如：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Developers</code> 组：赋予 EC2、S3、CodeDeploy 等开发相关权限</li>
+  <li><code class="language-plaintext highlighter-rouge">DBAdmins</code> 组：赋予 RDS、DynamoDB 管理权限</li>
+  <li><code class="language-plaintext highlighter-rouge">ReadOnly</code> 组：仅赋予只读权限</li>
+</ul>
+
+<p>一个 User 可以属于多个 Group，Group 不能嵌套（即 Group 不能包含其他 Group）。</p>
+
+<h3 id="3-role角色">3. Role（角色）</h3>
+
+<p>Role 是为 AWS 资源或外部身份定义的临时权限集合。与 User 不同，Role 没有长期凭证，而是通过 STS（Security Token Service）签发临时凭证。</p>
+
+<p>典型使用场景：</p>
+
+<ul>
+  <li><strong>EC2 实例角色</strong>：为 EC2 实例附加 Role，使其能够访问 S3 存储桶，而无需在实例中硬编码 Access Key</li>
+  <li><strong>跨账号访问</strong>：允许另一个 AWS 账号的用户临时访问你的资源</li>
+  <li><strong>联合身份</strong>：允许企业 AD 用户通过 SAML 登录 AWS</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>例如：创建一个 EC2-S3-ReadOnly 角色
+→ 受信实体：EC2 服务
+→ 附加策略：AmazonS3ReadOnlyAccess
+→ 任何附加了此角色的 EC2 实例都可以读取 S3 数据
+</code></pre></div></div>
+
+<h3 id="4-policy策略">4. Policy（策略）</h3>
+
+<p>Policy 是一个 JSON 文档，精确定义了允许或拒绝的操作。策略可以附加到 User、Group 或 Role 上。</p>
+
+<p>一个典型的 Policy 文档结构：</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"Version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2012-10-17"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"Statement"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"Action"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="s2">"s3:GetObject"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"s3:ListBucket"</span><span class="w">
+      </span><span class="p">],</span><span class="w">
+      </span><span class="nl">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="s2">"arn:aws:s3:::my-bucket"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"arn:aws:s3:::my-bucket/*"</span><span class="w">
+      </span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>关键字段说明：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>字段</th>
+      <th>含义</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">Effect</code></td>
+      <td>Allow 或 Deny</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">Action</code></td>
+      <td>允许/拒绝的具体 API 操作</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">Resource</code></td>
+      <td>策略适用的 AWS 资源 ARN</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">Condition</code></td>
+      <td>可选，限制策略生效的条件（如 IP 范围、时间等）</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="iam-最佳实践">IAM 最佳实践</h2>
+
+<p>在实际项目和考试中，以下最佳实践都是高频考点：</p>
+
+<ol>
+  <li><strong>永远不要使用 Root 账号进行日常操作</strong>：Root 账号是创建 AWS 账号时的初始账号，拥有不可限制的完整权限</li>
+  <li><strong>为 Root 账号启用 MFA（多因素认证）</strong>：即使密码泄露，攻击者也无法登录</li>
+  <li><strong>遵循最小权限原则（Least Privilege）</strong>：只赋予完成任务所需的最小权限</li>
+  <li><strong>使用 Group 管理权限</strong>：避免直接为单个 User 附加策略</li>
+  <li><strong>定期轮换凭证</strong>：Access Key 应定期更换</li>
+  <li><strong>使用 Role 而非 Access Key</strong>：在 AWS 资源之间交互时，优先使用 Role</li>
+</ol>
+
+<h2 id="iam-权限评估逻辑">IAM 权限评估逻辑</h2>
+
+<p>当一个请求到达 AWS 时，IAM 按以下逻辑评估权限：</p>
+
+<ol>
+  <li>默认所有请求被<strong>隐式拒绝</strong>（Implicit Deny）</li>
+  <li>检查所有适用的策略，如果有 <strong>Allow</strong>，则进入下一步</li>
+  <li>如果有任何 <strong>Explicit Deny</strong>，则最终拒绝（Deny 始终优先于 Allow）</li>
+</ol>
+
+<p>简单记忆：<strong>Deny &gt; Allow &gt; Default Deny</strong></p>
+
+<h2 id="考试要点总结">考试要点总结</h2>
+
+<ul>
+  <li>IAM 是<strong>全局服务</strong>，不关联任何特定 Region</li>
+  <li>Root 账号不应用于日常操作，务必开启 MFA</li>
+  <li>Access Key Secret 仅在创建时可见，丢失只能重新生成</li>
+  <li>Policy 是 JSON 格式，可附加到 User、Group、Role</li>
+  <li>Role 用于 AWS 资源间授权，优先于硬编码凭证</li>
+  <li>权限评估遵循 Explicit Deny &gt; Allow &gt; Implicit Deny</li>
+</ul>
+
+<p>掌握 IAM 不仅是通过认证考试的关键，更是在实际 AWS 项目中构建安全架构的基础。建议在理解概念后，亲自在 AWS 控制台动手操作，加深理解。</p>
 
     </div>
   </div>
@@ -167,33 +282,33 @@
     
     <li>
       <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">DotDot3</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
       <div class="entry-body">
-        <p>DDD Redis 的并发竞争问题如何解决- Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis...</p>
+        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.26: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">高可用高并发</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/26/HighAvailabilityConcurrency.html">构建高可用高并发系统：限流、降级、缓存与扩容的工程实践</a>
       <div class="entry-body">
-        <p>高可用- 负载均衡 - Consul + Consul-template 动态配置 Nginx upstream - Nginx + lua 动态负载均衡...</p>
+        <p>引言在互联网系统中，高可用和高并发是两个永恒的技术主题。高可用（High Availability）关注的是系统在各种异常情况下持续提供服务的能力；高并发...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.20: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">DotDot2</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/20/DotDot2.html">分布式系统核心问题：副本控制、组件对比与常见面试题精讲</a>
       <div class="entry-body">
-        <p>分布式控制方案- 中心化的副本控制协议，也就是主从模式- primary-secondary协议，也就是leader/follower（数据切片分段存储）...</p>
+        <p>分布式系统的设计本质上是在高可用、一致性、扩展性和性能之间寻找平衡。本文将从分布式副本控制方案出发，对比主流分布式组件（Redis Cluster、HBa...</p>
       </div>
     </li>
     
     <li>
       <span>2020.07.18: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">  Jvm（三）参数一览</a>
+      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/18/JVM-Param.html">JVM 参数调优实战：从压缩指针到 GC 配置全指南</a>
       <div class="entry-body">
-        <p>UseCompressedOop- CompressedOops原理：64位地址分为堆的基地址+偏移量，当堆内存```shell-Xms2g：初始化推大小...</p>
+        <p>引言JVM 参数调优是 Java 开发者绕不过去的技能。一组合理的 JVM 参数配置，可以显著提升应用的性能和稳定性；而错误的配置可能导致频繁 Full ...</p>
       </div>
     </li>
     
