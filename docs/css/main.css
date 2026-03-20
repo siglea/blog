@@ -30,6 +30,17 @@ p {
   line-height: 220%; /* 阮一峰博客真实行高 */
 }
 
+.module-list-item {
+  line-height: 180%; /* 阮一峰博客列表行高 */
+  margin-left: 1em; /* 阮一峰博客列表左边距 */
+  font-size: 1.6em; /* 统一列表项字体大小，与正文一致 */
+}
+
+.module-list-item span {
+  color: rgba(0, 0, 0, 0.5); /* 阮一峰博客日期颜色 */
+  font-size: 1.6em; /* 统一日期字体大小 */
+}
+
 h1 {
   font-size: 2.88em; /* 统一标题字体大小 */
 }
@@ -44,6 +55,26 @@ h3 {
 
 h4 {
   font-size: 1.5em; /* 统一标题字体大小 */
+}
+
+.about-page {
+  font-size: 1.6em; /* 统一关于页面字体大小 */
+}
+
+.about-page p {
+  font-size: 1.6em; /* 统一关于页面段落字体大小 */
+}
+
+.about-page ul {
+  font-size: 1.6em; /* 统一关于页面列表字体大小 */
+}
+
+.about-page li {
+  font-size: 1.6em; /* 统一关于页面列表项字体大小 */
+}
+
+.about-page h3 {
+  font-size: 1.87em; /* 统一关于页面标题字体大小 */
 }
 
 a {
