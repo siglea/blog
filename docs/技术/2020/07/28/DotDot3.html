@@ -15,15 +15,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="DDD Redis 的并发竞争问题如何解决 Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis 对于多个客户端连接并不存在竞争，但是在业务客户端对 Redis 进行并发访问时会发生连接超时、数据转换错误、阻塞、客户端关闭连接等问题，这些问题均是由于客户端连接混乱造成 解决方法： 客户端加锁（synchronized） 乐观锁（redis 的命令 watch）： 当执行多键值事务操作时，Redis 不仅要求这些键值需要落在同一个 Redis 实例上，还要求落在同一个 slot 上，所以 redis 的事务比较鸡肋 不过可以想办法遵循 redis 内部的分片算法把设计到的所有 key 分到同一个 slot redis 的 setnx 实现内置的锁： 要设置超时时间，防止抢占到锁的客户端因失败、崩溃或其他原因没有办法释放锁而造成死锁 MongoDB 概述 https://mp.weixin.qq.com/s/hLPREeTvThUYuLe-VFOfOA 分片 https://www.cnblogs.com/duanxz/p/10730121.html 扩容 MongoDB ，使用B-树，节点带数据 Mysql为什么不能使用内存映射 MongoDB VS MySQL https://zhuanlan.zhihu.com/p/67350330 并发框架Disruptor http://ifeve.com/lmax/ http://ifeve.com/disruptor/" />
 <meta property="og:description" content="DDD Redis 的并发竞争问题如何解决 Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis 对于多个客户端连接并不存在竞争，但是在业务客户端对 Redis 进行并发访问时会发生连接超时、数据转换错误、阻塞、客户端关闭连接等问题，这些问题均是由于客户端连接混乱造成 解决方法： 客户端加锁（synchronized） 乐观锁（redis 的命令 watch）： 当执行多键值事务操作时，Redis 不仅要求这些键值需要落在同一个 Redis 实例上，还要求落在同一个 slot 上，所以 redis 的事务比较鸡肋 不过可以想办法遵循 redis 内部的分片算法把设计到的所有 key 分到同一个 slot redis 的 setnx 实现内置的锁： 要设置超时时间，防止抢占到锁的客户端因失败、崩溃或其他原因没有办法释放锁而造成死锁 MongoDB 概述 https://mp.weixin.qq.com/s/hLPREeTvThUYuLe-VFOfOA 分片 https://www.cnblogs.com/duanxz/p/10730121.html 扩容 MongoDB ，使用B-树，节点带数据 Mysql为什么不能使用内存映射 MongoDB VS MySQL https://zhuanlan.zhihu.com/p/67350330 并发框架Disruptor http://ifeve.com/lmax/ http://ifeve.com/disruptor/" />
-<link rel="canonical" href="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html" />
-<meta property="og:url" content="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html" />
+<link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html" />
+<meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-07-28T08:44:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="DotDot3" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-07-28T08:44:00+08:00","datePublished":"2020-07-28T08:44:00+08:00","description":"DDD Redis 的并发竞争问题如何解决 Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis 对于多个客户端连接并不存在竞争，但是在业务客户端对 Redis 进行并发访问时会发生连接超时、数据转换错误、阻塞、客户端关闭连接等问题，这些问题均是由于客户端连接混乱造成 解决方法： 客户端加锁（synchronized） 乐观锁（redis 的命令 watch）： 当执行多键值事务操作时，Redis 不仅要求这些键值需要落在同一个 Redis 实例上，还要求落在同一个 slot 上，所以 redis 的事务比较鸡肋 不过可以想办法遵循 redis 内部的分片算法把设计到的所有 key 分到同一个 slot redis 的 setnx 实现内置的锁： 要设置超时时间，防止抢占到锁的客户端因失败、崩溃或其他原因没有办法释放锁而造成死锁 MongoDB 概述 https://mp.weixin.qq.com/s/hLPREeTvThUYuLe-VFOfOA 分片 https://www.cnblogs.com/duanxz/p/10730121.html 扩容 MongoDB ，使用B-树，节点带数据 Mysql为什么不能使用内存映射 MongoDB VS MySQL https://zhuanlan.zhihu.com/p/67350330 并发框架Disruptor http://ifeve.com/lmax/ http://ifeve.com/disruptor/","headline":"DotDot3","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/blog/assets/images/logo.png"},"name":"siglea"},"url":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-07-28T08:44:00+08:00","datePublished":"2020-07-28T08:44:00+08:00","description":"DDD Redis 的并发竞争问题如何解决 Redis 为单进程单线程模式，采用队列模式将并发访问变为串行访问。Redis 本身没有锁的概念，Redis 对于多个客户端连接并不存在竞争，但是在业务客户端对 Redis 进行并发访问时会发生连接超时、数据转换错误、阻塞、客户端关闭连接等问题，这些问题均是由于客户端连接混乱造成 解决方法： 客户端加锁（synchronized） 乐观锁（redis 的命令 watch）： 当执行多键值事务操作时，Redis 不仅要求这些键值需要落在同一个 Redis 实例上，还要求落在同一个 slot 上，所以 redis 的事务比较鸡肋 不过可以想办法遵循 redis 内部的分片算法把设计到的所有 key 分到同一个 slot redis 的 setnx 实现内置的锁： 要设置超时时间，防止抢占到锁的客户端因失败、崩溃或其他原因没有办法释放锁而造成死锁 MongoDB 概述 https://mp.weixin.qq.com/s/hLPREeTvThUYuLe-VFOfOA 分片 https://www.cnblogs.com/duanxz/p/10730121.html 扩容 MongoDB ，使用B-树，节点带数据 Mysql为什么不能使用内存映射 MongoDB VS MySQL https://zhuanlan.zhihu.com/p/67350330 并发框架Disruptor http://ifeve.com/lmax/ http://ifeve.com/disruptor/","headline":"DotDot3","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -44,7 +44,7 @@
         <div id="google_search">
           <form action="https://www.google.com/search" target="_blank" method="get">
             <input type="text" name="q" class="searchbox" placeholder="Google..." />
-            <input type="hidden" name="sitesearch" value="http://localhost:4000/blog" />
+            <input type="hidden" name="sitesearch" value="https://siglea.github.io/blog" />
             <input type="submit" class="searchbox_submit" value="&#x1F50D;" />
           </form>
         </div>
@@ -136,7 +136,7 @@
       
       <li>标签：
         
-        <a href="/blog/tag/Java/">Java</a>
+        <a href="/blog/tag/java/">Java</a>
         
       </li>
       

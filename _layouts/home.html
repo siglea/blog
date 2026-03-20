@@ -15,7 +15,7 @@ layout: default
       <p>
         分类<span class="delimiter">：</span>
         {% for cat in latest_post.categories %}
-        <a href="{{ site.baseurl }}/category/{{ cat }}/" rel="tag">{{ cat }}</a>{% unless forloop.last %}, {% endunless %}
+        <a href="{{ site.baseurl }}/category/{{ cat | slugify }}/" rel="tag">{{ cat }}</a>{% unless forloop.last %}, {% endunless %}
         {% endfor %}
       </p>
     </div>

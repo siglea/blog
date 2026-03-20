@@ -57,7 +57,7 @@
               <ul>
                 {% for category in site.categories %}
                 <li>
-                  <a href="{{ site.baseurl }}/category/{{ category[0] }}/">{{ category[0] }}</a>
+                  <a href="{{ site.baseurl }}/category/{{ category[0] | slugify }}/">{{ category[0] }}</a>
                   <span class="count">({{ category[1].size }})</span>
                 </li>
                 {% endfor %}
@@ -71,7 +71,7 @@
               <ul>
                 {% for tag in site.tags limit:20 %}
                 <li>
-                  <a href="{{ site.baseurl }}/tag/{{ tag[0] }}/">{{ tag[0] }}</a>
+                  <a href="{{ site.baseurl }}/tag/{{ tag[0] | slugify }}/">{{ tag[0] }}</a>
                   <span class="count">({{ tag[1].size }})</span>
                 </li>
                 {% endfor %}

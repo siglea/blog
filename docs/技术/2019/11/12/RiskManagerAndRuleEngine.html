@@ -15,15 +15,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="参考 美团酒旅实时数据规则引擎应用实践 https://tech.meituan.com/2018/04/19/hb-rt-operation.html Drools, IKExpression, Aviator和Groovy字符串表达式求值比较 http://www.itboth.com/d/eM3Ufi/java-groovy 风控决策引擎系统的搭建设计指南（转载） https://www.cnblogs.com/xitingxie/p/9168892.html 有赞Drools https://tech.youzan.com/rules-engine/ 风控系统资料合集-蚂蚁，京东，美团，开源系统 https://zhuanlan.zhihu.com/p/107975044 实时风控系统 https://blog.csdn.net/qq_22473611/article/details/103391493 基于Flink和规则引擎的实时风控解决方案 https://www.jianshu.com/p/a70271c6f463 模型在风控策略中用到什么细节？ http://www.woshipm.com/data-analysis/4202118.html 贷前风控 https://www.cnblogs.com/aprial/p/9993513.html 智能风控决策引擎 – 中后台设计策略 https://www.woshipm.com/pd/4196740.html" />
 <meta property="og:description" content="参考 美团酒旅实时数据规则引擎应用实践 https://tech.meituan.com/2018/04/19/hb-rt-operation.html Drools, IKExpression, Aviator和Groovy字符串表达式求值比较 http://www.itboth.com/d/eM3Ufi/java-groovy 风控决策引擎系统的搭建设计指南（转载） https://www.cnblogs.com/xitingxie/p/9168892.html 有赞Drools https://tech.youzan.com/rules-engine/ 风控系统资料合集-蚂蚁，京东，美团，开源系统 https://zhuanlan.zhihu.com/p/107975044 实时风控系统 https://blog.csdn.net/qq_22473611/article/details/103391493 基于Flink和规则引擎的实时风控解决方案 https://www.jianshu.com/p/a70271c6f463 模型在风控策略中用到什么细节？ http://www.woshipm.com/data-analysis/4202118.html 贷前风控 https://www.cnblogs.com/aprial/p/9993513.html 智能风控决策引擎 – 中后台设计策略 https://www.woshipm.com/pd/4196740.html" />
-<link rel="canonical" href="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html" />
-<meta property="og:url" content="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html" />
+<link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html" />
+<meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-11-12T10:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="风控与规则引擎" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"参考 美团酒旅实时数据规则引擎应用实践 https://tech.meituan.com/2018/04/19/hb-rt-operation.html Drools, IKExpression, Aviator和Groovy字符串表达式求值比较 http://www.itboth.com/d/eM3Ufi/java-groovy 风控决策引擎系统的搭建设计指南（转载） https://www.cnblogs.com/xitingxie/p/9168892.html 有赞Drools https://tech.youzan.com/rules-engine/ 风控系统资料合集-蚂蚁，京东，美团，开源系统 https://zhuanlan.zhihu.com/p/107975044 实时风控系统 https://blog.csdn.net/qq_22473611/article/details/103391493 基于Flink和规则引擎的实时风控解决方案 https://www.jianshu.com/p/a70271c6f463 模型在风控策略中用到什么细节？ http://www.woshipm.com/data-analysis/4202118.html 贷前风控 https://www.cnblogs.com/aprial/p/9993513.html 智能风控决策引擎 – 中后台设计策略 https://www.woshipm.com/pd/4196740.html","headline":"风控与规则引擎","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/blog/assets/images/logo.png"},"name":"siglea"},"url":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2019-11-12T10:25:00+08:00","datePublished":"2019-11-12T10:25:00+08:00","description":"参考 美团酒旅实时数据规则引擎应用实践 https://tech.meituan.com/2018/04/19/hb-rt-operation.html Drools, IKExpression, Aviator和Groovy字符串表达式求值比较 http://www.itboth.com/d/eM3Ufi/java-groovy 风控决策引擎系统的搭建设计指南（转载） https://www.cnblogs.com/xitingxie/p/9168892.html 有赞Drools https://tech.youzan.com/rules-engine/ 风控系统资料合集-蚂蚁，京东，美团，开源系统 https://zhuanlan.zhihu.com/p/107975044 实时风控系统 https://blog.csdn.net/qq_22473611/article/details/103391493 基于Flink和规则引擎的实时风控解决方案 https://www.jianshu.com/p/a70271c6f463 模型在风控策略中用到什么细节？ http://www.woshipm.com/data-analysis/4202118.html 贷前风控 https://www.cnblogs.com/aprial/p/9993513.html 智能风控决策引擎 – 中后台设计策略 https://www.woshipm.com/pd/4196740.html","headline":"风控与规则引擎","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2019/11/12/RiskManagerAndRuleEngine.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -44,7 +44,7 @@
         <div id="google_search">
           <form action="https://www.google.com/search" target="_blank" method="get">
             <input type="text" name="q" class="searchbox" placeholder="Google..." />
-            <input type="hidden" name="sitesearch" value="http://localhost:4000/blog" />
+            <input type="hidden" name="sitesearch" value="https://siglea.github.io/blog" />
             <input type="submit" class="searchbox_submit" value="&#x1F50D;" />
           </form>
         </div>
@@ -146,7 +146,7 @@
       
       <li>标签：
         
-        <a href="/blog/tag/Java/">Java</a>, 
+        <a href="/blog/tag/java/">Java</a>, 
         
         <a href="/blog/tag/分布式/">分布式</a>
         

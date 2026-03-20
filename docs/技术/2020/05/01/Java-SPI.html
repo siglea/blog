@@ -15,15 +15,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。 Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。 在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。 public final class ServiceLoader&lt;S&gt; implements Iterable&lt;S&gt; { private static final String PREFIX = &quot;META-INF/services/&quot;; public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) { ClassLoader cl = Thread.currentThread().getContextClassLoader(); return ServiceLoader.load(service, cl); } } https://blog.csdn.net/sweatOtt/article/details/83055191 https://juejin.im/post/5af952fdf265da0b9e652de3 https://www.jianshu.com/p/46b42f7f593c" />
 <meta property="og:description" content="SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。 Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。 在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。 public final class ServiceLoader&lt;S&gt; implements Iterable&lt;S&gt; { private static final String PREFIX = &quot;META-INF/services/&quot;; public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) { ClassLoader cl = Thread.currentThread().getContextClassLoader(); return ServiceLoader.load(service, cl); } } https://blog.csdn.net/sweatOtt/article/details/83055191 https://juejin.im/post/5af952fdf265da0b9e652de3 https://www.jianshu.com/p/46b42f7f593c" />
-<link rel="canonical" href="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html" />
-<meta property="og:url" content="http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html" />
+<link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html" />
+<meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-05-01T19:25:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Java SPI" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-05-01T19:25:00+08:00","datePublished":"2020-05-01T19:25:00+08:00","description":"SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。 Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。 在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。 public final class ServiceLoader&lt;S&gt; implements Iterable&lt;S&gt; { private static final String PREFIX = &quot;META-INF/services/&quot;; public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) { ClassLoader cl = Thread.currentThread().getContextClassLoader(); return ServiceLoader.load(service, cl); } } https://blog.csdn.net/sweatOtt/article/details/83055191 https://juejin.im/post/5af952fdf265da0b9e652de3 https://www.jianshu.com/p/46b42f7f593c","headline":"Java SPI","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/blog/assets/images/logo.png"},"name":"siglea"},"url":"http://localhost:4000/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2020-05-01T19:25:00+08:00","datePublished":"2020-05-01T19:25:00+08:00","description":"SPI全称Service Provider Interface，是Java提供的一套用来被第三方实现或者扩展的API，它可以用来启用框架扩展和替换组件。 Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义ClassLoader，结合SPI技术，就能做到接口和具体实现解耦，还能做到类隔离和对业务代码无感知的升级。 在jar包内 /META-INF/services/java.sql.Driver寻找类名（约束优于配置）。 public final class ServiceLoader&lt;S&gt; implements Iterable&lt;S&gt; { private static final String PREFIX = &quot;META-INF/services/&quot;; public static &lt;S&gt; ServiceLoader&lt;S&gt; load(Class&lt;S&gt; service) { ClassLoader cl = Thread.currentThread().getContextClassLoader(); return ServiceLoader.load(service, cl); } } https://blog.csdn.net/sweatOtt/article/details/83055191 https://juejin.im/post/5af952fdf265da0b9e652de3 https://www.jianshu.com/p/46b42f7f593c","headline":"Java SPI","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2020/05/01/Java-SPI.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -44,7 +44,7 @@
         <div id="google_search">
           <form action="https://www.google.com/search" target="_blank" method="get">
             <input type="text" name="q" class="searchbox" placeholder="Google..." />
-            <input type="hidden" name="sitesearch" value="http://localhost:4000/blog" />
+            <input type="hidden" name="sitesearch" value="https://siglea.github.io/blog" />
             <input type="submit" class="searchbox_submit" value="&#x1F50D;" />
           </form>
         </div>
@@ -125,7 +125,7 @@ Java SPI其实内部实现原理还是基于ClassLoader。我们可以自定义C
       
       <li>标签：
         
-        <a href="/blog/tag/Java/">Java</a>
+        <a href="/blog/tag/java/">Java</a>
         
       </li>
       

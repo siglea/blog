@@ -12,7 +12,7 @@ title: 分类
       <div id="homepage">
       {% for category in site.categories %}
         <h3>
-          <a href="{{ site.baseurl }}/category/{{ category[0] }}/">{{ category[0] }}</a>
+          <a href="{{ site.baseurl }}/category/{{ category[0] | slugify }}/">{{ category[0] }}</a>
           <span style="color:gray;font-size:0.7em;">({{ category[1].size }})</span>
         </h3>
         <ul>
@@ -25,7 +25,7 @@ title: 分类
         </ul>
         {% if category[1].size > 5 %}
         <p>
-          <a href="{{ site.baseurl }}/category/{{ category[0] }}/">查看全部 {{ category[1].size }} 篇文章...</a>
+          <a href="{{ site.baseurl }}/category/{{ category[0] | slugify }}/">查看全部 {{ category[1].size }} 篇文章...</a>
         </p>
         {% endif %}
       {% endfor %}
