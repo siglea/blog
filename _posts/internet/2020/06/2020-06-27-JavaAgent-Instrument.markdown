@@ -140,7 +140,7 @@ public class InstrumentationExample {
 
 下图展示了 Java Agent 的整体工作流程：
 
-<img src="{{ site.baseurl }}/img/JavaAgent.jpg" width="600px">
+<img src="{{ site.baseurl }}/img/java-agent/JavaAgent.jpg" width="600px">
 
 **参考资料：**
 - <https://www.jianshu.com/p/be68d66afb85>
@@ -156,7 +156,7 @@ ASM 是一个轻量级的 Java 字节码操作框架，采用**访问者模式�
 
 下图展示了 Java AOP 技术栈中各框架的层级关系：
 
-<img src="{{ site.baseurl }}/img/AOP.jpg" width="600px">
+<img src="{{ site.baseurl }}/img/java-agent/AOP.jpg" width="600px">
 
 #### 2.2 ASM 实现安全检查注入
 

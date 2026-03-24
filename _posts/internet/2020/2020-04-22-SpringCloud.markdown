@@ -9,7 +9,7 @@ tags:
 categories:
 - 技术
 ---
-<img src="{{ site.baseurl }}/img/springcloud.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/spring-cloud/springcloud.jpg" width="600px" />
 
 在微服务架构逐渐成为后端系统主流选择的今天，Spring Cloud 凭借其与 Spring Boot 的深度整合、丰富的组件生态以及活跃的社区支持，成为了 Java 领域构建微服务系统的事实标准。本文将对 Spring Cloud 的核心组件进行系统性梳理，并结合微服务架构的演进背景，帮助读者建立一个完整的技术全景视图。
 
@@ -81,7 +81,7 @@ Spring Cloud Gateway 是 Spring Cloud 官方推出的第二代网关框架，取
 
 使用步骤：（1）添加 pom 依赖（2）配置文件添加相关配置（3）启动类添加注解 `@EnableConfigServer`。
 
-<img src="{{ site.baseurl }}/img/springconfig.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/spring-cloud/springconfig.jpg" width="600px" />
 
 #### 其他实用技巧
 

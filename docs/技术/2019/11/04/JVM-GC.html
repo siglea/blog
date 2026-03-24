@@ -264,9 +264,9 @@
 
 <p>GC 不能在程序运行的任意位置暂停线程，而是需要线程运行到”安全点（Safepoint）”才能进行 STW（Stop The World）操作。安全区域（Safe Region）则是指在一段代码中，引用关系不会发生变化的区域，线程在安全区域内可以安全地进行 GC。</p>
 
-<p><img src="/blog/img/gc1.jpg" width="600px" />
-<img src="/blog/img/gc2.jpg" width="600px" />
-<img src="/blog/img/gc3.jpg" width="600px" /></p>
+<p><img src="/blog/img/jvm-gc/gc1.jpg" width="600px" />
+<img src="/blog/img/jvm-gc/gc2.jpg" width="600px" />
+<img src="/blog/img/jvm-gc/gc3.jpg" width="600px" /></p>
 
 <hr />
 
@@ -274,7 +274,7 @@
 
 <p>在发生 Minor GC 之前，JVM 会检查老年代最大可用的连续空间是否大于新生代所有对象总空间。如果不满足条件，则需要进行空间分配担保判断，决定是否直接进行 Full GC。</p>
 
-<p><img src="/blog/img/gc4.jpg" width="600px" /></p>
+<p><img src="/blog/img/jvm-gc/gc4.jpg" width="600px" /></p>
 
 <hr />
 
@@ -390,7 +390,7 @@
           <h2>关于</h2>
           <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。</p>
           <p>
-            文章：<a href="/blog/archive/">77</a>
+            文章：<a href="/blog/archive/">78</a>
             &middot;
             <a href="/blog/feed.xml">RSS</a>
           </p>

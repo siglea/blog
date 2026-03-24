@@ -130,7 +130,7 @@
 
 <p>在标签存储的物理设计上，通常采用分区表的方式来组织数据。每个标签或标签组作为一个分区，用户作为行维度，形成一张宽表。</p>
 
-<p><img src="/blog/img/up1.jpeg" width="600px" /></p>
+<p><img src="/blog/img/user-profile-2/up1.jpeg" width="600px" /></p>
 
 <p>在这种存储方案中，标签值通常使用数字来表示：</p>
 
@@ -140,7 +140,7 @@
   <li><strong>具体数字</strong>：用户被打上该标签，有具体数值（如消费金额、活跃天数等）</li>
 </ul>
 
-<p><img src="/blog/img/up2.jpg" width="600px" /></p>
+<p><img src="/blog/img/user-profile-2/up2.jpg" width="600px" /></p>
 
 <p>这种设计的优势在于查询某个用户的所有标签时只需要一次读取，但弊端在于标签维度增多时宽表会变得非常宽，写入性能和存储效率可能下降。实际工程中，通常会按照标签的业务域（如基础属性、行为偏好、消费能力）进行分区，在查询效率和存储效率之间取得平衡。</p>
 
@@ -150,7 +150,7 @@
 
 <p>为了提升按用户维度查询的效率，标签数据通常会以 UserID 为 key 进行冗余存储。每个用户对应一行记录，将该用户的所有标签聚合在一起。</p>
 
-<p><img src="/blog/img/up3.jpg" width="600px" /></p>
+<p><img src="/blog/img/user-profile-2/up3.jpg" width="600px" /></p>
 
 <p>这种冗余存储是典型的空间换时间策略。在需要获取某个用户完整画像的场景（比如实时推荐、风控决策），这种设计能够将查询从多次 IO 降低到一次，极大提升响应速度。</p>
 
@@ -167,7 +167,7 @@
   <li>UserID 与 CookieID 通常是多对多的关系</li>
 </ul>
 
-<p><img src="/blog/img/up4.jpg" width="600px" /></p>
+<p><img src="/blog/img/user-profile-2/up4.jpg" width="600px" /></p>
 
 <p>ID-MAP 的核心目标是将同一个自然人在不同平台、不同设备上的 ID 关联起来，形成统一的用户标识。这个过程通常采用图计算或并查集算法，将具有关联关系的 ID 归并到同一个 OneID 下。ID-MAP 的准确性直接影响用户画像的质量——如果 ID 合并出错，标签就会被错误地打到其他人身上。</p>
 
@@ -177,7 +177,7 @@
 
 <p>标签体系本身也需要管理，包括标签的名称、类型、计算规则、更新频率、所属业务域等。这些元数据通常存储在 MySQL 中，方便通过管理后台进行 CRUD 操作。</p>
 
-<p><img src="/blog/img/up5.jpg" width="600px" /></p>
+<p><img src="/blog/img/user-profile-2/up5.jpg" width="600px" /></p>
 
 <p>元数据管理是标签平台化运营的基础。有了完善的元数据，标签的生产、消费和运维才能形成闭环。</p>
 
@@ -193,7 +193,7 @@
 
 <p>对于线上实时查询场景，HBase 是用户画像标签存储的常见选择。使用 Spark 将用户标签计算结果同步到 HBase，以 UserID 作为 RowKey，标签作为列族中的列，能够实现毫秒级的随机读写。</p>
 
-<p><img src="/blog/img/up6.jpg" width="600px" /></p>
+<p><img src="/blog/img/user-profile-2/up6.jpg" width="600px" /></p>
 
 <p>HBase 的列族设计非常适合标签这种半结构化数据——不同用户可能拥有不同的标签集合，使用列族存储可以避免传统关系型数据库中大量 NULL 值的问题。同时 HBase 天然支持水平扩展，随着用户量和标签维度的增长，只需增加 RegionServer 即可。</p>
 
@@ -203,7 +203,7 @@
 
 <p>HBase 的 RowKey 查询非常高效，但如果需要按标签值反查用户（如”查询所有消费金额大于 1000 的用户”），HBase 就力不从心了。此时引入 Elasticsearch 作为 HBase 的二级索引是一种成熟的实践方案。</p>
 
-<p><img src="/blog/img/up7.jpg" width="600px" /></p>
+<p><img src="/blog/img/user-profile-2/up7.jpg" width="600px" /></p>
 
 <p>ES 负责索引标签维度的数据，支持复杂的组合查询和聚合分析；查询到目标用户 ID 后，再回 HBase 获取完整的画像信息。这种 ES + HBase 的组合架构兼顾了灵活查询和海量存储的需求。</p>
 
@@ -213,7 +213,7 @@
 
 <p>从 ETL 到 Hive、再到 HBase 和 Elasticsearch，整个数据链路涉及多个环节，每个环节都可能出现数据质量问题。脏数据和旧数据的危害不容小觑——一条错误的标签可能导致推荐结果偏差、营销资源浪费甚至用户投诉。</p>
 
-<p><img src="/blog/img/up8.jpg" width="600px" /></p>
+<p><img src="/blog/img/user-profile-2/up8.jpg" width="600px" /></p>
 
 <p>完善的数据监控体系应该覆盖：</p>
 
@@ -316,7 +316,7 @@
           <h2>关于</h2>
           <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。</p>
           <p>
-            文章：<a href="/blog/archive/">77</a>
+            文章：<a href="/blog/archive/">78</a>
             &middot;
             <a href="/blog/feed.xml">RSS</a>
           </p>

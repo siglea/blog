@@ -6,9 +6,62 @@
 </description>
     <link>https://siglea.github.io/blog/</link>
     <atom:link href="https://siglea.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 20 Mar 2026 20:03:48 +0800</pubDate>
-    <lastBuildDate>Fri, 20 Mar 2026 20:03:48 +0800</lastBuildDate>
+    <pubDate>Tue, 25 Mar 2026 12:00:00 +0800</pubDate>
+    <lastBuildDate>Tue, 25 Mar 2026 12:00:00 +0800</lastBuildDate>
     <generator>Jekyll v4.4.1</generator>
+
+      <item>
+        <title>用OpenCore安装黑苹果万能步骤</title>
+        <description>
+&lt;h3 id=&quot;背景&quot;&gt;背景&lt;/h3&gt;
+&lt;h3 id=&quot;步骤&quot;&gt;步骤&lt;/h3&gt;
+&lt;h4 id=&quot;总步骤&quot;&gt;总步骤&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/black-apple-open-core/1.png&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
+&lt;h4 id=&quot;一设置核心就是配置自己当前的硬件版本比如我自己的-imac-151-再在下方选择自己期望伪装的版本比如我选择的-imac-191&quot;&gt;一、设置，核心就是配置自己当前的硬件版本比如我自己的 iMac 15,1 ，再在下方选择自己期望伪装的版本比如我选择的 iMac 19,1&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/black-apple-open-core/1.1.png&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
+&lt;h4 id=&quot;二安装引导程序选择安装到自己当前硬盘即可不用搞啥u盘一步一步安装完后reboot长按optionalt按键进入efi引导&quot;&gt;二、安装引导程序，选择安装到自己当前硬盘即可（不用搞啥U盘），一步一步安装完后reboot，长按Option/Alt按键，进入EFI引导&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/black-apple-open-core/2.1.png&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
+&lt;h4 id=&quot;三下载希望升级到的macos新版本下载完成后在启动台或应用程序列表找到刚才下载好的安装包双击安装一步一步往下走&quot;&gt;三、下载希望升级到的MacOS新版本，下载完成后在启动台或应用程序列表找到刚才下载好的安装包，双击安装，一步一步往下走&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/black-apple-open-core/3.1.png&quot; width=&quot;400px&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/blog/img/black-apple-open-core/3.2.png&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
+&lt;h4 id=&quot;四补装驱动程序也是一步一步往下走即可&quot;&gt;四、补装驱动程序，也是一步一步往下走即可&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/black-apple-open-core/4.1.png&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;遇到的问题&quot;&gt;遇到的问题&lt;/h3&gt;
+&lt;h4 id=&quot;重要提示&quot;&gt;重要提示&lt;/h4&gt;
+&lt;p&gt;不需要搞额外U盘安装盘启动，就在本地当前硬盘即可完成整个流程；&lt;br /&gt;
+如果按照步骤上述没成功或卡死了，按 Command+R 重新安装老系统，再进行上述步骤；&lt;br /&gt;
+我用的是OpenCore-2.3.2，与这个版本前后几个版本理论上应该差异不大。&lt;/p&gt;
+
+&lt;h4 id=&quot;多个软件无麦克风与摄像头访问权限&quot;&gt;多个软件无麦克风与摄像头访问权限&lt;/h4&gt;
+&lt;p&gt;微信/飞书/钉钉等软件麦克风/摄像头不可用，虽提示授权，但在设置 - 隐私与安全性 - 麦克风/摄像头 选项下没有相应的软件。&lt;br /&gt;
+这类问题都是黑苹果后的兼容问题，按照如下步骤修复：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;# 以下命令用于查找特定应用的唯一应用 ID
+vi /Applications/Cursor.app/Contents/Info.plist
+# 查找 &amp;lt;key&amp;gt;CFBundleIdentifier&amp;lt;/key&amp;gt; 下方 &amp;lt;string&amp;gt;...&amp;lt;/string&amp;gt;
+
+# 以下命令用于给特定应用（微信等）授权麦克风与摄像头（请先确认 Bundle ID，慎用 sudo）
+sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT or REPLACE INTO access VALUES(&#39;kTCCServiceMicrophone&#39;,&#39;com.tencent.xinWeChat&#39;,0,0,1,1,NULL,NULL,NULL,&#39;UNUSED&#39;,NULL,0,1577993260);&quot;
+sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT OR REPLACE INTO access VALUES(&#39;kTCCServiceCamera&#39;,&#39;com.tencent.xinWeChat&#39;,0,1,1,1,NULL,NULL,0,&#39;UNUSED&#39;,NULL,0,1585206926);&quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;软件下载&quot;&gt;软件下载&lt;/h3&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;通过网盘分享的文件&lt;/strong&gt;  &lt;br /&gt;
+OpenCore-2.3.2.pkg&lt;/p&gt;
+
+  &lt;p&gt;链接: https://pan.baidu.com/s/1EcQUtQe2V5Rhwj91d01yxw?pwd=pksq  &lt;br /&gt;
+提取码: &lt;code&gt;pksq&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+</description>
+        <pubDate>Tue, 24 Mar 2026 23:02:56 +0800</pubDate>
+        <link>https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2026/03/24/black-apple-open-core.html</link>
+        <guid isPermaLink="true">https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2026/03/24/black-apple-open-core.html</guid>
+        
+        <category>技术</category>
+        
+      </item>
     
       <item>
         <title>Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</title>
@@ -560,7 +613,7 @@ EXEC
   &lt;li&gt;&lt;strong&gt;Cassandra&lt;/strong&gt;：一致性 Hash 确定分区，依靠协调节点。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/biu.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/dotdot2/biu.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;cassandra-与-gossip-协议&quot;&gt;Cassandra 与 Gossip 协议&lt;/h4&gt;
 
@@ -1041,13 +1094,13 @@ EXEC
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/jp1.jpg&quot; width=&quot;600px&quot; /&gt;
-&lt;img src=&quot;/blog/img/jp2.jpg&quot; width=&quot;600px&quot; /&gt;
-&lt;img src=&quot;/blog/img/jp3.jpg&quot; width=&quot;600px&quot; /&gt;
-&lt;img src=&quot;/blog/img/jp4.jpg&quot; width=&quot;600px&quot; /&gt;
-&lt;img src=&quot;/blog/img/jp5.jpg&quot; width=&quot;600px&quot; /&gt;
-&lt;img src=&quot;/blog/img/jp6.jpg&quot; width=&quot;600px&quot; /&gt;
-&lt;img src=&quot;/blog/img/jp7.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/jvm-param/jp1.jpg&quot; width=&quot;600px&quot; /&gt;
+&lt;img src=&quot;/blog/img/jvm-param/jp2.jpg&quot; width=&quot;600px&quot; /&gt;
+&lt;img src=&quot;/blog/img/jvm-param/jp3.jpg&quot; width=&quot;600px&quot; /&gt;
+&lt;img src=&quot;/blog/img/jvm-param/jp4.jpg&quot; width=&quot;600px&quot; /&gt;
+&lt;img src=&quot;/blog/img/jvm-param/jp5.jpg&quot; width=&quot;600px&quot; /&gt;
+&lt;img src=&quot;/blog/img/jvm-param/jp6.jpg&quot; width=&quot;600px&quot; /&gt;
+&lt;img src=&quot;/blog/img/jvm-param/jp7.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;总结&quot;&gt;总结&lt;/h3&gt;
 
@@ -1074,7 +1127,7 @@ EXEC
 
 &lt;p&gt;Java 源代码经过编译后生成 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.class&lt;/code&gt; 文件，这是 JVM 能够识别和执行的二进制格式。理解 Class 文件结构是深入 JVM 的第一步。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/class.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/jvm-note/class.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Class 文件由以下几个核心部分组成：&lt;/p&gt;
 
@@ -1125,8 +1178,8 @@ EXEC
 
 &lt;p&gt;通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;javap -verbose&lt;/code&gt; 可以看到其编译后的 Class 文件结构：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/class_code.jpg&quot; width=&quot;600px&quot; /&gt;
-&lt;img src=&quot;/blog/img/class_javap.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/jvm-note/class_code.jpg&quot; width=&quot;600px&quot; /&gt;
+&lt;img src=&quot;/blog/img/jvm-note/class_javap.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -1310,7 +1363,7 @@ EXEC
   &lt;li&gt;&lt;strong&gt;基于栈的指令集&lt;/strong&gt;（JVM）与&lt;strong&gt;基于寄存器的指令集&lt;/strong&gt;（如 Android Dalvik VM）&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/exec.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/jvm-note/exec.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -1578,7 +1631,7 @@ EXEC
   &lt;li&gt;&lt;strong&gt;偏向锁 → 轻量级锁 → 重量级锁&lt;/strong&gt;：随着竞争升级&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/lock_optimize.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/jvm-note/lock_optimize.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -1607,7 +1660,7 @@ EXEC
 
 &lt;p&gt;本文将系统介绍 AVL 树、二叉搜索树、红黑树、B 树和 B+ 树的核心特性，并重点分析为什么 MySQL 选择 B+ 树作为索引结构。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/tree.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/tree/tree.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -1795,7 +1848,7 @@ EXEC
     
       <item>
         <title>大型互联网系统架构实战案例解析</title>
-        <description>&lt;p&gt;&lt;img src=&quot;/blog/img/arch1.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+        <description>&lt;p&gt;&lt;img src=&quot;/blog/img/system-cases/arch1.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;在互联网行业中，系统架构设计往往决定了一个产品能否在高并发、海量数据的场景下稳定运行。本文汇集了多个经典的大型系统架构案例，涵盖电商秒杀、信息流、即时通讯、用户中心等场景，帮助读者理解不同业务场景下的架构选型与设计思路。&lt;/p&gt;
 
@@ -1932,7 +1985,7 @@ EXEC
 
 &lt;p&gt;在多端（Web、iOS、Android、小程序）共存的场景下，统一的身份认证体系至关重要。基于 Token 的认证架构可以实现无状态的跨平台身份验证，降低服务端的 Session 管理压力。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/token.png&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/system-cases/token.png&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;核心思路是：用户登录成功后，服务端签发包含用户身份信息的 Token（通常采用 JWT 格式），客户端在后续请求中携带该 Token，服务端通过验证签名来确认用户身份，无需维护集中式的会话存储。&lt;/p&gt;
 
@@ -2323,7 +2376,7 @@ private native int epollWait&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;long p
   &lt;li&gt;可通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;java -Dio.netty.leakDetectionLevel=ADVANCED&lt;/code&gt; 设置泄露检测级别&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/leak_level.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/netty/leak_level.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -2353,7 +2406,7 @@ public void operationComplete&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Chann
 
 &lt;p&gt;Netty 的线程模型本质上是创建包含少量线程的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EventLoop&lt;/code&gt; 线程池 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EventLoopGroup&lt;/code&gt;，一个 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EventLoop&lt;/code&gt; 管理多个 Channel，实际上就是 I/O 多路复用的体现。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/eventLoop.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/netty/eventLoop.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -2378,7 +2431,7 @@ public void operationComplete&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Chann
 
 &lt;h4 id=&quot;不使用-netty-的原生-nio&quot;&gt;不使用 Netty 的原生 NIO&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/nio-selector.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/netty/nio-selector.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -2386,7 +2439,7 @@ public void operationComplete&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Chann
 
 &lt;p&gt;Netty 提供了使用 OpenSSL 工具包的 SSLEngine 实现（&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;OpenSslEngine&lt;/code&gt;），相比 JDK 提供的 SSLEngine 实现有更好的性能。如果 OpenSSL 库可用，可以将 Netty 应用程序配置为默认使用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;OpenSslEngine&lt;/code&gt;；如果不可用，Netty 会回退到 JDK 实现。无论使用哪种实现，SSL API 和数据流都是一致的。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/ssl_tls.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/netty/ssl_tls.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SelfSignedCertificate cert &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; new SelfSignedCertificate&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 SslContext context &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; SslContext.newServerContext&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;cert.certificate&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;, cert.privateKey&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -3122,7 +3175,7 @@ long currentTimeNanos &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; System.nano
   &lt;li&gt;&lt;strong&gt;TF-IDF&lt;/strong&gt;：借鉴信息检索中的思想，标签在该用户上频繁出现但在全体用户中稀有，则权重更高&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/up9.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/user-profile-3/up9.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;同现矩阵&quot;&gt;同现矩阵&lt;/h4&gt;
 
@@ -3179,7 +3232,7 @@ long currentTimeNanos &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; System.nano
 
 &lt;p&gt;通过整合用户设备信息、行为轨迹和交易数据，构建风控画像模型，实现实时风险评估和欺诈识别。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/up10.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/user-profile-3/up10.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;ltv-生命周期运营&quot;&gt;LTV 生命周期运营&lt;/h4&gt;
 
@@ -3190,7 +3243,7 @@ long currentTimeNanos &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; System.nano
   &lt;li&gt;&lt;strong&gt;单个用户毛利&lt;/strong&gt; = CLV（Customer Life Value）- CAC（Customer Acquisition Cost）- COC（Customer Operation Cost）&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/up11.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/user-profile-3/up11.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;数据驱动的运营策略&quot;&gt;数据驱动的运营策略&lt;/h4&gt;
 
@@ -3204,16 +3257,16 @@ long currentTimeNanos &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; System.nano
 
 &lt;p&gt;Session 特征库记录用户单次访问会话的行为序列，用于分析用户的即时意图和决策路径。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/up12.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/user-profile-3/up12.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;在线医疗场景&quot;&gt;在线医疗场景&lt;/h4&gt;
 
 &lt;p&gt;在线医疗领域，用户画像可用于患者分层、智能分诊、个性化健康方案推荐等。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/blog/img/up13.jpg&quot; width=&quot;600px&quot; /&gt;
-&lt;img src=&quot;/blog/img/up14.jpg&quot; width=&quot;600px&quot; /&gt;
-&lt;img src=&quot;/blog/img/up15.jpg&quot; width=&quot;600px&quot; /&gt;
-&lt;img src=&quot;/blog/img/up16.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/img/user-profile-3/up13.jpg&quot; width=&quot;600px&quot; /&gt;
+&lt;img src=&quot;/blog/img/user-profile-3/up14.jpg&quot; width=&quot;600px&quot; /&gt;
+&lt;img src=&quot;/blog/img/user-profile-3/up15.jpg&quot; width=&quot;600px&quot; /&gt;
+&lt;img src=&quot;/blog/img/user-profile-3/up16.jpg&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 

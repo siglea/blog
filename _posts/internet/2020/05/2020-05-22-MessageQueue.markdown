@@ -13,7 +13,7 @@ categories:
 
 ## MOM（Message Oriented Middleware）概览
 
-<img src="{{ site.baseurl }}/img/mq.jpg" width="600px"> 
+<img src="{{ site.baseurl }}/img/message-queue/mq.jpg" width="600px"> 
 
 消息中间件（MOM，Message Oriented Middleware）是一类以消息传递为核心机制的基础设施软件。它的核心价值在于将消息的发送者与接收者解耦——生产者无需知道消费者的存在，反之亦然。这种松耦合的设计使得系统具备更好的可扩展性和容错能力。
 
@@ -274,7 +274,7 @@ broker机器的外网ip  hostname.com
 
 RocketMQ 是阿里巴巴开源的分布式消息中间件，在高吞吐、低延迟、海量消息堆积等方面表现突出。它吸收了 Kafka 的优点，同时针对电商等复杂业务场景做了大量增强。
 
-<img src="{{ site.baseurl }}/img/RocketMq.jpg" width="600px"> 
+<img src="{{ site.baseurl }}/img/message-queue/RocketMq.jpg" width="600px"> 
 
 ### RocketMQ 核心优势
 

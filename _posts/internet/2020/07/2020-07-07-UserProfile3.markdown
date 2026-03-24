@@ -90,7 +90,7 @@ categories:
 - **时间衰减**：越近的行为权重越高，反映用户当前兴趣
 - **TF-IDF**：借鉴信息检索中的思想，标签在该用户上频繁出现但在全体用户中稀有，则权重更高
 
-<img src="{{ site.baseurl }}/img/up9.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/user-profile-3/up9.jpg" width="600px" />
 
 #### 同现矩阵
 
@@ -141,7 +141,7 @@ categories:
 
 通过整合用户设备信息、行为轨迹和交易数据，构建风控画像模型，实现实时风险评估和欺诈识别。
 
-<img src="{{ site.baseurl }}/img/up10.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/user-profile-3/up10.jpg" width="600px" />
 
 #### LTV 生命周期运营
 
@@ -150,7 +150,7 @@ categories:
 - **生命周期估算**：流失率的倒数可用来预测用户生命周期。例如月流失率为 10%，则预期生命周期约为 10 个月
 - **单个用户毛利** = CLV（Customer Life Value）- CAC（Customer Acquisition Cost）- COC（Customer Operation Cost）
 
-<img src="{{ site.baseurl }}/img/up11.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/user-profile-3/up11.jpg" width="600px" />
 
 #### 数据驱动的运营策略
 
@@ -162,16 +162,16 @@ categories:
 
 Session 特征库记录用户单次访问会话的行为序列，用于分析用户的即时意图和决策路径。
 
-<img src="{{ site.baseurl }}/img/up12.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/user-profile-3/up12.jpg" width="600px" />
 
 #### 在线医疗场景
 
 在线医疗领域，用户画像可用于患者分层、智能分诊、个性化健康方案推荐等。
 
-<img src="{{ site.baseurl }}/img/up13.jpg" width="600px" />
-<img src="{{ site.baseurl }}/img/up14.jpg" width="600px" />
-<img src="{{ site.baseurl }}/img/up15.jpg" width="600px" />
-<img src="{{ site.baseurl }}/img/up16.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/user-profile-3/up13.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/user-profile-3/up14.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/user-profile-3/up15.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/user-profile-3/up16.jpg" width="600px" />
 
 ---
 

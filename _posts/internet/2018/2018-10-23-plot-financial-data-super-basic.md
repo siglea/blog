@@ -47,7 +47,7 @@ apple_data = market_train_df[market_train_df['assetCode'] == 'AAPL.O']
 apple_data.set_index('time')['close'].plot(grid = True)
 ```
 
-<img src="{{ site.baseurl }}/img/python-plot-financial-data-1.png" style="height:50%">
+<img src="{{ site.baseurl }}/img/plot-financial/python-plot-financial-data-1.png" style="height:50%">
 
 代码解析：
 
@@ -82,7 +82,7 @@ for code in suspicious_asset_code:
     asset_data.set_index('time')['close'].plot(grid=True)
 ```
 
-<img src="{{ site.baseurl }}/img/python-financial-plot-2.png" style="height:50%">
+<img src="{{ site.baseurl }}/img/plot-financial/python-financial-plot-2.png" style="height:50%">
 
 这种方式会把所有股票画在同一张图上。当股票数量较多或价格量级差异大时，图表会变得难以辨认。
 
@@ -112,7 +112,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-<img src="{{ site.baseurl }}/img/python-plot-subplot.png" style="height:50%">
+<img src="{{ site.baseurl }}/img/plot-financial/python-plot-subplot.png" style="height:50%">
 
 这样每只股票都有独立的坐标系，方便逐一检查数据异常——比如价格突然归零、出现负值、或者走势明显不合理的情况。
 

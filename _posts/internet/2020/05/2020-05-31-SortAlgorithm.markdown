@@ -269,7 +269,7 @@ public class MergeSort {
 
 ### 三、复杂度对比
 
-<img src="{{ site.baseurl }}/img/sort.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/sort-algorithm/sort.jpg" width="600px" />
 
 | 排序算法 | 平均时间复杂度 | 最坏时间复杂度 | 空间复杂度 | 稳定性 |
 |----------|---------------|---------------|-----------|--------|

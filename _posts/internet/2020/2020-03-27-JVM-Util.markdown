@@ -276,7 +276,7 @@ Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.92-b14 mixed mode):
 
 JConsole 是 JDK 自带的 JMX 监控工具，提供了内存、线程、类加载、MBean 等多维度的实时监控。适合开发环境使用。
 
-<img src="{{ site.baseurl }}/img/jconsole.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/jvm-util/jconsole.jpg" width="600px" />
 
 #### VisualVM
 
@@ -290,13 +290,13 @@ VisualVM 是功能更全面的 JVM 监控工具，集成了 jstat、jmap、jstac
 
 `javap` 可以反编译 `.class` 文件，查看 Java 字节码指令。这对于理解 JVM 执行机制、分析编译器优化非常有帮助。
 
-<img src="{{ site.baseurl }}/img/javap.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/jvm-util/javap.jpg" width="600px" />
 
 #### HSDIS：JIT 反汇编插件
 
 HSDIS 是 HotSpot VM 的反汇编插件，可以将 JIT 编译器生成的本地机器码反汇编为可读的汇编指令，用于深度性能分析。
 
-<img src="{{ site.baseurl }}/img/hsdis.jpg" width="600px" />
+<img src="{{ site.baseurl }}/img/jvm-util/hsdis.jpg" width="600px" />
 
 ---
 

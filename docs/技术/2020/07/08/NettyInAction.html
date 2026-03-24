@@ -291,7 +291,7 @@ private native int epollWait<span class="o">(</span>long pollAddress, int numfds
   <li>可通过 <code class="language-plaintext highlighter-rouge">java -Dio.netty.leakDetectionLevel=ADVANCED</code> 设置泄露检测级别</li>
 </ul>
 
-<p><img src="/blog/img/leak_level.jpg" width="600px" /></p>
+<p><img src="/blog/img/netty/leak_level.jpg" width="600px" /></p>
 
 <hr />
 
@@ -321,7 +321,7 @@ public void operationComplete<span class="o">(</span>ChannelFuture f<span class=
 
 <p>Netty 的线程模型本质上是创建包含少量线程的 <code class="language-plaintext highlighter-rouge">EventLoop</code> 线程池 <code class="language-plaintext highlighter-rouge">EventLoopGroup</code>，一个 <code class="language-plaintext highlighter-rouge">EventLoop</code> 管理多个 Channel，实际上就是 I/O 多路复用的体现。</p>
 
-<p><img src="/blog/img/eventLoop.jpg" width="600px" /></p>
+<p><img src="/blog/img/netty/eventLoop.jpg" width="600px" /></p>
 
 <hr />
 
@@ -346,7 +346,7 @@ public void operationComplete<span class="o">(</span>ChannelFuture f<span class=
 
 <h4 id="不使用-netty-的原生-nio">不使用 Netty 的原生 NIO</h4>
 
-<p><img src="/blog/img/nio-selector.jpg" width="600px" /></p>
+<p><img src="/blog/img/netty/nio-selector.jpg" width="600px" /></p>
 
 <hr />
 
@@ -354,7 +354,7 @@ public void operationComplete<span class="o">(</span>ChannelFuture f<span class=
 
 <p>Netty 提供了使用 OpenSSL 工具包的 SSLEngine 实现（<code class="language-plaintext highlighter-rouge">OpenSslEngine</code>），相比 JDK 提供的 SSLEngine 实现有更好的性能。如果 OpenSSL 库可用，可以将 Netty 应用程序配置为默认使用 <code class="language-plaintext highlighter-rouge">OpenSslEngine</code>；如果不可用，Netty 会回退到 JDK 实现。无论使用哪种实现，SSL API 和数据流都是一致的。</p>
 
-<p><img src="/blog/img/ssl_tls.jpg" width="600px" /></p>
+<p><img src="/blog/img/netty/ssl_tls.jpg" width="600px" /></p>
 
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SelfSignedCertificate cert <span class="o">=</span> new SelfSignedCertificate<span class="o">()</span><span class="p">;</span>
 SslContext context <span class="o">=</span> SslContext.newServerContext<span class="o">(</span>cert.certificate<span class="o">()</span>, cert.privateKey<span class="o">())</span><span class="p">;</span>
@@ -558,7 +558,7 @@ Sec-WebSocket-Version: 13
           <h2>关于</h2>
           <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。</p>
           <p>
-            文章：<a href="/blog/archive/">77</a>
+            文章：<a href="/blog/archive/">78</a>
             &middot;
             <a href="/blog/feed.xml">RSS</a>
           </p>

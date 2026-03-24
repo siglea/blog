@@ -138,7 +138,7 @@
 
 <p>Dubbo 采用了清晰的分层架构设计，从上到下分为服务接口层、配置代理层、路由监控层和传输层。</p>
 
-<p><img src="/blog/img/dubbo1.jpg" width="600px" /></p>
+<p><img src="/blog/img/dubbo/dubbo1.jpg" width="600px" /></p>
 
 <p><strong>四大层概述：</strong></p>
 
@@ -149,7 +149,7 @@
   <li><strong>传输层</strong>（协议层由 Invoker 转变为 Exporter、信息交换异步/同步转换、网络传输、序列化）</li>
 </ol>
 
-<p><img src="/blog/img/dubbo2.jpg" width="600px" /></p>
+<p><img src="/blog/img/dubbo/dubbo2.jpg" width="600px" /></p>
 
 <p><strong>十小层详解：</strong></p>
 
@@ -166,7 +166,7 @@
   <li><strong>数据序列化层（Serialize）</strong>：可复用的一些工具，扩展接口为 Serialization、ObjectInput、ObjectOutput 和 ThreadPool。</li>
 </ol>
 
-<p><img src="/blog/img/dubbo3.jpg" width="600px" /></p>
+<p><img src="/blog/img/dubbo/dubbo3.jpg" width="600px" /></p>
 
 <hr />
 
@@ -174,7 +174,7 @@
 
 <p>Invoker 经过协议层变成真正的服务暴露 Exporter：</p>
 
-<p><img src="/blog/img/exporter.jpg" width="600px" /></p>
+<p><img src="/blog/img/dubbo/exporter.jpg" width="600px" /></p>
 
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Exporter&lt;?&gt; exporter <span class="o">=</span> protocol.export<span class="o">(</span>wrapperInvoker<span class="o">)</span>
 </code></pre></div></div>
@@ -277,7 +277,7 @@
   <li>Hystrix 两种隔离模式分析 <a href="https://www.jianshu.com/p/e1a4d3bdf7c4">https://www.jianshu.com/p/e1a4d3bdf7c4</a></li>
 </ul>
 
-<p><img src="/blog/img/sh.jpg" width="600px" /></p>
+<p><img src="/blog/img/dubbo/sh.jpg" width="600px" /></p>
 
 <hr />
 
@@ -563,7 +563,7 @@
           <h2>关于</h2>
           <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。</p>
           <p>
-            文章：<a href="/blog/archive/">77</a>
+            文章：<a href="/blog/archive/">78</a>
             &middot;
             <a href="/blog/feed.xml">RSS</a>
           </p>
