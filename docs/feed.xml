@@ -6,14 +6,26 @@
 </description>
     <link>https://siglea.github.io/blog/</link>
     <atom:link href="https://siglea.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 25 Mar 2026 12:00:00 +0800</pubDate>
-    <lastBuildDate>Tue, 25 Mar 2026 12:00:00 +0800</lastBuildDate>
+    <pubDate>Wed, 25 Mar 2026 21:00:00 +0800</pubDate>
+    <lastBuildDate>Wed, 25 Mar 2026 21:00:00 +0800</lastBuildDate>
     <generator>Jekyll v4.4.1</generator>
 
       <item>
         <title>用OpenCore安装黑苹果万能步骤</title>
         <description>
+
 &lt;h3 id=&quot;背景&quot;&gt;背景&lt;/h3&gt;
+&lt;p&gt;随着 AI 技术的飞速发展，我也希望能尝试 AI 编程和 Vibe Coding。可惜手头的两台老款苹果电脑——iMac 2015 和 MacBook Pro 2016——无法官方升级到 MacOS 12 及以上系统。幸运的是，OpenCore 让我在这些设备上焕发新机，顺利体验最新系统与前沿技术！&lt;br /&gt;
+OpenCore 作为非常强大的黑苹果（即将 macOS 安装在非苹果官方硬件上）引导工具，不仅用于 Hackintosh 用户，它还适用于诸多场景：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;非官方硬件上体验 macOS&lt;/strong&gt;：允许普通 PC、笔记本等设备安装并顺利运行 macOS，实现兼容性和功能最大化。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;老 Mac 延寿&lt;/strong&gt;：通过 OpenCore，可以让官方 macOS 停止支持的老 Mac 安装更新的新系统（如 Monterey、Ventura 等），延长旧设备的使用寿命。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;多系统引导管理&lt;/strong&gt;：支持 macOS 与 Windows、Linux 等多系统的并行安装和切换，灵活性高且兼容性好。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;驱动补丁与硬件伪装&lt;/strong&gt;：OpenCore 提供丰富的配置信息，能模拟或修补某些硬件特性，如伪造 SMBIOS 信息、注入定制化驱动，增强系统稳定性与兼容性。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;调试与黑苹果优化&lt;/strong&gt;：支持详细日志输出，方便调试和按需微调系统，极大地方便黑苹果爱好者和开发者。&lt;br /&gt;
+总之，OpenCore 已成为 Hackintosh 社区主流和推荐的引导方案，不仅仅是“装个苹果”，更可以最大程度发挥硬件潜力，实现个性化定制和极致体验。&lt;/li&gt;
+&lt;/ol&gt;
+
 &lt;h3 id=&quot;步骤&quot;&gt;步骤&lt;/h3&gt;
 &lt;h4 id=&quot;总步骤&quot;&gt;总步骤&lt;/h4&gt;
 &lt;p&gt;&lt;img src=&quot;/blog/img/black-apple-open-core/1.png&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
@@ -36,7 +48,8 @@
 &lt;h4 id=&quot;多个软件无麦克风与摄像头访问权限&quot;&gt;多个软件无麦克风与摄像头访问权限&lt;/h4&gt;
 &lt;p&gt;微信/飞书/钉钉等软件麦克风/摄像头不可用，虽提示授权，但在设置 - 隐私与安全性 - 麦克风/摄像头 选项下没有相应的软件。&lt;br /&gt;
 这类问题都是黑苹果后的兼容问题，按照如下步骤修复：&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;# 以下命令用于查找特定应用的唯一应用 ID
+
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;# 以下命令用于查找特定应用的唯一应用 ID
 vi /Applications/Cursor.app/Contents/Info.plist
 # 查找 &amp;lt;key&amp;gt;CFBundleIdentifier&amp;lt;/key&amp;gt; 下方 &amp;lt;string&amp;gt;...&amp;lt;/string&amp;gt;
 
@@ -45,7 +58,7 @@ sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT or
 sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT OR REPLACE INTO access VALUES(&#39;kTCCServiceCamera&#39;,&#39;com.tencent.xinWeChat&#39;,0,1,1,1,NULL,NULL,0,&#39;UNUSED&#39;,NULL,0,1585206926);&quot;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&quot;软件下载&quot;&gt;软件下载&lt;/h3&gt;
+&lt;h4 id=&quot;软件下载&quot;&gt;软件下载&lt;/h4&gt;
 &lt;blockquote&gt;
   &lt;p&gt;&lt;strong&gt;通过网盘分享的文件&lt;/strong&gt;  &lt;br /&gt;
 OpenCore-2.3.2.pkg&lt;/p&gt;
@@ -53,6 +66,18 @@ OpenCore-2.3.2.pkg&lt;/p&gt;
   &lt;p&gt;链接: https://pan.baidu.com/s/1EcQUtQe2V5Rhwj91d01yxw?pwd=pksq  &lt;br /&gt;
 提取码: &lt;code&gt;pksq&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
+
+&lt;h4 id=&quot;官方下载方式&quot;&gt;官方下载方式&lt;/h4&gt;
+&lt;p&gt;建议优先通过 OpenCore 官方渠道获取最新版本及文档：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;OpenCore 官方主页：&lt;a href=&quot;https://opencore.com/&quot;&gt;https://opencore.com/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;OpenCore 官方 GitHub（最新版、发布历史、源代码与说明）：  &lt;br /&gt;
+&lt;a href=&quot;https://github.com/acidanthera/OpenCorePkg/releases&quot;&gt;https://github.com/acidanthera/OpenCorePkg/releases&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;建议直接下载官方发布的 &lt;code&gt;OpenCore-RELEASE.zip&lt;/code&gt; 压缩包，内含所有必要文件。下载后请仔细参考文档（Docs 文件夹内的 &lt;code&gt;Configuration.pdf&lt;/code&gt; 等），并根据自身机型或需求个性化配置。切勿随意使用第三方修改版或未知来源的安装包，以免引发安全和兼容性问题。&lt;/p&gt;
+
 
 </description>
         <pubDate>Tue, 24 Mar 2026 23:02:56 +0800</pubDate>
