@@ -5,6 +5,7 @@ date:   2020-07-26 14:36:00 +0900
 comments: true
 tags:
 - 分布式
+- 架构
 categories:
 - 技术
 ---

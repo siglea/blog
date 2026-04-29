@@ -4,7 +4,8 @@ title:  "Rails 应用集成 Mailgun 邮件服务：从配置到踩坑全记录"
 date:   2017-03-29 20:15:09 +0800
 comments: true
 tags:
-- programming
+- Ruby
+- Rails
 categories:
 - 技术
 ---

@@ -5,7 +5,7 @@ date:   2020-06-07 13:25:00 +0900
 comments: true
 tags:
 - 数据结构与算法
-- BigData
+- 大数据
 categories:
 - 技术
 ---

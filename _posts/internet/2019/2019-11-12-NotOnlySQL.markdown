@@ -5,8 +5,7 @@ date:   2019-11-12 11:25:00 +0900
 comments: true
 tags:
 - NoSQL
-- 数据库 
-- 数据结构与算法
+- 数据库
 categories:
 - 技术
 ---

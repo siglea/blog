@@ -3,7 +3,7 @@ layout: post
 title:  "《原则》读书笔记：瑞·达利欧的决策智慧"
 date:   2019-12-01 16:10:02 +0800
 comments: true
-tag: 
+tags:
 - 读书笔记
 categories:
 - 随手记

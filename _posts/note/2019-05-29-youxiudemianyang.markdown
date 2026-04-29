@@ -3,7 +3,7 @@ layout: post
 title:  "《优秀的绵羊》读书笔记：精英教育的反思"
 date:   2019-05-29 15:46:02 +0800
 comments: true
-tag: 
+tags:
 - 读书笔记
 categories:
 - 随手记

@@ -4,7 +4,9 @@ title:  "深入理解 AWS IAM：身份与访问管理核心概念及实践"
 date:   2019-01-11 23:30:09 +0900
 comments: true
 tags:
+- AWS
 - 云服务
+- 安全
 categories:
 - 技术
 ---

@@ -4,7 +4,8 @@ title:  "在Rails中使用ActiveModel::Serializer序列化非ActiveRecord模型"
 date:   2018-10-25 11:30:09 +0900
 comments: true
 tags:
-- programming
+- Ruby
+- Rails
 categories:
 - 技术
 ---

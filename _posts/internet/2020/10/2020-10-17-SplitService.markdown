@@ -4,8 +4,8 @@ title:  "微服务拆分的艺术：原则、方法与领域驱动设计实践"
 date:   2019-11-12 11:25:00 +0900
 comments: true
 tags:
-- Java
-- 分布式
+- 微服务
+- 架构
 categories:
 - 技术
 ---

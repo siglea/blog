@@ -4,7 +4,7 @@ title:  "RSpec 中 raise_error 匹配器的正确用法与常见陷阱"
 date:   2018-10-25 11:30:09 +0900
 comments: true
 tags:
-- programming
+- Ruby
 categories:
 - 技术
 ---

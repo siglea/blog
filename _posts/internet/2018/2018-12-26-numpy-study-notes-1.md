@@ -4,7 +4,7 @@ title:  "NumPy入门指南：数组操作、切片与广播机制详解"
 date:   2018-12-26 10:30:09 +0900
 comments: true
 tags:
-- python
+- Python
 categories:
 - 技术
 ---

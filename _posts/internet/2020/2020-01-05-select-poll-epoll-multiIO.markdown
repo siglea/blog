@@ -5,7 +5,7 @@ date:   2019-11-12 11:25:00 +0900
 comments: true
 tags:
 - 网络
-- 分布式
+- Linux
 categories:
 - 技术
 ---

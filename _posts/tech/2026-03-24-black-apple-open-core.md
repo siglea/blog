@@ -3,7 +3,8 @@ layout: post
 title:  "用OpenCore安装黑苹果万能步骤"
 date:   2026-03-24 23:02:56 +0800
 comments: true
-
+tags:
+- 工具
 categories:
 - 技术
 ---

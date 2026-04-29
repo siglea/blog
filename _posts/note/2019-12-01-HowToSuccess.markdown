@@ -3,7 +3,7 @@ layout: post
 title:  "失败是通往成功的必经之路"
 date:   2019-12-01 16:10:02 +0800
 comments: true
-tag: 
+tags:
 - 读书笔记
 categories:
 - 随手记

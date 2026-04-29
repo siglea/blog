@@ -4,7 +4,7 @@ title:  "分布式共识算法全解析：从 Paxos 到 Raft 与 ZAB"
 date:   2019-11-12 11:25:00 +0900
 comments: true
 tags:
-- 数据结构与算法 
+- 数据结构与算法
 - 分布式
 categories:
 - 技术

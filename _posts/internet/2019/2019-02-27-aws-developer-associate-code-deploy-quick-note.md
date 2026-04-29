@@ -4,6 +4,7 @@ title:  "AWS CodeDeploy 部署服务核心概念与实践指南"
 date:   2019-02-27 19:00:00 +0900
 comments: true
 tags:
+- AWS
 - 云服务
 categories:
 - 技术
