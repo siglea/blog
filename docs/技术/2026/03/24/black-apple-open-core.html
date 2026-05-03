@@ -13,8 +13,8 @@
 <meta property="og:title" content="用OpenCore安装黑苹果万能步骤" />
 <meta name="author" content="siglea" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="背景 随着 AI 技术的飞速发展，我也希望能尝试 AI 编程和 Vibe Coding。可惜手头的两台老款苹果电脑——iMac 2015 和 MacBook Pro 2016——无法官方升级到 MacOS 12 及以上系统。幸运的是，OpenCore 让我在这些设备上焕发新机，顺利体验最新系统与前沿技术！ OpenCore 作为非常强大的黑苹果（即将 macOS 安装在非苹果官方硬件上）引导工具，不仅用于 Hackintosh 用户，它还适用于诸多场景： 非官方硬件上体验 macOS：允许普通 PC、笔记本等设备安装并顺利运行 macOS，实现兼容性和功能最大化。 老 Mac 延寿：通过 OpenCore，可以让官方 macOS 停止支持的老 Mac 安装更新的新系统（如 Monterey、Ventura 等），延长旧设备的使用寿命。 多系统引导管理：支持 macOS 与 Windows、Linux 等多系统的并行安装和切换，灵活性高且兼容性好。 驱动补丁与硬件伪装：OpenCore 提供丰富的配置信息，能模拟或修补某些硬件特性，如伪造 SMBIOS 信息、注入定制化驱动，增强系统稳定性与兼容性。 调试与黑苹果优化：支持详细日志输出，方便调试和按需微调系统，极大地方便黑苹果爱好者和开发者。 总之，OpenCore 已成为 Hackintosh 社区主流和推荐的引导方案，不仅仅是“装个苹果”，更可以最大程度发挥硬件潜力，实现个性化定制和极致体验。 步骤 总步骤 一、设置，核心就是配置自己当前的硬件版本比如我自己的 iMac 15,1 ，再在下方选择自己期望伪装的版本比如我选择的 iMac 19,1 二、安装引导程序，选择安装到自己当前硬盘即可（不用搞啥U盘），一步一步安装完后reboot，长按Option/Alt按键，进入EFI引导 三、下载希望升级到的MacOS新版本，下载完成后在启动台或应用程序列表找到刚才下载好的安装包，双击安装，一步一步往下走 四、补装驱动程序，也是一步一步往下走即可 遇到的问题 重要提示 不需要搞额外U盘安装盘启动，就在本地当前硬盘即可完成整个流程； 如果按照步骤上述没成功或卡死了，按 Command+R 重新安装老系统，再进行上述步骤； 我用的是OpenCore-2.3.2，与这个版本前后几个版本理论上应该差异不大。 多个软件无麦克风与摄像头访问权限 微信/飞书/钉钉等软件麦克风/摄像头不可用，虽提示授权，但在设置 - 隐私与安全性 - 麦克风/摄像头 选项下没有相应的软件。 这类问题都是黑苹果后的兼容问题，按照如下步骤修复： # 以下命令用于查找特定应用的唯一应用 ID vi /Applications/Cursor.app/Contents/Info.plist # 查找 &lt;key&gt;CFBundleIdentifier&lt;/key&gt; 下方 &lt;string&gt;...&lt;/string&gt; # 以下命令用于给特定应用（微信等）授权麦克风与摄像头（请先确认 Bundle ID，慎用 sudo） sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT or REPLACE INTO access VALUES(&#39;kTCCServiceMicrophone&#39;,&#39;com.tencent.xinWeChat&#39;,0,0,1,1,NULL,NULL,NULL,&#39;UNUSED&#39;,NULL,0,1577993260);&quot; sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT OR REPLACE INTO access VALUES(&#39;kTCCServiceCamera&#39;,&#39;com.tencent.xinWeChat&#39;,0,1,1,1,NULL,NULL,0,&#39;UNUSED&#39;,NULL,0,1585206926);&quot; 软件下载 通过网盘分享的文件 OpenCore-2.3.2.pkg 链接: https://pan.baidu.com/s/1EcQUtQe2V5Rhwj91d01yxw?pwd=pksq 提取码: pksq 官方下载方式 建议优先通过 OpenCore 官方渠道获取最新版本及文档： OpenCore 官方主页：https://opencore.com/ OpenCore 官方 GitHub（最新版、发布历史、源代码与说明）： https://github.com/acidanthera/OpenCorePkg/releases 建议直接下载官方发布的 OpenCore-RELEASE.zip 压缩包，内含所有必要文件。下载后请仔细参考文档（Docs 文件夹内的 Configuration.pdf 等），并根据自身机型或需求个性化配置。切勿随意使用第三方修改版或未知来源的安装包，以免引发安全和兼容性问题。" />
-<meta property="og:description" content="背景 随着 AI 技术的飞速发展，我也希望能尝试 AI 编程和 Vibe Coding。可惜手头的两台老款苹果电脑——iMac 2015 和 MacBook Pro 2016——无法官方升级到 MacOS 12 及以上系统。幸运的是，OpenCore 让我在这些设备上焕发新机，顺利体验最新系统与前沿技术！ OpenCore 作为非常强大的黑苹果（即将 macOS 安装在非苹果官方硬件上）引导工具，不仅用于 Hackintosh 用户，它还适用于诸多场景： 非官方硬件上体验 macOS：允许普通 PC、笔记本等设备安装并顺利运行 macOS，实现兼容性和功能最大化。 老 Mac 延寿：通过 OpenCore，可以让官方 macOS 停止支持的老 Mac 安装更新的新系统（如 Monterey、Ventura 等），延长旧设备的使用寿命。 多系统引导管理：支持 macOS 与 Windows、Linux 等多系统的并行安装和切换，灵活性高且兼容性好。 驱动补丁与硬件伪装：OpenCore 提供丰富的配置信息，能模拟或修补某些硬件特性，如伪造 SMBIOS 信息、注入定制化驱动，增强系统稳定性与兼容性。 调试与黑苹果优化：支持详细日志输出，方便调试和按需微调系统，极大地方便黑苹果爱好者和开发者。 总之，OpenCore 已成为 Hackintosh 社区主流和推荐的引导方案，不仅仅是“装个苹果”，更可以最大程度发挥硬件潜力，实现个性化定制和极致体验。 步骤 总步骤 一、设置，核心就是配置自己当前的硬件版本比如我自己的 iMac 15,1 ，再在下方选择自己期望伪装的版本比如我选择的 iMac 19,1 二、安装引导程序，选择安装到自己当前硬盘即可（不用搞啥U盘），一步一步安装完后reboot，长按Option/Alt按键，进入EFI引导 三、下载希望升级到的MacOS新版本，下载完成后在启动台或应用程序列表找到刚才下载好的安装包，双击安装，一步一步往下走 四、补装驱动程序，也是一步一步往下走即可 遇到的问题 重要提示 不需要搞额外U盘安装盘启动，就在本地当前硬盘即可完成整个流程； 如果按照步骤上述没成功或卡死了，按 Command+R 重新安装老系统，再进行上述步骤； 我用的是OpenCore-2.3.2，与这个版本前后几个版本理论上应该差异不大。 多个软件无麦克风与摄像头访问权限 微信/飞书/钉钉等软件麦克风/摄像头不可用，虽提示授权，但在设置 - 隐私与安全性 - 麦克风/摄像头 选项下没有相应的软件。 这类问题都是黑苹果后的兼容问题，按照如下步骤修复： # 以下命令用于查找特定应用的唯一应用 ID vi /Applications/Cursor.app/Contents/Info.plist # 查找 &lt;key&gt;CFBundleIdentifier&lt;/key&gt; 下方 &lt;string&gt;...&lt;/string&gt; # 以下命令用于给特定应用（微信等）授权麦克风与摄像头（请先确认 Bundle ID，慎用 sudo） sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT or REPLACE INTO access VALUES(&#39;kTCCServiceMicrophone&#39;,&#39;com.tencent.xinWeChat&#39;,0,0,1,1,NULL,NULL,NULL,&#39;UNUSED&#39;,NULL,0,1577993260);&quot; sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT OR REPLACE INTO access VALUES(&#39;kTCCServiceCamera&#39;,&#39;com.tencent.xinWeChat&#39;,0,1,1,1,NULL,NULL,0,&#39;UNUSED&#39;,NULL,0,1585206926);&quot; 软件下载 通过网盘分享的文件 OpenCore-2.3.2.pkg 链接: https://pan.baidu.com/s/1EcQUtQe2V5Rhwj91d01yxw?pwd=pksq 提取码: pksq 官方下载方式 建议优先通过 OpenCore 官方渠道获取最新版本及文档： OpenCore 官方主页：https://opencore.com/ OpenCore 官方 GitHub（最新版、发布历史、源代码与说明）： https://github.com/acidanthera/OpenCorePkg/releases 建议直接下载官方发布的 OpenCore-RELEASE.zip 压缩包，内含所有必要文件。下载后请仔细参考文档（Docs 文件夹内的 Configuration.pdf 等），并根据自身机型或需求个性化配置。切勿随意使用第三方修改版或未知来源的安装包，以免引发安全和兼容性问题。" />
+<meta name="description" content="背景 随着 AI 技术的飞速发展，我也希望能尝试 AI 编程和 Vibe Coding。可惜手头的两台老款苹果电脑——iMac 2015 和 MacBook Pro 2016——无法官方升级到 MacOS 12 及以上系统。幸运的是，OpenCore 让我在这些设备上焕发新机，顺利体验最新系统与前沿技术！ OpenCore 作为非常强大的黑苹果（即将 macOS 安装在非苹果官方硬件上）引导工具，不仅用于 Hackintosh 用户，它还适用于诸多场景： 非官方硬件上体验 macOS：允许普通 PC、笔记本等设备安装并顺利运行 macOS，实现兼容性和功能最大化。 老 Mac 延寿：通过 OpenCore，可以让官方 macOS 停止支持的老 Mac 安装更新的新系统（如 Monterey、Ventura 等），延长旧设备的使用寿命。 多系统引导管理：支持 macOS 与 Windows、Linux 等多系统的并行安装和切换，灵活性高且兼容性好。 驱动补丁与硬件伪装：OpenCore 提供丰富的配置信息，能模拟或修补某些硬件特性，如伪造 SMBIOS 信息、注入定制化驱动，增强系统稳定性与兼容性。 调试与黑苹果优化：支持详细日志输出，方便调试和按需微调系统，极大地方便黑苹果爱好者和开发者。 总之，OpenCore 已成为 Hackintosh 社区主流和推荐的引导方案，不仅仅是“装个苹果”，更可以最大程度发挥硬件潜力，实现个性化定制和极致体验。 步骤 总步骤 一、设置，点击Settings，核心就是配置自己当前的硬件版本比如我自己的 iMac 15,1 ，再在下方选择自己期望伪装的版本比如我选择的 iMac 19,1 二、安装引导程序，点击 Build and Install OpenCore，选择安装到自己当前硬盘即可（不用搞啥U盘），一步一步安装完后reboot，长按Option/Alt按键，进入EFI引导 三、一定从EFI引导进入系统，点击 Create macOS Installer， 下载希望升级到的MacOS新版本，下载完成后在启动台或应用程序列表找到刚才下载好的安装包，双击安装，一步一步往下走 四、按装驱动程序，点击Post-Install Root Patch也是一步一步往下走即可 遇到的问题 重要提示 不需要搞额外U盘安装盘启动，就在本地当前硬盘即可完成整个流程； 如果按照步骤上述没成功或卡死了，按 Command+R 重新安装老系统，再进行上述步骤； 我用的是OpenCore-2.3.2，与这个版本前后几个版本理论上应该差异不大。 多个软件无麦克风与摄像头访问权限 微信/飞书/钉钉等软件麦克风/摄像头不可用，虽提示授权，但在设置 - 隐私与安全性 - 麦克风/摄像头 选项下没有相应的软件。 这类问题都是黑苹果后的兼容问题，按照如下步骤修复： # 以下命令用于查找特定应用的唯一应用 ID vi /Applications/Cursor.app/Contents/Info.plist # 查找 &lt;key&gt;CFBundleIdentifier&lt;/key&gt; 下方 &lt;string&gt;...&lt;/string&gt; # 以下命令用于给特定应用（微信等）授权麦克风与摄像头（请先确认 Bundle ID，慎用 sudo） sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT or REPLACE INTO access VALUES(&#39;kTCCServiceMicrophone&#39;,&#39;com.tencent.xinWeChat&#39;,0,0,1,1,NULL,NULL,NULL,&#39;UNUSED&#39;,NULL,0,1577993260);&quot; sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT OR REPLACE INTO access VALUES(&#39;kTCCServiceCamera&#39;,&#39;com.tencent.xinWeChat&#39;,0,1,1,1,NULL,NULL,0,&#39;UNUSED&#39;,NULL,0,1585206926);&quot; 软件下载 通过网盘分享的文件 OpenCore-2.3.2.pkg 链接: https://pan.baidu.com/s/1EcQUtQe2V5Rhwj91d01yxw?pwd=pksq 提取码: pksq 官方下载方式 建议优先通过 OpenCore 官方渠道获取最新版本及文档： OpenCore 官方主页：https://opencore.com/ OpenCore 官方 GitHub（最新版、发布历史、源代码与说明）： https://github.com/acidanthera/OpenCorePkg/releases 建议直接下载官方发布的 OpenCore-RELEASE.zip 压缩包，内含所有必要文件。下载后请仔细参考文档（Docs 文件夹内的 Configuration.pdf 等），并根据自身机型或需求个性化配置。切勿随意使用第三方修改版或未知来源的安装包，以免引发安全和兼容性问题。" />
+<meta property="og:description" content="背景 随着 AI 技术的飞速发展，我也希望能尝试 AI 编程和 Vibe Coding。可惜手头的两台老款苹果电脑——iMac 2015 和 MacBook Pro 2016——无法官方升级到 MacOS 12 及以上系统。幸运的是，OpenCore 让我在这些设备上焕发新机，顺利体验最新系统与前沿技术！ OpenCore 作为非常强大的黑苹果（即将 macOS 安装在非苹果官方硬件上）引导工具，不仅用于 Hackintosh 用户，它还适用于诸多场景： 非官方硬件上体验 macOS：允许普通 PC、笔记本等设备安装并顺利运行 macOS，实现兼容性和功能最大化。 老 Mac 延寿：通过 OpenCore，可以让官方 macOS 停止支持的老 Mac 安装更新的新系统（如 Monterey、Ventura 等），延长旧设备的使用寿命。 多系统引导管理：支持 macOS 与 Windows、Linux 等多系统的并行安装和切换，灵活性高且兼容性好。 驱动补丁与硬件伪装：OpenCore 提供丰富的配置信息，能模拟或修补某些硬件特性，如伪造 SMBIOS 信息、注入定制化驱动，增强系统稳定性与兼容性。 调试与黑苹果优化：支持详细日志输出，方便调试和按需微调系统，极大地方便黑苹果爱好者和开发者。 总之，OpenCore 已成为 Hackintosh 社区主流和推荐的引导方案，不仅仅是“装个苹果”，更可以最大程度发挥硬件潜力，实现个性化定制和极致体验。 步骤 总步骤 一、设置，点击Settings，核心就是配置自己当前的硬件版本比如我自己的 iMac 15,1 ，再在下方选择自己期望伪装的版本比如我选择的 iMac 19,1 二、安装引导程序，点击 Build and Install OpenCore，选择安装到自己当前硬盘即可（不用搞啥U盘），一步一步安装完后reboot，长按Option/Alt按键，进入EFI引导 三、一定从EFI引导进入系统，点击 Create macOS Installer， 下载希望升级到的MacOS新版本，下载完成后在启动台或应用程序列表找到刚才下载好的安装包，双击安装，一步一步往下走 四、按装驱动程序，点击Post-Install Root Patch也是一步一步往下走即可 遇到的问题 重要提示 不需要搞额外U盘安装盘启动，就在本地当前硬盘即可完成整个流程； 如果按照步骤上述没成功或卡死了，按 Command+R 重新安装老系统，再进行上述步骤； 我用的是OpenCore-2.3.2，与这个版本前后几个版本理论上应该差异不大。 多个软件无麦克风与摄像头访问权限 微信/飞书/钉钉等软件麦克风/摄像头不可用，虽提示授权，但在设置 - 隐私与安全性 - 麦克风/摄像头 选项下没有相应的软件。 这类问题都是黑苹果后的兼容问题，按照如下步骤修复： # 以下命令用于查找特定应用的唯一应用 ID vi /Applications/Cursor.app/Contents/Info.plist # 查找 &lt;key&gt;CFBundleIdentifier&lt;/key&gt; 下方 &lt;string&gt;...&lt;/string&gt; # 以下命令用于给特定应用（微信等）授权麦克风与摄像头（请先确认 Bundle ID，慎用 sudo） sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT or REPLACE INTO access VALUES(&#39;kTCCServiceMicrophone&#39;,&#39;com.tencent.xinWeChat&#39;,0,0,1,1,NULL,NULL,NULL,&#39;UNUSED&#39;,NULL,0,1577993260);&quot; sudo sqlite3 ~/Library/Application\ Support/com.apple.TCC/TCC.db &quot;INSERT OR REPLACE INTO access VALUES(&#39;kTCCServiceCamera&#39;,&#39;com.tencent.xinWeChat&#39;,0,1,1,1,NULL,NULL,0,&#39;UNUSED&#39;,NULL,0,1585206926);&quot; 软件下载 通过网盘分享的文件 OpenCore-2.3.2.pkg 链接: https://pan.baidu.com/s/1EcQUtQe2V5Rhwj91d01yxw?pwd=pksq 提取码: pksq 官方下载方式 建议优先通过 OpenCore 官方渠道获取最新版本及文档： OpenCore 官方主页：https://opencore.com/ OpenCore 官方 GitHub（最新版、发布历史、源代码与说明）： https://github.com/acidanthera/OpenCorePkg/releases 建议直接下载官方发布的 OpenCore-RELEASE.zip 压缩包，内含所有必要文件。下载后请仔细参考文档（Docs 文件夹内的 Configuration.pdf 等），并根据自身机型或需求个性化配置。切勿随意使用第三方修改版或未知来源的安装包，以免引发安全和兼容性问题。" />
 <link rel="canonical" href="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2026/03/24/black-apple-open-core.html" />
 <meta property="og:url" content="https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2026/03/24/black-apple-open-core.html" />
 <meta property="og:site_name" content="Code &amp; Coffee" />
@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="用OpenCore安装黑苹果万能步骤" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2026-03-24T23:02:56+08:00","datePublished":"2026-03-24T23:02:56+08:00","description":"背景 随着 AI 技术的飞速发展，我也希望能尝试 AI 编程和 Vibe Coding。可惜手头的两台老款苹果电脑——iMac 2015 和 MacBook Pro 2016——无法官方升级到 MacOS 12 及以上系统。幸运的是，OpenCore 让我在这些设备上焕发新机，顺利体验最新系统与前沿技术！ OpenCore 作为非常强大的黑苹果（即将 macOS 安装在非苹果官方硬件上）引导工具，不仅用于 Hackintosh 用户，它还适用于诸多场景： 非官方硬件上体验 macOS：允许普通 PC、笔记本等设备安装并顺利运行 macOS，实现兼容性和功能最大化。 老 Mac 延寿：通过 OpenCore，可以让官方 macOS 停止支持的老 Mac 安装更新的新系统（如 Monterey、Ventura 等），延长旧设备的使用寿命。 多系统引导管理：支持 macOS 与 Windows、Linux 等多系统的并行安装和切换，灵活性高且兼容性好。 驱动补丁与硬件伪装：OpenCore 提供丰富的配置信息，能模拟或修补某些硬件特性，如伪造 SMBIOS 信息、注入定制化驱动，增强系统稳定性与兼容性。 调试与黑苹果优化：支持详细日志输出，方便调试和按需微调系统，极大地方便黑苹果爱好者和开发者。 总之，OpenCore 已成为 Hackintosh 社区主流和推荐的引导方案，不仅仅是“装个苹果”，更可以最大程度发挥硬件潜力，实现个性化定制和极致体验。 步骤 总步骤 一、设置，核心就是配置自己当前的硬件版本比如我自己的 iMac 15,1 ，再在下方选择自己期望伪装的版本比如我选择的 iMac 19,1 二、安装引导程序，选择安装到自己当前硬盘即可（不用搞啥U盘），一步一步安装完后reboot，长按Option/Alt按键，进入EFI引导 三、下载希望升级到的MacOS新版本，下载完成后在启动台或应用程序列表找到刚才下载好的安装包，双击安装，一步一步往下走 四、补装驱动程序，也是一步一步往下走即可 遇到的问题 重要提示 不需要搞额外U盘安装盘启动，就在本地当前硬盘即可完成整个流程； 如果按照步骤上述没成功或卡死了，按 Command+R 重新安装老系统，再进行上述步骤； 我用的是OpenCore-2.3.2，与这个版本前后几个版本理论上应该差异不大。 多个软件无麦克风与摄像头访问权限 微信/飞书/钉钉等软件麦克风/摄像头不可用，虽提示授权，但在设置 - 隐私与安全性 - 麦克风/摄像头 选项下没有相应的软件。 这类问题都是黑苹果后的兼容问题，按照如下步骤修复： # 以下命令用于查找特定应用的唯一应用 ID vi /Applications/Cursor.app/Contents/Info.plist # 查找 &lt;key&gt;CFBundleIdentifier&lt;/key&gt; 下方 &lt;string&gt;...&lt;/string&gt; # 以下命令用于给特定应用（微信等）授权麦克风与摄像头（请先确认 Bundle ID，慎用 sudo） sudo sqlite3 ~/Library/Application\\ Support/com.apple.TCC/TCC.db &quot;INSERT or REPLACE INTO access VALUES(&#39;kTCCServiceMicrophone&#39;,&#39;com.tencent.xinWeChat&#39;,0,0,1,1,NULL,NULL,NULL,&#39;UNUSED&#39;,NULL,0,1577993260);&quot; sudo sqlite3 ~/Library/Application\\ Support/com.apple.TCC/TCC.db &quot;INSERT OR REPLACE INTO access VALUES(&#39;kTCCServiceCamera&#39;,&#39;com.tencent.xinWeChat&#39;,0,1,1,1,NULL,NULL,0,&#39;UNUSED&#39;,NULL,0,1585206926);&quot; 软件下载 通过网盘分享的文件 OpenCore-2.3.2.pkg 链接: https://pan.baidu.com/s/1EcQUtQe2V5Rhwj91d01yxw?pwd=pksq 提取码: pksq 官方下载方式 建议优先通过 OpenCore 官方渠道获取最新版本及文档： OpenCore 官方主页：https://opencore.com/ OpenCore 官方 GitHub（最新版、发布历史、源代码与说明）： https://github.com/acidanthera/OpenCorePkg/releases 建议直接下载官方发布的 OpenCore-RELEASE.zip 压缩包，内含所有必要文件。下载后请仔细参考文档（Docs 文件夹内的 Configuration.pdf 等），并根据自身机型或需求个性化配置。切勿随意使用第三方修改版或未知来源的安装包，以免引发安全和兼容性问题。","headline":"用OpenCore安装黑苹果万能步骤","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2026/03/24/black-apple-open-core.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2026/03/24/black-apple-open-core.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"siglea"},"dateModified":"2026-03-24T23:02:56+08:00","datePublished":"2026-03-24T23:02:56+08:00","description":"背景 随着 AI 技术的飞速发展，我也希望能尝试 AI 编程和 Vibe Coding。可惜手头的两台老款苹果电脑——iMac 2015 和 MacBook Pro 2016——无法官方升级到 MacOS 12 及以上系统。幸运的是，OpenCore 让我在这些设备上焕发新机，顺利体验最新系统与前沿技术！ OpenCore 作为非常强大的黑苹果（即将 macOS 安装在非苹果官方硬件上）引导工具，不仅用于 Hackintosh 用户，它还适用于诸多场景： 非官方硬件上体验 macOS：允许普通 PC、笔记本等设备安装并顺利运行 macOS，实现兼容性和功能最大化。 老 Mac 延寿：通过 OpenCore，可以让官方 macOS 停止支持的老 Mac 安装更新的新系统（如 Monterey、Ventura 等），延长旧设备的使用寿命。 多系统引导管理：支持 macOS 与 Windows、Linux 等多系统的并行安装和切换，灵活性高且兼容性好。 驱动补丁与硬件伪装：OpenCore 提供丰富的配置信息，能模拟或修补某些硬件特性，如伪造 SMBIOS 信息、注入定制化驱动，增强系统稳定性与兼容性。 调试与黑苹果优化：支持详细日志输出，方便调试和按需微调系统，极大地方便黑苹果爱好者和开发者。 总之，OpenCore 已成为 Hackintosh 社区主流和推荐的引导方案，不仅仅是“装个苹果”，更可以最大程度发挥硬件潜力，实现个性化定制和极致体验。 步骤 总步骤 一、设置，点击Settings，核心就是配置自己当前的硬件版本比如我自己的 iMac 15,1 ，再在下方选择自己期望伪装的版本比如我选择的 iMac 19,1 二、安装引导程序，点击 Build and Install OpenCore，选择安装到自己当前硬盘即可（不用搞啥U盘），一步一步安装完后reboot，长按Option/Alt按键，进入EFI引导 三、一定从EFI引导进入系统，点击 Create macOS Installer， 下载希望升级到的MacOS新版本，下载完成后在启动台或应用程序列表找到刚才下载好的安装包，双击安装，一步一步往下走 四、按装驱动程序，点击Post-Install Root Patch也是一步一步往下走即可 遇到的问题 重要提示 不需要搞额外U盘安装盘启动，就在本地当前硬盘即可完成整个流程； 如果按照步骤上述没成功或卡死了，按 Command+R 重新安装老系统，再进行上述步骤； 我用的是OpenCore-2.3.2，与这个版本前后几个版本理论上应该差异不大。 多个软件无麦克风与摄像头访问权限 微信/飞书/钉钉等软件麦克风/摄像头不可用，虽提示授权，但在设置 - 隐私与安全性 - 麦克风/摄像头 选项下没有相应的软件。 这类问题都是黑苹果后的兼容问题，按照如下步骤修复： # 以下命令用于查找特定应用的唯一应用 ID vi /Applications/Cursor.app/Contents/Info.plist # 查找 &lt;key&gt;CFBundleIdentifier&lt;/key&gt; 下方 &lt;string&gt;...&lt;/string&gt; # 以下命令用于给特定应用（微信等）授权麦克风与摄像头（请先确认 Bundle ID，慎用 sudo） sudo sqlite3 ~/Library/Application\\ Support/com.apple.TCC/TCC.db &quot;INSERT or REPLACE INTO access VALUES(&#39;kTCCServiceMicrophone&#39;,&#39;com.tencent.xinWeChat&#39;,0,0,1,1,NULL,NULL,NULL,&#39;UNUSED&#39;,NULL,0,1577993260);&quot; sudo sqlite3 ~/Library/Application\\ Support/com.apple.TCC/TCC.db &quot;INSERT OR REPLACE INTO access VALUES(&#39;kTCCServiceCamera&#39;,&#39;com.tencent.xinWeChat&#39;,0,1,1,1,NULL,NULL,0,&#39;UNUSED&#39;,NULL,0,1585206926);&quot; 软件下载 通过网盘分享的文件 OpenCore-2.3.2.pkg 链接: https://pan.baidu.com/s/1EcQUtQe2V5Rhwj91d01yxw?pwd=pksq 提取码: pksq 官方下载方式 建议优先通过 OpenCore 官方渠道获取最新版本及文档： OpenCore 官方主页：https://opencore.com/ OpenCore 官方 GitHub（最新版、发布历史、源代码与说明）： https://github.com/acidanthera/OpenCorePkg/releases 建议直接下载官方发布的 OpenCore-RELEASE.zip 压缩包，内含所有必要文件。下载后请仔细参考文档（Docs 文件夹内的 Configuration.pdf 等），并根据自身机型或需求个性化配置。切勿随意使用第三方修改版或未知来源的安装包，以免引发安全和兼容性问题。","headline":"用OpenCore安装黑苹果万能步骤","mainEntityOfPage":{"@type":"WebPage","@id":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2026/03/24/black-apple-open-core.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://siglea.github.io/blog/assets/images/logo.png"},"name":"siglea"},"url":"https://siglea.github.io/blog/%E6%8A%80%E6%9C%AF/2026/03/24/black-apple-open-core.html"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -97,7 +97,7 @@
 
   <div class="asset-content entry-content">
     <div class="asset-body">
-<h3 id="背景">背景</h3>
+      <h3 id="背景">背景</h3>
 
 <p>随着 AI 技术的飞速发展，我也希望能尝试 AI 编程和 Vibe Coding。可惜手头的两台老款苹果电脑——iMac 2015 和 MacBook Pro 2016——无法官方升级到 MacOS 12 及以上系统。幸运的是，OpenCore 让我在这些设备上焕发新机，顺利体验最新系统与前沿技术！</p>
 
@@ -119,7 +119,7 @@
 <h4 id="二安装引导程序点击-build-and-install-opencore选择安装到自己当前硬盘即可不用搞啥u盘一步一步安装完后reboot长按optionalt按键进入efi引导">二、安装引导程序，点击 Build and Install OpenCore，选择安装到自己当前硬盘即可（不用搞啥U盘），一步一步安装完后reboot，长按Option/Alt按键，进入EFI引导</h4>
 <p><img src="/blog/img/black-apple-open-core/2.1.png" width="400px" /></p>
 <h4 id="三一定从efi引导进入系统点击-create-macos-installer-下载希望升级到的macos新版本下载完成后在启动台或应用程序列表找到刚才下载好的安装包双击安装一步一步往下走">三、一定从EFI引导进入系统，点击 Create macOS Installer， 下载希望升级到的MacOS新版本，下载完成后在启动台或应用程序列表找到刚才下载好的安装包，双击安装，一步一步往下走</h4>
-<p><img src="/blog/img/black-apple-open-core/3.1.png" width="400px" /><br />
+<p><img src="/blog/img/black-apple-open-core/3.1.png" width="400px" />
 <img src="/blog/img/black-apple-open-core/3.2.png" width="400px" /></p>
 <h4 id="四按装驱动程序点击post-install-root-patch也是一步一步往下走即可">四、按装驱动程序，点击Post-Install Root Patch也是一步一步往下走即可</h4>
 <p><img src="/blog/img/black-apple-open-core/4.1.png" width="400px" /></p>
@@ -134,13 +134,13 @@
 <p>微信/飞书/钉钉等软件麦克风/摄像头不可用，虽提示授权，但在设置 - 隐私与安全性 - 麦克风/摄像头 选项下没有相应的软件。
 这类问题都是黑苹果后的兼容问题，按照如下步骤修复：</p>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 以下命令用于查找特定应用的唯一应用 ID</span>
-vi /Applications/Cursor.app/Contents/Info.plist
-<span class="c"># 查找 &lt;key&gt;CFBundleIdentifier&lt;/key&gt; 下方 &lt;string&gt;...&lt;/string&gt;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#</span> <span class="n">以下命令用于查找特定应用的唯一应用</span> <span class="no">ID</span>
+<span class="n">vi</span> <span class="o">/</span><span class="nc">Applications</span><span class="o">/</span><span class="nc">Cursor</span><span class="o">.</span><span class="na">app</span><span class="o">/</span><span class="nc">Contents</span><span class="o">/</span><span class="nc">Info</span><span class="o">.</span><span class="na">plist</span>
+<span class="err">#</span> <span class="n">查找</span> <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="nc">CFBundleIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span> <span class="n">下方</span> <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;...&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
 
-<span class="c"># 以下命令用于给特定应用（微信等）授权麦克风与摄像头（请先确认 Bundle ID，慎用 sudo）</span>
-<span class="nb">sudo </span>sqlite3 ~/Library/Application<span class="se">\ </span>Support/com.apple.TCC/TCC.db <span class="s2">"INSERT or REPLACE INTO access VALUES('kTCCServiceMicrophone','com.tencent.xinWeChat',0,0,1,1,NULL,NULL,NULL,'UNUSED',NULL,0,1577993260);"</span>
-<span class="nb">sudo </span>sqlite3 ~/Library/Application<span class="se">\ </span>Support/com.apple.TCC/TCC.db <span class="s2">"INSERT OR REPLACE INTO access VALUES('kTCCServiceCamera','com.tencent.xinWeChat',0,1,1,1,NULL,NULL,0,'UNUSED',NULL,0,1585206926);"</span>
+<span class="err">#</span> <span class="n">以下命令用于给特定应用</span><span class="err">（</span><span class="n">微信等</span><span class="err">）</span><span class="n">授权麦克风与摄像头</span><span class="err">（</span><span class="n">请先确认</span> <span class="nc">Bundle</span> <span class="no">ID</span><span class="err">，</span><span class="n">慎用</span> <span class="n">sudo</span><span class="err">）</span>
+<span class="n">sudo</span> <span class="n">sqlite3</span> <span class="o">~/</span><span class="nc">Library</span><span class="o">/</span><span class="nc">Application</span><span class="err">\</span> <span class="nc">Support</span><span class="o">/</span><span class="n">com</span><span class="o">.</span><span class="na">apple</span><span class="o">.</span><span class="na">TCC</span><span class="o">/</span><span class="no">TCC</span><span class="o">.</span><span class="na">db</span> <span class="s">"INSERT or REPLACE INTO access VALUES('kTCCServiceMicrophone','com.tencent.xinWeChat',0,0,1,1,NULL,NULL,NULL,'UNUSED',NULL,0,1577993260);"</span>
+<span class="n">sudo</span> <span class="n">sqlite3</span> <span class="o">~/</span><span class="nc">Library</span><span class="o">/</span><span class="nc">Application</span><span class="err">\</span> <span class="nc">Support</span><span class="o">/</span><span class="n">com</span><span class="o">.</span><span class="na">apple</span><span class="o">.</span><span class="na">TCC</span><span class="o">/</span><span class="no">TCC</span><span class="o">.</span><span class="na">db</span> <span class="s">"INSERT OR REPLACE INTO access VALUES('kTCCServiceCamera','com.tencent.xinWeChat',0,1,1,1,NULL,NULL,0,'UNUSED',NULL,0,1585206926);"</span>
 </code></pre></div></div>
 
 <h4 id="软件下载">软件下载</h4>
@@ -153,15 +153,15 @@ OpenCore-2.3.2.pkg</p>
 </blockquote>
 
 <h4 id="官方下载方式">官方下载方式</h4>
-<p>建议优先通过 OpenCore 官方渠道获取最新版本及文档：</p>
-
-<ul>
-  <li>OpenCore 官方主页：<a href="https://opencore.com/">https://opencore.com/</a></li>
-  <li>OpenCore 官方 GitHub（最新版、发布历史、源代码与说明）：<br />
-<a href="https://github.com/acidanthera/OpenCorePkg/releases">https://github.com/acidanthera/OpenCorePkg/releases</a></li>
-</ul>
-
-<p>建议直接下载官方发布的 <code class="language-plaintext highlighter-rouge">OpenCore-RELEASE.zip</code> 压缩包，内含所有必要文件。下载后请仔细参考文档（Docs 文件夹内的 <code class="language-plaintext highlighter-rouge">Configuration.pdf</code> 等），并根据自身机型或需求个性化配置。切勿随意使用第三方修改版或未知来源的安装包，以免引发安全和兼容性问题。</p>
+<blockquote>
+  <p><strong>建议优先通过 OpenCore 官方渠道获取最新版本及文档：</strong></p>
+  <ul>
+    <li>OpenCore 官方主页：<a href="https://opencore.com/">https://opencore.com/</a></li>
+    <li>OpenCore 官方 GitHub（最新版、发布历史、源代码与说明）：<br />
+<a href="https://github.com/acidanthera/OpenCorePkg/releases">https://github.com/acidanthera/OpenCorePkg/releases</a>
+建议直接下载官方发布的 <code class="language-plaintext highlighter-rouge">OpenCore-RELEASE.zip</code> 压缩包，内含所有必要文件。下载后请仔细参考文档（Docs 文件夹内的 <code class="language-plaintext highlighter-rouge">Configuration.pdf</code> 等），并根据自身机型或需求个性化配置。切勿随意使用第三方修改版或未知来源的安装包，以免引发安全和兼容性问题。</li>
+  </ul>
+</blockquote>
 
 
     </div>
@@ -192,6 +192,14 @@ OpenCore-2.3.2.pkg</p>
     
     <li>
       <span>2026.04.30: </span>
+      <a href="/blog/%E7%A7%91%E6%8A%80/2026/04/30/mingxiao-minimax-hermes-agent-harness-live.html">十字路口 × MiniMax × Nous Research:Agent Harness 时代,人类如何驾驭 AI</a>
+      <div class="entry-body">
+        <p>十字路口 × MiniMax × Nous Research:Agent Harness 时代,人类如何驾驭 AI> "**打不过,就加入。**——就相当...</p>
+      </div>
+    </li>
+    
+    <li>
+      <span>2026.04.30: </span>
       <a href="/blog/%E5%95%86%E4%B8%9A/2026/04/30/%E6%B0%B8%E5%BA%86-%E6%8A%95%E8%B5%84%E5%8D%81%E4%B8%89%E6%8B%8D-%E8%87%AA%E5%B7%B1%E6%98%AF%E8%87%AA%E5%B7%B1-%E5%85%AC%E5%8F%B8%E6%98%AF%E5%85%AC%E5%8F%B8-%E5%B8%82%E5%9C%BA%E6%98%AF%E5%B8%82%E5%9C%BA.html">永庆 × 投资十三拍：自己是自己，公司是公司，市场是市场</a>
       <div class="entry-body">
         <p>永庆 × 投资十三拍：自己是自己，公司是公司，市场是市场> "我们这个水平，只能是认知到它很好。具体要干活还是需要企业家去干活。最后上涨是因为更多投资者看...</p>
@@ -214,14 +222,6 @@ OpenCore-2.3.2.pkg</p>
       </div>
     </li>
     
-    <li>
-      <span>2020.07.28: </span>
-      <a href="/blog/%E6%8A%80%E6%9C%AF/2020/07/28/DotDot3.html">Redis 并发竞争、MongoDB 架构对比与 Disruptor 高性能并发框架解析</a>
-      <div class="entry-body">
-        <p>在后端开发中，Redis 和 MongoDB 是两个使用频率极高的 NoSQL 数据库，而 Disruptor 则是追求极致性能时的并发利器。本文将围绕三...</p>
-      </div>
-    </li>
-    
   </ul>
 </div>
 
@@ -239,7 +239,7 @@ OpenCore-2.3.2.pkg</p>
           <h2>关于</h2>
           <p>探索技术深度，分享架构智慧。从后端架构到前端设计，从系统设计到产品思维， 在代码与咖啡的交织中，记录技术人的成长之旅。</p>
           <p>
-            文章：<a href="/blog/archive/">81</a>
+            文章：<a href="/blog/archive/">82</a>
             &middot;
             <a href="/blog/feed.xml">RSS</a>
           </p>
