@@ -1,0 +1,36 @@
+# 仅验证 `bundle exec jekyll build` 能否在 Linux 上跑通（输出到仓库配置的 `docs/`）。
+# 不部署 Pages，与 `jekyll-gh-pages.yml` / `static.yml` 并存；可按需在仓库 Settings → Actions 里关闭本 workflow。
+name: Jekyll build verify (docs)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jekyll-verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Jekyll build → docs/
+        run: bundle exec jekyll build --trace
+
+      - name: Sanity check output
+        run: test -f docs/index.html && test -s docs/index.html && echo "OK docs/index.html"
